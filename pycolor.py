@@ -10,15 +10,15 @@ import subprocess
 def search_replace(pattern, string, callback):
     newstring = string[:0] #str or bytes
     matches = 0
-    last = 0
 
-    substring = string[last:]
+    regex = re.compile(pattern)
+    substring = string[0:]
 
     while True:
-        match = re.search(pattern, substring)
+        match = regex.search(substring)
         if match:
             newstring += substring[:match.start()] + callback(match, string)
-            substring = substring[ match.end():]
+            substring = substring[match.end():]
             matches += 1
         else:
             newstring += substring
