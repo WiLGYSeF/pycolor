@@ -5,6 +5,30 @@ import os
 import sys
 import subprocess
 
+
+class Pycolor:
+    def __init__(self):
+        pass
+
+    def execute(self, cmd, buffer_line=True):
+        return execute(cmd, self.stdout_cb, self.stderr_cb, buffer_line=buffer_line)
+
+    def stdout_cb(self, data):
+        data = data.decode('utf-8')
+        try:
+            if int(data) & 1 == 0:
+                sys.stdout.write('\x1b[32m' + data + '\x1b[0m')
+            else:
+                sys.stdout.write(data)
+        except:
+            sys.stdout.write(data)
+        sys.stdout.flush()
+
+    def stderr_cb(self, data):
+        data = data.decode('utf-8')
+        sys.stderr.write('\x1b[34m' + data + '\x1b[0m')
+        sys.stderr.flush()
+
 def nonblock(file):
     fde = file.fileno()
     flag = fcntl.fcntl(fde, fcntl.F_GETFL)
@@ -70,23 +94,12 @@ def execute(cmd, stdout_callback, stderr_callback, buffer_line=True):
 
         return process.poll()
 
-def stdout_cb(data):
-    data = data.decode('utf-8')
-    sys.stdout.write(data)
-    sys.stdout.flush()
-
-def stderr_cb(data):
-    data = data.decode('utf-8')
-    sys.stderr.write(data)
-    sys.stderr.flush()
-
 if __name__ == '__main__':
+    pycobj = Pycolor()
     args = sys.argv[1:]
 
-    result = execute(
+    result = pycobj.execute(
         args,
-        stdout_cb,
-        stderr_cb,
         buffer_line=True
     )
     sys.exit(result)
