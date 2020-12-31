@@ -6,30 +6,38 @@ import os
 import re
 import sys
 import subprocess
+from typing import Pattern
+
 
 def search_replace(pattern, string, callback):
     newstring = string[:0] #str or bytes
+    last = 0
     matches = 0
 
-    regex = re.compile(pattern)
-    substring = string[0:]
+    if isinstance(pattern, Pattern):
+        regex = pattern
+    else:
+        regex = re.compile(pattern)
 
-    while True:
-        match = regex.search(substring)
-        if match:
-            newstring += substring[:match.start()] + callback(match, string)
-            substring = substring[match.end():]
-            matches += 1
-        else:
-            newstring += substring
-            break
+    for match in regex.finditer(string):
+        newstring += string[last:match.start()] + callback(match)
+        last = match.end()
+        matches += 1
 
-    return newstring, matches
+    return newstring + string[last:], matches
 
 class Pycolor:
     def __init__(self):
+        self.backref_regex = [
+            re.compile(rb'\\%d' % (i + 1)) for i in range(10)
+        ]
+
         with open('config.json', 'r') as file:
             self.config = json.loads(file.read())
+
+            for pattern in self.config['patterns']:
+                pattern['regex'] = re.compile(pattern['expression'].encode('utf-8'))
+                pattern['replace'] = pattern['replace'].encode('utf-8')
 
     def execute(self, cmd, buffer_line=True):
         return execute(cmd, self.stdout_cb, self.stderr_cb, buffer_line=buffer_line)
@@ -38,14 +46,14 @@ class Pycolor:
         newdata = data
 
         for pattern in self.config['patterns']:
-            def replace(match, string):
-                repl = pattern['replace'].encode('utf-8')
+            def replace(match):
+                repl = pattern['replace']
                 for i in range(len(match.groups())):
-                    repl = re.sub(rb'\\%d' % (i + 1), match[i + 1], repl)
+                    repl = self.backref_regex[i].sub(match[i + 1], repl)
                 return repl
 
             newdata, matches = search_replace(
-                pattern['expression'].encode('utf-8'),
+                pattern['regex'],
                 newdata,
                 replace
             )
