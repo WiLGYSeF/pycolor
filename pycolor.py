@@ -49,17 +49,16 @@ class Pycolor:
     def stdout_cb(self, data):
         newdata = data
 
-        for pattern in self.config['patterns']:
-            def replace(match):
-                repl = pattern['replace']
-                for i in range(len(match.groups())):
-                    repl = self.backref_regex[i].sub(match[i + 1], repl)
-                return repl
+        def replace(repl, match):
+            for i in range(len(match.groups())):
+                repl = self.backref_regex[i].sub(match[i + 1], repl)
+            return repl
 
+        for pattern in self.config['patterns']:
             newdata, replace_ranges = search_replace(
                 pattern['regex'],
                 newdata,
-                replace
+                lambda x: replace(pattern['replace'], x)
             )
             if len(replace_ranges) > 0:
                 break
