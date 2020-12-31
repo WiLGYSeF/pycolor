@@ -12,7 +12,7 @@ from typing import Pattern
 def search_replace(pattern, string, callback):
     newstring = string[:0] #str or bytes
     last = 0
-    matches = 0
+    replace_ranges = []
 
     if isinstance(pattern, Pattern):
         regex = pattern
@@ -22,9 +22,9 @@ def search_replace(pattern, string, callback):
     for match in regex.finditer(string):
         newstring += string[last:match.start()] + callback(match)
         last = match.end()
-        matches += 1
+        replace_ranges.append(match.span())
 
-    return newstring + string[last:], matches
+    return newstring + string[last:], replace_ranges
 
 class Pycolor:
     def __init__(self):
@@ -52,12 +52,12 @@ class Pycolor:
                     repl = self.backref_regex[i].sub(match[i + 1], repl)
                 return repl
 
-            newdata, matches = search_replace(
+            newdata, replace_ranges = search_replace(
                 pattern['regex'],
                 newdata,
                 replace
             )
-            if matches > 0:
+            if len(replace_ranges) > 0:
                 break
 
         sys.stdout.buffer.write(newdata)
