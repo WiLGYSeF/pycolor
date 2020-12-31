@@ -1,27 +1,58 @@
 #!/usr/bin/env python3
 
 import fcntl
+import json
 import os
+import re
 import sys
 import subprocess
 
+def search_replace(pattern, string, callback):
+    newstring = string[:0] #str or bytes
+    matches = 0
+    last = 0
+
+    substring = string[last:]
+
+    while True:
+        match = re.search(pattern, substring)
+        if match:
+            newstring += substring[:match.start()] + callback(match, string)
+            substring = substring[ match.end():]
+            matches += 1
+        else:
+            newstring += substring
+            break
+
+    return newstring, matches
 
 class Pycolor:
     def __init__(self):
-        pass
+        with open('config.json', 'r') as file:
+            self.config = json.loads(file.read())
 
     def execute(self, cmd, buffer_line=True):
         return execute(cmd, self.stdout_cb, self.stderr_cb, buffer_line=buffer_line)
 
     def stdout_cb(self, data):
-        data = data.decode('utf-8')
-        try:
-            if int(data) & 1 == 0:
-                sys.stdout.write('\x1b[32m' + data + '\x1b[0m')
-            else:
-                sys.stdout.write(data)
-        except:
-            sys.stdout.write(data)
+        newdata = data
+
+        for pattern in self.config['patterns']:
+            def replace(match, string):
+                repl = pattern['replace'].encode('utf-8')
+                for i in range(len(match.groups())):
+                    repl = re.sub(rb'\\%d' % (i + 1), match[i + 1], repl)
+                return repl
+
+            newdata, matches = search_replace(
+                pattern['expression'].encode('utf-8'),
+                newdata,
+                replace
+            )
+            if matches > 0:
+                break
+
+        sys.stdout.buffer.write(newdata)
         sys.stdout.flush()
 
     def stderr_cb(self, data):
