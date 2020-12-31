@@ -32,9 +32,12 @@ def execute(cmd, stdout_callback, stderr_callback):
 def stdout_cb(data):
     data = data.decode('utf-8')
     sys.stdout.write(data)
+    sys.stdout.flush()
 
 def stderr_cb(data):
-    sys.stderr.write(data.decode('utf-8'))
+    data = data.decode('utf-8')
+    sys.stderr.write(data)
+    sys.stderr.flush()
 
 args = sys.argv[1:]
 
