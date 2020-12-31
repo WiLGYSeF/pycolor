@@ -9,7 +9,7 @@ import subprocess
 from typing import Pattern
 
 
-def search_replace(pattern, string, callback):
+def search_replace(pattern, string, replace):
     newstring = string[:0] #str or bytes
     last = 0
     replace_ranges = []
@@ -19,8 +19,12 @@ def search_replace(pattern, string, callback):
     else:
         regex = re.compile(pattern)
 
+    if not callable(replace):
+        repl = replace
+        replace = lambda x: repl
+
     for match in regex.finditer(string):
-        newstring += string[last:match.start()] + callback(match)
+        newstring += string[last:match.start()] + replace(match)
         last = match.end()
         replace_ranges.append(match.span())
 
