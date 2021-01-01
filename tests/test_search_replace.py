@@ -182,3 +182,15 @@ class SearchReplaceTest(unittest.TestCase):
         )
         self.assertEqual(newstring, 'hello world')
         self.assertListEqual(replace_ranges, [])
+
+    def test_replace_all_ignore_between(self):
+        newstring, replace_ranges = pycolor.search_replace(
+            r'^he(.*)ld',
+            'hello world',
+            'abc',
+            ignore_ranges=[
+                (3, 8)
+            ]
+        )
+        self.assertEqual(newstring, 'hello world')
+        self.assertListEqual(replace_ranges, [])

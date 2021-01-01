@@ -33,7 +33,10 @@ def search_replace(pattern, string, replace, ignore_ranges=None):
 
         if igidx < len(ignore_ranges):
             ign = ignore_ranges[igidx]
-            if match.start() >= ign[0] and match.start() < ign[1]:
+            if any([
+                match.start() >= ign[0] and match.start() < ign[1],
+                ign[0] >= match.start() and ign[0] < match.end()
+            ]):
                 continue
 
         repl = replace(match)
