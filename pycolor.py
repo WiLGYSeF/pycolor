@@ -112,19 +112,13 @@ class Pycolor:
 
     def stdout_cb(self, data):
         newdata = data
-
-        def replace(repl, match):
-            for i in range(len(match.groups())):
-                repl = self.backref_regex[i].sub(match[i + 1], repl)
-            return repl
-
         ignore_ranges = []
 
         for pattern in self.program_config['patterns']:
             newdata, replace_ranges = search_replace(
                 pattern['regex'],
                 newdata,
-                lambda x: replace(pattern['replace'], x),
+                lambda x: x.expand(pattern['replace']),
                 ignore_ranges=ignore_ranges,
                 start_occurrance=pattern.get('start_occurrance', 1),
                 max_count=pattern.get('max_count', -1)
