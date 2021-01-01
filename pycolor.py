@@ -8,11 +8,14 @@ import sys
 import subprocess
 
 
-def search_replace(pattern, string, replace, ignore_ranges=None):
+def search_replace(pattern, string, replace, ignore_ranges=None, start_occurrance=1, max_count=-1):
     if ignore_ranges is None:
         ignore_ranges = []
+    start_occurrance = max(1, start_occurrance)
 
     newstring = string[:0] #str or bytes
+    count = 0
+    replace_count = 0
     last = 0
     replace_ranges = []
 
@@ -39,7 +42,14 @@ def search_replace(pattern, string, replace, ignore_ranges=None):
             ]):
                 continue
 
-        repl = replace(match)
+        count += 1
+
+        if count >= start_occurrance and (max_count < 0 or replace_count < max_count):
+            repl = replace(match)
+            replace_count += 1
+        else:
+            repl = string[match.start():match.end()]
+
         newstring += string[last:match.start()] + repl
         last = match.end()
 
@@ -86,11 +96,18 @@ class Pycolor:
         with open('config.json', 'r') as file:
             self.config = json.loads(file.read())
 
-            for pattern in self.config['patterns']:
-                pattern['regex'] = re.compile(pattern['expression'].encode('utf-8'))
-                pattern['replace'] = pattern['replace'].encode('utf-8')
+            for program in self.config['programs']:
+                for pattern in program['patterns']:
+                    pattern['regex'] = re.compile(pattern['expression'].encode('utf-8'))
+                    pattern['replace'] = pattern['replace'].encode('utf-8')
+
+        self.program_config = None
 
     def execute(self, cmd, buffer_line=True):
+        for cfg in self.config['programs']:
+            if cmd[0] == cfg['name']:
+                self.program_config = cfg
+
         return execute(cmd, self.stdout_cb, self.stderr_cb, buffer_line=buffer_line)
 
     def stdout_cb(self, data):
@@ -103,12 +120,14 @@ class Pycolor:
 
         ignore_ranges = []
 
-        for pattern in self.config['patterns']:
+        for pattern in self.program_config['patterns']:
             newdata, replace_ranges = search_replace(
                 pattern['regex'],
                 newdata,
                 lambda x: replace(pattern['replace'], x),
-                ignore_ranges=ignore_ranges
+                ignore_ranges=ignore_ranges,
+                start_occurrance=pattern.get('start_occurrance', 1),
+                max_count=pattern.get('max_count', -1)
             )
             if len(replace_ranges) > 0:
                 update_ranges(ignore_ranges, replace_ranges)
