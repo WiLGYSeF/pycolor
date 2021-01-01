@@ -6,15 +6,17 @@ import os
 import re
 import sys
 import subprocess
-from typing import Pattern
 
 
-def search_replace(pattern, string, replace):
+def search_replace(pattern, string, replace, ignore_ranges=None):
+    if ignore_ranges is None:
+        ignore_ranges = []
+
     newstring = string[:0] #str or bytes
     last = 0
     replace_ranges = []
 
-    if isinstance(pattern, Pattern):
+    if isinstance(pattern, re._pattern_type):
         regex = pattern
     else:
         regex = re.compile(pattern)
@@ -23,12 +25,54 @@ def search_replace(pattern, string, replace):
         repl = replace
         replace = lambda x: repl
 
+    igidx = 0
+
     for match in regex.finditer(string):
-        newstring += string[last:match.start()] + replace(match)
+        while igidx < len(ignore_ranges) and ignore_ranges[igidx][1] < match.start():
+            igidx += 1
+
+        if igidx < len(ignore_ranges):
+            ign = ignore_ranges[igidx]
+            if match.start() >= ign[0] and match.start() < ign[1]:
+                continue
+
+        repl = replace(match)
+        newstring += string[last:match.start()] + repl
         last = match.end()
-        replace_ranges.append(match.span())
+
+        start = match.start()
+        end = match.start() + len(repl)
+
+        for rng in replace_ranges:
+            old_range, new_range = rng
+            diff = new_range[1] - old_range[1] - (new_range[0] - old_range[0])
+            start += diff
+            end += diff
+
+        replace_ranges.append((
+            match.span(),
+            (start, end)
+        ))
 
     return newstring + string[last:], replace_ranges
+
+def update_ranges(ranges, replace_ranges):
+    for ridx in range(len(ranges)): #pylint: disable=consider-using-enumerate
+        cur = ranges[ridx]
+        start, end = cur
+
+        for replidx in range(len(replace_ranges) - 1, -1, -1):
+            old_range, new_range = replace_ranges[replidx]
+
+            if cur[0] >= old_range[1]:
+                diff = new_range[1] - old_range[1] - (new_range[0] - old_range[0])
+                start += diff
+                end += diff
+
+        ranges[ridx] = (start, end)
+
+    ranges.extend(map(lambda x: x[1], replace_ranges))
+    ranges.sort(key=lambda x: x[0])
 
 class Pycolor:
     def __init__(self):
@@ -54,14 +98,17 @@ class Pycolor:
                 repl = self.backref_regex[i].sub(match[i + 1], repl)
             return repl
 
+        ignore_ranges = []
+
         for pattern in self.config['patterns']:
             newdata, replace_ranges = search_replace(
                 pattern['regex'],
                 newdata,
-                lambda x: replace(pattern['replace'], x)
+                lambda x: replace(pattern['replace'], x),
+                ignore_ranges=ignore_ranges
             )
             if len(replace_ranges) > 0:
-                break
+                update_ranges(ignore_ranges, replace_ranges)
 
         sys.stdout.buffer.write(newdata)
         sys.stdout.flush()
