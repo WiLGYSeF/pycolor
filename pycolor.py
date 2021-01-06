@@ -17,9 +17,10 @@ class Pycolor:
         with open('config.json', 'r') as file:
             self.config = json.loads(file.read())
 
-            for profile in self.config['profiles']:
-                for pattern in profile['patterns']:
-                    pattern['regex'] = re.compile(pattern['expression'].encode('utf-8'))
+            for profile in self.config.get('profiles', []):
+                for pattern in profile.get('patterns', []):
+                    if 'expression' in pattern:
+                        pattern['regex'] = re.compile(pattern['expression'].encode('utf-8'))
                     if 'replace' in pattern:
                         pattern['replace'] = pattern['replace'].encode('utf-8')
 
@@ -28,18 +29,18 @@ class Pycolor:
     def execute(self, cmd):
         self.profile_cfg = {}
 
-        for cfg in self.config['profiles']:
+        for cfg in self.config.get('profiles', []):
             if 'which' in cfg:
                 if which(cmd[0]).decode('utf-8') == cfg['which']:
                     self.profile_cfg = cfg
-            elif cmd[0] == cfg['name']:
+            elif 'name' not in cfg or cmd[0] == cfg['name']:
                 self.profile_cfg = cfg
 
         if len(self.profile_cfg) != 0:
             stdout_cb = self.stdout_cb
             stderr_cb = self.stderr_cb
         else:
-            print('no config')
+            print('no config') # TODO: remove
             stdout_cb = lambda x: sys.stdout.buffer.write(x) and sys.stdout.flush()
             stderr_cb = lambda x: sys.stderr.buffer.write(x) and sys.stderr.flush()
 
@@ -54,21 +55,22 @@ class Pycolor:
         newdata = data
         ignore_ranges = []
 
-        for pattern in self.profile_cfg['patterns']:
-            if pattern.get('filter', False):
-                if pattern['regex'].search(data):
-                    return
-            elif 'replace' in pattern:
-                newdata, replace_ranges = search_replace(
-                    pattern['regex'],
-                    newdata,
-                    lambda x: x.expand(pattern['replace']),
-                    ignore_ranges=ignore_ranges,
-                    start_occurrance=pattern.get('start_occurrance', 1),
-                    max_count=pattern.get('max_count', -1)
-                )
-                if len(replace_ranges) > 0:
-                    update_ranges(ignore_ranges, replace_ranges)
+        for pattern in self.profile_cfg.get('patterns', []):
+            if 'regex' in pattern:
+                if pattern.get('filter', False):
+                    if pattern['regex'].search(data):
+                        return
+                elif 'replace' in pattern:
+                    newdata, replace_ranges = search_replace(
+                        pattern['regex'],
+                        newdata,
+                        lambda x: x.expand(pattern['replace']),
+                        ignore_ranges=ignore_ranges,
+                        start_occurrance=pattern.get('start_occurrance', 1),
+                        max_count=pattern.get('max_count', -1)
+                    )
+                    if len(replace_ranges) > 0:
+                        update_ranges(ignore_ranges, replace_ranges)
 
         sys.stdout.buffer.write(newdata)
         sys.stdout.flush()
