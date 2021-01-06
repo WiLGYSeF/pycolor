@@ -44,6 +44,35 @@ class Pycolor:
 
                 self.profiles.append(profile)
 
+        for profile in self.profiles:
+            for fromprof_cfg in profile['from_profiles']:
+                if isinstance(fromprof_cfg, dict):
+                    if len(fromprof_cfg.get('name', '')) == 0:
+                        raise Exception()
+
+                    fromprof = self.get_profile_by_name(fromprof_cfg['name'])
+                    if fromprof is None:
+                        raise Exception()
+
+                    if 'order' in fromprof_cfg:
+                        if fromprof_cfg['order'] not in ('before', 'after'):
+                            raise Exception()
+
+                        if fromprof_cfg['order'] == 'before':
+                            profile['patterns'] = fromprof['patterns'] + profile['patterns']
+                        elif fromprof_cfg['order'] == 'after':
+                            profile['patterns'].extend(fromprof['patterns'])
+                    else:
+                        profile['patterns'].extend(fromprof['patterns'])
+                elif isinstance(fromprof_cfg, str):
+                    fromprof = self.get_profile_by_name(fromprof_cfg)
+                    if fromprof is None:
+                        raise Exception()
+
+                    profile['patterns'].extend(fromprof['patterns'])
+                else:
+                    raise Exception()
+
         self.current_profile = {}
 
     def get_profile_by_name(self, name):
