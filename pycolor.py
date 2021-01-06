@@ -5,6 +5,7 @@ import re
 import sys
 
 from execute import execute
+import pyformat
 from search_replace import search_replace, update_ranges
 from which import which
 
@@ -74,7 +75,9 @@ class Pycolor:
                 }
 
                 if 'replace' in pattern_cfg:
-                    pattern['replace'] = pattern_cfg['replace'].encode('utf-8')
+                    pattern['replace'] = pyformat.format_string(
+                        pattern_cfg['replace']
+                    ).encode('utf-8')
                 profile['patterns'].append(pattern)
 
             self.profiles.append(profile)
