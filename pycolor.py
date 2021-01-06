@@ -13,10 +13,6 @@ from which import which
 
 class Pycolor:
     def __init__(self):
-        self.backref_regex = [
-            re.compile(rb'\\%d' % (i + 1)) for i in range(10)
-        ]
-
         with open('config.json', 'r') as file:
             self.config = json.loads(file.read())
 
