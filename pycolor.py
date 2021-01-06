@@ -70,6 +70,7 @@ class Pycolor:
                 pattern = {
                     'expression': pattern_cfg['expression'],
                     'regex': re.compile(pattern_cfg['expression'].encode('utf-8')),
+                    'filter': pattern_cfg.get('filter', False)
                 }
 
                 if 'replace' in pattern_cfg:
