@@ -7,26 +7,9 @@ import re
 import sys
 import subprocess
 
-from search_replace import search_replace
+from search_replace import search_replace, update_ranges
 from which import which
 
-def update_ranges(ranges, replace_ranges):
-    for ridx in range(len(ranges)): #pylint: disable=consider-using-enumerate
-        cur = ranges[ridx]
-        start, end = cur
-
-        for replidx in range(len(replace_ranges) - 1, -1, -1):
-            old_range, new_range = replace_ranges[replidx]
-
-            if cur[0] >= old_range[1]:
-                diff = new_range[1] - old_range[1] - (new_range[0] - old_range[0])
-                start += diff
-                end += diff
-
-        ranges[ridx] = (start, end)
-
-    ranges.extend(map(lambda x: x[1], replace_ranges))
-    ranges.sort(key=lambda x: x[0])
 
 class Pycolor:
     def __init__(self):

@@ -61,3 +61,21 @@ def search_replace(pattern, string, replace, ignore_ranges=None, start_occurranc
         ))
 
     return newstring + string[last:], replace_ranges
+
+def update_ranges(ranges, replace_ranges):
+    for ridx in range(len(ranges)): #pylint: disable=consider-using-enumerate
+        cur = ranges[ridx]
+        start, end = cur
+
+        for replidx in range(len(replace_ranges) - 1, -1, -1):
+            old_range, new_range = replace_ranges[replidx]
+
+            if cur[0] >= old_range[1]:
+                diff = new_range[1] - old_range[1] - (new_range[0] - old_range[0])
+                start += diff
+                end += diff
+
+        ranges[ridx] = (start, end)
+
+    ranges.extend(map(lambda x: x[1], replace_ranges))
+    ranges.sort(key=lambda x: x[0])
