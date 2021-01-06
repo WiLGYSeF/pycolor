@@ -8,6 +8,7 @@ import sys
 import subprocess
 
 from search_replace import search_replace, update_ranges
+from static_vars import static_vars
 from which import which
 
 
@@ -81,14 +82,6 @@ def nonblock(file):
     fde = file.fileno()
     flag = fcntl.fcntl(fde, fcntl.F_GETFL)
     fcntl.fcntl(fde, fcntl.F_SETFL, flag | os.O_NONBLOCK)
-
-# https://stackoverflow.com/a/279586
-def static_vars(**kwargs):
-    def decorate(func):
-        for k in kwargs:
-            setattr(func, k, kwargs[k])
-        return func
-    return decorate
 
 @static_vars(buffers={})
 def read_stream(stream, callback, buffer_line=True, last=False):
