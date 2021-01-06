@@ -1,12 +1,12 @@
 import unittest
 
-import pycolor
+from search_replace import search_replace
 
 
 # TODO: more test cases
 class SearchReplaceTest(unittest.TestCase):
     def test_same_length_single(self):
-        newstring, replace_ranges = pycolor.search_replace(
+        newstring, replace_ranges = search_replace(
             r'llo',
             'hello world',
             'wwo'
@@ -20,7 +20,7 @@ class SearchReplaceTest(unittest.TestCase):
         ])
 
     def test_same_length_multi(self):
-        newstring, replace_ranges = pycolor.search_replace(
+        newstring, replace_ranges = search_replace(
             r'[er]l',
             'hello world',
             '##'
@@ -38,7 +38,7 @@ class SearchReplaceTest(unittest.TestCase):
         ])
 
     def test_shorter_single(self):
-        newstring, replace_ranges = pycolor.search_replace(
+        newstring, replace_ranges = search_replace(
             r'e[a-z]{2}o',
             'hello world',
             '#'
@@ -52,7 +52,7 @@ class SearchReplaceTest(unittest.TestCase):
         ])
 
     def test_shorter_multi(self):
-        newstring, replace_ranges = pycolor.search_replace(
+        newstring, replace_ranges = search_replace(
             r'l+[a-z]',
             'hello world',
             '#'
@@ -70,7 +70,7 @@ class SearchReplaceTest(unittest.TestCase):
         ])
 
     def test_longer_single(self):
-        newstring, replace_ranges = pycolor.search_replace(
+        newstring, replace_ranges = search_replace(
             r'he',
             'hello world',
             '####'
@@ -84,7 +84,7 @@ class SearchReplaceTest(unittest.TestCase):
         ])
 
     def test_longer_multi(self):
-        newstring, replace_ranges = pycolor.search_replace(
+        newstring, replace_ranges = search_replace(
             r'^[a-z]|[^a-z][a-z]',
             'hello world',
             '1234'
@@ -102,7 +102,7 @@ class SearchReplaceTest(unittest.TestCase):
         ])
 
     def test_multi(self):
-        newstring, replace_ranges = pycolor.search_replace(
+        newstring, replace_ranges = search_replace(
             r'^[a-z]|[^a-z][a-z]',
             'hello world',
             '1234'
@@ -119,7 +119,7 @@ class SearchReplaceTest(unittest.TestCase):
             )
         ])
 
-        newstring, replace_ranges = pycolor.search_replace(
+        newstring, replace_ranges = search_replace(
             r'l+[a-z]',
             newstring,
             '#'
@@ -137,7 +137,7 @@ class SearchReplaceTest(unittest.TestCase):
         ])
 
     def test_longer_multi_ignore_first_between(self):
-        newstring, replace_ranges = pycolor.search_replace(
+        newstring, replace_ranges = search_replace(
             r'^[a-z]|[^a-z][a-z]',
             'hello world',
             '1234',
@@ -154,7 +154,7 @@ class SearchReplaceTest(unittest.TestCase):
         ])
 
     def test_longer_multi_ignore_second_between(self):
-        newstring, replace_ranges = pycolor.search_replace(
+        newstring, replace_ranges = search_replace(
             r'^[a-z]|[^a-z][a-z]',
             'hello world',
             '1234',
@@ -171,7 +171,7 @@ class SearchReplaceTest(unittest.TestCase):
         ])
 
     def test_longer_multi_ignore_all_between(self):
-        newstring, replace_ranges = pycolor.search_replace(
+        newstring, replace_ranges = search_replace(
             r'^[a-z]|[^a-z][a-z]',
             'hello world',
             '1234',
@@ -184,7 +184,7 @@ class SearchReplaceTest(unittest.TestCase):
         self.assertListEqual(replace_ranges, [])
 
     def test_replace_all_ignore_between(self):
-        newstring, replace_ranges = pycolor.search_replace(
+        newstring, replace_ranges = search_replace(
             r'^he(.*)ld',
             'hello world',
             'abc',
