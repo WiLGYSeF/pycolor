@@ -19,7 +19,8 @@ class Pycolor:
             for program in self.config['programs']:
                 for pattern in program['patterns']:
                     pattern['regex'] = re.compile(pattern['expression'].encode('utf-8'))
-                    pattern['replace'] = pattern['replace'].encode('utf-8')
+                    if 'replace' in pattern:
+                        pattern['replace'] = pattern['replace'].encode('utf-8')
 
         self.program_config = None
 
@@ -48,16 +49,20 @@ class Pycolor:
         ignore_ranges = []
 
         for pattern in self.program_config['patterns']:
-            newdata, replace_ranges = search_replace(
-                pattern['regex'],
-                newdata,
-                lambda x: x.expand(pattern['replace']),
-                ignore_ranges=ignore_ranges,
-                start_occurrance=pattern.get('start_occurrance', 1),
-                max_count=pattern.get('max_count', -1)
-            )
-            if len(replace_ranges) > 0:
-                update_ranges(ignore_ranges, replace_ranges)
+            if pattern.get('filter', False):
+                if pattern['regex'].search(data):
+                    return
+            elif 'replace' in pattern:
+                newdata, replace_ranges = search_replace(
+                    pattern['regex'],
+                    newdata,
+                    lambda x: x.expand(pattern['replace']),
+                    ignore_ranges=ignore_ranges,
+                    start_occurrance=pattern.get('start_occurrance', 1),
+                    max_count=pattern.get('max_count', -1)
+                )
+                if len(replace_ranges) > 0:
+                    update_ranges(ignore_ranges, replace_ranges)
 
         sys.stdout.buffer.write(newdata)
         sys.stdout.flush()
