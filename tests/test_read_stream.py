@@ -1,7 +1,7 @@
 from io import BytesIO
 import unittest
 
-import pycolor
+from execute import read_stream
 
 
 class ReadStreamTest(unittest.TestCase):
@@ -11,10 +11,10 @@ class ReadStreamTest(unittest.TestCase):
         def callback(data):
             self.assertTrue(False)
 
-        pycolor.read_stream(stream, callback, buffer_line=True, last=True)
-        pycolor.read_stream(stream, callback, buffer_line=False, last=True)
-        pycolor.read_stream(stream, callback, buffer_line=True, last=False)
-        pycolor.read_stream(stream, callback, buffer_line=False, last=False)
+        read_stream(stream, callback, buffer_line=True, last=True)
+        read_stream(stream, callback, buffer_line=False, last=True)
+        read_stream(stream, callback, buffer_line=True, last=False)
+        read_stream(stream, callback, buffer_line=False, last=False)
 
     def test_oneline_buflf_last(self):
         stream = BytesIO()
@@ -26,7 +26,7 @@ class ReadStreamTest(unittest.TestCase):
         def callback(data):
             self.assertEqual(data, indata)
 
-        pycolor.read_stream(stream, callback, buffer_line=True, last=True)
+        read_stream(stream, callback, buffer_line=True, last=True)
 
     def test_oneline_buflf_last_nolf(self):
         stream = BytesIO()
@@ -38,7 +38,7 @@ class ReadStreamTest(unittest.TestCase):
         def callback(data):
             self.assertEqual(data, indata)
 
-        pycolor.read_stream(stream, callback, buffer_line=True, last=True)
+        read_stream(stream, callback, buffer_line=True, last=True)
 
     def test_oneline_buflf_nolf(self):
         stream = BytesIO()
@@ -50,7 +50,7 @@ class ReadStreamTest(unittest.TestCase):
         def callback(data):
             self.assertTrue(False)
 
-        pycolor.read_stream(stream, callback, buffer_line=True, last=False)
+        read_stream(stream, callback, buffer_line=True, last=False)
 
     def test_oneline_nolf(self):
         stream = BytesIO()
@@ -62,7 +62,7 @@ class ReadStreamTest(unittest.TestCase):
         def callback(data):
             self.assertEqual(data, indata)
 
-        pycolor.read_stream(stream, callback, buffer_line=False, last=False)
+        read_stream(stream, callback, buffer_line=False, last=False)
 
     def test_twoline_buflf_last(self):
         stream = BytesIO()
@@ -82,4 +82,4 @@ class ReadStreamTest(unittest.TestCase):
             self.assertEqual(data, indata[counter])
             counter += 1
 
-        pycolor.read_stream(stream, callback, buffer_line=True, last=True)
+        read_stream(stream, callback, buffer_line=True, last=True)

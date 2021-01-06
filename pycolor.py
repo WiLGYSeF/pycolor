@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 
-import fcntl
 import json
-import os
 import re
 import sys
-import subprocess
 
+from execute import execute
 from search_replace import search_replace, update_ranges
-from static_vars import static_vars
 from which import which
 
 
@@ -43,8 +40,8 @@ class Pycolor:
             stderr_cb = self.stderr_cb
         else:
             print('no config') # TODO: remove
-            stdout_cb = lambda x: sys.stdout.buffer.write(x) and sys.stdout.flush()
-            stderr_cb = lambda x: sys.stderr.buffer.write(x) and sys.stderr.flush()
+            stdout_cb = self.stdout_base_cb
+            stderr_cb = self.stderr_base_cb
 
         return execute(
             cmd,
@@ -83,62 +80,14 @@ class Pycolor:
     def stderr_cb(self, data):
         self.data_callback(sys.stderr, data)
 
-def nonblock(file):
-    fde = file.fileno()
-    flag = fcntl.fcntl(fde, fcntl.F_GETFL)
-    fcntl.fcntl(fde, fcntl.F_SETFL, flag | os.O_NONBLOCK)
+    def stdout_base_cb(self, data):
+        sys.stdout.buffer.write(data)
+        sys.stdout.flush()
 
-@static_vars(buffers={})
-def read_stream(stream, callback, buffer_line=True, last=False):
-    if stream not in read_stream.buffers:
-        read_stream.buffers[stream] = b''
+    def stderr_base_cb(self, data):
+        sys.stderr.buffer.write(data)
+        sys.stderr.flush()
 
-    if buffer_line:
-        lines = stream.readlines()
-
-        if len(lines) == 0:
-            return
-
-        start = 0
-
-        if lines[0][-1] == ord('\n'):
-            callback(read_stream.buffers[stream] + lines[0])
-            read_stream.buffers[stream] = b''
-            start = 1
-
-        for i in range(start, len(lines) - 1):
-            callback(lines[i])
-
-        if lines[-1][-1] != ord('\n'):
-            read_stream.buffers[stream] += lines[-1]
-
-            if last:
-                callback(read_stream.buffers[stream])
-                read_stream.buffers[stream] = b''
-        elif len(lines) > 1:
-            callback(lines[-1])
-    else:
-        data = stream.read()
-        if data:
-            callback(data)
-
-def execute(cmd, stdout_callback, stderr_callback, buffer_line=True):
-    with subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
-    ) as process:
-        nonblock(process.stdout)
-        nonblock(process.stderr)
-
-        while process.poll() is None:
-            read_stream(process.stdout, stdout_callback, buffer_line=buffer_line)
-            read_stream(process.stderr, stderr_callback, buffer_line=buffer_line)
-
-        read_stream(process.stdout, stdout_callback, buffer_line=buffer_line, last=True)
-        read_stream(process.stderr, stderr_callback, buffer_line=buffer_line, last=True)
-
-        return process.poll()
 
 if __name__ == '__main__':
     pycobj = Pycolor()
