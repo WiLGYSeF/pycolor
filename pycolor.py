@@ -12,9 +12,11 @@ from static_vars import static_vars
 from which import which
 
 
+PYCOLOR_CONFIG_FNAME = 'config.json'
+
 class Pycolor:
     def __init__(self):
-        with open('config.json', 'r') as file:
+        with open(PYCOLOR_CONFIG_FNAME, 'r') as file:
             self.config = json.loads(file.read())
 
             for profile in self.config.get('profiles', []):
