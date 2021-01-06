@@ -16,25 +16,25 @@ class Pycolor:
         with open('config.json', 'r') as file:
             self.config = json.loads(file.read())
 
-            for program in self.config['programs']:
-                for pattern in program['patterns']:
+            for profile in self.config['profiles']:
+                for pattern in profile['patterns']:
                     pattern['regex'] = re.compile(pattern['expression'].encode('utf-8'))
                     if 'replace' in pattern:
                         pattern['replace'] = pattern['replace'].encode('utf-8')
 
-        self.program_config = None
+        self.profile_cfg = None
 
     def execute(self, cmd, buffer_line=True):
-        self.program_config = None
+        self.profile_cfg = None
 
-        for cfg in self.config['programs']:
+        for cfg in self.config['profiles']:
             if 'which' in cfg:
                 if which(cmd[0]).decode('utf-8') == cfg['which']:
-                    self.program_config = cfg
+                    self.profile_cfg = cfg
             elif cmd[0] == cfg['name']:
-                self.program_config = cfg
+                self.profile_cfg = cfg
 
-        if self.program_config is not None:
+        if self.profile_cfg is not None:
             stdout_cb = self.stdout_cb
             stderr_cb = self.stderr_cb
         else:
@@ -48,7 +48,7 @@ class Pycolor:
         newdata = data
         ignore_ranges = []
 
-        for pattern in self.program_config['patterns']:
+        for pattern in self.profile_cfg['patterns']:
             if pattern.get('filter', False):
                 if pattern['regex'].search(data):
                     return
