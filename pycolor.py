@@ -13,29 +13,56 @@ PYCOLOR_CONFIG_FNAME = 'config.json'
 
 class Pycolor:
     def __init__(self):
+        self.profiles = []
+
         with open(PYCOLOR_CONFIG_FNAME, 'r') as file:
-            self.config = json.loads(file.read())
+            config = json.loads(file.read())
 
-            for profile in self.config.get('profiles', []):
-                for pattern in profile.get('patterns', []):
-                    if 'expression' in pattern:
-                        pattern['regex'] = re.compile(pattern['expression'].encode('utf-8'))
-                    if 'replace' in pattern:
-                        pattern['replace'] = pattern['replace'].encode('utf-8')
+            for prof_cfg in config.get('profiles', []):
+                profile = {
+                    'name': prof_cfg.get('name'),
+                    'profile_name': prof_cfg.get('profile_name'),
+                    'which': prof_cfg.get('which'),
+                    'buffer_line': prof_cfg.get('buffer_line', True),
+                    'from_profiles': prof_cfg.get('from_profiles', []),
+                    'patterns': []
+                }
 
-        self.profile_cfg = {}
+                for pattern_cfg in prof_cfg.get('patterns', []):
+                    if 'expression' not in pattern_cfg:
+                        raise Exception()
+                        continue
+
+                    pattern = {
+                        'expression': pattern_cfg['expression'],
+                        'regex': re.compile(pattern_cfg['expression'].encode('utf-8')),
+                    }
+
+                    if 'replace' in pattern_cfg:
+                        pattern['replace'] = pattern_cfg['replace'].encode('utf-8')
+                    profile['patterns'].append(pattern)
+
+                self.profiles.append(profile)
+
+        self.current_profile = {}
+
+    def get_profile_by_name(self, name):
+        for profile in self.profiles:
+            if profile.get('profile_name') == name:
+                return profile
+        return None
 
     def execute(self, cmd):
-        self.profile_cfg = {}
+        self.current_profile = {}
 
-        for cfg in self.config.get('profiles', []):
+        for cfg in self.profiles:
             if 'which' in cfg:
                 if which(cmd[0]).decode('utf-8') == cfg['which']:
-                    self.profile_cfg = cfg
-            elif 'name' not in cfg or cmd[0] == cfg['name']:
-                self.profile_cfg = cfg
+                    self.current_profile = cfg
+            elif cmd[0] == cfg['name']:
+                self.current_profile = cfg
 
-        if len(self.profile_cfg) != 0:
+        if len(self.current_profile) != 0:
             stdout_cb = self.stdout_cb
             stderr_cb = self.stderr_cb
         else:
@@ -47,29 +74,28 @@ class Pycolor:
             cmd,
             stdout_cb,
             stderr_cb,
-            buffer_line=self.profile_cfg.get('buffer_line', True)
+            buffer_line=self.current_profile.get('buffer_line', True)
         )
 
     def data_callback(self, stream, data):
         newdata = data
         ignore_ranges = []
 
-        for pattern in self.profile_cfg.get('patterns', []):
-            if 'regex' in pattern:
-                if pattern.get('filter', False):
-                    if pattern['regex'].search(data):
-                        return
-                elif 'replace' in pattern:
-                    newdata, replace_ranges = search_replace(
-                        pattern['regex'],
-                        newdata,
-                        lambda x: x.expand(pattern['replace']),
-                        ignore_ranges=ignore_ranges,
-                        start_occurrance=pattern.get('start_occurrance', 1),
-                        max_count=pattern.get('max_count', -1)
-                    )
-                    if len(replace_ranges) > 0:
-                        update_ranges(ignore_ranges, replace_ranges)
+        for pattern in self.current_profile['patterns']:
+            if pattern.get('filter', False):
+                if pattern['regex'].search(data):
+                    return
+            elif 'replace' in pattern:
+                newdata, replace_ranges = search_replace(
+                    pattern['regex'],
+                    newdata,
+                    lambda x: x.expand(pattern['replace']),
+                    ignore_ranges=ignore_ranges,
+                    start_occurrance=pattern.get('start_occurrance', 1),
+                    max_count=pattern.get('max_count', -1)
+                )
+                if len(replace_ranges) > 0:
+                    update_ranges(ignore_ranges, replace_ranges)
 
         stream.buffer.write(newdata)
         stream.flush()
