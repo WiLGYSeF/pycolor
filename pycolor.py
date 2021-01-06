@@ -22,10 +22,10 @@ class Pycolor:
                     if 'replace' in pattern:
                         pattern['replace'] = pattern['replace'].encode('utf-8')
 
-        self.profile_cfg = None
+        self.profile_cfg = {}
 
-    def execute(self, cmd, buffer_line=True):
-        self.profile_cfg = None
+    def execute(self, cmd):
+        self.profile_cfg = {}
 
         for cfg in self.config['profiles']:
             if 'which' in cfg:
@@ -34,7 +34,7 @@ class Pycolor:
             elif cmd[0] == cfg['name']:
                 self.profile_cfg = cfg
 
-        if self.profile_cfg is not None:
+        if len(self.profile_cfg) != 0:
             stdout_cb = self.stdout_cb
             stderr_cb = self.stderr_cb
         else:
@@ -42,7 +42,12 @@ class Pycolor:
             stdout_cb = lambda x: sys.stdout.buffer.write(x) and sys.stdout.flush()
             stderr_cb = lambda x: sys.stderr.buffer.write(x) and sys.stderr.flush()
 
-        return execute(cmd, stdout_cb, stderr_cb, buffer_line=buffer_line)
+        return execute(
+            cmd,
+            stdout_cb,
+            stderr_cb,
+            buffer_line=self.profile_cfg.get('buffer_line', True)
+        )
 
     def stdout_cb(self, data):
         newdata = data
@@ -141,8 +146,5 @@ if __name__ == '__main__':
     pycobj = Pycolor()
     args = sys.argv[1:]
 
-    result = pycobj.execute(
-        args,
-        buffer_line=True
-    )
+    result = pycobj.execute(args)
     sys.exit(result)
