@@ -8,6 +8,7 @@ import sys
 import subprocess
 
 from search_replace import search_replace
+from which import which
 
 def update_ranges(ranges, replace_ranges):
     for ridx in range(len(ranges)): #pylint: disable=consider-using-enumerate
@@ -44,11 +45,24 @@ class Pycolor:
         self.program_config = None
 
     def execute(self, cmd, buffer_line=True):
+        self.program_config = None
+
         for cfg in self.config['programs']:
-            if cmd[0] == cfg['name']:
+            if 'which' in cfg:
+                if which(cmd[0]).decode('utf-8') == cfg['which']:
+                    self.program_config = cfg
+            elif cmd[0] == cfg['name']:
                 self.program_config = cfg
 
-        return execute(cmd, self.stdout_cb, self.stderr_cb, buffer_line=buffer_line)
+        if self.program_config is not None:
+            stdout_cb = self.stdout_cb
+            stderr_cb = self.stderr_cb
+        else:
+            print('no config')
+            stdout_cb = lambda x: sys.stdout.buffer.write(x) and sys.stdout.flush()
+            stderr_cb = lambda x: sys.stderr.buffer.write(x) and sys.stderr.flush()
+
+        return execute(cmd, stdout_cb, stderr_cb, buffer_line=buffer_line)
 
     def stdout_cb(self, data):
         newdata = data
