@@ -51,7 +51,7 @@ class Pycolor:
             buffer_line=self.profile_cfg.get('buffer_line', True)
         )
 
-    def stdout_cb(self, data):
+    def data_callback(self, stream, data):
         newdata = data
         ignore_ranges = []
 
@@ -72,13 +72,14 @@ class Pycolor:
                     if len(replace_ranges) > 0:
                         update_ranges(ignore_ranges, replace_ranges)
 
-        sys.stdout.buffer.write(newdata)
-        sys.stdout.flush()
+        stream.buffer.write(newdata)
+        stream.flush()
+
+    def stdout_cb(self, data):
+        self.data_callback(sys.stdout, data)
 
     def stderr_cb(self, data):
-        data = data.decode('utf-8')
-        sys.stderr.write('\x1b[34m' + data + '\x1b[0m')
-        sys.stderr.flush()
+        self.data_callback(sys.stderr, data)
 
 def nonblock(file):
     fde = file.fileno()
