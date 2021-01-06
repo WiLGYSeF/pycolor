@@ -16,33 +16,7 @@ class Pycolor:
         self.profiles = []
 
         with open(PYCOLOR_CONFIG_FNAME, 'r') as file:
-            config = json.loads(file.read())
-
-            for prof_cfg in config.get('profiles', []):
-                profile = {
-                    'name': prof_cfg.get('name'),
-                    'profile_name': prof_cfg.get('profile_name'),
-                    'which': prof_cfg.get('which'),
-                    'buffer_line': prof_cfg.get('buffer_line', True),
-                    'from_profiles': prof_cfg.get('from_profiles', []),
-                    'patterns': []
-                }
-
-                for pattern_cfg in prof_cfg.get('patterns', []):
-                    if 'expression' not in pattern_cfg:
-                        raise Exception()
-                        continue
-
-                    pattern = {
-                        'expression': pattern_cfg['expression'],
-                        'regex': re.compile(pattern_cfg['expression'].encode('utf-8')),
-                    }
-
-                    if 'replace' in pattern_cfg:
-                        pattern['replace'] = pattern_cfg['replace'].encode('utf-8')
-                    profile['patterns'].append(pattern)
-
-                self.profiles.append(profile)
+            self.parse_file(file)
 
         for profile in self.profiles:
             for fromprof_cfg in profile['from_profiles']:
@@ -75,6 +49,35 @@ class Pycolor:
 
         self.current_profile = {}
 
+    def parse_file(self, file):
+        config = json.loads(file.read())
+
+        for prof_cfg in config.get('profiles', []):
+            profile = {
+                'name': prof_cfg.get('name'),
+                'profile_name': prof_cfg.get('profile_name'),
+                'which': prof_cfg.get('which'),
+                'buffer_line': prof_cfg.get('buffer_line', True),
+                'from_profiles': prof_cfg.get('from_profiles', []),
+                'patterns': []
+            }
+
+            for pattern_cfg in prof_cfg.get('patterns', []):
+                if 'expression' not in pattern_cfg:
+                    raise Exception()
+                    continue
+
+                pattern = {
+                    'expression': pattern_cfg['expression'],
+                    'regex': re.compile(pattern_cfg['expression'].encode('utf-8')),
+                }
+
+                if 'replace' in pattern_cfg:
+                    pattern['replace'] = pattern_cfg['replace'].encode('utf-8')
+                profile['patterns'].append(pattern)
+
+            self.profiles.append(profile)
+
     def get_profile_by_name(self, name):
         for profile in self.profiles:
             if profile.get('profile_name') == name:
@@ -86,7 +89,7 @@ class Pycolor:
             result = which(command)
             if result is not None and result.decode('utf-8') == cfg['which']:
                 return cfg
-            elif command == cfg['name']:
+            if command == cfg['name']:
                 return cfg
         return None
 
@@ -100,8 +103,8 @@ class Pycolor:
         else:
             print('no config') # TODO: remove
             self.current_profile = {}
-            stdout_cb = self.stdout_base_cb
-            stderr_cb = self.stderr_base_cb
+            stdout_cb = Pycolor.stdout_base_cb
+            stderr_cb = Pycolor.stderr_base_cb
 
         return execute(
             cmd,
@@ -139,11 +142,13 @@ class Pycolor:
     def stderr_cb(self, data):
         self.data_callback(sys.stderr, data)
 
-    def stdout_base_cb(self, data):
+    @staticmethod
+    def stdout_base_cb(data):
         sys.stdout.buffer.write(data)
         sys.stdout.flush()
 
-    def stderr_base_cb(self, data):
+    @staticmethod
+    def stderr_base_cb(data):
         sys.stderr.buffer.write(data)
         sys.stderr.flush()
 
@@ -152,5 +157,5 @@ if __name__ == '__main__':
     pycobj = Pycolor()
     args = sys.argv[1:]
 
-    result = pycobj.execute(args)
-    sys.exit(result)
+    returncode = pycobj.execute(args)
+    sys.exit(returncode)
