@@ -129,7 +129,9 @@ class Pycolor:
                 newdata, replace_ranges = search_replace(
                     pattern['regex'],
                     newdata,
-                    lambda x: x.expand(pattern['replace']),
+                    lambda x: pyformat.format_string(pattern['replace'].decode('utf-8'), context={
+                        'match': x
+                    }).encode('utf-8'),
                     ignore_ranges=ignore_ranges,
                     start_occurrance=pattern.get('start_occurrance', 1),
                     max_count=pattern.get('max_count', -1)

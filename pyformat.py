@@ -1,7 +1,10 @@
-FORMAT_CHAR_VALID = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+FORMAT_CHAR_VALID = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
 
-def format_string(string):
+def format_string(string, context=None):
+    if context is None:
+        context = {}
+
     newstring = ''
 
     idx = 0
@@ -16,10 +19,29 @@ def format_string(string):
             continue
 
         if char == '%':
-            formatter, idx = get_formatter(string, idx)
+            formatter, newidx = get_formatter(string, idx)
             if formatter is not None:
                 if formatter[0] == 'C':
-                    newstring += get_color(formatter[1:])
+                    color = get_color(formatter[1:])
+                    if color is not None:
+                        newstring += color
+                elif len(context) != 0:
+                    if 'match' in context:
+                        if formatter[0] == 'G':
+                            try:
+                                group = int(formatter[1:])
+                            except ValueError:
+                                group = formatter[1:]
+
+                            try:
+                                # FIXME: should not decode here
+                                newstring += context['match'][group].decode('utf-8')
+                            except IndexError:
+                                pass
+                else:
+                    newstring += string[idx:newidx]
+
+                idx = newidx
                 continue
 
         newstring += char
@@ -88,4 +110,6 @@ def get_color(color):
         'white': 97
     }
 
+    if color.lower() not in colors:
+        return None
     return '\x1b[%sm' % colors[color.lower()]
