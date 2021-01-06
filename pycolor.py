@@ -81,21 +81,25 @@ class Pycolor:
                 return profile
         return None
 
-    def execute(self, cmd):
-        self.current_profile = {}
-
+    def get_profile_by_command(self, command):
         for cfg in self.profiles:
-            if 'which' in cfg:
-                if which(cmd[0]).decode('utf-8') == cfg['which']:
-                    self.current_profile = cfg
-            elif cmd[0] == cfg['name']:
-                self.current_profile = cfg
+            result = which(command)
+            if result is not None and result.decode('utf-8') == cfg['which']:
+                return cfg
+            elif command == cfg['name']:
+                return cfg
+        return None
 
-        if len(self.current_profile) != 0:
+    def execute(self, cmd):
+        profile = self.get_profile_by_command(cmd[0])
+
+        if profile is not None:
+            self.current_profile = profile
             stdout_cb = self.stdout_cb
             stderr_cb = self.stderr_cb
         else:
             print('no config') # TODO: remove
+            self.current_profile = {}
             stdout_cb = self.stdout_base_cb
             stderr_cb = self.stderr_base_cb
 
