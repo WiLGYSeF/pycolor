@@ -91,6 +91,14 @@ def get_color(colorstr):
     def _colorval(color):
         colors = {
             'reset': 0,
+            'bold': 1,
+            'dim': 2,
+            'underline': 4,
+            'underlined': 4,
+            'blink': 5,
+            'invert': 7,
+            'reverse': 7,
+            'hidden': 8,
             'black': 30,
             'red': 31,
             'green': 32,
@@ -120,8 +128,11 @@ def get_color(colorstr):
             return None
 
         val = colors[color.lower()]
-        if val != 0 and background:
-            val += 10
+        if background:
+            if val >= 30:
+                val += 10
+            elif val >= 1 and val <= 8:
+                val += 20
 
         return val
 
