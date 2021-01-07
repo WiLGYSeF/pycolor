@@ -167,19 +167,20 @@ class Pycolor:
 
             spl = re.split(sep.encode('utf-8'), newdata)
             field_idx_set = set()
-            full_replace = None
 
             for pattern in fieldsep['patterns']:
                 if 'replace_all' in pattern:
                     field_idx = pyformat.fieldsep_num_to_idx(pattern['field'])
                     if re.search(pattern['regex'], spl[field_idx]):
-                        full_replace = pyformat.format_string(
+                        newdata = pyformat.format_string(
                             pattern['replace_all'].decode('utf-8'),
                             context={
                                 'fields': spl
                             }
                         ).encode('utf-8')
-                        break
+
+                        spl = re.split(sep.encode('utf-8'), newdata)
+                        field_idx_set = set()
                 else:
                     if pattern['field'] is not None:
                         field_idxlist = [pyformat.fieldsep_num_to_idx(pattern['field'])]
@@ -207,10 +208,7 @@ class Pycolor:
                             spl[field_idx] = newfield
                             field_idx_set.add(field_idx)
 
-            if full_replace is not None:
-                newdata = full_replace
-            else:
-                newdata = b''.join(spl)
+            newdata = b''.join(spl)
 
         if len(self.current_profile['field_separators']) == 0:
             for pattern in self.current_profile['patterns']:
