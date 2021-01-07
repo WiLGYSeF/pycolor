@@ -71,7 +71,9 @@ class Pycolor:
                 pattern = {
                     'expression': pattern_cfg['expression'],
                     'regex': re.compile(pattern_cfg['expression'].encode('utf-8')),
-                    'filter': pattern_cfg.get('filter', False)
+                    'filter': pattern_cfg.get('filter', False),
+                    'start_occurrance': 1,
+                    'max_count': -1
                 }
 
                 if 'replace' in pattern_cfg:
@@ -114,7 +116,7 @@ class Pycolor:
             cmd,
             stdout_cb,
             stderr_cb,
-            buffer_line=self.current_profile.get('buffer_line', True)
+            buffer_line=self.current_profile['buffer_line']
         )
 
     def data_callback(self, stream, data):
@@ -122,7 +124,7 @@ class Pycolor:
         ignore_ranges = []
 
         for pattern in self.current_profile['patterns']:
-            if pattern.get('filter', False):
+            if pattern['filter']:
                 if pattern['regex'].search(data):
                     return
             elif 'replace' in pattern:
@@ -133,8 +135,8 @@ class Pycolor:
                         'match': x
                     }).encode('utf-8'),
                     ignore_ranges=ignore_ranges,
-                    start_occurrance=pattern.get('start_occurrance', 1),
-                    max_count=pattern.get('max_count', -1)
+                    start_occurrance=pattern['start_occurrance'],
+                    max_count=pattern['max_count']
                 )
                 if len(replace_ranges) > 0:
                     update_ranges(ignore_ranges, replace_ranges)
