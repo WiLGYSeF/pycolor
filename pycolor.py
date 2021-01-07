@@ -181,7 +181,7 @@ class Pycolor:
                             }
                         ).encode('utf-8')
 
-                        spl = re.split(sep.encode('utf-8'), newdata)
+                        spl = re_split(sep.encode('utf-8'), newdata)
                         field_idx_set = set()
                 else:
                     if pattern['field'] is not None:
