@@ -108,6 +108,7 @@ def get_color(colorstr):
             'cyan': 36,
             'lightgray': 37,
             'lightgrey': 37,
+            'default': 39,
             'darkgray': 90,
             'darkgrey': 90,
             'lightred': 91,
