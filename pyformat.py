@@ -47,6 +47,51 @@ def do_format(string, formatter, idx, newidx, context):
                 return context['match'][group].decode('utf-8')
             except IndexError:
                 return ''
+    if 'fields' in context:
+        if formatter[0] == 'S':
+            formatter = formatter[1:]
+
+            if formatter[0] == 'e':
+                field_idx = int(formatter[1:])
+                if field_idx < 0:
+                    field_idx = len(context['fields']) // 2 + field_idx
+                return context['fields'][field_idx * 2 + 1].decode('utf-8')
+
+            indexes = set()
+            commaspl = formatter.split(',')
+            for number in commaspl:
+                if '*' in number:
+                    rangespl = number.split('*')
+                    start = rangespl[0]
+                    end = rangespl[1]
+
+                    if len(start) == 0:
+                        start = 1
+                    else:
+                        start = int(start)
+
+                    if len(end) == 0:
+                        end = len(context['fields'])
+                    else:
+                        end = int(end)
+                        if end < 0:
+                            end = (len(context['fields']) // 2 + end) * 2 + 1
+
+                    for i in range(start - 1, end):
+                        indexes.add(i)
+                elif number == '*':
+                    for i in range(len(context['fields'])):
+                        indexes.add(i + 1)
+                else:
+                    indexes.add(int(number))
+
+            indexes = sorted(indexes)
+            newstring = context['fields'][indexes[0]]
+
+            for i in range(2, len(indexes), 2):
+                newstring += context['fields'][indexes[i - 1]] + context['fields'][indexes[i]]
+
+            return newstring.decode('utf-8')
 
     return string[idx:newidx]
 
