@@ -36,13 +36,18 @@ GET_FORMATTER_STRINGS = [
 FORMAT_STRINGS = {
     '': '',
     'abc': 'abc',
-    'abc%': 'abc%',
+    'abc%': 'abc%'
+}
+
+FORMAT_COLOR_STRINGS = {
     'abc%(Cred)abc': 'abc\x1b[31mabc',
     r'abc\%(Cred)abc': r'abc\%(Cred)abc',
     'abc\\': 'abc\\',
     '%Cinvalid': '',
     '%Cred%Cblue': '\x1b[31m\x1b[34m',
     '%(Cred)%(Cblue)': '\x1b[31m\x1b[34m',
+    '%(Cred;^blue)': '\x1b[31;44m',
+    '%(Cunderline;red)abc%(C^underline)': '\x1b[4;31mabc\x1b[24m'
 }
 
 class Match:
@@ -58,7 +63,8 @@ class Match:
 STRING = 'string'
 CONTEXT = 'context'
 RESULT = 'result'
-FORMAT_STRINGS_CONTEXT = [
+
+FORMAT_CONTEXT_GROUP_STRINGS = [
     {
         STRING: '%G1 abc %G1',
         CONTEXT: {
@@ -94,6 +100,100 @@ FORMAT_STRINGS_CONTEXT = [
     }
 ]
 
+FORMAT_CONTEXT_FIELDSEP_STRINGS = [
+    {
+        STRING: '%S1',
+        CONTEXT: {
+            'fields': [b'this', b' ', b'is', b' ', b'a', b' ', b'test']
+        },
+        RESULT: 'this'
+    },
+    {
+        STRING: '%S2 %S1 %S3 %S4?',
+        CONTEXT: {
+            'fields': [b'this', b' ', b'is', b' ', b'a', b' ', b'test']
+        },
+        RESULT: 'is this a test?'
+    },
+    {
+        STRING: '%S4%Se2%S4%(Se-3)%S3',
+        CONTEXT: {
+            'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
+        },
+        RESULT: 'test   test   a'
+    },
+    {
+        STRING: '%(S1*3)',
+        CONTEXT: {
+            'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
+        },
+        RESULT: 'this   is    a'
+    },
+    {
+        STRING: '%(S*3)',
+        CONTEXT: {
+            'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
+        },
+        RESULT: 'this   is    a'
+    },
+    {
+        STRING: '%(S*)',
+        CONTEXT: {
+            'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
+        },
+        RESULT: 'this   is    a test'
+    },
+    {
+        STRING: '%(S*-1)',
+        CONTEXT: {
+            'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
+        },
+        RESULT: 'this   is    a test'
+    },
+    {
+        STRING: '%(S2*-2)%(Se-1)',
+        CONTEXT: {
+            'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
+        },
+        RESULT: 'is    a '
+    },
+    {
+        STRING: '%(S2*-3)',
+        CONTEXT: {
+            'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
+        },
+        RESULT: 'is'
+    },
+    {
+        STRING: '%(S3*-3)',
+        CONTEXT: {
+            'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
+        },
+        RESULT: ''
+    },
+    {
+        STRING: '%(Se3)',
+        CONTEXT: {
+            'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
+        },
+        RESULT: '    '
+    },
+    {
+        STRING: '%(Se10)',
+        CONTEXT: {
+            'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
+        },
+        RESULT: ''
+    },
+    {
+        STRING: '%(S1*3,+)',
+        CONTEXT: {
+            'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
+        },
+        RESULT: 'this+is+a'
+    },
+]
+
 
 class FormatterTest(unittest.TestCase):
     def test_get_formatter(self):
@@ -104,9 +204,20 @@ class FormatterTest(unittest.TestCase):
         for key, val in FORMAT_STRINGS.items():
             self.assertEqual(pyformat.format_string(key), val)
 
-    def test_format_string_context(self):
-        for entry in FORMAT_STRINGS_CONTEXT:
-            self.assertEqual(pyformat.format_string(
-                entry[STRING],
-                context=entry[CONTEXT])
-            , entry[RESULT])
+    def test_format_color_string(self):
+        for key, val in FORMAT_COLOR_STRINGS.items():
+            self.assertEqual(pyformat.format_string(key), val)
+
+    def test_format_context_group_string(self):
+        for entry in FORMAT_CONTEXT_GROUP_STRINGS:
+            self.assertEqual(
+                pyformat.format_string(entry[STRING], context=entry[CONTEXT]),
+                entry[RESULT]
+            )
+
+    def test_format_context_fieldsep_string(self):
+        for entry in FORMAT_CONTEXT_FIELDSEP_STRINGS:
+            self.assertEqual(
+                pyformat.format_string(entry[STRING], context=entry[CONTEXT]),
+                entry[RESULT]
+            )

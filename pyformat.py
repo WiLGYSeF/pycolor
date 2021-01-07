@@ -35,6 +35,8 @@ def do_format(string, formatter, idx, newidx, context):
         color = get_color(formatter[1:])
         return color if color is not None else ''
 
+    # FIXME: should not decode here
+
     if 'match' in context:
         if formatter[0] == 'G':
             try:
@@ -43,7 +45,6 @@ def do_format(string, formatter, idx, newidx, context):
                 group = formatter[1:]
 
             try:
-                # FIXME: should not decode here
                 return context['match'][group].decode('utf-8')
             except IndexError:
                 return ''
@@ -54,41 +55,60 @@ def do_format(string, formatter, idx, newidx, context):
             if formatter[0] == 'e':
                 field_idx = int(formatter[1:])
                 if field_idx < 0:
-                    field_idx = fieldsep_idx_to_num(len(context['fields'])) + field_idx
-                return context['fields'][fieldsep_num_to_idx(field_idx) + 1].decode('utf-8')
+                    field_idx += fieldsep_idx_to_num(len(context['fields'])) + 1
+                field_idx = fieldsep_num_to_idx(field_idx - 1) + 1
+
+                if field_idx >= len(context['fields']):
+                    return ''
+                return context['fields'][field_idx].decode('utf-8')
 
             indexes = set()
-            commaspl = formatter.split(',')
-            for number in commaspl:
-                if '*' in number:
-                    rangespl = number.split('*')
-                    start = rangespl[0]
-                    end = rangespl[1]
 
-                    if len(start) == 0:
-                        start = 1
-                    else:
-                        start = int(start)
+            comma_idx = formatter.find(',')
+            if comma_idx != -1:
+                number = formatter[:comma_idx]
+                sep = formatter[comma_idx + 1:].encode('utf-8')
+            else:
+                number = formatter
+                sep = None
 
-                    if len(end) == 0:
-                        end = len(context['fields'])
-                    else:
-                        end = int(end)
-                        if end < 0:
-                            end = fieldsep_num_to_idx(
-                                fieldsep_idx_to_num(len(context['fields'])) + end
-                            ) + 1
+            if '*' in number:
+                rangespl = number.split('*')
+                start = rangespl[0]
+                end = rangespl[1]
 
-                    for i in range(start - 1, end):
-                        indexes.add(i)
+                if len(start) == 0:
+                    start = fieldsep_num_to_idx(1)
                 else:
-                    indexes.add(int(number))
+                    start = fieldsep_num_to_idx(int(start))
+
+                if len(end) == 0:
+                    end = len(context['fields'])
+                else:
+                    end = int(end)
+                    if end < 0:
+                        end += fieldsep_idx_to_num(len(context['fields'])) + 1
+                    end = fieldsep_num_to_idx(end)
+
+                for i in range(start, end + 1):
+                    indexes.add(i)
+            else:
+                indexes.add(fieldsep_num_to_idx(int(number)))
 
             indexes = sorted(indexes)
+            if len(indexes) == 0:
+                return ''
+
             newstring = context['fields'][indexes[0]]
 
             for i in range(2, len(indexes), 2):
-                newstring += context['fields'][indexes[i - 1]] + context['fields'][indexes[i]]
+                if indexes[i] >= len(context['fields']):
+                    break
+
+                if sep is None:
+                    newstring += context['fields'][indexes[i - 1]] + context['fields'][indexes[i]]
+                else:
+                    newstring += sep + context['fields'][indexes[i]]
 
             return newstring.decode('utf-8')
 

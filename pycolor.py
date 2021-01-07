@@ -187,7 +187,7 @@ class Pycolor:
                     if pattern['field'] is not None:
                         field_idxlist = [pyformat.fieldsep_num_to_idx(pattern['field'])]
                     else:
-                        field_idxlist = range(0, len(spl), 2)
+                        field_idxlist = range(pyformat.fieldsep_idx_to_num(len(spl)))
 
                     for field_idx in field_idxlist:
                         if field_idx in field_idx_set:
