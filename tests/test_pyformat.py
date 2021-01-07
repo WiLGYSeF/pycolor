@@ -39,7 +39,8 @@ FORMAT_STRINGS = {
     'abc%': 'abc%',
     'abc%(Cred)abc': 'abc\x1b[31mabc',
     r'abc\%(Cred)abc': r'abc\%(Cred)abc',
-    'abc\\': 'abc\\'
+    'abc\\': 'abc\\',
+    '%Cinvalid': ''
 }
 
 
