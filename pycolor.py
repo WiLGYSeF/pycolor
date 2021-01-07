@@ -168,11 +168,11 @@ class Pycolor:
             field_idx_set = set()
 
             for pattern in fieldsep['patterns']:
-                if pattern['min_fields'] >= pyformat.fieldsep_idx_to_num(len(spl)):
+                if pattern['min_fields'] >= pyformat.fieldsep.idx_to_num(len(spl)):
                     continue
 
                 if 'replace_all' in pattern:
-                    field_idx = pyformat.fieldsep_num_to_idx(pattern['field'])
+                    field_idx = pyformat.fieldsep.num_to_idx(pattern['field'])
                     if re.search(pattern['regex'], spl[field_idx]):
                         newdata = pyformat.format_string(
                             pattern['replace_all'].decode('utf-8'),
@@ -185,9 +185,9 @@ class Pycolor:
                         field_idx_set = set()
                 else:
                     if pattern['field'] is not None:
-                        field_idxlist = [pyformat.fieldsep_num_to_idx(pattern['field'])]
+                        field_idxlist = [pyformat.fieldsep.num_to_idx(pattern['field'])]
                     else:
-                        field_idxlist = range(pyformat.fieldsep_idx_to_num(len(spl)))
+                        field_idxlist = range(pyformat.fieldsep.idx_to_num(len(spl)))
 
                     for field_idx in field_idxlist:
                         if field_idx in field_idx_set:
