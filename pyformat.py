@@ -125,6 +125,14 @@ def get_color(colorstr):
             color = color[1:]
             background = True
 
+        try:
+            return '%d;5;%d' % (
+                48 if background else 38,
+                int(color)
+            )
+        except ValueError:
+            pass
+
         if color.lower() not in colors:
             return None
 
