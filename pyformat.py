@@ -54,8 +54,8 @@ def do_format(string, formatter, idx, newidx, context):
             if formatter[0] == 'e':
                 field_idx = int(formatter[1:])
                 if field_idx < 0:
-                    field_idx = len(context['fields']) // 2 + field_idx
-                return context['fields'][field_idx * 2 + 1].decode('utf-8')
+                    field_idx = fieldsep_idx_to_num(len(context['fields'])) + field_idx
+                return context['fields'][fieldsep_num_to_idx(field_idx) + 1].decode('utf-8')
 
             indexes = set()
             commaspl = formatter.split(',')
@@ -75,13 +75,12 @@ def do_format(string, formatter, idx, newidx, context):
                     else:
                         end = int(end)
                         if end < 0:
-                            end = (len(context['fields']) // 2 + end) * 2 + 1
+                            end = fieldsep_num_to_idx(
+                                fieldsep_idx_to_num(len(context['fields'])) + end
+                            )
 
                     for i in range(start - 1, end):
                         indexes.add(i)
-                elif number == '*':
-                    for i in range(len(context['fields'])):
-                        indexes.add(i + 1)
                 else:
                     indexes.add(int(number))
 
@@ -94,6 +93,12 @@ def do_format(string, formatter, idx, newidx, context):
             return newstring.decode('utf-8')
 
     return string[idx:newidx]
+
+def fieldsep_idx_to_num(idx):
+    return idx // 2 + 1
+
+def fieldsep_num_to_idx(num):
+    return (num - 1) * 2
 
 def get_formatter(string, idx):
     if idx >= len(string) or string[idx] != '%':

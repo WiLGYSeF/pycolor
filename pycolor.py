@@ -61,7 +61,7 @@ class Pycolor:
                 'buffer_line': prof_cfg.get('buffer_line', True),
                 'from_profiles': prof_cfg.get('from_profiles', []),
                 'patterns': [],
-                'field_separators': prof_cfg.get('field_separators', [])
+                'field_separators': []
             }
 
             for pattern_cfg in prof_cfg.get('patterns', []):
@@ -82,6 +82,42 @@ class Pycolor:
                         pattern_cfg['replace']
                     ).encode('utf-8')
                 profile['patterns'].append(pattern)
+
+            for fieldsep_cfg in prof_cfg.get('field_separators', []):
+                if 'separator' not in fieldsep_cfg:
+                    raise Exception()
+                    continue
+
+                fieldsep = {
+                    'separator': fieldsep_cfg['separator'],
+                    'patterns': []
+                }
+
+                for pattern_cfg in fieldsep_cfg.get('patterns', []):
+                    if 'expression' not in pattern_cfg:
+                        raise Exception()
+                        continue
+
+                    pattern = {
+                        'field': pattern_cfg.get('field'),
+                        'expression': pattern_cfg['expression'],
+                        'regex': re.compile(pattern_cfg['expression'].encode('utf-8')),
+                        'filter': pattern_cfg.get('filter', False),
+                        'start_occurrance': 1,
+                        'max_count': -1
+                    }
+
+                    if 'replace' in pattern_cfg:
+                        pattern['replace'] = pyformat.format_string(
+                            pattern_cfg['replace']
+                        ).encode('utf-8')
+                    if 'replace_all' in pattern_cfg:
+                        pattern['replace_all'] = pyformat.format_string(
+                            pattern_cfg['replace_all']
+                        ).encode('utf-8')
+                    fieldsep['patterns'].append(pattern)
+
+                profile['field_separators'].append(fieldsep)
 
             self.profiles.append(profile)
 
@@ -130,40 +166,46 @@ class Pycolor:
                 sep = '(%s)' % sep
 
             spl = re.split(sep.encode('utf-8'), newdata)
-            fieldidx_set = set()
+            field_idx_set = set()
             full_replace = None
 
             for pattern in fieldsep['patterns']:
                 if 'replace_all' in pattern:
-                    fieldidx = (pattern['field'] - 1) * 2
-                    if re.search(pattern['expression'].encode('utf-8'), spl[fieldidx]):
-                        full_replace = pyformat.format_string(pattern['replace_all'], context={
-                            'fields': spl
-                        }).encode('utf-8')
+                    field_idx = pyformat.fieldsep_num_to_idx(pattern['field'])
+                    if re.search(pattern['regex'], spl[field_idx]):
+                        full_replace = pyformat.format_string(
+                            pattern['replace_all'].decode('utf-8'),
+                            context={
+                                'fields': spl
+                            }
+                        ).encode('utf-8')
                         break
                 else:
-                    if 'field' in pattern:
-                        fieldidxlist = [(pattern['field'] - 1) * 2]
+                    if pattern['field'] is not None:
+                        field_idxlist = [pyformat.fieldsep_num_to_idx(pattern['field'])]
                     else:
-                        fieldidxlist = range(0, len(spl), 2)
+                        field_idxlist = range(0, len(spl), 2)
 
-                    for fieldidx in fieldidxlist:
-                        if fieldidx in fieldidx_set:
+                    for field_idx in field_idxlist:
+                        if field_idx in field_idx_set:
                             continue
 
                         newfield, replace_ranges = search_replace(
                             pattern['expression'].encode('utf-8'),
-                            spl[fieldidx],
-                            lambda x: pyformat.format_string(pattern['replace'], context={
-                                'match': x
-                            }).encode('utf-8'),
+                            spl[field_idx],
+                            lambda x: pyformat.format_string(
+                                pattern['replace'].decode('utf-8'),
+                                context={
+                                    'match': x
+                                }
+                            ).encode('utf-8'),
                             ignore_ranges=[],
                             start_occurrance=pattern['start_occurrance'],
                             max_count=pattern['max_count']
                         )
                         if len(replace_ranges) > 0:
-                            spl[fieldidx] = newfield
-                            fieldidx_set.add(fieldidx)
+                            spl[field_idx] = newfield
+                            field_idx_set.add(field_idx)
 
             if full_replace is not None:
                 newdata = full_replace
@@ -179,9 +221,12 @@ class Pycolor:
                     newdata, replace_ranges = search_replace(
                         pattern['regex'],
                         newdata,
-                        lambda x: pyformat.format_string(pattern['replace'].decode('utf-8'), context={
-                            'match': x
-                        }).encode('utf-8'),
+                        lambda x: pyformat.format_string(
+                            pattern['replace'].decode('utf-8'),
+                            context={
+                                'match': x
+                            }
+                        ).encode('utf-8'),
                         ignore_ranges=ignore_ranges,
                         start_occurrance=pattern['start_occurrance'],
                         max_count=pattern['max_count']
