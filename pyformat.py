@@ -21,26 +21,7 @@ def format_string(string, context=None):
         if char == '%':
             formatter, newidx = get_formatter(string, idx)
             if formatter is not None:
-                if formatter[0] == 'C':
-                    color = get_color(formatter[1:])
-                    if color is not None:
-                        newstring += color
-                elif len(context) != 0:
-                    if 'match' in context:
-                        if formatter[0] == 'G':
-                            try:
-                                group = int(formatter[1:])
-                            except ValueError:
-                                group = formatter[1:]
-
-                            try:
-                                # FIXME: should not decode here
-                                newstring += context['match'][group].decode('utf-8')
-                            except IndexError:
-                                pass
-                else:
-                    newstring += string[idx:newidx]
-
+                newstring += do_format(string, formatter, idx, newidx, context)
                 idx = newidx
                 continue
 
@@ -49,6 +30,26 @@ def format_string(string, context=None):
         idx += 1
 
     return newstring
+
+def do_format(string, formatter, idx, newidx, context):
+    if formatter[0] == 'C':
+        color = get_color(formatter[1:])
+        return color if color is not None else ''
+
+    if 'match' in context:
+        if formatter[0] == 'G':
+            try:
+                group = int(formatter[1:])
+            except ValueError:
+                group = formatter[1:]
+
+            try:
+                # FIXME: should not decode here
+                return context['match'][group].decode('utf-8')
+            except IndexError:
+                return ''
+
+    return string[idx:newidx]
 
 def get_formatter(string, idx):
     if idx >= len(string) or string[idx] != '%':
