@@ -77,7 +77,7 @@ def do_format(string, formatter, idx, newidx, context):
                         if end < 0:
                             end = fieldsep_num_to_idx(
                                 fieldsep_idx_to_num(len(context['fields'])) + end
-                            )
+                            ) + 1
 
                     for i in range(start - 1, end):
                         indexes.add(i)
