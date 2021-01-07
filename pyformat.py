@@ -51,11 +51,12 @@ def do_format(string, formatter, idx, newidx, context):
     if 'fields' in context:
         if formatter[0] == 'S':
             formatter = formatter[1:]
+            last_field_num = fieldsep_idx_to_num(len(context['fields']))
 
             if formatter[0] == 'e':
                 field_idx = int(formatter[1:])
                 if field_idx < 0:
-                    field_idx += fieldsep_idx_to_num(len(context['fields'])) + 1
+                    field_idx += last_field_num + 1
                 field_idx = fieldsep_num_to_idx(field_idx - 1) + 1
 
                 if field_idx >= len(context['fields']):
@@ -87,13 +88,16 @@ def do_format(string, formatter, idx, newidx, context):
                 else:
                     end = int(end)
                     if end < 0:
-                        end += fieldsep_idx_to_num(len(context['fields'])) + 1
+                        end += last_field_num + 1
                     end = fieldsep_num_to_idx(end)
 
                 for i in range(start, end + 1):
                     indexes.add(i)
             else:
-                indexes.add(fieldsep_num_to_idx(int(number)))
+                number = int(number)
+                if number < 0:
+                    number += last_field_num + 1
+                indexes.add(fieldsep_num_to_idx(number))
 
             indexes = sorted(indexes)
             if len(indexes) == 0:

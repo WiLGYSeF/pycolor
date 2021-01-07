@@ -116,7 +116,7 @@ FORMAT_CONTEXT_FIELDSEP_STRINGS = [
         RESULT: 'is this a test?'
     },
     {
-        STRING: '%S4%Se2%S4%(Se-3)%S3',
+        STRING: '%S4%Se2%(S-1)%(Se-3)%S3',
         CONTEXT: {
             'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
         },
