@@ -7,6 +7,7 @@ import sys
 from execute import execute
 import pyformat
 from search_replace import search_replace, update_ranges
+from split import re_split
 from which import which
 
 
@@ -162,10 +163,7 @@ class Pycolor:
 
         for fieldsep in self.current_profile['field_separators']:
             sep = fieldsep['separator']
-            if sep[0] != '(' and sep[-1] != ')':
-                sep = '(%s)' % sep
-
-            spl = re.split(sep.encode('utf-8'), newdata)
+            spl = re_split(sep.encode('utf-8'), newdata)
             field_idx_set = set()
 
             for pattern in fieldsep['patterns']:
