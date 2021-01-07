@@ -143,11 +143,11 @@ def get_color(colorstr):
             elif val >= 1 and val <= 8:
                 val += 20
 
-        return val
+        return str(val)
 
     val = ';'.join(filter(
-        lambda x: x != 'None',
-        [ str(_colorval(clr)) for clr in colorstr.split(';') ]
+        lambda x: x is not None,
+        [ _colorval(clr) for clr in colorstr.split(';') ]
     ))
 
     if len(val) == 0:
