@@ -30,6 +30,10 @@ GET_FORMATTER_STRINGS = [
     {
         ARGS: ('abc%(Cred-orange)abc', 3),
         VALUE: ('Cred-orange', 17)
+    },
+    {
+        ARGS: ('abc%C(red-orange)abc', 3),
+        VALUE: ('Cred-orange', 17)
     }
 ]
 
@@ -192,7 +196,7 @@ FORMAT_CONTEXT_FIELDSEP_STRINGS = [
             'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
         },
         RESULT: 'this+is+a'
-    },
+    }
 ]
 
 

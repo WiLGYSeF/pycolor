@@ -2,16 +2,7 @@ def get_fields(formatter, context):
     last_field_num = idx_to_num(len(context['fields']))
 
     if formatter[0] == 'e':
-        field_idx = int(formatter[1:])
-        if field_idx < 0:
-            field_idx += last_field_num + 1
-        field_idx = num_to_idx(field_idx - 1) + 1
-
-        if field_idx >= len(context['fields']):
-            return ''
-        return context['fields'][field_idx].decode('utf-8')
-
-    indexes = set()
+        return get_join_field(int(formatter[1:]), context)
 
     comma_idx = formatter.find(',')
     if comma_idx != -1:
@@ -38,31 +29,38 @@ def get_fields(formatter, context):
             if end < 0:
                 end += last_field_num + 1
             end = num_to_idx(end)
-
-        for i in range(start, end + 1):
-            indexes.add(i)
+            if end >= len(context['fields']):
+                end = len(context['fields']) - 1
     else:
         number = int(number)
         if number < 0:
             number += last_field_num + 1
-        indexes.add(num_to_idx(number))
 
-    indexes = sorted(indexes)
-    if len(indexes) == 0:
+        start = num_to_idx(number)
+        end = start
+
+    if start > end:
         return ''
 
-    newstring = context['fields'][indexes[0]]
-
-    for i in range(2, len(indexes), 2):
-        if indexes[i] >= len(context['fields']):
-            break
-
+    newstring = context['fields'][start]
+    for i in range(start + 2, end + 1, 2):
         if sep is None:
-            newstring += context['fields'][indexes[i - 1]] + context['fields'][indexes[i]]
+            newstring += context['fields'][i - 1] + context['fields'][i]
         else:
-            newstring += sep + context['fields'][indexes[i]]
+            newstring += sep + context['fields'][i]
 
     return newstring.decode('utf-8')
+
+def get_join_field(num, context):
+    if num < 0:
+        num += idx_to_num(len(context['fields'])) + 1
+    if num <= 1:
+        return ''
+
+    num = num_to_idx(num - 1) + 1
+    if num >= len(context['fields']):
+        return ''
+    return context['fields'][num].decode('utf-8')
 
 def idx_to_num(idx):
     return idx // 2 + 1
