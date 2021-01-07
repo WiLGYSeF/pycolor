@@ -43,6 +43,55 @@ FORMAT_STRINGS = {
     '%Cinvalid': ''
 }
 
+class Match:
+    def __init__(self, string, groupdict):
+        self.string = string
+        self._groupdict = groupdict
+
+    def __getitem__(self, group):
+        if group not in self._groupdict:
+            raise IndexError()
+        return self._groupdict[group]
+
+STRING = 'string'
+CONTEXT = 'context'
+RESULT = 'result'
+FORMAT_STRINGS_CONTEXT = [
+    {
+        STRING: '%G1 abc %G1',
+        CONTEXT: {
+            'match': Match(b'abc 123 abc', {
+                1: b'123'
+            })
+        },
+        RESULT: '123 abc 123'
+    },
+    {
+        STRING: '%ZZZ',
+        CONTEXT: {},
+        RESULT: '%ZZZ'
+    },
+    {
+        STRING: '%Gname abc %Gname',
+        CONTEXT: {
+            'match': Match(b'abc 123 abc', {
+                1: b'123',
+                'name': b'123'
+            })
+        },
+        RESULT: '123 abc 123'
+    },
+    {
+        STRING: '%Ginvalid abc %Ginvalid',
+        CONTEXT: {
+            'match': Match(b'abc 123 abc', {
+                1: b'123'
+            })
+        },
+        RESULT: ' abc '
+    }
+]
+
 
 class FormatterTest(unittest.TestCase):
     def test_get_formatter(self):
@@ -52,3 +101,10 @@ class FormatterTest(unittest.TestCase):
     def test_format_string(self):
         for key, val in FORMAT_STRINGS.items():
             self.assertEqual(pyformat.format_string(key), val)
+
+    def test_format_string_context(self):
+        for entry in FORMAT_STRINGS_CONTEXT:
+            self.assertEqual(pyformat.format_string(
+                entry[STRING],
+                context=entry[CONTEXT])
+            , entry[RESULT])
