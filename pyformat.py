@@ -6,8 +6,8 @@ def format_string(string, context=None):
         context = {}
 
     newstring = ''
-
     idx = 0
+
     while idx < len(string):
         char = string[idx]
         if char == '\\':
@@ -26,7 +26,6 @@ def format_string(string, context=None):
                 continue
 
         newstring += char
-
         idx += 1
 
     return newstring
@@ -88,29 +87,50 @@ def get_formatter(string, idx):
 
     return formatter, idx
 
-def get_color(color):
-    colors = {
-        'reset': 0,
-        'black': 30,
-        'red': 31,
-        'green': 32,
-        'yellow': 33,
-        'blue': 34,
-        'magenta': 35,
-        'cyan': 36,
-        'lightgray': 37,
-        'lightgrey': 37,
-        'darkgray': 38,
-        'darkgrey': 38,
-        'lightred': 91,
-        'lightgreen': 92,
-        'lightyellow': 93,
-        'lightblue': 94,
-        'lightmagenta': 95,
-        'lightcyan': 96,
-        'white': 97
-    }
+def get_color(colorstr):
+    def _colorval(color):
+        colors = {
+            'reset': 0,
+            'black': 30,
+            'red': 31,
+            'green': 32,
+            'yellow': 33,
+            'blue': 34,
+            'magenta': 35,
+            'cyan': 36,
+            'lightgray': 37,
+            'lightgrey': 37,
+            'darkgray': 38,
+            'darkgrey': 38,
+            'lightred': 91,
+            'lightgreen': 92,
+            'lightyellow': 93,
+            'lightblue': 94,
+            'lightmagenta': 95,
+            'lightcyan': 96,
+            'white': 97
+        }
 
-    if color.lower() not in colors:
+        background = False
+        if color[0] == '^':
+            color = color[1:]
+            background = True
+
+        if color.lower() not in colors:
+            return None
+
+        val = colors[color.lower()]
+        if val != 0 and background:
+            val += 10
+
+        return val
+
+    val = ';'.join(filter(
+        lambda x: x != 'None',
+        [ str(_colorval(clr)) for clr in colorstr.split(';') ]
+    ))
+
+    if len(val) == 0:
         return None
-    return '\x1b[%sm' % colors[color.lower()]
+
+    return '\x1b[%sm' % val
