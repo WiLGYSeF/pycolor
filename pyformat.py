@@ -128,34 +128,41 @@ def get_formatter(string, idx):
     if idx >= len(string) or string[idx] != '%':
         return None, idx
 
-    paren = False
-    had_paren = False
     idx += 1
 
     if idx >= len(string):
         return None, idx
 
+    paren = 0
+    first_char_before_paren = False
+
     if string[idx] == '(':
-        paren = True
-        had_paren = True
+        paren = 1
         idx += 1
+    elif string[idx + 1] == '(' and string[idx] in FORMAT_CHAR_VALID:
+        first_char_before_paren = True
+        paren = 1
+        idx += 2
 
     startidx = idx
 
     while idx < len(string):
         char = string[idx]
-        if not paren and char not in FORMAT_CHAR_VALID:
+        if paren != 1 and char not in FORMAT_CHAR_VALID:
             break
 
-        if char == ')':
-            paren = False
+        if paren == 1 and char == ')':
+            paren = -1
             idx += 1
             break
 
         idx += 1
 
-    if had_paren:
-        formatter = string[startidx:idx - 1]
+    if paren == -1:
+        if first_char_before_paren:
+            formatter = string[startidx - 2] + string[startidx:idx - 1]
+        else:
+            formatter = string[startidx:idx - 1]
     else:
         formatter = string[startidx:idx]
 

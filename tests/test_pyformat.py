@@ -36,17 +36,18 @@ GET_FORMATTER_STRINGS = [
 FORMAT_STRINGS = {
     '': '',
     'abc': 'abc',
-    'abc%': 'abc%'
+    'abc%': 'abc%',
+    'abc\\': 'abc\\',
 }
 
 FORMAT_COLOR_STRINGS = {
     'abc%(Cred)abc': 'abc\x1b[31mabc',
     r'abc\%(Cred)abc': r'abc\%(Cred)abc',
-    'abc\\': 'abc\\',
     '%Cinvalid': '',
     '%Cred%Cblue': '\x1b[31m\x1b[34m',
     '%(Cred)%(Cblue)': '\x1b[31m\x1b[34m',
     '%(Cred;^blue)': '\x1b[31;44m',
+    '%C(red)abc': '\x1b[31mabc',
     '%(Cunderline;red)abc%(C^underline)': '\x1b[4;31mabc\x1b[24m'
 }
 
