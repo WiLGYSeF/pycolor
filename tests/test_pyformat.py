@@ -40,7 +40,9 @@ FORMAT_STRINGS = {
     'abc%(Cred)abc': 'abc\x1b[31mabc',
     r'abc\%(Cred)abc': r'abc\%(Cred)abc',
     'abc\\': 'abc\\',
-    '%Cinvalid': ''
+    '%Cinvalid': '',
+    '%Cred%Cblue': '\x1b[31m\x1b[34m',
+    '%(Cred)%(Cblue)': '\x1b[31m\x1b[34m',
 }
 
 class Match:

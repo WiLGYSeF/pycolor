@@ -60,7 +60,8 @@ class Pycolor:
                 'which': prof_cfg.get('which'),
                 'buffer_line': prof_cfg.get('buffer_line', True),
                 'from_profiles': prof_cfg.get('from_profiles', []),
-                'patterns': []
+                'patterns': [],
+                'field_separators': prof_cfg.get('field_separators', [])
             }
 
             for pattern_cfg in prof_cfg.get('patterns', []):
@@ -123,23 +124,70 @@ class Pycolor:
         newdata = data
         ignore_ranges = []
 
-        for pattern in self.current_profile['patterns']:
-            if pattern['filter']:
-                if pattern['regex'].search(data):
-                    return
-            elif 'replace' in pattern:
-                newdata, replace_ranges = search_replace(
-                    pattern['regex'],
-                    newdata,
-                    lambda x: pyformat.format_string(pattern['replace'].decode('utf-8'), context={
-                        'match': x
-                    }).encode('utf-8'),
-                    ignore_ranges=ignore_ranges,
-                    start_occurrance=pattern['start_occurrance'],
-                    max_count=pattern['max_count']
-                )
-                if len(replace_ranges) > 0:
-                    update_ranges(ignore_ranges, replace_ranges)
+        for fieldsep in self.current_profile['field_separators']:
+            sep = fieldsep['separator']
+            if sep[0] != '(' and sep[-1] != ')':
+                sep = '(%s)' % sep
+
+            spl = re.split(sep.encode('utf-8'), newdata)
+            fieldidx_set = set()
+            full_replace = None
+
+            for pattern in fieldsep['patterns']:
+                if 'replace_all' in pattern:
+                    fieldidx = (pattern['field'] - 1) * 2
+                    if re.search(pattern['expression'].encode('utf-8'), spl[fieldidx]):
+                        full_replace = pyformat.format_string(pattern['replace_all'], context={
+                            'fields': spl
+                        }).encode('utf-8')
+                        break
+                else:
+                    if 'field' in pattern:
+                        fieldidxlist = [(pattern['field'] - 1) * 2]
+                    else:
+                        fieldidxlist = range(0, len(spl), 2)
+
+                    for fieldidx in fieldidxlist:
+                        if fieldidx in fieldidx_set:
+                            continue
+
+                        newfield, replace_ranges = search_replace(
+                            pattern['expression'].encode('utf-8'),
+                            spl[fieldidx],
+                            lambda x: pyformat.format_string(pattern['replace'], context={
+                                'match': x
+                            }).encode('utf-8'),
+                            ignore_ranges=[],
+                            start_occurrance=pattern['start_occurrance'],
+                            max_count=pattern['max_count']
+                        )
+                        if len(replace_ranges) > 0:
+                            spl[fieldidx] = newfield
+                            fieldidx_set.add(fieldidx)
+
+            if full_replace is not None:
+                newdata = full_replace
+            else:
+                newdata = b''.join(spl)
+
+        if len(self.current_profile['field_separators']) == 0:
+            for pattern in self.current_profile['patterns']:
+                if pattern['filter']:
+                    if pattern['regex'].search(data):
+                        return
+                elif 'replace' in pattern:
+                    newdata, replace_ranges = search_replace(
+                        pattern['regex'],
+                        newdata,
+                        lambda x: pyformat.format_string(pattern['replace'].decode('utf-8'), context={
+                            'match': x
+                        }).encode('utf-8'),
+                        ignore_ranges=ignore_ranges,
+                        start_occurrance=pattern['start_occurrance'],
+                        max_count=pattern['max_count']
+                    )
+                    if len(replace_ranges) > 0:
+                        update_ranges(ignore_ranges, replace_ranges)
 
         stream.buffer.write(newdata)
         stream.flush()

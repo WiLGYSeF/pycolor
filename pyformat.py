@@ -121,6 +121,9 @@ def get_color(colorstr):
             'white': 97
         }
 
+        if len(color) == 0:
+            return None
+
         background = False
         if color[0] == '^':
             color = color[1:]
