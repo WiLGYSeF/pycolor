@@ -101,6 +101,7 @@ class Pycolor:
 
                     pattern = {
                         'field': pattern_cfg.get('field'),
+                        'min_fields': pattern_cfg.get('min_fields', -1),
                         'expression': pattern_cfg['expression'],
                         'regex': re.compile(pattern_cfg['expression'].encode('utf-8')),
                         'filter': pattern_cfg.get('filter', False),
@@ -167,6 +168,9 @@ class Pycolor:
             field_idx_set = set()
 
             for pattern in fieldsep['patterns']:
+                if pattern['min_fields'] >= pyformat.fieldsep_idx_to_num(len(spl)):
+                    continue
+
                 if 'replace_all' in pattern:
                     field_idx = pyformat.fieldsep_num_to_idx(pattern['field'])
                     if re.search(pattern['regex'], spl[field_idx]):
