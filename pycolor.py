@@ -4,7 +4,7 @@ import json
 import re
 import sys
 
-from execute import execute
+import execute
 import pyformat
 from search_replace import search_replace, update_ranges
 from split import re_split
@@ -151,7 +151,7 @@ class Pycolor:
             stdout_cb = Pycolor.stdout_base_cb
             stderr_cb = Pycolor.stderr_base_cb
 
-        return execute(
+        return execute.execute(
             cmd,
             stdout_cb,
             stderr_cb,
