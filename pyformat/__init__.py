@@ -36,6 +36,9 @@ def format_string(string, context=None):
 
 def do_format(string, formatter, idx, newidx, context):
     if formatter[0] == 'C':
+        if not context.get('color_enabled', True):
+            return ''
+
         colorstr = color.get_color(formatter[1:])
         return colorstr if colorstr is not None else ''
 

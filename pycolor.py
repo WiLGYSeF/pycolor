@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+import os
 import re
 import sys
 
@@ -54,6 +55,28 @@ class Pycolor:
     def parse_file(self, file):
         config = json.loads(file.read())
 
+        def init_pattern(cfg):
+            if 'expression' not in cfg:
+                raise Exception()
+
+            pattern = {
+                'expression': cfg['expression'],
+                'regex': re.compile(cfg['expression'].encode('utf-8')),
+                'filter': cfg.get('filter', False),
+                'start_occurrance': 1,
+                'max_count': -1
+            }
+
+            if 'replace' in cfg:
+                pattern['replace'] = pyformat.format_string(
+                    cfg['replace'],
+                    context={
+                        'color_enabled': not is_being_redirected()
+                    }
+                ).encode('utf-8')
+
+            return pattern
+
         for prof_cfg in config.get('profiles', []):
             profile = {
                 'name': prof_cfg.get('name'),
@@ -66,23 +89,7 @@ class Pycolor:
             }
 
             for pattern_cfg in prof_cfg.get('patterns', []):
-                if 'expression' not in pattern_cfg:
-                    raise Exception()
-                    continue
-
-                pattern = {
-                    'expression': pattern_cfg['expression'],
-                    'regex': re.compile(pattern_cfg['expression'].encode('utf-8')),
-                    'filter': pattern_cfg.get('filter', False),
-                    'start_occurrance': 1,
-                    'max_count': -1
-                }
-
-                if 'replace' in pattern_cfg:
-                    pattern['replace'] = pyformat.format_string(
-                        pattern_cfg['replace']
-                    ).encode('utf-8')
-                profile['patterns'].append(pattern)
+                profile['patterns'].append(init_pattern(pattern_cfg))
 
             for fieldsep_cfg in prof_cfg.get('field_separators', []):
                 if 'separator' not in fieldsep_cfg:
@@ -95,27 +102,17 @@ class Pycolor:
                 }
 
                 for pattern_cfg in fieldsep_cfg.get('patterns', []):
-                    if 'expression' not in pattern_cfg:
-                        raise Exception()
-                        continue
+                    pattern = init_pattern(pattern_cfg)
 
-                    pattern = {
-                        'field': pattern_cfg.get('field'),
-                        'min_fields': pattern_cfg.get('min_fields', -1),
-                        'expression': pattern_cfg['expression'],
-                        'regex': re.compile(pattern_cfg['expression'].encode('utf-8')),
-                        'filter': pattern_cfg.get('filter', False),
-                        'start_occurrance': 1,
-                        'max_count': -1
-                    }
+                    pattern['field'] = pattern_cfg.get('field')
+                    pattern['min_fields'] = pattern_cfg.get('min_fields', -1)
 
-                    if 'replace' in pattern_cfg:
-                        pattern['replace'] = pyformat.format_string(
-                            pattern_cfg['replace']
-                        ).encode('utf-8')
                     if 'replace_all' in pattern_cfg:
                         pattern['replace_all'] = pyformat.format_string(
-                            pattern_cfg['replace_all']
+                            pattern_cfg['replace_all'],
+                            context={
+                                'color_enabled': not is_being_redirected()
+                            }
                         ).encode('utf-8')
                     fieldsep['patterns'].append(pattern)
 
@@ -253,6 +250,10 @@ class Pycolor:
         sys.stderr.buffer.write(data)
         sys.stderr.flush()
 
+
+def is_being_redirected():
+    # https://stackoverflow.com/a/1512526
+    return os.fstat(0) != os.fstat(1)
 
 if __name__ == '__main__':
     pycobj = Pycolor()
