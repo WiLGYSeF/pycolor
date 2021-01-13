@@ -45,11 +45,12 @@ class Pycolor:
             pattern = {
                 'field': cfg.get('field'),
                 'min_fields': cfg.get('min_fields', -1),
+                'max_fields': cfg.get('max_fields', -1),
                 'expression': cfg['expression'],
                 'regex': re.compile(cfg['expression'].encode('utf-8')),
                 'filter': cfg.get('filter', False),
-                'start_occurrance': 1,
-                'max_count': -1
+                'start_occurrance': cfg.get('start_occurrance', 1),
+                'max_count': cfg.get('max_count', -1)
             }
 
             if 'replace' in cfg:
@@ -109,7 +110,7 @@ class Pycolor:
                 raise Exception()
 
             patterns.extend(fromprof['patterns'])
-            return patterns
+            return
 
         for fromprof_cfg in from_profiles:
             if isinstance(fromprof_cfg, dict):
@@ -201,13 +202,25 @@ class Pycolor:
             field_idx_set = set()
 
             for pattern in fieldsep['patterns']:
-                if pattern['min_fields'] > pyformat.fieldsep.idx_to_num(len(spl)):
+                fieldcount = pyformat.fieldsep.idx_to_num(len(spl))
+                if pattern['min_fields'] > fieldcount or (
+                    pattern['max_fields'] > 0 and pattern['max_fields'] < fieldcount
+                ):
                     continue
 
+                field_idxlist = []
+                if pattern['field'] is not None:
+                    if pattern['field'] == 0:
+                        field_idxlist = None
+                    else:
+                        field_idxlist = [ pyformat.fieldsep.num_to_idx(pattern['field']) ]
+                else:
+                    field_idxlist = range(0, len(spl), 2)
+
                 if 'replace_all' in pattern:
-                    if pattern['field'] is not None:
-                        if pattern['field'] == 0:
-                            if re.search(pattern['regex'], newdata):
+                    if field_idxlist is not None:
+                        for field_idx in field_idxlist:
+                            if re.search(pattern['regex'], spl[field_idx]):
                                 newdata = pyformat.format_string(
                                     pattern['replace_all'].decode('utf-8'),
                                     context={
@@ -217,14 +230,8 @@ class Pycolor:
 
                                 spl = re_split(sep.encode('utf-8'), newdata)
                                 field_idx_set = set()
-                            continue
-
-                        field_idxlist = [ pyformat.fieldsep.num_to_idx(pattern['field']) ]
                     else:
-                        field_idxlist = range(0, len(spl), 2)
-
-                    for field_idx in field_idxlist:
-                        if re.search(pattern['regex'], spl[field_idx]):
+                        if re.search(pattern['regex'], b''.join(spl)):
                             newdata = pyformat.format_string(
                                 pattern['replace_all'].decode('utf-8'),
                                 context={
@@ -235,26 +242,28 @@ class Pycolor:
                             spl = re_split(sep.encode('utf-8'), newdata)
                             field_idx_set = set()
                 elif 'replace' in pattern:
-                    if pattern['field'] is not None:
-                        if pattern['field'] == 0:
-                            newdata, replace_ranges = pat_schrep(pattern, newdata, pattern['replace'])
+                    if field_idxlist is not None:
+                        for field_idx in field_idxlist:
+                            if field_idx in field_idx_set:
+                                continue
+
+                            newfield, replace_ranges = pat_schrep(
+                                pattern,
+                                spl[field_idx],
+                                pattern['replace']
+                            )
                             if len(replace_ranges) > 0:
-                                spl = re_split(sep.encode('utf-8'), newdata)
-                                field_idx_set = set()
-                            continue
-
-                        field_idxlist = [ pyformat.fieldsep.num_to_idx(pattern['field']) ]
+                                spl[field_idx] = newfield
+                                field_idx_set.add(field_idx)
                     else:
-                        field_idxlist = range(0, len(spl), 2)
-
-                    for field_idx in field_idxlist:
-                        if field_idx in field_idx_set:
-                            continue
-
-                        newfield, replace_ranges = pat_schrep(pattern, spl[field_idx], pattern['replace'])
+                        newdata, replace_ranges = pat_schrep(
+                            pattern,
+                            b''.join(spl),
+                            pattern['replace']
+                        )
                         if len(replace_ranges) > 0:
-                            spl[field_idx] = newfield
-                            field_idx_set.add(field_idx)
+                            spl = re_split(sep.encode('utf-8'), newdata)
+                            field_idx_set = set()
 
             newdata = b''.join(spl)
 
