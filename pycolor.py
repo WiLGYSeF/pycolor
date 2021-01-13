@@ -180,12 +180,12 @@ class Pycolor:
         newdata = data
         ignore_ranges = []
 
-        def pat_schrep(pattern, string):
+        def pat_schrep(pattern, string, replace):
             return search_replace(
                 pattern['regex'],
                 string,
                 lambda x: pyformat.format_string(
-                    pattern['replace'].decode('utf-8'),
+                    replace.decode('utf-8'),
                     context={
                         'match': x
                     }
@@ -205,19 +205,44 @@ class Pycolor:
                     continue
 
                 if 'replace_all' in pattern:
-                    field_idx = pyformat.fieldsep.num_to_idx(pattern['field'])
-                    if re.search(pattern['regex'], spl[field_idx]):
-                        newdata = pyformat.format_string(
-                            pattern['replace_all'].decode('utf-8'),
-                            context={
-                                'fields': spl
-                            }
-                        ).encode('utf-8')
-
-                        spl = re_split(sep.encode('utf-8'), newdata)
-                        field_idx_set = set()
-                else:
                     if pattern['field'] is not None:
+                        if pattern['field'] == 0:
+                            if re.search(pattern['regex'], newdata):
+                                newdata = pyformat.format_string(
+                                    pattern['replace_all'].decode('utf-8'),
+                                    context={
+                                        'fields': spl
+                                    }
+                                ).encode('utf-8')
+
+                                spl = re_split(sep.encode('utf-8'), newdata)
+                                field_idx_set = set()
+                            continue
+
+                        field_idxlist = [ pyformat.fieldsep.num_to_idx(pattern['field']) ]
+                    else:
+                        field_idxlist = range(0, len(spl), 2)
+
+                    for field_idx in field_idxlist:
+                        if re.search(pattern['regex'], spl[field_idx]):
+                            newdata = pyformat.format_string(
+                                pattern['replace_all'].decode('utf-8'),
+                                context={
+                                    'fields': spl
+                                }
+                            ).encode('utf-8')
+
+                            spl = re_split(sep.encode('utf-8'), newdata)
+                            field_idx_set = set()
+                elif 'replace' in pattern:
+                    if pattern['field'] is not None:
+                        if pattern['field'] == 0:
+                            newdata, replace_ranges = pat_schrep(pattern, newdata, pattern['replace'])
+                            if len(replace_ranges) > 0:
+                                spl = re_split(sep.encode('utf-8'), newdata)
+                                field_idx_set = set()
+                            continue
+
                         field_idxlist = [ pyformat.fieldsep.num_to_idx(pattern['field']) ]
                     else:
                         field_idxlist = range(0, len(spl), 2)
@@ -226,7 +251,7 @@ class Pycolor:
                         if field_idx in field_idx_set:
                             continue
 
-                        newfield, replace_ranges = pat_schrep(pattern, spl[field_idx])
+                        newfield, replace_ranges = pat_schrep(pattern, spl[field_idx], pattern['replace'])
                         if len(replace_ranges) > 0:
                             spl[field_idx] = newfield
                             field_idx_set.add(field_idx)
@@ -239,7 +264,7 @@ class Pycolor:
                     if pattern['regex'].search(data):
                         return
                 elif 'replace' in pattern:
-                    newdata, replace_ranges = pat_schrep(pattern, newdata)
+                    newdata, replace_ranges = pat_schrep(pattern, newdata, pattern['replace'])
                     if len(replace_ranges) > 0:
                         update_ranges(ignore_ranges, replace_ranges)
 
