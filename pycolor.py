@@ -22,33 +22,16 @@ class Pycolor:
             self.parse_file(file)
 
         for profile in self.profiles:
-            for fromprof_cfg in profile['from_profiles']:
-                if isinstance(fromprof_cfg, dict):
-                    if len(fromprof_cfg.get('name', '')) == 0:
-                        raise Exception()
+            self.include_from_profile(
+                profile['patterns'],
+                profile['from_profiles']
+            )
 
-                    fromprof = self.get_profile_by_name(fromprof_cfg['name'])
-                    if fromprof is None:
-                        raise Exception()
-
-                    if 'order' in fromprof_cfg:
-                        if fromprof_cfg['order'] not in ('before', 'after'):
-                            raise Exception()
-
-                        if fromprof_cfg['order'] == 'before':
-                            profile['patterns'] = fromprof['patterns'] + profile['patterns']
-                        elif fromprof_cfg['order'] == 'after':
-                            profile['patterns'].extend(fromprof['patterns'])
-                    else:
-                        profile['patterns'].extend(fromprof['patterns'])
-                elif isinstance(fromprof_cfg, str):
-                    fromprof = self.get_profile_by_name(fromprof_cfg)
-                    if fromprof is None:
-                        raise Exception()
-
-                    profile['patterns'].extend(fromprof['patterns'])
-                else:
-                    raise Exception()
+            for fieldsep in profile['field_separators']:
+                self.include_from_profile(
+                    fieldsep['patterns'],
+                    fieldsep['from_profiles']
+                )
 
         self.current_profile = {}
 
@@ -60,6 +43,8 @@ class Pycolor:
                 raise Exception()
 
             pattern = {
+                'field': cfg.get('field'),
+                'min_fields': cfg.get('min_fields', -1),
                 'expression': cfg['expression'],
                 'regex': re.compile(cfg['expression'].encode('utf-8')),
                 'filter': cfg.get('filter', False),
@@ -97,14 +82,12 @@ class Pycolor:
 
                 fieldsep = {
                     'separator': fieldsep_cfg['separator'],
+                    'from_profiles': fieldsep_cfg.get('from_profiles', []),
                     'patterns': []
                 }
 
                 for pattern_cfg in fieldsep_cfg.get('patterns', []):
                     pattern = init_pattern(pattern_cfg)
-
-                    pattern['field'] = pattern_cfg.get('field')
-                    pattern['min_fields'] = pattern_cfg.get('min_fields', -1)
 
                     if 'replace_all' in pattern_cfg:
                         pattern['replace_all'] = pyformat.format_string(
@@ -118,6 +101,46 @@ class Pycolor:
                 profile['field_separators'].append(fieldsep)
 
             self.profiles.append(profile)
+
+    def include_from_profile(self, patterns, from_profiles):
+        if isinstance(from_profiles, str):
+            fromprof = self.get_profile_by_name(from_profiles)
+            if fromprof is None:
+                raise Exception()
+
+            patterns.extend(fromprof['patterns'])
+            return patterns
+
+        for fromprof_cfg in from_profiles:
+            if isinstance(fromprof_cfg, dict):
+                if len(fromprof_cfg.get('name', '')) == 0:
+                    raise Exception()
+
+                fromprof = self.get_profile_by_name(fromprof_cfg['name'])
+                if fromprof is None:
+                    raise Exception()
+
+                if 'order' in fromprof_cfg:
+                    if fromprof_cfg['order'] not in ('before', 'after', 'disabled'):
+                        raise Exception()
+
+                    if fromprof_cfg['order'] == 'before':
+                        orig_patterns = patterns.copy()
+                        patterns.clear()
+                        patterns.extend(fromprof['patterns'])
+                        patterns.extend(orig_patterns)
+                    elif fromprof_cfg['order'] == 'after':
+                        patterns.extend(fromprof['patterns'])
+                else:
+                    patterns.extend(fromprof['patterns'])
+            elif isinstance(fromprof_cfg, str):
+                fromprof = self.get_profile_by_name(fromprof_cfg)
+                if fromprof is None:
+                    raise Exception()
+
+                patterns.extend(fromprof['patterns'])
+            else:
+                raise Exception()
 
     def get_profile_by_name(self, name):
         for profile in self.profiles:
@@ -178,7 +201,7 @@ class Pycolor:
             field_idx_set = set()
 
             for pattern in fieldsep['patterns']:
-                if pattern['min_fields'] >= pyformat.fieldsep.idx_to_num(len(spl)):
+                if pattern['min_fields'] > pyformat.fieldsep.idx_to_num(len(spl)):
                     continue
 
                 if 'replace_all' in pattern:
