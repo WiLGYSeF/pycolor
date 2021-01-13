@@ -94,7 +94,6 @@ class Pycolor:
             for fieldsep_cfg in prof_cfg.get('field_separators', []):
                 if 'separator' not in fieldsep_cfg:
                     raise Exception()
-                    continue
 
                 fieldsep = {
                     'separator': fieldsep_cfg['separator'],
@@ -143,7 +142,6 @@ class Pycolor:
             stdout_cb = self.stdout_cb
             stderr_cb = self.stderr_cb
         else:
-            print('no config') # TODO: remove
             self.current_profile = {}
             stdout_cb = Pycolor.stdout_base_cb
             stderr_cb = Pycolor.stderr_base_cb
@@ -158,6 +156,21 @@ class Pycolor:
     def data_callback(self, stream, data):
         newdata = data
         ignore_ranges = []
+
+        def pat_schrep(pattern, string):
+            return search_replace(
+                pattern['regex'],
+                string,
+                lambda x: pyformat.format_string(
+                    pattern['replace'].decode('utf-8'),
+                    context={
+                        'match': x
+                    }
+                ).encode('utf-8'),
+                ignore_ranges=ignore_ranges,
+                start_occurrance=pattern['start_occurrance'],
+                max_count=pattern['max_count']
+            )
 
         for fieldsep in self.current_profile['field_separators']:
             sep = fieldsep['separator']
@@ -182,27 +195,15 @@ class Pycolor:
                         field_idx_set = set()
                 else:
                     if pattern['field'] is not None:
-                        field_idxlist = [pyformat.fieldsep.num_to_idx(pattern['field'])]
+                        field_idxlist = [ pyformat.fieldsep.num_to_idx(pattern['field']) ]
                     else:
-                        field_idxlist = range(pyformat.fieldsep.idx_to_num(len(spl)))
+                        field_idxlist = range(0, len(spl), 2)
 
                     for field_idx in field_idxlist:
                         if field_idx in field_idx_set:
                             continue
 
-                        newfield, replace_ranges = search_replace(
-                            pattern['expression'].encode('utf-8'),
-                            spl[field_idx],
-                            lambda x: pyformat.format_string(
-                                pattern['replace'].decode('utf-8'),
-                                context={
-                                    'match': x
-                                }
-                            ).encode('utf-8'),
-                            ignore_ranges=[],
-                            start_occurrance=pattern['start_occurrance'],
-                            max_count=pattern['max_count']
-                        )
+                        newfield, replace_ranges = pat_schrep(pattern, spl[field_idx])
                         if len(replace_ranges) > 0:
                             spl[field_idx] = newfield
                             field_idx_set.add(field_idx)
@@ -215,19 +216,7 @@ class Pycolor:
                     if pattern['regex'].search(data):
                         return
                 elif 'replace' in pattern:
-                    newdata, replace_ranges = search_replace(
-                        pattern['regex'],
-                        newdata,
-                        lambda x: pyformat.format_string(
-                            pattern['replace'].decode('utf-8'),
-                            context={
-                                'match': x
-                            }
-                        ).encode('utf-8'),
-                        ignore_ranges=ignore_ranges,
-                        start_occurrance=pattern['start_occurrance'],
-                        max_count=pattern['max_count']
-                    )
+                    newdata, replace_ranges = pat_schrep(pattern, newdata)
                     if len(replace_ranges) > 0:
                         update_ranges(ignore_ranges, replace_ranges)
 
