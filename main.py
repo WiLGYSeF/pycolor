@@ -7,25 +7,14 @@ PYCOLOR_CONFIG_FNAME = 'config.json'
 
 
 def main():
-    argcount = 1
-    while argcount < len(sys.argv):
-        arg = sys.argv[argcount]
-        if arg == '--' or not arg.startswith('--'):
-            break
-
-        argcount += 1
-    argcount -= 1
-
-    if argcount == len(sys.argv) - 1:
+    my_args, cmd_args = get_my_args(sys.argv)
+    if len(cmd_args) == 0:
         print('no command')
         exit(1)
 
-    args = sys.argv[1:argcount + 1]
-
     pycobj = Pycolor()
-    cmd_args = sys.argv[argcount + 1:]
 
-    for arg in args:
+    for arg in my_args:
         if arg.startswith('--color'):
             _, argval = get_arg(arg, 'auto')
             pycobj.color_mode = argval
@@ -34,6 +23,28 @@ def main():
 
     returncode = pycobj.execute(cmd_args)
     sys.exit(returncode)
+
+def get_my_args(argv, start_idx=1):
+    my_args = []
+    cmd_args = []
+
+    idx = start_idx
+    while idx < len(argv):
+        arg = argv[idx]
+        if arg == '--':
+            idx += 1
+            break
+        if not arg.startswith('--'):
+            break
+
+        my_args.append(arg)
+        idx += 1
+
+    while idx < len(argv):
+        cmd_args.append(argv[idx])
+        idx += 1
+
+    return my_args, cmd_args
 
 def get_arg(string, default=None):
     if not string.startswith('--'):
