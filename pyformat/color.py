@@ -34,7 +34,6 @@ def _colorval(color):
         'nor': 0,
         'bol': 1,
         'bri': 1,
-        'dim': 2,
         'ita': 3,
         'und': 4,
         'bli': 5,
