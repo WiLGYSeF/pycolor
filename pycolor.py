@@ -6,6 +6,7 @@ import re
 import sys
 
 import execute
+from pattern import Pattern
 import pyformat
 from search_replace import search_replace, update_ranges
 from split import re_split
@@ -41,38 +42,10 @@ class Pycolor:
         config = json.loads(file.read())
 
         def init_pattern(cfg):
-            if 'expression' not in cfg:
-                raise Exception()
-
-            pattern = {
-                'active': True,
-                'field': cfg.get('field'),
-                'min_fields': cfg.get('min_fields', -1),
-                'max_fields': cfg.get('max_fields', -1),
-                'expression': cfg['expression'],
-                'regex': re.compile(cfg['expression'].encode('utf-8')),
-                'filter': cfg.get('filter', False),
-                'start_occurrance': cfg.get('start_occurrance', 1),
-                'max_count': cfg.get('max_count', -1),
-                'activation_line': cfg.get('activation_line', -1),
-                'deactivation_line': cfg.get('deactivation_line', -1),
-                'activation_expression': None,
-                'deactivation_expression': None,
-            }
-
-            if cfg.get('activation_expression') is not None:
-                pattern['activation_expression'] = cfg['activation_expression']
-                pattern['activation_regex'] = re.compile(
-                    cfg['activation_expression'].encode('utf-8')
-                )
-            if cfg.get('deactivation_expression') is not None:
-                pattern['deactivation_expression'] = cfg['deactivation_expression']
-                pattern['deactivation_regex'] = re.compile(
-                    cfg['deactivation_expression'].encode('utf-8')
-                )
+            pattern = Pattern(cfg)
 
             if 'replace' in cfg:
-                pattern['replace'] = pyformat.format_string(
+                pattern.replace = pyformat.format_string(
                     cfg['replace'],
                     context={
                         'color_enabled': not is_being_redirected()
@@ -109,7 +82,7 @@ class Pycolor:
                     pattern = init_pattern(pattern_cfg)
 
                     if 'replace_all' in pattern_cfg:
-                        pattern['replace_all'] = pyformat.format_string(
+                        pattern.replace_all = pyformat.format_string(
                             pattern_cfg['replace_all'],
                             context={
                                 'color_enabled': not is_being_redirected()
@@ -191,8 +164,8 @@ class Pycolor:
         self.linecount = 0
 
         for pat in self.current_profile['patterns']:
-            if pat['activation_expression'] is not None:
-                pat['active'] = False
+            if pat.activation_expression is not None:
+                pat.active = False
 
         return execute.execute(
             cmd,
@@ -212,7 +185,7 @@ class Pycolor:
 
         def pat_schrep(pattern, string, replace):
             return search_replace(
-                pattern['regex'],
+                pattern.regex,
                 string,
                 lambda x: pyformat.format_string(
                     replace.decode('utf-8'),
@@ -221,8 +194,8 @@ class Pycolor:
                     }
                 ).encode('utf-8'),
                 ignore_ranges=ignore_ranges,
-                start_occurrance=pattern['start_occurrance'],
-                max_count=pattern['max_count']
+                start_occurrance=pattern.start_occurrance,
+                max_count=pattern.max_count
             )
 
         for fieldsep in self.current_profile['field_separators']:
@@ -231,43 +204,42 @@ class Pycolor:
             field_idx_set = set()
 
             for pat in fieldsep['patterns']:
-                if not pat['active']:
-                    if 'activation_regex' in pat and re.search(pat['activation_regex'], data):
-                        pat['active'] = True
+                if not pat.active:
+                    if pat.activation_regex is not None and re.search(pat.activation_regex, data):
+                        pat.active = True
                     else:
                         continue
 
-                if 'deactivation_regex' in pat:
-                    if re.search(pat['deactivation_regex'], data):
-                        pat['active'] = False
-                        continue
-
-                if pat['activation_line'] > -1 and pat['activation_line'] > self.linecount:
+                if pat.deactivation_regex is not None and re.search(pat.deactivation_regex, data):
+                    pat.active = False
                     continue
-                if pat['deactivation_line'] > -1 and pat['deactivation_line'] <= self.linecount:
+
+                if pat.activation_line > -1 and pat.activation_line > self.linecount:
+                    continue
+                if pat.deactivation_line > -1 and pat.deactivation_line <= self.linecount:
                     continue
 
                 fieldcount = pyformat.fieldsep.idx_to_num(len(spl))
-                if pat['min_fields'] > fieldcount or (
-                    pat['max_fields'] > 0 and pat['max_fields'] < fieldcount
+                if pat.min_fields > fieldcount or (
+                    pat.max_fields > 0 and pat.max_fields < fieldcount
                 ):
                     continue
 
                 field_idxlist = []
-                if pat['field'] is not None:
-                    if pat['field'] == 0:
+                if pat.field is not None:
+                    if pat.field == 0:
                         field_idxlist = None
                     else:
-                        field_idxlist = [ pyformat.fieldsep.num_to_idx(pat['field']) ]
+                        field_idxlist = [ pyformat.fieldsep.num_to_idx(pat.field) ]
                 else:
                     field_idxlist = range(0, len(spl), 2)
 
-                if 'replace_all' in pat:
+                if pat.replace_all is not None:
                     if field_idxlist is not None:
                         for field_idx in field_idxlist:
-                            if re.search(pat['regex'], spl[field_idx]):
+                            if re.search(pat.regex, spl[field_idx]):
                                 newdata = pyformat.format_string(
-                                    pat['replace_all'].decode('utf-8'),
+                                    pat.replace_all.decode('utf-8'),
                                     context={
                                         'fields': spl
                                     }
@@ -276,9 +248,9 @@ class Pycolor:
                                 spl = re_split(sep.encode('utf-8'), newdata)
                                 field_idx_set = set()
                     else:
-                        if re.search(pat['regex'], b''.join(spl)):
+                        if re.search(pat.regex, b''.join(spl)):
                             newdata = pyformat.format_string(
-                                pat['replace_all'].decode('utf-8'),
+                                pat.replace_all.decode('utf-8'),
                                 context={
                                     'fields': spl
                                 }
@@ -286,7 +258,7 @@ class Pycolor:
 
                             spl = re_split(sep.encode('utf-8'), newdata)
                             field_idx_set = set()
-                elif 'replace' in pat:
+                elif pat.replace is not None:
                     if field_idxlist is not None:
                         for field_idx in field_idxlist:
                             if field_idx in field_idx_set:
@@ -295,7 +267,7 @@ class Pycolor:
                             newfield, replace_ranges = pat_schrep(
                                 pat,
                                 spl[field_idx],
-                                pat['replace']
+                                pat.replace
                             )
                             if len(replace_ranges) > 0:
                                 spl[field_idx] = newfield
@@ -304,7 +276,7 @@ class Pycolor:
                         newdata, replace_ranges = pat_schrep(
                             pat,
                             b''.join(spl),
-                            pat['replace']
+                            pat.replace
                         )
                         if len(replace_ranges) > 0:
                             spl = re_split(sep.encode('utf-8'), newdata)
@@ -314,27 +286,26 @@ class Pycolor:
 
         if len(self.current_profile['field_separators']) == 0:
             for pat in self.current_profile['patterns']:
-                if not pat['active']:
-                    if 'activation_regex' in pat and re.search(pat['activation_regex'], data):
-                        pat['active'] = True
+                if not pat.active:
+                    if pat.activation_regex is not None and re.search(pat.activation_regex, data):
+                        pat.active = True
                     else:
                         continue
 
-                if 'deactivation_regex' in pat:
-                    if re.search(pat['deactivation_regex'], data):
-                        pat['active'] = False
-                        continue
-
-                if pat['activation_line'] > -1 and pat['activation_line'] > self.linecount:
-                    continue
-                if pat['deactivation_line'] > -1 and pat['deactivation_line'] <= self.linecount:
+                if pat.deactivation_regex is not None and re.search(pat.deactivation_regex, data):
+                    pat.active = False
                     continue
 
-                if pat['filter']:
-                    if pat['regex'].search(data):
+                if pat.activation_line > -1 and pat.activation_line > self.linecount:
+                    continue
+                if pat.deactivation_line > -1 and pat.deactivation_line <= self.linecount:
+                    continue
+
+                if pat.filter:
+                    if pat.regex.search(data):
                         return
-                elif 'replace' in pat:
-                    newdata, replace_ranges = pat_schrep(pat, newdata, pat['replace'])
+                elif pat.replace is not None:
+                    newdata, replace_ranges = pat_schrep(pat, newdata, pat.replace)
                     if len(replace_ranges) > 0:
                         update_ranges(ignore_ranges, replace_ranges)
 
