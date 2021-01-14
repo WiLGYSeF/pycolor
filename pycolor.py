@@ -17,10 +17,16 @@ PYCOLOR_CONFIG_FNAME = 'config.json'
 
 
 class Pycolor:
-    def __init__(self):
+    def __init__(self, color_mode='auto'):
+        self.color_mode = color_mode
+
         self.profiles = []
 
-        with open(PYCOLOR_CONFIG_FNAME, 'r') as file:
+        self.current_profile = {}
+        self.linenum = 0
+
+    def load_file(self, fname):
+        with open(fname, 'r') as file:
             self.parse_file(file)
 
         for profile in self.profiles:
@@ -35,9 +41,6 @@ class Pycolor:
                     fieldsep['from_profiles']
                 )
 
-        self.current_profile = {}
-        self.linenum = 0
-
     def parse_file(self, file):
         config = json.loads(file.read())
 
@@ -48,7 +51,7 @@ class Pycolor:
                 pattern.replace = pyformat.format_string(
                     cfg['replace'],
                     context={
-                        'color_enabled': not is_being_redirected()
+                        'color_enabled': self.is_color_enabled()
                     }
                 ).encode('utf-8')
 
@@ -56,7 +59,7 @@ class Pycolor:
                 pattern.replace_all = pyformat.format_string(
                     cfg['replace_all'],
                     context={
-                        'color_enabled': not is_being_redirected()
+                        'color_enabled': self.is_color_enabled()
                     }
                 ).encode('utf-8')
 
@@ -298,6 +301,13 @@ class Pycolor:
 
         stream.flush()
 
+    def is_color_enabled(self):
+        if self.color_mode == 'on':
+            return True
+        if self.color_mode == 'off':
+            return False
+        return not Pycolor.is_being_redirected()
+
     def stdout_cb(self, data):
         self.data_callback(sys.stdout, data)
 
@@ -313,6 +323,11 @@ class Pycolor:
     def stderr_base_cb(data):
         sys.stderr.buffer.write(data)
         sys.stderr.flush()
+
+    @staticmethod
+    def is_being_redirected():
+        # https://stackoverflow.com/a/1512526
+        return os.fstat(0) != os.fstat(1)
 
 
 def main():
@@ -334,12 +349,17 @@ def main():
     pycobj = Pycolor()
     cmd_args = sys.argv[argcount + 1:]
 
+    for arg in args:
+        if arg.startswith('--color'):
+            if arg == '--color':
+                pycobj.color_mode = 'on'
+            elif arg.startswith('--color='):
+                pycobj.color_mode = arg[arg.find('=') + 1:]
+
+    pycobj.load_file(PYCOLOR_CONFIG_FNAME)
+
     returncode = pycobj.execute(cmd_args)
     sys.exit(returncode)
-
-def is_being_redirected():
-    # https://stackoverflow.com/a/1512526
-    return os.fstat(0) != os.fstat(1)
 
 if __name__ == '__main__':
     main()
