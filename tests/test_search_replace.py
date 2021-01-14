@@ -19,7 +19,7 @@ class SearchReplaceTest(unittest.TestCase):
             )
         ])
 
-    def test_same_length_multi(self):
+    def test_same_length_two(self):
         newstring, replace_ranges = search_replace(
             r'[er]l',
             'hello world',
@@ -37,6 +37,28 @@ class SearchReplaceTest(unittest.TestCase):
             )
         ])
 
+    def test_same_length_multi(self):
+        newstring, replace_ranges = search_replace(
+            r'l',
+            'hello world',
+            '##'
+        )
+        self.assertEqual(newstring, 'he####o wor##d')
+        self.assertListEqual(replace_ranges, [
+            (
+                (2, 3),
+                (2, 4)
+            ),
+            (
+                (3, 4),
+                (4, 6)
+            ),
+            (
+                (9, 10),
+                (11, 13)
+            )
+        ])
+
     def test_shorter_single(self):
         newstring, replace_ranges = search_replace(
             r'e[a-z]{2}o',
@@ -51,7 +73,7 @@ class SearchReplaceTest(unittest.TestCase):
             )
         ])
 
-    def test_shorter_multi(self):
+    def test_shorter_two(self):
         newstring, replace_ranges = search_replace(
             r'l+[a-z]',
             'hello world',
@@ -83,7 +105,7 @@ class SearchReplaceTest(unittest.TestCase):
             )
         ])
 
-    def test_longer_multi(self):
+    def test_longer_two(self):
         newstring, replace_ranges = search_replace(
             r'^[a-z]|[^a-z][a-z]',
             'hello world',
@@ -101,7 +123,7 @@ class SearchReplaceTest(unittest.TestCase):
             )
         ])
 
-    def test_multi(self):
+    def test_two(self):
         newstring, replace_ranges = search_replace(
             r'^[a-z]|[^a-z][a-z]',
             'hello world',
@@ -136,7 +158,7 @@ class SearchReplaceTest(unittest.TestCase):
             )
         ])
 
-    def test_longer_multi_ignore_first_between(self):
+    def test_longer_two_ignore_first_between(self):
         newstring, replace_ranges = search_replace(
             r'^[a-z]|[^a-z][a-z]',
             'hello world',
@@ -153,7 +175,7 @@ class SearchReplaceTest(unittest.TestCase):
             )
         ])
 
-    def test_longer_multi_ignore_second_between(self):
+    def test_longer_two_ignore_second_between(self):
         newstring, replace_ranges = search_replace(
             r'^[a-z]|[^a-z][a-z]',
             'hello world',
@@ -170,7 +192,7 @@ class SearchReplaceTest(unittest.TestCase):
             )
         ])
 
-    def test_longer_multi_ignore_all_between(self):
+    def test_longer_two_ignore_all_between(self):
         newstring, replace_ranges = search_replace(
             r'^[a-z]|[^a-z][a-z]',
             'hello world',
