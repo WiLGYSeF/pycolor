@@ -58,14 +58,14 @@ def _colorval(color):
     if len(color) == 0:
         return None
 
-    background = False
+    toggle = False
     if color[0] == '^':
         color = color[1:]
-        background = True
+        toggle = True
 
     try:
         return '%d;5;%d' % (
-            48 if background else 38,
+            48 if toggle else 38,
             int(color)
         )
     except ValueError:
@@ -79,13 +79,13 @@ def _colorval(color):
         groups = match.groupdict()
         if groups['three'] is not None:
             return '%d;2;%d;%d;%d' % (
-                48 if background else 38,
+                48 if toggle else 38,
                 int(groups['three'][0] * 2, 16),
                 int(groups['three'][1] * 2, 16),
                 int(groups['three'][2] * 2, 16),
             )
         return '%d;2;%d;%d;%d' % (
-            48 if background else 38,
+            48 if toggle else 38,
             int(groups['six'][0:2], 16),
             int(groups['six'][2:4], 16),
             int(groups['six'][4:6], 16),
@@ -95,7 +95,7 @@ def _colorval(color):
         return None
 
     val = colors[color.lower()]
-    if background:
+    if toggle:
         if val >= 30 and val <= 39 or val >= 90 and val <= 97:
             val += 10
         elif val >= 1 and val <= 8:
