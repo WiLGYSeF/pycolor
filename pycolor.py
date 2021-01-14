@@ -36,7 +36,7 @@ class Pycolor:
                 )
 
         self.current_profile = {}
-        self.linecount = 0
+        self.linenum = 0
 
     def parse_file(self, file):
         config = json.loads(file.read())
@@ -161,7 +161,10 @@ class Pycolor:
             stdout_cb = Pycolor.stdout_base_cb
             stderr_cb = Pycolor.stderr_base_cb
 
-        self.linecount = 0
+        if self.current_profile['buffer_line']:
+            self.linenum = 1
+        else:
+            self.linenum = 0
 
         for pat in self.current_profile['patterns']:
             if pat.activation_expression is not None:
@@ -179,9 +182,9 @@ class Pycolor:
         ignore_ranges = []
 
         if self.current_profile['buffer_line']:
-            self.linecount += 1
+            self.linenum += 1
         else:
-            self.linecount += data.count(b'\n')
+            self.linenum += data.count(b'\n')
 
         def pat_schrep(pattern, string, replace):
             return search_replace(
@@ -214,7 +217,7 @@ class Pycolor:
                     pat.active = False
                     continue
 
-                if not pat.is_line_active(self.linecount):
+                if not pat.is_line_active(self.linenum):
                     continue
 
                 fieldcount = pyformat.fieldsep.idx_to_num(len(spl))
@@ -294,7 +297,7 @@ class Pycolor:
                     pat.active = False
                     continue
 
-                if not pat.is_line_active(self.linecount):
+                if not pat.is_line_active(self.linenum):
                     continue
 
                 if pat.filter:
