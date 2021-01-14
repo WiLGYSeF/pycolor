@@ -38,3 +38,10 @@ class Pattern:
             self.deactivation_regex = re.compile(
                 cfg['deactivation_expression'].encode('utf-8')
             )
+
+    def is_line_active(self, linenum):
+        if self.activation_line > -1 and self.activation_line > linenum:
+            return False
+        if self.deactivation_line > -1 and self.deactivation_line <= linenum:
+            return False
+        return True

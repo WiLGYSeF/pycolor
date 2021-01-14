@@ -214,9 +214,7 @@ class Pycolor:
                     pat.active = False
                     continue
 
-                if pat.activation_line > -1 and pat.activation_line > self.linecount:
-                    continue
-                if pat.deactivation_line > -1 and pat.deactivation_line <= self.linecount:
+                if not pat.is_line_active(self.linecount):
                     continue
 
                 fieldcount = pyformat.fieldsep.idx_to_num(len(spl))
@@ -296,9 +294,7 @@ class Pycolor:
                     pat.active = False
                     continue
 
-                if pat.activation_line > -1 and pat.activation_line > self.linecount:
-                    continue
-                if pat.deactivation_line > -1 and pat.deactivation_line <= self.linecount:
+                if not pat.is_line_active(self.linecount):
                     continue
 
                 if pat.filter:
