@@ -14,6 +14,7 @@ def main():
 
     pycobj = Pycolor()
     load_files = []
+    profile_name = None
 
     for arg in my_args:
         if arg.startswith('--color'):
@@ -24,13 +25,22 @@ def main():
             if argval is None:
                 raise Exception()
             load_files.append(argval)
+        elif arg.startswith('--profile'):
+            _, argval = get_arg(arg)
+            if argval is None:
+                raise Exception()
+            profile_name = argval
 
     pycobj.load_file(PYCOLOR_CONFIG_FNAME)
 
     for fname in load_files:
         pycobj.load_file(fname)
 
-    returncode = pycobj.execute(cmd_args)
+    profile = None
+    if profile_name is not None:
+        profile = pycobj.get_profile_by_name(profile_name)
+
+    returncode = pycobj.execute(cmd_args, profile=profile)
     sys.exit(returncode)
 
 def get_my_args(argv, start_idx=1):

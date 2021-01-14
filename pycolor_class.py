@@ -134,8 +134,9 @@ class Pycolor:
                 return cfg
         return None
 
-    def execute(self, cmd):
-        profile = self.get_profile_by_command(cmd[0])
+    def execute(self, cmd, profile=None):
+        if profile is None:
+            profile = self.get_profile_by_command(cmd[0])
 
         if profile is not None:
             self.current_profile = profile
