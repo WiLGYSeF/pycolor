@@ -230,22 +230,26 @@ class Pycolor:
             if pat.replace_all is not None:
                 if field_idxlist is not None:
                     for field_idx in field_idxlist:
-                        if re.search(pat.regex, spl[field_idx]):
+                        match = re.search(pat.regex, spl[field_idx])
+                        if match is not None:
                             newdata = pyformat.format_string(
                                 pat.replace_all.decode('utf-8'),
                                 context={
-                                    'fields': spl
+                                    'fields': spl,
+                                    'match': match
                                 }
                             ).encode('utf-8')
 
                             spl = re_split(sep, newdata)
                             ignore_ranges = [(0, len(newdata))]
                 else:
-                    if re.search(pat.regex, b''.join(spl)):
+                    match = re.search(pat.regex, b''.join(spl))
+                    if match is not None:
                         newdata = pyformat.format_string(
                             pat.replace_all.decode('utf-8'),
                             context={
-                                'fields': spl
+                                'fields': spl,
+                                'match': match
                             }
                         ).encode('utf-8')
 
