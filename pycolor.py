@@ -230,28 +230,44 @@ class Pycolor:
             spl = re_split(sep.encode('utf-8'), newdata)
             field_idx_set = set()
 
-            for pattern in fieldsep['patterns']:
+            for pat in fieldsep['patterns']:
+                if not pat['active']:
+                    if 'activation_regex' in pat and re.search(pat['activation_regex'], data):
+                        pat['active'] = True
+                    else:
+                        continue
+
+                if 'deactivation_regex' in pat:
+                    if re.search(pat['deactivation_regex'], data):
+                        pat['active'] = False
+                        continue
+
+                if pat['activation_line'] > -1 and pat['activation_line'] > self.linecount:
+                    continue
+                if pat['deactivation_line'] > -1 and pat['deactivation_line'] <= self.linecount:
+                    continue
+
                 fieldcount = pyformat.fieldsep.idx_to_num(len(spl))
-                if pattern['min_fields'] > fieldcount or (
-                    pattern['max_fields'] > 0 and pattern['max_fields'] < fieldcount
+                if pat['min_fields'] > fieldcount or (
+                    pat['max_fields'] > 0 and pat['max_fields'] < fieldcount
                 ):
                     continue
 
                 field_idxlist = []
-                if pattern['field'] is not None:
-                    if pattern['field'] == 0:
+                if pat['field'] is not None:
+                    if pat['field'] == 0:
                         field_idxlist = None
                     else:
-                        field_idxlist = [ pyformat.fieldsep.num_to_idx(pattern['field']) ]
+                        field_idxlist = [ pyformat.fieldsep.num_to_idx(pat['field']) ]
                 else:
                     field_idxlist = range(0, len(spl), 2)
 
-                if 'replace_all' in pattern:
+                if 'replace_all' in pat:
                     if field_idxlist is not None:
                         for field_idx in field_idxlist:
-                            if re.search(pattern['regex'], spl[field_idx]):
+                            if re.search(pat['regex'], spl[field_idx]):
                                 newdata = pyformat.format_string(
-                                    pattern['replace_all'].decode('utf-8'),
+                                    pat['replace_all'].decode('utf-8'),
                                     context={
                                         'fields': spl
                                     }
@@ -260,9 +276,9 @@ class Pycolor:
                                 spl = re_split(sep.encode('utf-8'), newdata)
                                 field_idx_set = set()
                     else:
-                        if re.search(pattern['regex'], b''.join(spl)):
+                        if re.search(pat['regex'], b''.join(spl)):
                             newdata = pyformat.format_string(
-                                pattern['replace_all'].decode('utf-8'),
+                                pat['replace_all'].decode('utf-8'),
                                 context={
                                     'fields': spl
                                 }
@@ -270,25 +286,25 @@ class Pycolor:
 
                             spl = re_split(sep.encode('utf-8'), newdata)
                             field_idx_set = set()
-                elif 'replace' in pattern:
+                elif 'replace' in pat:
                     if field_idxlist is not None:
                         for field_idx in field_idxlist:
                             if field_idx in field_idx_set:
                                 continue
 
                             newfield, replace_ranges = pat_schrep(
-                                pattern,
+                                pat,
                                 spl[field_idx],
-                                pattern['replace']
+                                pat['replace']
                             )
                             if len(replace_ranges) > 0:
                                 spl[field_idx] = newfield
                                 field_idx_set.add(field_idx)
                     else:
                         newdata, replace_ranges = pat_schrep(
-                            pattern,
+                            pat,
                             b''.join(spl),
-                            pattern['replace']
+                            pat['replace']
                         )
                         if len(replace_ranges) > 0:
                             spl = re_split(sep.encode('utf-8'), newdata)
