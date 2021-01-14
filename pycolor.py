@@ -315,13 +315,31 @@ class Pycolor:
         sys.stderr.flush()
 
 
+def main():
+    argcount = 1
+    while argcount < len(sys.argv):
+        arg = sys.argv[argcount]
+        if arg == '--' or not arg.startswith('--'):
+            break
+
+        argcount += 1
+    argcount -= 1
+
+    if argcount == len(sys.argv) - 1:
+        print('no command')
+        exit(1)
+
+    args = sys.argv[1:argcount + 1]
+
+    pycobj = Pycolor()
+    cmd_args = sys.argv[argcount + 1:]
+
+    returncode = pycobj.execute(cmd_args)
+    sys.exit(returncode)
+
 def is_being_redirected():
     # https://stackoverflow.com/a/1512526
     return os.fstat(0) != os.fstat(1)
 
 if __name__ == '__main__':
-    pycobj = Pycolor()
-    args = sys.argv[1:]
-
-    returncode = pycobj.execute(args)
-    sys.exit(returncode)
+    main()
