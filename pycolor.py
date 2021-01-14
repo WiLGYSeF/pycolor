@@ -14,6 +14,7 @@ from which import which
 
 PYCOLOR_CONFIG_FNAME = 'config.json'
 
+
 class Pycolor:
     def __init__(self):
         self.profiles = []
@@ -34,6 +35,7 @@ class Pycolor:
                 )
 
         self.current_profile = {}
+        self.linecount = 0
 
     def parse_file(self, file):
         config = json.loads(file.read())
@@ -50,7 +52,11 @@ class Pycolor:
                 'regex': re.compile(cfg['expression'].encode('utf-8')),
                 'filter': cfg.get('filter', False),
                 'start_occurrance': cfg.get('start_occurrance', 1),
-                'max_count': cfg.get('max_count', -1)
+                'max_count': cfg.get('max_count', -1),
+                'activation_line': cfg.get('activation_line', -1),
+                'deactivation_line': cfg.get('deactivation_line', -1),
+                'activation_expression': cfg.get('activation_expression'),
+                'deactivation_expression': cfg.get('deactivation_expression'),
             }
 
             if 'replace' in cfg:
@@ -170,6 +176,8 @@ class Pycolor:
             stdout_cb = Pycolor.stdout_base_cb
             stderr_cb = Pycolor.stderr_base_cb
 
+        self.linecount = 0
+
         return execute.execute(
             cmd,
             stdout_cb,
@@ -180,6 +188,11 @@ class Pycolor:
     def data_callback(self, stream, data):
         newdata = data
         ignore_ranges = []
+
+        if self.current_profile['buffer_line']:
+            self.linecount += 1
+        else:
+            self.linecount += data.count(b'\n')
 
         def pat_schrep(pattern, string, replace):
             return search_replace(
@@ -268,12 +281,17 @@ class Pycolor:
             newdata = b''.join(spl)
 
         if len(self.current_profile['field_separators']) == 0:
-            for pattern in self.current_profile['patterns']:
-                if pattern['filter']:
-                    if pattern['regex'].search(data):
+            for pat in self.current_profile['patterns']:
+                if pat['activation_line'] > -1 and pat['activation_line'] > self.linecount:
+                    continue
+                if pat['deactivation_line'] > -1 and pat['deactivation_line'] <= self.linecount:
+                    continue
+
+                if pat['filter']:
+                    if pat['regex'].search(data):
                         return
-                elif 'replace' in pattern:
-                    newdata, replace_ranges = pat_schrep(pattern, newdata, pattern['replace'])
+                elif 'replace' in pat:
+                    newdata, replace_ranges = pat_schrep(pat, newdata, pat['replace'])
                     if len(replace_ranges) > 0:
                         update_ranges(ignore_ranges, replace_ranges)
 
