@@ -72,13 +72,12 @@ def get_color(colorstr):
                     int(groups['three'][1] * 2, 16),
                     int(groups['three'][2] * 2, 16),
                 )
-            else:
-                return '%d;2;%d;%d;%d' % (
-                    48 if background else 38,
-                    int(groups['six'][0:2], 16),
-                    int(groups['six'][2:4], 16),
-                    int(groups['six'][4:6], 16),
-                )
+            return '%d;2;%d;%d;%d' % (
+                48 if background else 38,
+                int(groups['six'][0:2], 16),
+                int(groups['six'][2:4], 16),
+                int(groups['six'][4:6], 16),
+            )
 
         if color.lower() not in colors:
             return None
