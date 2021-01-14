@@ -22,6 +22,7 @@ def search_replace(pattern, string, replace, ignore_ranges=None, start_occurranc
         replace = lambda x: repl
 
     igidx = 0
+    replace_diff = 0
 
     for match in regex.finditer(string):
         while igidx < len(ignore_ranges) and ignore_ranges[igidx][1] < match.start():
@@ -46,14 +47,9 @@ def search_replace(pattern, string, replace, ignore_ranges=None, start_occurranc
         newstring += string[last:match.start()] + repl
         last = match.end()
 
-        start = match.start()
-        end = match.start() + len(repl)
-
-        for rng in replace_ranges:
-            old_range, new_range = rng
-            diff = new_range[1] - old_range[1] - (new_range[0] - old_range[0])
-            start += diff
-            end += diff
+        start = match.start() + replace_diff
+        end = match.start() + len(repl) + replace_diff
+        replace_diff = end - match.end()
 
         replace_ranges.append((
             match.span(),
