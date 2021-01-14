@@ -52,6 +52,14 @@ class Pycolor:
                     }
                 ).encode('utf-8')
 
+            if 'replace_all' in cfg:
+                pattern.replace_all = pyformat.format_string(
+                    cfg['replace_all'],
+                    context={
+                        'color_enabled': not is_being_redirected()
+                    }
+                ).encode('utf-8')
+
             return pattern
 
         for prof_cfg in config.get('profiles', []):
@@ -68,30 +76,6 @@ class Pycolor:
             for pattern_cfg in prof_cfg.get('patterns', []):
                 profile['patterns'].append(init_pattern(pattern_cfg))
 
-            for fieldsep_cfg in prof_cfg.get('field_separators', []):
-                if 'separator' not in fieldsep_cfg:
-                    raise Exception()
-
-                fieldsep = {
-                    'separator': fieldsep_cfg['separator'],
-                    'from_profiles': fieldsep_cfg.get('from_profiles', []),
-                    'patterns': []
-                }
-
-                for pattern_cfg in fieldsep_cfg.get('patterns', []):
-                    pattern = init_pattern(pattern_cfg)
-
-                    if 'replace_all' in pattern_cfg:
-                        pattern.replace_all = pyformat.format_string(
-                            pattern_cfg['replace_all'],
-                            context={
-                                'color_enabled': not is_being_redirected()
-                            }
-                        ).encode('utf-8')
-                    fieldsep['patterns'].append(pattern)
-
-                profile['field_separators'].append(fieldsep)
-
             self.profiles.append(profile)
 
     def include_from_profile(self, patterns, from_profiles):
@@ -105,6 +89,9 @@ class Pycolor:
 
         for fromprof_cfg in from_profiles:
             if isinstance(fromprof_cfg, dict):
+                if not fromprof_cfg.get('enabled', True):
+                    continue
+
                 if len(fromprof_cfg.get('name', '')) == 0:
                     raise Exception()
 
@@ -197,67 +184,48 @@ class Pycolor:
                 max_count=pattern.max_count
             )
 
-        fieldsep_list = self.current_profile['field_separators']
-        if len(fieldsep_list) == 0:
-            fieldsep_list = [
-                {
-                    'separator': None,
-                    'patterns': self.current_profile['patterns']
-                }
-            ]
+        for pat in self.current_profile['patterns']:
+            if not pat.enabled:
+                continue
 
-        for fieldsep in fieldsep_list:
-            sep = fieldsep['separator']
+            sep = pat.separator
             if sep is not None:
                 sep = sep.encode('utf-8')
 
-            spl = re_split(sep, newdata)
-            field_idx_set = set()
-
-            for pat in fieldsep['patterns']:
-                if not pat.active:
-                    if pat.activation_regex is not None and re.search(pat.activation_regex, data):
-                        pat.active = True
-                    else:
-                        continue
-
-                if pat.deactivation_regex is not None and re.search(pat.deactivation_regex, data):
-                    pat.active = False
-                    continue
-
-                if not pat.is_line_active(self.linenum):
-                    continue
-
-                fieldcount = pyformat.fieldsep.idx_to_num(len(spl))
-                if pat.min_fields > fieldcount or (
-                    pat.max_fields > 0 and pat.max_fields < fieldcount
-                ):
-                    continue
-
-                field_idxlist = []
-                if pat.field is not None:
-                    if pat.field == 0:
-                        field_idxlist = None
-                    else:
-                        field_idxlist = [ pyformat.fieldsep.num_to_idx(pat.field) ]
+            if not pat.active:
+                if pat.activation_regex is not None and re.search(pat.activation_regex, data):
+                    pat.active = True
                 else:
-                    field_idxlist = range(0, len(spl), 2)
+                    continue
 
-                if pat.replace_all is not None:
-                    if field_idxlist is not None:
-                        for field_idx in field_idxlist:
-                            if re.search(pat.regex, spl[field_idx]):
-                                newdata = pyformat.format_string(
-                                    pat.replace_all.decode('utf-8'),
-                                    context={
-                                        'fields': spl
-                                    }
-                                ).encode('utf-8')
+            if pat.deactivation_regex is not None and re.search(pat.deactivation_regex, data):
+                pat.active = False
+                continue
 
-                                spl = re_split(sep, newdata)
-                                field_idx_set = set()
-                    else:
-                        if re.search(pat.regex, b''.join(spl)):
+            if not pat.is_line_active(self.linenum):
+                continue
+
+            spl = re_split(sep, newdata)
+            fieldcount = pyformat.fieldsep.idx_to_num(len(spl))
+
+            if pat.min_fields > fieldcount or (
+                pat.max_fields > 0 and pat.max_fields < fieldcount
+            ):
+                continue
+
+            field_idxlist = []
+            if pat.field is not None:
+                if pat.field == 0:
+                    field_idxlist = None
+                else:
+                    field_idxlist = [ pyformat.fieldsep.num_to_idx(pat.field) ]
+            else:
+                field_idxlist = range(0, len(spl), 2)
+
+            if pat.replace_all is not None:
+                if field_idxlist is not None:
+                    for field_idx in field_idxlist:
+                        if re.search(pat.regex, spl[field_idx]):
                             newdata = pyformat.format_string(
                                 pat.replace_all.decode('utf-8'),
                                 context={
@@ -266,30 +234,34 @@ class Pycolor:
                             ).encode('utf-8')
 
                             spl = re_split(sep, newdata)
-                            field_idx_set = set()
-                elif pat.replace is not None:
-                    if field_idxlist is not None:
-                        for field_idx in field_idxlist:
-                            if field_idx in field_idx_set:
-                                continue
+                else:
+                    if re.search(pat.regex, b''.join(spl)):
+                        newdata = pyformat.format_string(
+                            pat.replace_all.decode('utf-8'),
+                            context={
+                                'fields': spl
+                            }
+                        ).encode('utf-8')
 
-                            newfield, replace_ranges = pat_schrep(
-                                pat,
-                                spl[field_idx],
-                                pat.replace
-                            )
-                            if len(replace_ranges) > 0:
-                                spl[field_idx] = newfield
-                                field_idx_set.add(field_idx)
-                    else:
-                        newdata, replace_ranges = pat_schrep(
+                        spl = re_split(sep, newdata)
+            elif pat.replace is not None:
+                if field_idxlist is not None:
+                    for field_idx in field_idxlist:
+                        newfield, replace_ranges = pat_schrep(
                             pat,
-                            b''.join(spl),
+                            spl[field_idx],
                             pat.replace
                         )
                         if len(replace_ranges) > 0:
-                            spl = re_split(sep, newdata)
-                            field_idx_set = set()
+                            spl[field_idx] = newfield
+                else:
+                    newdata, replace_ranges = pat_schrep(
+                        pat,
+                        b''.join(spl),
+                        pat.replace
+                    )
+                    if len(replace_ranges) > 0:
+                        spl = re_split(sep, newdata)
 
             newdata = b''.join(spl)
 

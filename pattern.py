@@ -3,11 +3,8 @@ import re
 
 class Pattern:
     def __init__(self, cfg):
+        self.enabled = cfg.get('enabled', True)
         self.active = True
-
-        self.field = cfg.get('field')
-        self.min_fields = cfg.get('min_fields', -1)
-        self.max_fields = cfg.get('max_fields', -1)
 
         self.expression = cfg['expression']
         self.filter = cfg.get('filter', False)
@@ -39,6 +36,11 @@ class Pattern:
             self.deactivation_regex = re.compile(
                 cfg['deactivation_expression'].encode('utf-8')
             )
+
+        self.separator = cfg.get('separator')
+        self.field = cfg.get('field')
+        self.min_fields = cfg.get('min_fields', -1)
+        self.max_fields = cfg.get('max_fields', -1)
 
     def is_line_active(self, linenum):
         if self.activation_line > -1 and self.activation_line > linenum:
