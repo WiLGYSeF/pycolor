@@ -351,15 +351,23 @@ def main():
 
     for arg in args:
         if arg.startswith('--color'):
-            if arg == '--color':
-                pycobj.color_mode = 'on'
-            elif arg.startswith('--color='):
-                pycobj.color_mode = arg[arg.find('=') + 1:]
+            _, argval = get_arg(arg, 'auto')
+            pycobj.color_mode = argval
 
     pycobj.load_file(PYCOLOR_CONFIG_FNAME)
 
     returncode = pycobj.execute(cmd_args)
     sys.exit(returncode)
+
+def get_arg(string, default=None):
+    if not string.startswith('--'):
+        raise ValueError()
+
+    idx = string.find('=')
+    if idx == -1:
+        return string[2:], default
+
+    return string[2:idx], string[idx + 1:]
 
 if __name__ == '__main__':
     main()
