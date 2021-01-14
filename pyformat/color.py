@@ -37,6 +37,8 @@ def _colorval(color):
         'blue': 34,
         'magenta': 35,
         'cyan': 36,
+        'gray': 37,
+        'grey': 37,
         'lightgray': 37,
         'lightgrey': 37,
         'default': 39,
