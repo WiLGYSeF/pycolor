@@ -10,24 +10,23 @@ PYCOLOR_CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), '.pycolor.json')
 def main():
     my_args, cmd_args = get_my_args(sys.argv)
     if len(cmd_args) == 0:
-        print('no command')
-        exit(1)
+        sys.exit(1)
 
     pycobj = Pycolor()
     load_files = []
     profile_name = None
 
     for arg in my_args:
-        if arg.startswith('--color'):
-            _, argval = get_arg(arg, 'auto')
+        argname, argval = get_arg(arg)
+        if argname == 'color':
+            if argval is None:
+                argval = 'auto'
             pycobj.color_mode = argval
-        elif arg.startswith('--load-file'):
-            _, argval = get_arg(arg)
+        elif argname == 'load-file':
             if argval is None:
                 raise Exception()
             load_files.append(argval)
-        elif arg.startswith('--profile'):
-            _, argval = get_arg(arg)
+        elif argname == 'profile':
             if argval is None:
                 raise Exception()
             profile_name = argval
