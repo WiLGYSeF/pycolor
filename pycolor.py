@@ -45,6 +45,7 @@ class Pycolor:
                 raise Exception()
 
             pattern = {
+                'active': True,
                 'field': cfg.get('field'),
                 'min_fields': cfg.get('min_fields', -1),
                 'max_fields': cfg.get('max_fields', -1),
@@ -55,9 +56,20 @@ class Pycolor:
                 'max_count': cfg.get('max_count', -1),
                 'activation_line': cfg.get('activation_line', -1),
                 'deactivation_line': cfg.get('deactivation_line', -1),
-                'activation_expression': cfg.get('activation_expression'),
-                'deactivation_expression': cfg.get('deactivation_expression'),
+                'activation_expression': None,
+                'deactivation_expression': None,
             }
+
+            if cfg.get('activation_expression') is not None:
+                pattern['activation_expression'] = cfg['activation_expression']
+                pattern['activation_regex'] = re.compile(
+                    cfg['activation_expression'].encode('utf-8')
+                )
+            if cfg.get('deactivation_expression') is not None:
+                pattern['deactivation_expression'] = cfg['deactivation_expression']
+                pattern['deactivation_regex'] = re.compile(
+                    cfg['deactivation_expression'].encode('utf-8')
+                )
 
             if 'replace' in cfg:
                 pattern['replace'] = pyformat.format_string(
@@ -178,6 +190,10 @@ class Pycolor:
 
         self.linecount = 0
 
+        for pat in self.current_profile['patterns']:
+            if pat['activation_expression'] is not None:
+                pat['active'] = False
+
         return execute.execute(
             cmd,
             stdout_cb,
@@ -282,6 +298,17 @@ class Pycolor:
 
         if len(self.current_profile['field_separators']) == 0:
             for pat in self.current_profile['patterns']:
+                if not pat['active']:
+                    if 'activation_regex' in pat and re.search(pat['activation_regex'], data):
+                        pat['active'] = True
+                    else:
+                        continue
+
+                if 'deactivation_regex' in pat:
+                    if re.search(pat['deactivation_regex'], data):
+                        pat['active'] = False
+                        continue
+
                 if pat['activation_line'] > -1 and pat['activation_line'] > self.linecount:
                     continue
                 if pat['deactivation_line'] > -1 and pat['deactivation_line'] <= self.linecount:
