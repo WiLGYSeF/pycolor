@@ -1,3 +1,6 @@
+import re
+
+
 def get_color(colorstr):
     def _colorval(color):
         colors = {
@@ -47,6 +50,27 @@ def get_color(colorstr):
             )
         except ValueError:
             pass
+
+        match = re.fullmatch(
+            r'0x(?P<six>[0-9a-f]{6})|0x(?P<three>[0-9a-f]{3})',
+            color
+        )
+        if match is not None:
+            groups = match.groupdict()
+            if groups['three'] is not None:
+                return '%d;2;%d;%d;%d' % (
+                    48 if background else 38,
+                    int(groups['three'][0] * 2, 16),
+                    int(groups['three'][1] * 2, 16),
+                    int(groups['three'][2] * 2, 16),
+                )
+            else:
+                return '%d;2;%d;%d;%d' % (
+                    48 if background else 38,
+                    int(groups['six'][0:2], 16),
+                    int(groups['six'][2:4], 16),
+                    int(groups['six'][4:6], 16),
+                )
 
         if color.lower() not in colors:
             return None
