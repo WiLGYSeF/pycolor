@@ -10,6 +10,11 @@ RESULT = 'result'
 
 RE_SPLIT_RESULTS = [
     {
+        SEP: None,
+        STRING: 'this is a test',
+        RESULT: ['this is a test']
+    },
+    {
         SEP: ' ',
         STRING: 'this is a test',
         RESULT: [
