@@ -30,6 +30,8 @@ def get_color(colorstr):
             'lightgray': 37,
             'lightgrey': 37,
             'default': 39,
+            'overline': 53,
+            'overlined': 53,
             'darkgray': 90,
             'darkgrey': 90,
             'lightred': 91,
@@ -83,10 +85,12 @@ def get_color(colorstr):
 
         val = colors[color.lower()]
         if background:
-            if val >= 30:
+            if val >= 30 and val <= 39 or val >= 90 and val <= 97:
                 val += 10
             elif val >= 1 and val <= 8:
                 val += 20
+            elif val == 53:
+                val = 55
 
         return str(val)
 
