@@ -170,7 +170,7 @@ class Pycolor:
             self.linenum += data.count(b'\n')
 
         def pat_schrep(pattern, string, replace):
-            return search_replace(
+            newstring, replace_ranges = search_replace(
                 pattern.regex,
                 string,
                 lambda x: pyformat.format_string(
@@ -183,6 +183,12 @@ class Pycolor:
                 start_occurrance=pattern.start_occurrance,
                 max_count=pattern.max_count
             )
+
+            update_ranges(ignore_ranges, replace_ranges)
+
+            if len(replace_ranges) == 0:
+                return None
+            return newstring
 
         for pat in self.current_profile['patterns']:
             if not pat.enabled:
@@ -234,6 +240,7 @@ class Pycolor:
                             ).encode('utf-8')
 
                             spl = re_split(sep, newdata)
+                            ignore_ranges = [(0, len(newdata))]
                 else:
                     if re.search(pat.regex, b''.join(spl)):
                         newdata = pyformat.format_string(
@@ -244,24 +251,26 @@ class Pycolor:
                         ).encode('utf-8')
 
                         spl = re_split(sep, newdata)
+                        ignore_ranges = [(0, len(newdata))]
             elif pat.replace is not None:
                 if field_idxlist is not None:
+                    # TODO: fix ignore_ranges here
                     for field_idx in field_idxlist:
-                        newfield, replace_ranges = pat_schrep(
+                        newfield = pat_schrep(
                             pat,
                             spl[field_idx],
                             pat.replace
                         )
-                        if len(replace_ranges) > 0:
+                        if newfield is not None:
                             spl[field_idx] = newfield
                 else:
-                    newdata, replace_ranges = pat_schrep(
+                    replaced = pat_schrep(
                         pat,
                         b''.join(spl),
                         pat.replace
                     )
-                    if len(replace_ranges) > 0:
-                        spl = re_split(sep, newdata)
+                    if replaced is not None:
+                        spl = re_split(sep, replaced)
 
             newdata = b''.join(spl)
 
