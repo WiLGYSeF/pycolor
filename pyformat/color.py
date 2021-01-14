@@ -29,6 +29,7 @@ def _colorval(color):
         'strikethrough': 9,
         'crossed': 9,
         'crossedout': 9,
+
         'black': 30,
         'red': 31,
         'green': 32,
@@ -39,8 +40,10 @@ def _colorval(color):
         'lightgray': 37,
         'lightgrey': 37,
         'default': 39,
+
         'overline': 53,
         'overlined': 53,
+
         'darkgray': 90,
         'darkgrey': 90,
         'lightred': 91,
