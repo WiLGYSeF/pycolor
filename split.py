@@ -2,6 +2,9 @@ import re
 
 
 def re_split(sep, string):
+    if sep is None:
+        return [ string ]
+
     if isinstance(sep, re._pattern_type):
         regex = sep
     else:

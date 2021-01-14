@@ -197,9 +197,21 @@ class Pycolor:
                 max_count=pattern.max_count
             )
 
-        for fieldsep in self.current_profile['field_separators']:
+        fieldsep_list = self.current_profile['field_separators']
+        if len(fieldsep_list) == 0:
+            fieldsep_list = [
+                {
+                    'separator': None,
+                    'patterns': self.current_profile['patterns']
+                }
+            ]
+
+        for fieldsep in fieldsep_list:
             sep = fieldsep['separator']
-            spl = re_split(sep.encode('utf-8'), newdata)
+            if sep is not None:
+                sep = sep.encode('utf-8')
+
+            spl = re_split(sep, newdata)
             field_idx_set = set()
 
             for pat in fieldsep['patterns']:
@@ -242,7 +254,7 @@ class Pycolor:
                                     }
                                 ).encode('utf-8')
 
-                                spl = re_split(sep.encode('utf-8'), newdata)
+                                spl = re_split(sep, newdata)
                                 field_idx_set = set()
                     else:
                         if re.search(pat.regex, b''.join(spl)):
@@ -253,7 +265,7 @@ class Pycolor:
                                 }
                             ).encode('utf-8')
 
-                            spl = re_split(sep.encode('utf-8'), newdata)
+                            spl = re_split(sep, newdata)
                             field_idx_set = set()
                 elif pat.replace is not None:
                     if field_idxlist is not None:
@@ -276,33 +288,10 @@ class Pycolor:
                             pat.replace
                         )
                         if len(replace_ranges) > 0:
-                            spl = re_split(sep.encode('utf-8'), newdata)
+                            spl = re_split(sep, newdata)
                             field_idx_set = set()
 
             newdata = b''.join(spl)
-
-        if len(self.current_profile['field_separators']) == 0:
-            for pat in self.current_profile['patterns']:
-                if not pat.active:
-                    if pat.activation_regex is not None and re.search(pat.activation_regex, data):
-                        pat.active = True
-                    else:
-                        continue
-
-                if pat.deactivation_regex is not None and re.search(pat.deactivation_regex, data):
-                    pat.active = False
-                    continue
-
-                if not pat.is_line_active(self.linenum):
-                    continue
-
-                if pat.filter:
-                    if pat.regex.search(data):
-                        return
-                elif pat.replace is not None:
-                    newdata, replace_ranges = pat_schrep(pat, newdata, pat.replace)
-                    if len(replace_ranges) > 0:
-                        update_ranges(ignore_ranges, replace_ranges)
 
         stream.buffer.write(newdata)
         stream.flush()
