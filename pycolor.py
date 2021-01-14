@@ -163,9 +163,14 @@ class Pycolor:
     def data_callback(self, stream, data):
         newdata = data
         ignore_ranges = []
+        removed_newline = False
 
         if self.current_profile['buffer_line']:
             self.linenum += 1
+
+            if newdata[-1] == ord('\n'):
+                newdata = newdata[:-1]
+                removed_newline = True
         else:
             self.linenum += data.count(b'\n')
 
@@ -283,6 +288,10 @@ class Pycolor:
             newdata = b''.join(spl)
 
         stream.buffer.write(newdata)
+
+        if removed_newline:
+            stream.buffer.write(b'\n')
+
         stream.flush()
 
     def stdout_cb(self, data):
