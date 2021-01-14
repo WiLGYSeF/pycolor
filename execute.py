@@ -10,15 +10,32 @@ def nonblock(file):
     flag = fcntl.fcntl(fde, fcntl.F_GETFL)
     fcntl.fcntl(fde, fcntl.F_SETFL, flag | os.O_NONBLOCK)
 
+def readlines(stream):
+    #file.readlines() is broken
+    data = stream.read()
+    if data is None or len(data) == 0:
+        return None
+
+    lines = []
+    last = 0
+
+    for idx in range(len(data)):
+        if data[idx] == ord('\n'):
+            lines.append(data[last:idx + 1])
+            last = idx + 1
+
+    if last < len(data):
+        lines.append(data[last:])
+    return lines
+
 @static_vars(buffers={})
 def read_stream(stream, callback, buffer_line=True, last=False):
     if stream not in read_stream.buffers:
         read_stream.buffers[stream] = b''
 
     if buffer_line:
-        lines = stream.readlines()
-
-        if len(lines) == 0:
+        lines = readlines(stream)
+        if lines is None:
             return
 
         start = 0
