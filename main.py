@@ -13,13 +13,22 @@ def main():
         exit(1)
 
     pycobj = Pycolor()
+    load_files = []
 
     for arg in my_args:
         if arg.startswith('--color'):
             _, argval = get_arg(arg, 'auto')
             pycobj.color_mode = argval
+        elif arg.startswith('--load-file'):
+            _, argval = get_arg(arg)
+            if argval is None:
+                raise Exception()
+            load_files.append(argval)
 
     pycobj.load_file(PYCOLOR_CONFIG_FNAME)
+
+    for fname in load_files:
+        pycobj.load_file(fname)
 
     returncode = pycobj.execute(cmd_args)
     sys.exit(returncode)
