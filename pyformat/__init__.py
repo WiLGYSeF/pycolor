@@ -9,6 +9,8 @@ def format_string(string, context=None):
     if context is None:
         context = {}
 
+    context['last_colors'] = []
+
     newstring = ''
     idx = 0
 
@@ -39,8 +41,15 @@ def do_format(string, formatter, idx, newidx, context):
         if not context.get('color_enabled', True):
             return ''
 
+        if formatter[1:].lower().startswith('last'):
+            return get_lastcolor(context['last_colors'], formatter[5:])
+
         colorstr = color.get_color(formatter[1:])
-        return colorstr if colorstr is not None else ''
+        if colorstr is None:
+            colorstr = ''
+
+        context['last_colors'].append(colorstr)
+        return colorstr
 
     # FIXME: should not decode here
 
@@ -104,3 +113,19 @@ def get_formatter(string, idx):
         formatter = string[startidx:idx]
 
     return formatter, idx
+
+def get_lastcolor(colors, string):
+    if len(colors) == 0:
+        return ''
+
+    try:
+        last_idx = -int(string)
+    except ValueError:
+        last_idx = -1
+
+    if last_idx >= 0:
+        last_idx -= 1
+        if last_idx >= len(colors):
+            last_idx = -1
+
+    return colors[last_idx]
