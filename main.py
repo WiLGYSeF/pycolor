@@ -1,9 +1,10 @@
+import os
 import sys
 
 from pycolor_class import Pycolor
 
 
-PYCOLOR_CONFIG_FNAME = 'config.json'
+PYCOLOR_CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), '.pycolor.json')
 
 
 def main():
@@ -31,7 +32,7 @@ def main():
                 raise Exception()
             profile_name = argval
 
-    pycobj.load_file(PYCOLOR_CONFIG_FNAME)
+    pycobj.load_file(PYCOLOR_CONFIG_DEFAULT)
 
     for fname in load_files:
         pycobj.load_file(fname)
