@@ -33,6 +33,7 @@ class Pattern:
             self.activation_regex = re.compile(
                 cfg['activation_expression'].encode('utf-8')
             )
+            self.active = False
         if cfg.get('deactivation_expression') is not None:
             self.deactivation_expression = cfg['deactivation_expression']
             self.deactivation_regex = re.compile(

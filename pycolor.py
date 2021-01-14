@@ -166,10 +166,6 @@ class Pycolor:
         else:
             self.linenum = 0
 
-        for pat in self.current_profile['patterns']:
-            if pat.activation_expression is not None:
-                pat.active = False
-
         return execute.execute(
             cmd,
             stdout_cb,
