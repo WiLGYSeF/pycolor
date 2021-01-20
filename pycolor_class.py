@@ -193,6 +193,55 @@ class Pycolor:
         else:
             self.linenum += data.count(b'\n')
 
+        for pat in self.current_profile.patterns:
+            if not pat.enabled:
+                continue
+            if pat.stdout_only and stream != sys.stdout or pat.stderr_only and stream != sys.stderr:
+                continue
+
+            newdata = self.apply_pattern(pat, newdata, ignore_ranges)
+
+        stream.buffer.write(newdata)
+
+        if removed_newline:
+            stream.buffer.write(b'\n')
+
+        stream.flush()
+
+    def apply_pattern(self, pat, data, ignore_ranges):
+        sep = pat.separator
+        if sep is not None:
+            sep = sep.encode('utf-8')
+
+        if not pat.active:
+            if pat.activation_regex is None or not re.search(pat.activation_regex, data):
+                return data
+            pat.active = True
+
+        if pat.deactivation_regex is not None and re.search(pat.deactivation_regex, data):
+            pat.active = False
+            return data
+
+        if not pat.is_line_active(self.linenum):
+            return data
+
+        spl = re_split(sep, data)
+        fieldcount = pyformat.fieldsep.idx_to_num(len(spl))
+
+        if pat.min_fields > fieldcount or (
+            pat.max_fields > 0 and pat.max_fields < fieldcount
+        ):
+            return data
+
+        field_idxlist = []
+        if pat.field is not None:
+            if pat.field == 0:
+                field_idxlist = None
+            else:
+                field_idxlist = [ pyformat.fieldsep.num_to_idx(pat.field) ]
+        else:
+            field_idxlist = range(0, len(spl), 2)
+
         def pat_schrep(pattern, string, replace):
             return search_replace(
                 pattern.regex,
@@ -208,66 +257,12 @@ class Pycolor:
                 max_count=pattern.max_count
             )
 
-        for pat in self.current_profile.patterns:
-            if not pat.enabled:
-                continue
-
-            if pat.stdout_only and stream != sys.stdout or pat.stderr_only and stream != sys.stderr:
-                continue
-
-            sep = pat.separator
-            if sep is not None:
-                sep = sep.encode('utf-8')
-
-            if not pat.active:
-                if pat.activation_regex is not None and re.search(pat.activation_regex, data):
-                    pat.active = True
-                else:
-                    continue
-
-            if pat.deactivation_regex is not None and re.search(pat.deactivation_regex, data):
-                pat.active = False
-                continue
-
-            if not pat.is_line_active(self.linenum):
-                continue
-
-            spl = re_split(sep, newdata)
-            fieldcount = pyformat.fieldsep.idx_to_num(len(spl))
-
-            if pat.min_fields > fieldcount or (
-                pat.max_fields > 0 and pat.max_fields < fieldcount
-            ):
-                continue
-
-            field_idxlist = []
-            if pat.field is not None:
-                if pat.field == 0:
-                    field_idxlist = None
-                else:
-                    field_idxlist = [ pyformat.fieldsep.num_to_idx(pat.field) ]
-            else:
-                field_idxlist = range(0, len(spl), 2)
-
-            if pat.replace_all is not None:
-                if field_idxlist is not None:
-                    for field_idx in field_idxlist:
-                        match = re.search(pat.regex, spl[field_idx])
-                        if match is not None:
-                            newdata = pyformat.format_string(
-                                pat.replace_all.decode('utf-8'),
-                                context={
-                                    'fields': spl,
-                                    'match': match
-                                }
-                            ).encode('utf-8')
-
-                            spl = re_split(sep, newdata)
-                            ignore_ranges = [(0, len(newdata))]
-                else:
-                    match = re.search(pat.regex, b''.join(spl))
+        if pat.replace_all is not None:
+            if field_idxlist is not None:
+                for field_idx in field_idxlist:
+                    match = re.search(pat.regex, spl[field_idx])
                     if match is not None:
-                        newdata = pyformat.format_string(
+                        data = pyformat.format_string(
                             pat.replace_all.decode('utf-8'),
                             context={
                                 'fields': spl,
@@ -275,50 +270,57 @@ class Pycolor:
                             }
                         ).encode('utf-8')
 
-                        spl = re_split(sep, newdata)
-                        ignore_ranges = [(0, len(newdata))]
-            elif pat.replace is not None:
-                if field_idxlist is not None:
-                    for field_idx in field_idxlist:
-                        newfield, replace_ranges = pat_schrep(
-                            pat,
-                            spl[field_idx],
-                            pat.replace
-                        )
-                        if len(replace_ranges) != 0:
-                            spl[field_idx] = newfield
+                        spl = re_split(sep, data)
+                        ignore_ranges.clear()
+                        ignore_ranges.append( (0, len(data)) )
+            else:
+                match = re.search(pat.regex, b''.join(spl))
+                if match is not None:
+                    data = pyformat.format_string(
+                        pat.replace_all.decode('utf-8'),
+                        context={
+                            'fields': spl,
+                            'match': match
+                        }
+                    ).encode('utf-8')
 
-                            offset = 0
-                            for i in range(field_idx):
-                                offset += len(spl[i])
-
-                            for idx in range(len(replace_ranges)): #pylint: disable=consider-using-enumerate
-                                old_range, new_range = replace_ranges[idx]
-                                replace_ranges[idx] = (
-                                    (old_range[0] + offset, old_range[1] + offset),
-                                    (new_range[0] + offset, new_range[1] + offset),
-                                )
-
-                            update_ranges(ignore_ranges, replace_ranges)
-                else:
-                    replaced, replace_ranges = pat_schrep(
+                    spl = re_split(sep, data)
+                    ignore_ranges.clear()
+                    ignore_ranges.append( (0, len(data)) )
+        elif pat.replace is not None:
+            if field_idxlist is not None:
+                for field_idx in field_idxlist:
+                    newfield, replace_ranges = pat_schrep(
                         pat,
-                        b''.join(spl),
+                        spl[field_idx],
                         pat.replace
                     )
                     if len(replace_ranges) != 0:
+                        spl[field_idx] = newfield
+
+                        offset = 0
+                        for i in range(field_idx):
+                            offset += len(spl[i])
+
+                        for idx in range(len(replace_ranges)): #pylint: disable=consider-using-enumerate
+                            old_range, new_range = replace_ranges[idx]
+                            replace_ranges[idx] = (
+                                (old_range[0] + offset, old_range[1] + offset),
+                                (new_range[0] + offset, new_range[1] + offset),
+                            )
+
                         update_ranges(ignore_ranges, replace_ranges)
-                        spl = re_split(sep, replaced)
-                        newdata = b''.join(spl)
+            else:
+                replaced, replace_ranges = pat_schrep(
+                    pat,
+                    b''.join(spl),
+                    pat.replace
+                )
+                if len(replace_ranges) != 0:
+                    update_ranges(ignore_ranges, replace_ranges)
+                    spl = re_split(sep, replaced)
 
-            newdata = b''.join(spl)
-
-        stream.buffer.write(newdata)
-
-        if removed_newline:
-            stream.buffer.write(b'\n')
-
-        stream.flush()
+        return b''.join(spl)
 
     def is_color_enabled(self):
         if self.color_mode == 'on':
