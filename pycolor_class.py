@@ -163,7 +163,7 @@ class Pycolor:
         if position is None:
             return range(arglen)
 
-        match = re.fullmatch(r'([<>+-])?([*0-9]+)', position)
+        match = re.fullmatch(r'([<>+-])?(\*|[0-9]+)', position)
         if match is None:
             return range(arglen)
 
