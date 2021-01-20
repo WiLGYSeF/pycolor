@@ -243,23 +243,8 @@ class Pycolor:
             field_idxlist = range(0, len(spl), 2)
 
         if pat.replace_all is not None:
-            if field_idxlist is not None:
-                for field_idx in field_idxlist:
-                    match = re.search(pat.regex, spl[field_idx])
-                    if match is not None:
-                        data = pyformat.format_string(
-                            pat.replace_all.decode('utf-8'),
-                            context={
-                                'fields': spl,
-                                'match': match
-                            }
-                        ).encode('utf-8')
-
-                        spl = re_split(sep, data)
-                        ignore_ranges.clear()
-                        ignore_ranges.append( (0, len(data)) )
-            else:
-                match = re.search(pat.regex, b''.join(spl))
+            def match_and_replace(spl, indata):
+                match = re.search(pat.regex, indata)
                 if match is not None:
                     data = pyformat.format_string(
                         pat.replace_all.decode('utf-8'),
@@ -269,9 +254,16 @@ class Pycolor:
                         }
                     ).encode('utf-8')
 
-                    spl = re_split(sep, data)
+                    spl.clear()
+                    spl.extend(re_split(sep, data))
                     ignore_ranges.clear()
                     ignore_ranges.append( (0, len(data)) )
+
+            if field_idxlist is not None:
+                for field_idx in field_idxlist:
+                    match_and_replace(spl, spl[field_idx])
+            else:
+                match_and_replace(spl, b''.join(spl))
         elif pat.replace is not None:
             if field_idxlist is not None:
                 for field_idx in field_idxlist:
