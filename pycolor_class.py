@@ -63,6 +63,7 @@ class Pycolor:
         for prof_cfg in config.get('profiles', []):
             profile = {
                 'name': prof_cfg.get('name'),
+                'name_regex': prof_cfg.get('name_regex'),
                 'profile_name': prof_cfg.get('profile_name'),
                 'which': prof_cfg.get('which'),
                 'arg_patterns': prof_cfg.get('arg_patterns', []),
@@ -132,7 +133,9 @@ class Pycolor:
                 result = which(command)
                 if result is not None and result.decode('utf-8') != cfg['which']:
                     continue
-            if command != cfg['name']:
+            if cfg['name'] is not None and command != cfg['name']:
+                continue
+            if cfg['name_regex'] is not None and not re.fullmatch(cfg['name_regex'], command):
                 continue
 
             if not Pycolor.check_arg_patterns(args, cfg['arg_patterns']):
