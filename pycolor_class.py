@@ -65,6 +65,7 @@ class Pycolor:
                 'name': prof_cfg.get('name'),
                 'profile_name': prof_cfg.get('profile_name'),
                 'which': prof_cfg.get('which'),
+                'arg_patterns': prof_cfg.get('arg_patterns'),
                 'buffer_line': prof_cfg.get('buffer_line', True),
                 'from_profiles': prof_cfg.get('from_profiles', []),
                 'patterns': [],
@@ -125,25 +126,76 @@ class Pycolor:
                 return profile
         return None
 
-    def get_profile_by_command(self, command):
+    def get_profile_by_command(self, command, args):
         for cfg in self.profiles:
             result = which(command)
-            if result is not None and result.decode('utf-8') == cfg['which']:
-                return cfg
-            if command == cfg['name']:
-                return cfg
+            if result is not None and result.decode('utf-8') != cfg['which']:
+                continue
+            if command != cfg['name']:
+                continue
+
+            skip_profile = False
+
+            for arg_pat in cfg.get('arg_patterns', []):
+                if skip_profile:
+                    break
+                if 'expression' not in arg_pat:
+                    continue
+
+                if 'position' in arg_pat:
+                    match = re.fullmatch(r'([<>+-])?([*0-9]+)', arg_pat['position'])
+                    if match is not None:
+                        modifier = match[1]
+                        index = match[2]
+
+                        if index != '*':
+                            index = int(index)
+                            if modifier is None:
+                                check_arg_range = range(index - 1, min(index, len(args)))
+                            elif modifier == '>' or modifier == '+':
+                                check_arg_range = range(index - 1, len(args))
+                            elif modifier == '<' or modifier == '-':
+                                check_arg_range = range(0, min(index, len(args)))
+                        else:
+                            check_arg_range = range(len(args))
+                    else:
+                        check_arg_range = range(len(args))
+                else:
+                    check_arg_range = range(len(args))
+
+                match = False
+
+                for idx in check_arg_range:
+                    arg = args[idx]
+                    print(arg_pat['expression'], arg)
+
+                    if re.fullmatch(arg_pat['expression'], arg):
+                        match = True
+                        if arg_pat.get('match_not', False):
+                            skip_profile = True
+                            break
+
+                if not match and not arg_pat.get('optional', False):
+                    skip_profile = True
+
+            if skip_profile:
+                continue
+
+            return cfg
         return None
 
     def execute(self, cmd, profile=None):
         if profile is None:
-            profile = self.get_profile_by_command(cmd[0])
+            profile = self.get_profile_by_command(cmd[0], cmd[1:])
 
         if profile is not None:
             self.current_profile = profile
             stdout_cb = self.stdout_cb
             stderr_cb = self.stderr_cb
         else:
-            self.current_profile = {}
+            self.current_profile = {
+                'buffer_line': True
+            }
             stdout_cb = Pycolor.stdout_base_cb
             stderr_cb = Pycolor.stderr_base_cb
 
