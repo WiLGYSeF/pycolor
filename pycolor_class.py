@@ -65,7 +65,7 @@ class Pycolor:
                 'name': prof_cfg.get('name'),
                 'profile_name': prof_cfg.get('profile_name'),
                 'which': prof_cfg.get('which'),
-                'arg_patterns': prof_cfg.get('arg_patterns'),
+                'arg_patterns': prof_cfg.get('arg_patterns', []),
                 'buffer_line': prof_cfg.get('buffer_line', True),
                 'from_profiles': prof_cfg.get('from_profiles', []),
                 'patterns': [],
@@ -128,13 +128,14 @@ class Pycolor:
 
     def get_profile_by_command(self, command, args):
         for cfg in self.profiles:
-            result = which(command)
-            if result is not None and result.decode('utf-8') != cfg['which']:
-                continue
+            if cfg['which'] is not None:
+                result = which(command)
+                if result is not None and result.decode('utf-8') != cfg['which']:
+                    continue
             if command != cfg['name']:
                 continue
 
-            if not Pycolor.check_arg_patterns(args, cfg.get('arg_patterns', [])):
+            if not Pycolor.check_arg_patterns(args, cfg['arg_patterns']):
                 continue
 
             return cfg
