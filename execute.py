@@ -19,7 +19,7 @@ def readlines(stream):
     lines = []
     last = 0
 
-    for idx in range(len(data)):
+    for idx in range(len(data)): #pylint: disable=consider-using-enumerate
         if data[idx] == ord('\n'):
             lines.append(data[last:idx + 1])
             last = idx + 1
