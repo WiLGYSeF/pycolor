@@ -212,6 +212,9 @@ class Pycolor:
             if not pat.enabled:
                 continue
 
+            if pat.stdout_only and stream != sys.stdout or pat.stderr_only and stream != sys.stderr:
+                continue
+
             sep = pat.separator
             if sep is not None:
                 sep = sep.encode('utf-8')

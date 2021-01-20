@@ -6,6 +6,9 @@ class Pattern:
         self.enabled = cfg.get('enabled', True)
         self.active = True
 
+        self.stdout_only = cfg.get('stdout_only', False)
+        self.stderr_only = cfg.get('stderr_only', False)
+
         self.expression = cfg['expression']
         self.filter = cfg.get('filter', False)
 
