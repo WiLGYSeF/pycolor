@@ -134,55 +134,54 @@ class Pycolor:
             if command != cfg['name']:
                 continue
 
-            skip_profile = False
-
-            for arg_pat in cfg.get('arg_patterns', []):
-                if skip_profile:
-                    break
-                if 'expression' not in arg_pat:
-                    continue
-
-                if 'position' in arg_pat:
-                    match = re.fullmatch(r'([<>+-])?([*0-9]+)', arg_pat['position'])
-                    if match is not None:
-                        modifier = match[1]
-                        index = match[2]
-
-                        if index != '*':
-                            index = int(index)
-                            if modifier is None:
-                                check_arg_range = range(index - 1, min(index, len(args)))
-                            elif modifier == '>' or modifier == '+':
-                                check_arg_range = range(index - 1, len(args))
-                            elif modifier == '<' or modifier == '-':
-                                check_arg_range = range(0, min(index, len(args)))
-                        else:
-                            check_arg_range = range(len(args))
-                    else:
-                        check_arg_range = range(len(args))
-                else:
-                    check_arg_range = range(len(args))
-
-                match = False
-
-                for idx in check_arg_range:
-                    arg = args[idx]
-                    print(arg_pat['expression'], arg)
-
-                    if re.fullmatch(arg_pat['expression'], arg):
-                        match = True
-                        if arg_pat.get('match_not', False):
-                            skip_profile = True
-                            break
-
-                if not match and not arg_pat.get('optional', False):
-                    skip_profile = True
-
-            if skip_profile:
+            if not Pycolor.check_arg_patterns(args, cfg.get('arg_patterns', [])):
                 continue
 
             return cfg
         return None
+
+    @staticmethod
+    def check_arg_patterns(args, arg_patterns):
+        for argpat in arg_patterns:
+            if 'expression' not in argpat:
+                continue
+
+            matches = False
+            for idx in Pycolor.get_arg_range(len(args), argpat.get('position')):
+                if re.fullmatch(argpat['expression'], args[idx]):
+                    if argpat.get('match_not', False):
+                        return False
+                    matches = True
+
+            if not matches and not argpat.get('optional', False):
+                return False
+
+        return True
+
+    @staticmethod
+    def get_arg_range(arglen, position):
+        if position is None:
+            return range(arglen)
+
+        match = re.fullmatch(r'([<>+-])?([*0-9]+)', position)
+        if match is None:
+            return range(arglen)
+
+        index = match[2]
+        if index == '*':
+            return range(arglen)
+        index = int(index)
+
+        arg_range = None
+        modifier = match[1]
+
+        if modifier is None:
+            arg_range = range(index - 1, min(index, arglen))
+        elif modifier in ('>', '+'):
+            arg_range = range(index - 1, arglen)
+        elif modifier in ('<', '-'):
+            arg_range = range(0, min(index, arglen))
+        return arg_range
 
     def execute(self, cmd, profile=None):
         if profile is None:
