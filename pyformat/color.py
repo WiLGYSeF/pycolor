@@ -30,6 +30,20 @@ def _colorval(color):
         'crossed': 9,
         'crossedout': 9,
 
+        'res': 0,
+        'nor': 0,
+        'bol': 1,
+        'bri': 1,
+        'ita': 3,
+        'und': 4,
+        'bli': 5,
+        'inv': 7,
+        'rev': 7,
+        'hid': 8,
+        'con': 8,
+        'str': 9,
+        'cro': 9,
+
         'black': 30,
         'red': 31,
         'green': 32,
@@ -43,8 +57,19 @@ def _colorval(color):
         'lightgrey': 37,
         'default': 39,
 
+        'k': 30, #black
+        'r': 31, #red
+        'g': 32, #green
+        'y': 33, #yellow
+        'b': 34, #blue
+        'm': 35, #magenta
+        'c': 36, #cyan
+        'e': 37, #grey
+
         'overline': 53,
         'overlined': 53,
+
+        'ove': 53,
 
         'darkgray': 90,
         'darkgrey': 90,
@@ -54,7 +79,17 @@ def _colorval(color):
         'lightblue': 94,
         'lightmagenta': 95,
         'lightcyan': 96,
-        'white': 97
+        'white': 97,
+
+        'de': 90,
+        'lk': 90,
+        'lr': 91,
+        'lg': 92,
+        'ly': 93,
+        'lb': 94,
+        'lm': 95,
+        'lc': 96,
+        'w': 97,
     }
 
     if len(color) == 0:

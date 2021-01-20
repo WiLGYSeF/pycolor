@@ -127,5 +127,7 @@ def get_lastcolor(colors, string):
         last_idx -= 1
         if last_idx >= len(colors):
             last_idx = -1
+    elif -last_idx > len(colors):
+        last_idx = 0
 
     return colors[last_idx]
