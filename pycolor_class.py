@@ -4,7 +4,7 @@ import re
 import sys
 
 import execute
-from pattern import Pattern
+from profile_class import Profile
 import pyformat
 from search_replace import search_replace, update_ranges
 from split import re_split
@@ -26,57 +26,21 @@ class Pycolor:
 
         for profile in self.profiles:
             self.include_from_profile(
-                profile['patterns'],
-                profile['from_profiles']
+                profile.patterns,
+                profile.from_profiles
             )
 
-            for fieldsep in profile['field_separators']:
+            for fieldsep in profile.field_separators:
                 self.include_from_profile(
-                    fieldsep['patterns'],
-                    fieldsep['from_profiles']
+                    fieldsep.patterns,
+                    fieldsep.from_profiles
                 )
 
     def parse_file(self, file):
         config = json.loads(file.read())
 
-        def init_pattern(cfg):
-            pattern = Pattern(cfg)
-
-            if 'replace' in cfg:
-                pattern.replace = pyformat.format_string(
-                    cfg['replace'],
-                    context={
-                        'color_enabled': self.is_color_enabled()
-                    }
-                ).encode('utf-8')
-
-            if 'replace_all' in cfg:
-                pattern.replace_all = pyformat.format_string(
-                    cfg['replace_all'],
-                    context={
-                        'color_enabled': self.is_color_enabled()
-                    }
-                ).encode('utf-8')
-
-            return pattern
-
         for prof_cfg in config.get('profiles', []):
-            profile = {
-                'name': prof_cfg.get('name'),
-                'name_regex': prof_cfg.get('name_regex'),
-                'profile_name': prof_cfg.get('profile_name'),
-                'which': prof_cfg.get('which'),
-                'arg_patterns': prof_cfg.get('arg_patterns', []),
-                'buffer_line': prof_cfg.get('buffer_line', True),
-                'from_profiles': prof_cfg.get('from_profiles', []),
-                'patterns': [],
-                'field_separators': []
-            }
-
-            for pattern_cfg in prof_cfg.get('patterns', []):
-                profile['patterns'].append(init_pattern(pattern_cfg))
-
-            self.profiles.append(profile)
+            self.profiles.append(Profile(self, prof_cfg))
 
     def include_from_profile(self, patterns, from_profiles):
         if isinstance(from_profiles, str):
@@ -84,7 +48,7 @@ class Pycolor:
             if fromprof is None:
                 raise Exception()
 
-            patterns.extend(fromprof['patterns'])
+            patterns.extend(fromprof.patterns)
             return
 
         for fromprof_cfg in from_profiles:
@@ -101,44 +65,44 @@ class Pycolor:
 
                 if 'order' in fromprof_cfg:
                     if fromprof_cfg['order'] not in ('before', 'after', 'disabled'):
-                        raise Exception()
+                        raise ValueError()
 
                     if fromprof_cfg['order'] == 'before':
                         orig_patterns = patterns.copy()
                         patterns.clear()
-                        patterns.extend(fromprof['patterns'])
+                        patterns.extend(fromprof.patterns)
                         patterns.extend(orig_patterns)
                     elif fromprof_cfg['order'] == 'after':
-                        patterns.extend(fromprof['patterns'])
+                        patterns.extend(fromprof.patterns)
                 else:
-                    patterns.extend(fromprof['patterns'])
+                    patterns.extend(fromprof.patterns)
             elif isinstance(fromprof_cfg, str):
                 fromprof = self.get_profile_by_name(fromprof_cfg)
                 if fromprof is None:
                     raise Exception()
 
-                patterns.extend(fromprof['patterns'])
+                patterns.extend(fromprof.patterns)
             else:
-                raise Exception()
+                raise ValueError()
 
     def get_profile_by_name(self, name):
         for profile in self.profiles:
-            if profile.get('profile_name') == name:
+            if profile.profile_name == name:
                 return profile
         return None
 
     def get_profile_by_command(self, command, args):
         for cfg in self.profiles:
-            if cfg['which'] is not None:
+            if cfg.which is not None:
                 result = which(command)
-                if result is not None and result.decode('utf-8') != cfg['which']:
+                if result is not None and result.decode('utf-8') != cfg.which:
                     continue
-            if cfg['name'] is not None and command != cfg['name']:
+            if cfg.name is not None and command != cfg.name:
                 continue
-            if cfg['name_regex'] is not None and not re.fullmatch(cfg['name_regex'], command):
+            if cfg.name_regex is not None and not re.fullmatch(cfg.name_regex, command):
                 continue
 
-            if not Pycolor.check_arg_patterns(args, cfg['arg_patterns']):
+            if not Pycolor.check_arg_patterns(args, cfg.arg_patterns):
                 continue
 
             return cfg
@@ -196,13 +160,14 @@ class Pycolor:
             stdout_cb = self.stdout_cb
             stderr_cb = self.stderr_cb
         else:
-            self.current_profile = {
+            self.current_profile = Profile(self, {
+                'profile_name': 'none_found',
                 'buffer_line': True
-            }
+            })
             stdout_cb = Pycolor.stdout_base_cb
             stderr_cb = Pycolor.stderr_base_cb
 
-        if self.current_profile['buffer_line']:
+        if self.current_profile.buffer_line:
             self.linenum = 1
         else:
             self.linenum = 0
@@ -211,7 +176,7 @@ class Pycolor:
             cmd,
             stdout_cb,
             stderr_cb,
-            buffer_line=self.current_profile['buffer_line']
+            buffer_line=self.current_profile.buffer_line
         )
 
     def data_callback(self, stream, data):
@@ -219,7 +184,7 @@ class Pycolor:
         ignore_ranges = []
         removed_newline = False
 
-        if self.current_profile['buffer_line']:
+        if self.current_profile.buffer_line:
             self.linenum += 1
 
             if newdata[-1] == ord('\n'):
@@ -243,7 +208,7 @@ class Pycolor:
                 max_count=pattern.max_count
             )
 
-        for pat in self.current_profile['patterns']:
+        for pat in self.current_profile.patterns:
             if not pat.enabled:
                 continue
 
