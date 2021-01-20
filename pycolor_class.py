@@ -242,21 +242,6 @@ class Pycolor:
         else:
             field_idxlist = range(0, len(spl), 2)
 
-        def pat_schrep(pattern, string, replace):
-            return search_replace(
-                pattern.regex,
-                string,
-                lambda x: pyformat.format_string(
-                    replace.decode('utf-8'),
-                    context={
-                        'match': x
-                    }
-                ).encode('utf-8'),
-                ignore_ranges=ignore_ranges,
-                start_occurrance=pattern.start_occurrance,
-                max_count=pattern.max_count
-            )
-
         if pat.replace_all is not None:
             if field_idxlist is not None:
                 for field_idx in field_idxlist:
@@ -290,10 +275,11 @@ class Pycolor:
         elif pat.replace is not None:
             if field_idxlist is not None:
                 for field_idx in field_idxlist:
-                    newfield, replace_ranges = pat_schrep(
+                    newfield, replace_ranges = Pycolor.pat_schrep(
                         pat,
                         spl[field_idx],
-                        pat.replace
+                        pat.replace,
+                        ignore_ranges
                     )
                     if len(replace_ranges) != 0:
                         spl[field_idx] = newfield
@@ -311,16 +297,33 @@ class Pycolor:
 
                         update_ranges(ignore_ranges, replace_ranges)
             else:
-                replaced, replace_ranges = pat_schrep(
+                replaced, replace_ranges = Pycolor.pat_schrep(
                     pat,
                     b''.join(spl),
-                    pat.replace
+                    pat.replace,
+                    ignore_ranges
                 )
                 if len(replace_ranges) != 0:
                     update_ranges(ignore_ranges, replace_ranges)
                     spl = re_split(sep, replaced)
 
         return b''.join(spl)
+
+    @staticmethod
+    def pat_schrep(pattern, string, replace, ignore_ranges):
+        return search_replace(
+            pattern.regex,
+            string,
+            lambda x: pyformat.format_string(
+                replace.decode('utf-8'),
+                context={
+                    'match': x
+                }
+            ).encode('utf-8'),
+            ignore_ranges=ignore_ranges,
+            start_occurrance=pattern.start_occurrance,
+            max_count=pattern.max_count
+        )
 
     def is_color_enabled(self):
         if self.color_mode == 'on':
