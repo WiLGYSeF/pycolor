@@ -264,9 +264,8 @@ class Pycolor:
                             'match': match
                         }
                     )
-                    data = data.encode('utf-8')
 
-                    fields = re_split(sep, data)
+                    fields = re_split(sep, data.encode('utf-8'))
                     ignore_ranges.clear()
                     ignore_ranges.extend(color_ranges)
 
@@ -275,7 +274,9 @@ class Pycolor:
                     match_and_replace(fields[field_idx])
             else:
                 match_and_replace(b''.join(fields))
-        elif pat.replace is not None:
+            return b''.join(fields)
+
+        if pat.replace is not None:
             if field_idxlist is not None:
                 for field_idx in field_idxlist:
                     newfield, replace_ranges = self.pat_schrep(
@@ -299,18 +300,19 @@ class Pycolor:
                             )
 
                         update_ranges(ignore_ranges, replace_ranges)
-            else:
-                replaced, replace_ranges = self.pat_schrep(
-                    pat,
-                    b''.join(fields),
-                    pat.replace,
-                    ignore_ranges
-                )
-                if len(replace_ranges) != 0:
-                    update_ranges(ignore_ranges, replace_ranges)
-                    fields = re_split(sep, replaced)
+                return b''.join(fields)
 
-        return b''.join(fields)
+            replaced, replace_ranges = self.pat_schrep(
+                pat,
+                b''.join(fields),
+                pat.replace,
+                ignore_ranges
+            )
+            if len(replace_ranges) != 0:
+                update_ranges(ignore_ranges, replace_ranges)
+            return replaced
+
+        return data
 
     def pat_schrep(self, pattern, string, replace, ignore_ranges):
         return search_replace(
