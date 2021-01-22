@@ -1,17 +1,26 @@
 import re
 
 
-def get_color(colorstr):
+def get_color(colorstr, aliases=None):
+    if aliases is None:
+        aliases = {}
+
     val = ';'.join(filter(
         lambda x: x is not None,
-        [ _colorval(clr) for clr in colorstr.split(';') ]
+        [ _colorval(clr, aliases) for clr in colorstr.split(';') ]
     ))
     if len(val) == 0:
         return None
 
     return '\x1b[%sm' % val
 
-def _colorval(color):
+def _colorval(color, aliases=None):
+    if aliases is None:
+        aliases = {}
+
+    if color in aliases:
+        color = aliases[color]
+
     colors = {
         'reset': 0,
         'normal': 0,

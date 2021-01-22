@@ -44,7 +44,10 @@ def do_format(string, formatter, idx, newidx, context):
         if formatter[1:].lower().startswith('last'):
             return get_lastcolor(context['last_colors'], formatter[5:])
 
-        colorstr = color.get_color(formatter[1:])
+        colorstr = color.get_color(
+            formatter[1:],
+            aliases=context.get('color_aliases', {})
+        )
         if colorstr is None:
             colorstr = ''
 
