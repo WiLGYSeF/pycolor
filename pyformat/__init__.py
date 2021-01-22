@@ -6,12 +6,17 @@ FORMAT_CHAR_VALID = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvw
 
 
 def format_string(string, context=None):
+    newstring, _ = format_string_color_ranges(string, context)
+    return newstring
+
+def format_string_color_ranges(string, context=None):
     if context is None:
         context = {}
 
     context['last_colors'] = []
 
     newstring = ''
+    color_ranges = []
     idx = 0
 
     while idx < len(string):
@@ -27,17 +32,21 @@ def format_string(string, context=None):
         if char == '%':
             formatter, newidx = get_formatter(string, idx)
             if formatter is not None:
-                newstring += do_format(string, formatter, idx, newidx, context)
+                result = do_format(string, formatter, idx, newidx, context)
+                if is_color_format(formatter):
+                    color_ranges.append( (len(newstring), len(newstring) + len(result)) )
+
+                newstring += result
                 idx = newidx
                 continue
 
         newstring += char
         idx += 1
 
-    return newstring
+    return newstring, color_ranges
 
 def do_format(string, formatter, idx, newidx, context):
-    if formatter[0] == 'C':
+    if is_color_format(formatter):
         if not context.get('color_enabled', True):
             return ''
 
@@ -118,6 +127,9 @@ def get_formatter(string, idx):
         formatter = string[startidx:idx]
 
     return formatter, idx
+
+def is_color_format(string):
+    return string[0] == 'C'
 
 def get_lastcolor(colors, string):
     if len(colors) == 0:

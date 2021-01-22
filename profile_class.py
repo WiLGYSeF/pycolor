@@ -43,21 +43,9 @@ class Profile:
         pattern = Pattern(cfg)
 
         if 'replace' in cfg:
-            pattern.replace = pyformat.format_string(
-                cfg['replace'],
-                context={
-                    'color_enabled': self.pycolor.is_color_enabled(),
-                    'color_aliases': self.pycolor.color_aliases
-                }
-            ).encode('utf-8')
+            pattern.replace = cfg['replace'].encode('utf-8')
 
         if 'replace_all' in cfg:
-            pattern.replace_all = pyformat.format_string(
-                cfg['replace_all'],
-                context={
-                    'color_enabled': self.pycolor.is_color_enabled(),
-                    'color_aliases': self.pycolor.color_aliases
-                }
-            ).encode('utf-8')
+            pattern.replace_all = cfg['replace_all'].encode('utf-8')
 
         return pattern
