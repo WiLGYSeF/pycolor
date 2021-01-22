@@ -17,7 +17,7 @@ class Pycolor:
         self.profiles = []
         self.named_profiles = {}
 
-        self.current_profile = {}
+        self.current_profile = None
         self.linenum = 0
 
     def load_file(self, fname):
