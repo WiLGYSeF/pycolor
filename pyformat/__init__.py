@@ -41,6 +41,8 @@ def do_format(string, formatter, idx, newidx, context):
         if not context.get('color_enabled', True):
             return ''
 
+        if formatter[1:].lower() == 'prev':
+            return get_lastcolor(context['last_colors'], '2')
         if formatter[1:].lower().startswith('last'):
             return get_lastcolor(context['last_colors'], formatter[5:])
 
