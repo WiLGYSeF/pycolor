@@ -4,6 +4,7 @@ import sys
 from pycolor_class import Pycolor
 
 
+PYCOLOR_CONFIG_DIR = os.path.join(os.getenv('HOME'), '.pycolor')
 PYCOLOR_CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), '.pycolor.json')
 
 
@@ -31,7 +32,17 @@ def main():
                 raise Exception()
             profile_name = argval
 
-    pycobj.load_file(PYCOLOR_CONFIG_DEFAULT)
+    if os.path.isfile(PYCOLOR_CONFIG_DEFAULT):
+        pycobj.load_file(PYCOLOR_CONFIG_DEFAULT)
+
+    if os.path.exists(PYCOLOR_CONFIG_DIR):
+        # https://stackoverflow.com/a/3207973
+        _, _, filenames = next(os.walk(PYCOLOR_CONFIG_DIR))
+
+        for fname in filenames:
+            fpath = os.path.join(PYCOLOR_CONFIG_DIR, fname)
+            if os.path.isfile(fpath):
+                pycobj.load_file(fpath)
 
     for fname in load_files:
         pycobj.load_file(fname)
