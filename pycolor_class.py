@@ -228,11 +228,33 @@ class Pycolor:
         if not pat.is_line_active(self.linenum):
             return data
 
-        sep = pat.separator
-        if sep is not None:
-            sep = sep.encode('utf-8')
+        if pat.separator is None:
+            if pat.replace is not None:
+                data, replace_ranges = self.pat_schrep(
+                    pat,
+                    data,
+                    ignore_ranges
+                )
+                if len(replace_ranges) != 0:
+                    update_ranges(ignore_ranges, replace_ranges)
+            elif pat.replace_all is not None:
+                match = re.search(pat.regex, data)
+                if match is not None:
+                    data, color_ranges = pyformat.format_string_color_ranges(
+                        pat.replace_all.decode('utf-8'),
+                        context={
+                            'color_enabled': self.is_color_enabled(),
+                            'color_aliases': self.color_aliases,
+                            'match': match
+                        }
+                    )
 
-        fields = re_split(sep, data)
+                    ignore_ranges.clear()
+                    ignore_ranges.extend(color_ranges)
+
+            return data
+
+        fields = re_split(pat.separator.encode('utf-8'), data)
         fieldcount = pyformat.fieldsep.idx_to_num(len(fields))
 
         if pat.min_fields > fieldcount or (
@@ -241,85 +263,62 @@ class Pycolor:
             return data
 
         field_idxlist = []
-        if pat.field is not None:
-            if pat.field <= 0:
-                field_idxlist = None
-            else:
-                field_idxlist = [ pyformat.fieldsep.num_to_idx(pat.field) ]
+        if pat.field is not None and pat.field > 0:
+            field_idxlist = [ pyformat.fieldsep.num_to_idx(pat.field) ]
         else:
             field_idxlist = range(0, len(fields), 2)
 
         if pat.replace_all is not None:
-            def match_and_replace(indata):
-                nonlocal fields
+            for field_idx in field_idxlist:
+                match = re.search(pat.regex, fields[field_idx])
+                if match is None:
+                    continue
 
-                match = re.search(pat.regex, indata)
-                if match is not None:
-                    data, color_ranges = pyformat.format_string_color_ranges(
-                        pat.replace_all.decode('utf-8'),
-                        context={
-                            'color_enabled': self.is_color_enabled(),
-                            'color_aliases': self.color_aliases,
-                            'fields': fields,
-                            'match': match
-                        }
-                    )
+                data, color_ranges = pyformat.format_string_color_ranges(
+                    pat.replace_all.decode('utf-8'),
+                    context={
+                        'color_enabled': self.is_color_enabled(),
+                        'color_aliases': self.color_aliases,
+                        'fields': fields,
+                        'match': match
+                    }
+                )
 
-                    fields = re_split(sep, data.encode('utf-8'))
-                    ignore_ranges.clear()
-                    ignore_ranges.extend(color_ranges)
-
-            if field_idxlist is not None:
-                for field_idx in field_idxlist:
-                    match_and_replace(fields[field_idx])
-            else:
-                match_and_replace(b''.join(fields))
-            return b''.join(fields)
+                ignore_ranges.clear()
+                ignore_ranges.extend(color_ranges)
+                return data.encode('utf-8')
 
         if pat.replace is not None:
-            if field_idxlist is not None:
-                for field_idx in field_idxlist:
-                    newfield, replace_ranges = self.pat_schrep(
-                        pat,
-                        fields[field_idx],
-                        pat.replace,
-                        ignore_ranges
-                    )
-                    if len(replace_ranges) != 0:
-                        fields[field_idx] = newfield
+            for field_idx in field_idxlist:
+                newfield, replace_ranges = self.pat_schrep(
+                    pat,
+                    fields[field_idx],
+                    ignore_ranges
+                )
+                if len(replace_ranges) != 0:
+                    fields[field_idx] = newfield
 
-                        offset = 0
-                        for i in range(field_idx):
-                            offset += len(fields[i])
+                    offset = 0
+                    for i in range(field_idx):
+                        offset += len(fields[i])
 
-                        for idx in range(len(replace_ranges)): #pylint: disable=consider-using-enumerate
-                            old_range, new_range = replace_ranges[idx]
-                            replace_ranges[idx] = (
-                                (old_range[0] + offset, old_range[1] + offset),
-                                (new_range[0] + offset, new_range[1] + offset),
-                            )
+                    for idx in range(len(replace_ranges)): #pylint: disable=consider-using-enumerate
+                        old_range, new_range = replace_ranges[idx]
+                        replace_ranges[idx] = (
+                            (old_range[0] + offset, old_range[1] + offset),
+                            (new_range[0] + offset, new_range[1] + offset),
+                        )
 
-                        update_ranges(ignore_ranges, replace_ranges)
-                return b''.join(fields)
+                    update_ranges(ignore_ranges, replace_ranges)
 
-            replaced, replace_ranges = self.pat_schrep(
-                pat,
-                b''.join(fields),
-                pat.replace,
-                ignore_ranges
-            )
-            if len(replace_ranges) != 0:
-                update_ranges(ignore_ranges, replace_ranges)
-            return replaced
+        return b''.join(fields)
 
-        return data
-
-    def pat_schrep(self, pattern, string, replace, ignore_ranges):
+    def pat_schrep(self, pattern, string, ignore_ranges):
         return search_replace(
             pattern.regex,
             string,
             lambda x: pyformat.format_string(
-                replace.decode('utf-8'),
+                pattern.replace.decode('utf-8'),
                 context={
                     'color_enabled': self.is_color_enabled(),
                     'color_aliases': self.color_aliases,

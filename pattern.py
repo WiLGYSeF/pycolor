@@ -45,6 +45,13 @@ class Pattern:
         self.min_fields = cfg.get('min_fields', -1)
         self.max_fields = cfg.get('max_fields', -1)
 
+        if self.separator is not None and len(self.separator) == 0:
+            self.separator = None
+        if self.separator is None:
+            self.field = None
+            self.min_fields = -1
+            self.max_fields = -1
+
     def is_line_active(self, linenum):
         if self.activation_line > -1 and self.activation_line > linenum:
             return False
