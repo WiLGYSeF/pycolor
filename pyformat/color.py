@@ -5,6 +5,10 @@ def get_color(colorstr, aliases=None):
     if aliases is None:
         aliases = {}
 
+    match = re.fullmatch(r'r(?:aw)?([0-9;]+)', colorstr)
+    if match:
+        return '\x1b[%sm' % match[1]
+
     val = ';'.join(filter(
         lambda x: x is not None,
         [ _colorval(clr, aliases) for clr in colorstr.split(';') ]
@@ -17,7 +21,6 @@ def get_color(colorstr, aliases=None):
 def _colorval(color, aliases=None):
     if aliases is None:
         aliases = {}
-
     if color in aliases:
         color = aliases[color]
 
