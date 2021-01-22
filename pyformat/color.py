@@ -39,6 +39,7 @@ def _colorval(color, aliases=None):
         'crossed': 9,
         'crossedout': 9,
 
+        'z': 0,
         'res': 0,
         'nor': 0,
         'bol': 1,
