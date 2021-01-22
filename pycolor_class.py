@@ -93,21 +93,33 @@ class Pycolor:
         return self.named_profiles.get(name)
 
     def get_profile_by_command(self, command, args):
-        for cfg in self.profiles:
-            if cfg.which is not None:
+        matches = []
+
+        for prof in self.profiles:
+            if not any([
+                prof.which,
+                prof.name,
+                prof.name_regex
+            ]):
+                continue
+
+            if prof.which is not None:
                 result = which(command)
-                if result is not None and result.decode('utf-8') != cfg.which:
+                if result is not None and result.decode('utf-8') != prof.which:
                     continue
-            if cfg.name is not None and command != cfg.name:
+            if prof.name is not None and command != prof.name:
                 continue
-            if cfg.name_regex is not None and not re.fullmatch(cfg.name_regex, command):
-                continue
-
-            if not Pycolor.check_arg_patterns(args, cfg.arg_patterns):
+            if prof.name_regex is not None and not re.fullmatch(prof.name_regex, command):
                 continue
 
-            return cfg
-        return None
+            if not Pycolor.check_arg_patterns(args, prof.arg_patterns):
+                continue
+
+            matches.append(prof)
+
+        if len(matches) == 0:
+            return None
+        return matches[-1]
 
     @staticmethod
     def check_arg_patterns(args, arg_patterns):
