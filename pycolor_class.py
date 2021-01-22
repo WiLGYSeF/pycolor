@@ -225,8 +225,8 @@ class Pycolor:
         if not pat.is_line_active(self.linenum):
             return data
 
-        spl = re_split(sep, data)
-        fieldcount = pyformat.fieldsep.idx_to_num(len(spl))
+        fields = re_split(sep, data)
+        fieldcount = pyformat.fieldsep.idx_to_num(len(fields))
 
         if pat.min_fields > fieldcount or (
             pat.max_fields > 0 and pat.max_fields < fieldcount
@@ -240,45 +240,46 @@ class Pycolor:
             else:
                 field_idxlist = [ pyformat.fieldsep.num_to_idx(pat.field) ]
         else:
-            field_idxlist = range(0, len(spl), 2)
+            field_idxlist = range(0, len(fields), 2)
 
         if pat.replace_all is not None:
-            def match_and_replace(spl, indata):
+            def match_and_replace(indata):
+                nonlocal fields
+
                 match = re.search(pat.regex, indata)
                 if match is not None:
                     data = pyformat.format_string(
                         pat.replace_all.decode('utf-8'),
                         context={
-                            'fields': spl,
+                            'fields': fields,
                             'match': match
                         }
                     ).encode('utf-8')
 
-                    spl.clear()
-                    spl.extend(re_split(sep, data))
+                    fields = re_split(sep, data)
                     ignore_ranges.clear()
                     ignore_ranges.append( (0, len(data)) )
 
             if field_idxlist is not None:
                 for field_idx in field_idxlist:
-                    match_and_replace(spl, spl[field_idx])
+                    match_and_replace(fields[field_idx])
             else:
-                match_and_replace(spl, b''.join(spl))
+                match_and_replace(b''.join(fields))
         elif pat.replace is not None:
             if field_idxlist is not None:
                 for field_idx in field_idxlist:
                     newfield, replace_ranges = Pycolor.pat_schrep(
                         pat,
-                        spl[field_idx],
+                        fields[field_idx],
                         pat.replace,
                         ignore_ranges
                     )
                     if len(replace_ranges) != 0:
-                        spl[field_idx] = newfield
+                        fields[field_idx] = newfield
 
                         offset = 0
                         for i in range(field_idx):
-                            offset += len(spl[i])
+                            offset += len(fields[i])
 
                         for idx in range(len(replace_ranges)): #pylint: disable=consider-using-enumerate
                             old_range, new_range = replace_ranges[idx]
@@ -291,15 +292,15 @@ class Pycolor:
             else:
                 replaced, replace_ranges = Pycolor.pat_schrep(
                     pat,
-                    b''.join(spl),
+                    b''.join(fields),
                     pat.replace,
                     ignore_ranges
                 )
                 if len(replace_ranges) != 0:
                     update_ranges(ignore_ranges, replace_ranges)
-                    spl = re_split(sep, replaced)
+                    fields = re_split(sep, replaced)
 
-        return b''.join(spl)
+        return b''.join(fields)
 
     @staticmethod
     def pat_schrep(pattern, string, replace, ignore_ranges):
