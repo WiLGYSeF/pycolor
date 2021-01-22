@@ -45,6 +45,9 @@ def main():
     profile = None
     if profile_name is not None:
         profile = pycobj.get_profile_by_name(profile_name)
+        if profile is None:
+            print('ERROR: profile with name "%s" not found' % profile_name, file=sys.stderr)
+            sys.exit(1)
 
     if read_stdin:
         if profile is None:
