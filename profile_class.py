@@ -8,10 +8,10 @@ class Profile:
         self.name_regex = cfg.get('name_regex')
         self.profile_name = cfg.get('profile_name')
         self.which = cfg.get('which')
-        self.arg_patterns = cfg.get('arg_patterns', [])
         self.buffer_line = cfg.get('buffer_line', True)
         self.from_profiles = cfg.get('from_profiles', [])
         self.patterns = []
+        self.arg_patterns = []
 
         if not any([
             self.name,
@@ -22,6 +22,17 @@ class Profile:
 
         for pattern_cfg in cfg.get('patterns', []):
             self.patterns.append(init_pattern(pycolor, pattern_cfg))
+
+        for argpat in cfg.get('arg_patterns', []):
+            if 'expression' not in argpat:
+                continue
+
+            self.arg_patterns.append({
+                'expression': argpat['expression'],
+                'position': argpat.get('position', '*'),
+                'match_not': argpat.get('match_not', False),
+                'optional': argpat.get('optional', False)
+            })
 
 
 def init_pattern(pycolor, cfg):
