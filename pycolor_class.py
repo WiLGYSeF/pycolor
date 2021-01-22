@@ -242,7 +242,7 @@ class Pycolor:
 
         field_idxlist = []
         if pat.field is not None:
-            if pat.field == 0:
+            if pat.field <= 0:
                 field_idxlist = None
             else:
                 field_idxlist = [ pyformat.fieldsep.num_to_idx(pat.field) ]
@@ -255,7 +255,7 @@ class Pycolor:
 
                 match = re.search(pat.regex, indata)
                 if match is not None:
-                    data = pyformat.format_string(
+                    data, color_ranges = pyformat.format_string_color_ranges(
                         pat.replace_all.decode('utf-8'),
                         context={
                             'color_enabled': self.is_color_enabled(),
@@ -263,11 +263,12 @@ class Pycolor:
                             'fields': fields,
                             'match': match
                         }
-                    ).encode('utf-8')
+                    )
+                    data = data.encode('utf-8')
 
                     fields = re_split(sep, data)
                     ignore_ranges.clear()
-                    ignore_ranges.append( (0, len(data)) )
+                    ignore_ranges.extend(color_ranges)
 
             if field_idxlist is not None:
                 for field_idx in field_idxlist:
