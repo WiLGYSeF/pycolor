@@ -11,7 +11,6 @@ class Profile:
         self.arg_patterns = cfg.get('arg_patterns', [])
         self.buffer_line = cfg.get('buffer_line', True)
         self.from_profiles = cfg.get('from_profiles', [])
-        self.field_separators = []
         self.patterns = []
 
         if not any([

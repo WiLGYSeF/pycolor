@@ -30,12 +30,6 @@ class Pycolor:
                 profile.from_profiles
             )
 
-            for fieldsep in profile.field_separators:
-                self.include_from_profile(
-                    fieldsep.patterns,
-                    fieldsep.from_profiles
-                )
-
     def parse_file(self, file):
         config = json.loads(file.read())
 
