@@ -1,5 +1,4 @@
 import json
-import os
 import re
 import sys
 
@@ -158,22 +157,14 @@ class Pycolor:
         if profile is None:
             profile = self.get_profile_by_command(cmd[0], cmd[1:])
 
+        self.set_current_profile(profile)
+
         if profile is not None:
-            self.current_profile = profile
             stdout_cb = self.stdout_cb
             stderr_cb = self.stderr_cb
         else:
-            self.current_profile = Profile(self, {
-                'profile_name': 'none_found',
-                'buffer_line': True
-            })
             stdout_cb = Pycolor.stdout_base_cb
             stderr_cb = Pycolor.stderr_base_cb
-
-        if self.current_profile.buffer_line:
-            self.linenum = 1
-        else:
-            self.linenum = 0
 
         return execute.execute(
             cmd,
@@ -321,6 +312,20 @@ class Pycolor:
             max_count=pattern.max_count
         )
 
+    def set_current_profile(self, profile):
+        if profile is None:
+            self.current_profile = Profile(self, {
+                'profile_name': 'none_found',
+                'buffer_line': True
+            })
+        else:
+            self.current_profile = profile
+
+        if self.current_profile.buffer_line:
+            self.linenum = 1
+        else:
+            self.linenum = 0
+
     def is_color_enabled(self):
         if self.color_mode == 'on':
             return True
@@ -346,5 +351,4 @@ class Pycolor:
 
     @staticmethod
     def is_being_redirected():
-        # https://stackoverflow.com/a/1512526
-        return os.fstat(0) != os.fstat(1)
+        return not sys.stdout.isatty()

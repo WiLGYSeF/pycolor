@@ -1,6 +1,7 @@
 import os
 import sys
 
+from execute import read_stream
 from pycolor_class import Pycolor
 
 
@@ -9,8 +10,13 @@ PYCOLOR_CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), '.pycolor.json')
 
 def main():
     my_args, cmd_args = get_my_args(sys.argv)
+
+    read_stdin = False
     if len(cmd_args) == 0:
-        sys.exit(1)
+        if not sys.stdin.isatty():
+            read_stdin = True
+        else:
+            sys.exit(1)
 
     pycobj = Pycolor()
     load_files = []
@@ -39,6 +45,23 @@ def main():
     profile = None
     if profile_name is not None:
         profile = pycobj.get_profile_by_name(profile_name)
+
+    if read_stdin:
+        if profile is None:
+            print('ERROR: no profile selected with --profile', file=sys.stderr)
+            sys.exit(1)
+
+        pycobj.set_current_profile(profile)
+
+        while True:
+            result = read_stream(
+                sys.stdin.buffer,
+                pycobj.stdout_cb,
+                buffer_line=profile.buffer_line
+            )
+            if result is None:
+                break
+        sys.exit(0)
 
     returncode = pycobj.execute(cmd_args, profile=profile)
     sys.exit(returncode)
