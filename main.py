@@ -61,6 +61,13 @@ def main():
             )
             if result is None:
                 break
+
+        read_stream(
+            sys.stdin.buffer,
+            pycobj.stdout_cb,
+            buffer_line=profile.buffer_line,
+            last=True
+        )
         sys.exit(0)
 
     returncode = pycobj.execute(cmd_args, profile=profile)
