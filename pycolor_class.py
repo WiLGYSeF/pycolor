@@ -230,11 +230,7 @@ class Pycolor:
 
         if pat.separator is None:
             if pat.replace is not None:
-                data, replace_ranges = self.pat_schrep(
-                    pat,
-                    data,
-                    ignore_ranges
-                )
+                data, replace_ranges = self.pat_schrep(pat, data, ignore_ranges)
                 if len(replace_ranges) != 0:
                     update_ranges(ignore_ranges, replace_ranges)
             elif pat.replace_all is not None:
@@ -290,11 +286,7 @@ class Pycolor:
 
         if pat.replace is not None:
             for field_idx in field_idxlist:
-                newfield, replace_ranges = self.pat_schrep(
-                    pat,
-                    fields[field_idx],
-                    ignore_ranges
-                )
+                newfield, replace_ranges = self.pat_schrep(pat, fields[field_idx], ignore_ranges)
                 if len(replace_ranges) != 0:
                     fields[field_idx] = newfield
 
@@ -329,6 +321,19 @@ class Pycolor:
             start_occurrance=pattern.start_occurrance,
             max_count=pattern.max_count
         )
+
+    @staticmethod
+    def find_color_ranges(string):
+        regex = re.compile(br'\x1b\[[0-9;]m')
+        color_ranges = []
+
+        for match in regex.finditer(string):
+            color_ranges.append((
+                match.span(),
+                match.span()
+            ))
+
+        return color_ranges
 
     def is_color_enabled(self):
         if self.color_mode == 'on':
