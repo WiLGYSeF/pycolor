@@ -4,6 +4,7 @@ import unittest
 from execute import read_stream
 
 
+# TODO: more test cases
 class ReadStreamTest(unittest.TestCase):
     def test_empty(self):
         stream = BytesIO()

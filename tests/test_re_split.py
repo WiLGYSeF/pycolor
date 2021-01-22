@@ -18,62 +18,28 @@ RE_SPLIT_RESULTS = [
         SEP: ' ',
         STRING: 'this is a test',
         RESULT: [
-            'this',
-            ' ',
-            'is',
-            ' ',
-            'a',
-            ' ',
-            'test'
+            'this', ' ', 'is', ' ', 'a', ' ', 'test'
         ]
     },
     {
         SEP: ' +',
         STRING: 'this   is    a test',
         RESULT: [
-            'this',
-            '   ',
-            'is',
-            '    ',
-            'a',
-            ' ',
-            'test'
+            'this', '   ', 'is', '    ', 'a', ' ', 'test'
         ]
     },
     {
         SEP: ' ',
         STRING: 'this   is    a test',
         RESULT: [
-            'this',
-            ' ',
-            '',
-            ' ',
-            '',
-            ' ',
-            'is',
-            ' ',
-            '',
-            ' ',
-            '',
-            ' ',
-            '',
-            ' ',
-            'a',
-            ' ',
-            'test'
+            'this', ' ', '', ' ', '', ' ', 'is', ' ', '', ' ', '', ' ', '', ' ', 'a', ' ', 'test'
         ]
     },
     {
         SEP: re.compile('[-=]'),
         STRING: 'y-e=e-t',
         RESULT: [
-            'y',
-            '-',
-            'e',
-            '=',
-            'e',
-            '-',
-            't'
+            'y', '-', 'e', '=', 'e', '-', 't'
         ]
     }
 ]
