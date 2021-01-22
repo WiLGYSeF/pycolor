@@ -258,6 +258,8 @@ class Pycolor:
                     data = pyformat.format_string(
                         pat.replace_all.decode('utf-8'),
                         context={
+                            'color_enabled': self.is_color_enabled(),
+                            'color_aliases': self.color_aliases,
                             'fields': fields,
                             'match': match
                         }
@@ -275,7 +277,7 @@ class Pycolor:
         elif pat.replace is not None:
             if field_idxlist is not None:
                 for field_idx in field_idxlist:
-                    newfield, replace_ranges = Pycolor.pat_schrep(
+                    newfield, replace_ranges = self.pat_schrep(
                         pat,
                         fields[field_idx],
                         pat.replace,
@@ -297,7 +299,7 @@ class Pycolor:
 
                         update_ranges(ignore_ranges, replace_ranges)
             else:
-                replaced, replace_ranges = Pycolor.pat_schrep(
+                replaced, replace_ranges = self.pat_schrep(
                     pat,
                     b''.join(fields),
                     pat.replace,
@@ -309,14 +311,15 @@ class Pycolor:
 
         return b''.join(fields)
 
-    @staticmethod
-    def pat_schrep(pattern, string, replace, ignore_ranges):
+    def pat_schrep(self, pattern, string, replace, ignore_ranges):
         return search_replace(
             pattern.regex,
             string,
             lambda x: pyformat.format_string(
                 replace.decode('utf-8'),
                 context={
+                    'color_enabled': self.is_color_enabled(),
+                    'color_aliases': self.color_aliases,
                     'match': x
                 }
             ).encode('utf-8'),

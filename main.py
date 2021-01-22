@@ -74,3 +74,7 @@ def get_arg(string, default=None):
         return string[2:], default
 
     return string[2:idx], string[idx + 1:]
+
+
+if __name__ == '__main__': #pragma: no cover
+    main()
