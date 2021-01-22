@@ -1,11 +1,8 @@
 from pattern import Pattern
-import pyformat
 
 
 class Profile:
-    def __init__(self, pycolor, cfg):
-        self.pycolor = pycolor
-
+    def __init__(self, cfg):
         self.name = cfg.get('name')
         self.name_regex = cfg.get('name_regex')
         self.profile_name = cfg.get('profile_name')

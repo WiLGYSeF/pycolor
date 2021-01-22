@@ -45,7 +45,7 @@ class Pycolor:
         self.color_aliases.update(config.get('color_aliases', {}))
 
         for cfg in config.get('profiles', []):
-            profiles.append(Profile(self, cfg))
+            profiles.append(Profile(cfg))
 
         return profiles
 
@@ -341,7 +341,7 @@ class Pycolor:
 
     def set_current_profile(self, profile):
         if profile is None:
-            self.current_profile = Profile(self, {
+            self.current_profile = Profile({
                 'profile_name': 'none_found',
                 'buffer_line': True
             })
