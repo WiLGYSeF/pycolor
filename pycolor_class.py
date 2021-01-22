@@ -22,19 +22,23 @@ class Pycolor:
 
     def load_file(self, fname):
         with open(fname, 'r') as file:
-            self.parse_file(file)
+            profiles = self.parse_file(file)
+            self.profiles.extend(profiles)
 
-        for profile in self.profiles:
-            self.include_from_profile(
-                profile.patterns,
-                profile.from_profiles
-            )
+            for prof in profiles:
+                self.include_from_profile(
+                    prof.patterns,
+                    prof.from_profiles
+                )
 
     def parse_file(self, file):
         config = json.loads(file.read())
+        profiles = []
 
-        for prof_cfg in config.get('profiles', []):
-            self.profiles.append(Profile(self, prof_cfg))
+        for cfg in config.get('profiles', []):
+            profiles.append(Profile(self, cfg))
+
+        return profiles
 
     def include_from_profile(self, patterns, from_profiles):
         if isinstance(from_profiles, str):
