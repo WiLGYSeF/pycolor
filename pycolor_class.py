@@ -17,6 +17,8 @@ class Pycolor:
         self.profiles = []
         self.named_profiles = {}
 
+        self.color_aliases = {}
+
         self.current_profile = None
         self.linenum = 0
 
@@ -39,6 +41,8 @@ class Pycolor:
     def parse_file(self, file):
         config = json.loads(file.read())
         profiles = []
+
+        self.color_aliases.update(config.get('color_aliases', {}))
 
         for cfg in config.get('profiles', []):
             profiles.append(Profile(self, cfg))

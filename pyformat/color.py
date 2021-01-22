@@ -1,17 +1,29 @@
 import re
 
 
-def get_color(colorstr):
+def get_color(colorstr, aliases=None):
+    if aliases is None:
+        aliases = {}
+
+    match = re.fullmatch(r'r(?:aw)?([0-9;]+)', colorstr)
+    if match:
+        return '\x1b[%sm' % match[1]
+
     val = ';'.join(filter(
         lambda x: x is not None,
-        [ _colorval(clr) for clr in colorstr.split(';') ]
+        [ _colorval(clr, aliases) for clr in colorstr.split(';') ]
     ))
     if len(val) == 0:
         return None
 
     return '\x1b[%sm' % val
 
-def _colorval(color):
+def _colorval(color, aliases=None):
+    if aliases is None:
+        aliases = {}
+    if color in aliases:
+        color = aliases[color]
+
     colors = {
         'reset': 0,
         'normal': 0,
@@ -30,6 +42,7 @@ def _colorval(color):
         'crossed': 9,
         'crossedout': 9,
 
+        'z': 0,
         'res': 0,
         'nor': 0,
         'bol': 1,

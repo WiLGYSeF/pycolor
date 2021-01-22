@@ -5,17 +5,35 @@ import pyformat.color
 
 
 FORMAT_COLOR_STRINGS = {
-    'abc%(Cred)abc': 'abc\x1b[31mabc',
-    r'abc\%(Cred)abc': r'abc\%(Cred)abc',
+    'abc%C(red)abc': 'abc\x1b[31mabc',
+    r'abc\%C(red)abc': r'abc\%C(red)abc',
     '%Cinvalid': '',
     '%Cred%Cblue': '\x1b[31m\x1b[34m',
     '%(Cred)%(Cblue)': '\x1b[31m\x1b[34m',
-    '%(Cred;^blue)': '\x1b[31;44m',
+    '%C(red;^blue)': '\x1b[31;44m',
     '%C(red)abc': '\x1b[31mabc',
-    '%(C123)abc': '\x1b[38;5;123mabc',
-    '%(C0xffaa00)abc': '\x1b[38;2;255;170;0mabc',
-    '%(Cunderline;red)abc%(C^underline)': '\x1b[4;31mabc\x1b[24m'
+    '%C(123)abc': '\x1b[38;5;123mabc',
+    '%C(0xffaa00)abc': '\x1b[38;2;255;170;0mabc',
+    '%C(underline;red)abc%C(^underline)': '\x1b[4;31mabc\x1b[24m',
+    '%C(und;red)abc%C(^und)': '\x1b[4;31mabc\x1b[24m',
+    '%C(red)a%C(green)b%C(last)c': '\x1b[31ma\x1b[32mb\x1b[32mc',
+    '%C(red)a%C(green)b%C(prev)c': '\x1b[31ma\x1b[32mb\x1b[31mc',
+    '%C(raw1;4;38;5;40)abc': '\x1b[1;4;38;5;40mabc',
 }
+
+ALIASES = 'aliases'
+STRING = 'string'
+RESULT = 'result'
+
+FORMAT_COLOR_STRING_ALIASES = [
+    {
+        ALIASES: {
+            'asdf': 'red'
+        },
+        STRING: '%C(asdf)test',
+        RESULT: '\x1b[31mtest'
+    }
+]
 
 HEX_TO_RGBS = {
     '0xffffff': (255, 255, 255),
@@ -32,6 +50,23 @@ class ColorTest(unittest.TestCase):
     def test_format_color_string(self):
         for key, val in FORMAT_COLOR_STRINGS.items():
             self.assertEqual(pyformat.format_string(key), val)
+
+    def test_format_color_string_color_disabled(self):
+        self.assertEqual(pyformat.format_string(
+            '%C(red)test',
+            context={
+                'color_enabled': False
+            }
+        ), 'test')
+
+    def test_format_color_string_aliases(self):
+        for entry in FORMAT_COLOR_STRING_ALIASES:
+            self.assertEqual(pyformat.format_string(
+                entry[STRING],
+                context={
+                    'color_aliases': entry[ALIASES]
+                }
+            ), entry[RESULT])
 
     def test_hex_to_rgb(self):
         for key, val in HEX_TO_RGBS.items():
