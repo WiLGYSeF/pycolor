@@ -13,6 +13,9 @@ class Profile:
         self.patterns = []
         self.arg_patterns = []
 
+        if self.profile_name is not None and len(self.profile_name) == 0:
+            self.profile_name = None
+
         if not any([
             self.name,
             self.name_regex,

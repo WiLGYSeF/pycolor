@@ -16,6 +16,7 @@ class Pycolor:
         self.color_mode = color_mode
 
         self.profiles = []
+        self.named_profiles = {}
 
         self.current_profile = {}
         self.linenum = 0
@@ -23,7 +24,12 @@ class Pycolor:
     def load_file(self, fname):
         with open(fname, 'r') as file:
             profiles = self.parse_file(file)
-            self.profiles.extend(profiles)
+
+            for prof in profiles:
+                self.profiles.append(prof)
+
+                if prof.profile_name is not None:
+                    self.named_profiles[prof.profile_name] = prof
 
             for prof in profiles:
                 self.include_from_profile(
@@ -84,10 +90,7 @@ class Pycolor:
                 raise ValueError()
 
     def get_profile_by_name(self, name):
-        for profile in self.profiles:
-            if profile.profile_name == name:
-                return profile
-        return None
+        return self.named_profiles.get(name)
 
     def get_profile_by_command(self, command, args):
         for cfg in self.profiles:
