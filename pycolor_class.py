@@ -105,9 +105,6 @@ class Pycolor:
     @staticmethod
     def check_arg_patterns(args, arg_patterns):
         for argpat in arg_patterns:
-            if 'expression' not in argpat:
-                continue
-
             matches = False
             for idx in Pycolor.get_arg_range(len(args), argpat.get('position')):
                 if re.fullmatch(argpat['expression'], args[idx]):
@@ -124,6 +121,11 @@ class Pycolor:
     def get_arg_range(arglen, position):
         if position is None:
             return range(arglen)
+
+        if isinstance(position, int):
+            if position > arglen:
+                return range(0)
+            return range(position - 1, position)
 
         match = re.fullmatch(r'([<>+-])?(\*|[0-9]+)', position)
         if match is None:
