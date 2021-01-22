@@ -205,10 +205,6 @@ class Pycolor:
         stream.flush()
 
     def apply_pattern(self, pat, data, ignore_ranges):
-        sep = pat.separator
-        if sep is not None:
-            sep = sep.encode('utf-8')
-
         if not pat.active:
             if pat.activation_regex is None or not re.search(pat.activation_regex, data):
                 return data
@@ -220,6 +216,10 @@ class Pycolor:
 
         if not pat.is_line_active(self.linenum):
             return data
+
+        sep = pat.separator
+        if sep is not None:
+            sep = sep.encode('utf-8')
 
         fields = re_split(sep, data)
         fieldcount = pyformat.fieldsep.idx_to_num(len(fields))
