@@ -5,18 +5,14 @@ from pyformat import fieldsep
 FORMAT_CHAR_VALID = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
 
-def format_string(string, context=None):
-    newstring, _ = format_string_color_ranges(string, context)
-    return newstring
-
-def format_string_color_ranges(string, context=None):
+def format_string(string, context=None, return_color_positions=False):
     if context is None:
         context = {}
 
     context['last_colors'] = []
 
     newstring = ''
-    color_ranges = []
+    color_positions = {}
     idx = 0
 
     while idx < len(string):
@@ -34,16 +30,23 @@ def format_string_color_ranges(string, context=None):
             if formatter is not None:
                 result = do_format(string, formatter, idx, newidx, context)
                 if is_color_format(formatter):
-                    color_ranges.append( (len(newstring), len(newstring) + len(result)) )
+                    if return_color_positions:
+                        color_positions[len(newstring)] = result
+                    else:
+                        newstring += result
+                else:
+                    newstring += result
 
-                newstring += result
                 idx = newidx
                 continue
 
         newstring += char
         idx += 1
 
-    return newstring, color_ranges
+    if return_color_positions:
+        return newstring, color_positions
+
+    return newstring
 
 def do_format(string, formatter, idx, newidx, context):
     if is_color_format(formatter):
