@@ -365,13 +365,16 @@ class Pycolor:
             return
 
         keys_pos = sorted(pos.keys())
+        keys_col = set(color_positions.keys())
 
         if len(pos) == 1:
             idx = keys_pos[0]
             color_positions[idx] = pos[idx]
-            return
 
-        keys_col = set(color_positions.keys())
+            for key in keys_col:
+                if key > idx:
+                    del color_positions[key]
+            return
 
         for idx in range(0, len(keys_pos) - 1, 2):
             first = keys_pos[idx]
