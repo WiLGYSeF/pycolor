@@ -131,7 +131,7 @@ class Pycolor:
         for argpat in arg_patterns:
             matches = False
             for idx in Pycolor.get_arg_range(len(args), argpat.get('position')):
-                if re.fullmatch(argpat['expression'], args[idx]):
+                if argpat['regex'].fullmatch(args[idx]):
                     if argpat.get('match_not', False):
                         return False
                     idx_matches.add(idx)

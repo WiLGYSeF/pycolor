@@ -1,3 +1,5 @@
+import re
+
 from pattern import Pattern
 
 
@@ -32,6 +34,7 @@ class Profile:
 
             self.arg_patterns.append({
                 'expression': argpat['expression'],
+                'regex': re.compile(argpat['expression']),
                 'position': argpat.get('position', '*'),
                 'match_not': argpat.get('match_not', False),
                 'optional': argpat.get('optional', False)
