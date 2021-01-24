@@ -8,6 +8,7 @@ class Profile:
         self.profile_name = cfg.get('profile_name')
         self.which = cfg.get('which')
         self.buffer_line = cfg.get('buffer_line', True)
+        self.all_args_must_match = cfg.get('all_args_must_match', False)
         self.from_profiles = cfg.get('from_profiles', [])
         self.patterns = []
         self.arg_patterns = []

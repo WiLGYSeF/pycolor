@@ -115,7 +115,7 @@ class Pycolor:
             if prof.name_regex is not None and not re.fullmatch(prof.name_regex, command):
                 continue
 
-            if not Pycolor.check_arg_patterns(args, prof.arg_patterns):
+            if not Pycolor.check_arg_patterns(args, prof.arg_patterns, prof.all_args_must_match):
                 continue
 
             matches.append(prof)
@@ -125,17 +125,23 @@ class Pycolor:
         return matches[-1]
 
     @staticmethod
-    def check_arg_patterns(args, arg_patterns):
+    def check_arg_patterns(args, arg_patterns, all_must_match=False):
+        idx_matches = set()
+
         for argpat in arg_patterns:
             matches = False
             for idx in Pycolor.get_arg_range(len(args), argpat.get('position')):
                 if re.fullmatch(argpat['expression'], args[idx]):
                     if argpat.get('match_not', False):
                         return False
+                    idx_matches.add(idx)
                     matches = True
 
             if not matches and not argpat.get('optional', False):
                 return False
+
+        if all_must_match and len(idx_matches) != len(args):
+            return False
 
         return True
 
