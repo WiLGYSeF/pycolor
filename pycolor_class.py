@@ -137,7 +137,11 @@ class Pycolor:
                     idx_matches.add(idx)
                     matches = True
 
-            if not matches and not argpat.get('optional', False):
+            if not any([
+                matches,
+                argpat.get('match_not', False),
+                argpat.get('optional', False)
+            ]):
                 return False
 
         if all_must_match and len(idx_matches) != len(args):
