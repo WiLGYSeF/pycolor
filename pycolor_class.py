@@ -209,37 +209,7 @@ class Pycolor:
             if pat.stdout_only and stream != sys.stdout or pat.stderr_only and stream != sys.stderr:
                 continue
 
-            if False:
-                newdata = self.apply_pattern(pat, newdata, color_positions)
-            else:
-                colorpos = {}
-                newdata = self.apply_pattern(pat, newdata, colorpos)
-
-                if len(colorpos) > 0:
-                    positions = sorted(colorpos.keys())
-                    for idx in range(0, len(positions) - 1, 2):
-                        first = positions[idx]
-                        second = positions[idx + 1]
-
-                        for key in list(color_positions.keys()):
-                            if key >= first and key <= second:
-                                del color_positions[key]
-
-                        color_positions[first] = colorpos[first]
-                        color_positions[second] = colorpos[second]
-
-                        if pyformat.color.is_ansi_reset(colorpos[second]):
-                            last = -1
-                            for key in sorted(color_positions.keys()):
-                                if key < first:
-                                    last = key
-
-                            if last != -1:
-                                color_positions[second] = colorpos[second] + color_positions[last]
-
-                    if (len(colorpos) & 1) == 1:
-                        last = positions[-1]
-                        color_positions[last] = colorpos[last]
+            newdata = self.apply_pattern(pat, newdata, color_positions)
 
         if len(color_positions) > 0:
             colored_data = b''
@@ -391,11 +361,53 @@ class Pycolor:
 
     @staticmethod
     def update_color_positions(color_positions, pos):
+        if len(pos) == 0:
+            return
+
+        keys_pos = sorted(pos.keys())
+
+        if len(pos) == 1:
+            idx = keys_pos[0]
+            color_positions[idx] = pos[idx]
+            return
+
+        keys_col = set(color_positions.keys())
+
+        for idx in range(0, len(keys_pos) - 1, 2):
+            first = keys_pos[idx]
+            second = keys_pos[idx + 1]
+
+            to_remove = []
+            for key in keys_col:
+                if key >= first and key <= second:
+                    to_remove.append(key)
+                    del color_positions[key]
+            for key in to_remove:
+                keys_col.remove(key)
+
+            color_positions[first] = pos[first]
+            color_positions[second] = pos[second]
+
+            if pyformat.color.is_ansi_reset(pos[second]):
+                last = -1
+                for key in keys_col:
+                    if key < first and key > last:
+                        last = key
+
+                if last != -1:
+                    color_positions[second] = pos[second] + color_positions[last]
+
+        if (len(pos) & 1) == 1:
+            last = pos[-1]
+            color_positions[last] = pos[last]
+
+        """
         for key, val in pos.items():
             if key in color_positions:
                 color_positions[key] = color_positions[key] + val
             else:
                 color_positions[key] = val
+        """
 
     def set_current_profile(self, profile):
         if profile is None:
