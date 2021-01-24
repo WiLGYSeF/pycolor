@@ -209,7 +209,37 @@ class Pycolor:
             if pat.stdout_only and stream != sys.stdout or pat.stderr_only and stream != sys.stderr:
                 continue
 
-            newdata = self.apply_pattern(pat, newdata, color_positions)
+            if False:
+                newdata = self.apply_pattern(pat, newdata, color_positions)
+            else:
+                colorpos = {}
+                newdata = self.apply_pattern(pat, newdata, colorpos)
+
+                if len(colorpos) > 0:
+                    positions = sorted(colorpos.keys())
+                    for idx in range(0, len(positions) - 1, 2):
+                        first = positions[idx]
+                        second = positions[idx + 1]
+
+                        for key in list(color_positions.keys()):
+                            if key >= first and key <= second:
+                                del color_positions[key]
+
+                        color_positions[first] = colorpos[first]
+                        color_positions[second] = colorpos[second]
+
+                        if pyformat.color.is_ansi_reset(colorpos[second]):
+                            last = -1
+                            for key in sorted(color_positions.keys()):
+                                if key < first:
+                                    last = key
+
+                            if last != -1:
+                                color_positions[second] = colorpos[second] + color_positions[last]
+
+                    if (len(colorpos) & 1) == 1:
+                        last = positions[-1]
+                        color_positions[last] = colorpos[last]
 
         if len(color_positions) > 0:
             colored_data = b''
