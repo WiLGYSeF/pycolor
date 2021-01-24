@@ -420,10 +420,7 @@ class Pycolor:
         else:
             self.current_profile = profile
 
-        if self.current_profile.buffer_line:
-            self.linenum = 1
-        else:
-            self.linenum = 0
+        self.linenum = 0
 
     def is_color_enabled(self):
         if self.color_mode == 'on':
