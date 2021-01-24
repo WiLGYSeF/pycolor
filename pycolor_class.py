@@ -285,6 +285,8 @@ class Pycolor:
 
         field_idxlist = []
         if pat.field is not None and pat.field > 0:
+            if pat.field > fieldcount:
+                return data
             field_idxlist = [ pyformat.fieldsep.num_to_idx(pat.field) ]
         else:
             field_idxlist = range(0, len(fields), 2)
