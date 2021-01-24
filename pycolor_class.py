@@ -248,7 +248,7 @@ class Pycolor:
                 update_positions(color_positions, replace_ranges)
                 Pycolor.update_color_positions(color_positions, colorpos)
             elif pat.replace_all is not None:
-                match = re.search(pat.regex, data)
+                match = pat.regex.search(data)
                 if match is not None:
                     data, colorpos = pyformat.format_string(
                         pat.replace_all.decode('utf-8'),
@@ -281,7 +281,7 @@ class Pycolor:
 
         if pat.replace_all is not None:
             for field_idx in field_idxlist:
-                match = re.search(pat.regex, fields[field_idx])
+                match = pat.regex.search(fields[field_idx])
                 if match is None:
                     continue
 
