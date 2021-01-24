@@ -367,15 +367,6 @@ class Pycolor:
         keys_pos = sorted(pos.keys())
         keys_col = set(color_positions.keys())
 
-        if len(pos) == 1:
-            idx = keys_pos[0]
-            color_positions[idx] = pos[idx]
-
-            for key in keys_col:
-                if key > idx:
-                    del color_positions[key]
-            return
-
         for idx in range(0, len(keys_pos) - 1, 2):
             first = keys_pos[idx]
             second = keys_pos[idx + 1]
@@ -401,16 +392,12 @@ class Pycolor:
                     color_positions[second] = pos[second] + color_positions[last]
 
         if (len(pos) & 1) == 1:
-            last = pos[-1]
+            last = keys_pos[-1]
             color_positions[last] = pos[last]
 
-        """
-        for key, val in pos.items():
-            if key in color_positions:
-                color_positions[key] = color_positions[key] + val
-            else:
-                color_positions[key] = val
-        """
+            for key in keys_col:
+                if key > last:
+                    del color_positions[key]
 
     def set_current_profile(self, profile):
         if profile is None:

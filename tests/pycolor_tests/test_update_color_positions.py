@@ -79,6 +79,39 @@ UPDATE_COLOR_POSITIONS = [
             9: '\x1b[0m'
         }
     },
+    {
+        COLOR_POSITION: {
+            5: '\x1b[31m',
+            9: '\x1b[0m'
+        },
+        POS: {
+            6: '\x1b[34m',
+            11: '\x1b[0m'
+        },
+        RESULT: {
+            5: '\x1b[31m',
+            6: '\x1b[34m',
+            11: '\x1b[0m\x1b[31m'
+        }
+    },
+    {
+        COLOR_POSITION: {
+            5: '\x1b[31m',
+            9: '\x1b[0m'
+        },
+        POS: {
+            6: '\x1b[34m',
+            8: '\x1b[0m',
+            11: '\x1b[36m'
+        },
+        RESULT: {
+            5: '\x1b[31m',
+            6: '\x1b[34m',
+            8: '\x1b[0m\x1b[31m',
+            9: '\x1b[0m',
+            11: '\x1b[36m'
+        }
+    },
 ]
 
 
