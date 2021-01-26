@@ -8,7 +8,7 @@ from execute import read_stream
 import pycolor_class
 
 
-def check_pycolor_execute(self, cmd, mocked_data_dir, test_name):
+def check_pycolor_execute(self, cmd, mocked_data_dir, test_name, print_output=False):
     pycobj = pycolor_class.Pycolor()
     filename_prefix = os.path.join(mocked_data_dir, test_name)
     pycobj.load_file(filename_prefix + '.json')
@@ -50,10 +50,17 @@ def check_pycolor_execute(self, cmd, mocked_data_dir, test_name):
 
     if output_expected is not None:
         pycobj.stdout.seek(0)
-        self.assertEqual(pycobj.stdout.read(), output_expected)
+        data = pycobj.stdout.read()
+        if print_output:
+            print(data)
+        self.assertEqual(data, output_expected)
+
     if output_expected_err is not None:
         pycobj.stderr.seek(0)
-        self.assertEqual(pycobj.stderr.read(), output_expected_err)
+        data = pycobj.stderr.read()
+        if print_output:
+            print(data)
+        self.assertEqual(data, output_expected_err)
 
 @contextmanager
 def execute_patch(obj, stdout_stream, stderr_stream):
