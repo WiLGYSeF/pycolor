@@ -1,3 +1,4 @@
+import re
 import unittest
 
 from pycolor_class import Pycolor
@@ -15,7 +16,7 @@ CHECK_ARG_PATTERNS = [
         ARGS: ['-l'],
         ARGPATTERNS: [
             {
-                'expression': '-l',
+                'regex': re.compile('-l'),
                 'position': '*',
                 'match_not': False,
                 'optional': False
@@ -27,7 +28,7 @@ CHECK_ARG_PATTERNS = [
         ARGS: ['-l'],
         ARGPATTERNS: [
             {
-                'expression': '-a',
+                'regex': re.compile('-a'),
                 'position': '*',
                 'match_not': False,
                 'optional': False
@@ -39,7 +40,7 @@ CHECK_ARG_PATTERNS = [
         ARGS: ['-lA'],
         ARGPATTERNS: [
             {
-                'expression': '-[A-Za-z]*l[A-Za-z]*',
+                'regex': re.compile('-[A-Za-z]*l[A-Za-z]*'),
                 'position': '*',
                 'match_not': False,
                 'optional': False
@@ -51,7 +52,7 @@ CHECK_ARG_PATTERNS = [
         ARGS: ['-l', '-a'],
         ARGPATTERNS: [
             {
-                'expression': '-l',
+                'regex': re.compile('-l'),
                 'position': 1,
                 'match_not': False,
                 'optional': False
@@ -63,7 +64,7 @@ CHECK_ARG_PATTERNS = [
         ARGS: ['-l', '-a'],
         ARGPATTERNS: [
             {
-                'expression': '-l',
+                'regex': re.compile('-l'),
                 'position': 2,
                 'match_not': False,
                 'optional': False
@@ -75,7 +76,7 @@ CHECK_ARG_PATTERNS = [
         ARGS: ['-l'],
         ARGPATTERNS: [
             {
-                'expression': '-l',
+                'regex': re.compile('-l'),
                 'position': '*',
                 'match_not': True,
                 'optional': False
@@ -87,13 +88,13 @@ CHECK_ARG_PATTERNS = [
         ARGS: ['-l'],
         ARGPATTERNS: [
             {
-                'expression': '-l',
+                'regex': re.compile('-l'),
                 'position': '*',
                 'match_not': False,
                 'optional': False
             },
             {
-                'expression': '-a',
+                'regex': re.compile('-a'),
                 'position': '*',
                 'match_not': False,
                 'optional': False
@@ -105,13 +106,13 @@ CHECK_ARG_PATTERNS = [
         ARGS: ['-l'],
         ARGPATTERNS: [
             {
-                'expression': '-l',
+                'regex': re.compile('-l'),
                 'position': '*',
                 'match_not': False,
                 'optional': False
             },
             {
-                'expression': '-a',
+                'regex': re.compile('-a'),
                 'position': '*',
                 'match_not': False,
                 'optional': True
