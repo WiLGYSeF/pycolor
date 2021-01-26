@@ -222,15 +222,7 @@ class Pycolor:
             newdata = self.apply_pattern(pat, newdata, color_positions)
 
         if len(color_positions) > 0:
-            colored_data = b''
-            last = 0
-
-            for key in sorted(color_positions.keys()):
-                colored_data += newdata[last:key] + color_positions[key].encode('utf-8')
-                last = key
-
-            colored_data += newdata[last:]
-            newdata = colored_data
+            newdata = Pycolor.insert_color_data(newdata, color_positions)
 
         stream.buffer.write(newdata)
 
@@ -370,6 +362,17 @@ class Pycolor:
             max_count=pattern.max_count
         )
         return newstring, replace_ranges, color_positions
+
+    @staticmethod
+    def insert_color_data(data, color_positions):
+        colored_data = b''
+        last = 0
+
+        for key in sorted(color_positions.keys()):
+            colored_data += data[last:key] + color_positions[key].encode('utf-8')
+            last = key
+
+        return colored_data + data[last:]
 
     @staticmethod
     def update_color_positions(color_positions, pos):
