@@ -12,27 +12,24 @@ def check_pycolor_execute(self, cmd, mocked_data_dir, test_name):
     filename_prefix = os.path.join(mocked_data_dir, test_name)
     pycobj.load_file(filename_prefix + '.json')
 
-    try:
-        stdout = open(filename_prefix + '.txt', 'rb')
-    except FileNotFoundError:
-        stdout = None
+    def open_fstream(fname):
+        try:
+            return open(fname, 'rb')
+        except FileNotFoundError:
+            return None
 
-    try:
-        stderr = open(filename_prefix + '.err.txt', 'rb')
-    except FileNotFoundError:
-        stderr = None
+    def read_file(fname):
+        try:
+            with open(fname, 'rb') as file:
+                return file.read()
+        except FileNotFoundError:
+            return None
 
-    try:
-        with open(filename_prefix + '.out.txt', 'rb') as file:
-            output_expected = file.read()
-    except FileNotFoundError:
-        output_expected = None
+    stdout = open_fstream(filename_prefix + '.txt')
+    stderr = open_fstream(filename_prefix + '.err.txt')
 
-    try:
-        with open(filename_prefix + '.out.err.txt', 'rb') as file:
-            output_expected_err = file.read()
-    except FileNotFoundError:
-        output_expected_err = None
+    output_expected = read_file(filename_prefix + '.out.txt')
+    output_expected_err = read_file(filename_prefix + '.out.err.txt')
 
     if output_expected is None and output_expected_err is None:
         raise FileNotFoundError(
