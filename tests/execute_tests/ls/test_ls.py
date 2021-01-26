@@ -11,3 +11,6 @@ MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_
 class LsTest(unittest.TestCase):
     def test_normal(self):
         check_pycolor_execute(self, ['ls'], MOCKED_DATA, 'normal')
+
+    def test_normal_color(self):
+        check_pycolor_execute(self, ['ls'], MOCKED_DATA, 'normal-color')
