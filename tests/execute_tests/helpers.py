@@ -9,7 +9,7 @@ import pycolor_class
 
 
 def check_pycolor_execute(self, cmd, mocked_data_dir, test_name, print_output=False):
-    pycobj = pycolor_class.Pycolor()
+    pycobj = pycolor_class.Pycolor(color_mode='always')
     filename_prefix = os.path.join(mocked_data_dir, test_name)
     pycobj.load_file(filename_prefix + '.json')
 
