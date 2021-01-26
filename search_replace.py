@@ -63,15 +63,29 @@ def update_ranges(ranges, replace_ranges):
         cur = ranges[ridx]
         start, end = cur
 
-        for replidx in range(len(replace_ranges) - 1, -1, -1):
-            old_range, new_range = replace_ranges[replidx]
+        for old_range, new_range in replace_ranges:
+            if old_range[1] > cur[0]:
+                break
 
-            if cur[0] >= old_range[1]:
-                diff = new_range[1] - old_range[1] - (new_range[0] - old_range[0])
-                start += diff
-                end += diff
+            diff = new_range[1] - old_range[1] - (new_range[0] - old_range[0])
+            start += diff
+            end += diff
 
         ranges[ridx] = (start, end)
 
     ranges.extend(map(lambda x: x[1], replace_ranges))
     ranges.sort(key=lambda x: x[0])
+
+def update_positions(positions, replace_ranges):
+    for key in sorted(positions.keys(), reverse=True):
+        newkey = key
+
+        for old_range, new_range in replace_ranges:
+            if old_range[1] > key:
+                break
+
+            newkey += new_range[1] - old_range[1] - (new_range[0] - old_range[0])
+
+        if newkey != key:
+            positions[newkey] = positions[key]
+            del positions[key]

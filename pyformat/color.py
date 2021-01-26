@@ -146,6 +146,9 @@ def _colorval(color, aliases=None):
 
     return str(val)
 
+def is_ansi_reset(string):
+    return string == '\x1b[0m'
+
 def hex_to_rgb(string):
     match = re.fullmatch(
         r'(?:0x)?(?:(?P<six>[0-9a-f]{6})|(?P<three>[0-9a-f]{3}))',
