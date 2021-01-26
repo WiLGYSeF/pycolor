@@ -220,6 +220,8 @@ class Pycolor:
                 continue
 
             newdata = self.apply_pattern(pat, newdata, color_positions)
+            if newdata is None:
+                break
 
         if len(color_positions) > 0:
             colored_data = b''
@@ -232,12 +234,12 @@ class Pycolor:
             colored_data += newdata[last:]
             newdata = colored_data
 
-        stream.buffer.write(newdata)
+        if newdata is not None:
+            stream.buffer.write(newdata)
+            if removed_newline:
+                stream.buffer.write(b'\n')
 
-        if removed_newline:
-            stream.buffer.write(b'\n')
-
-        stream.flush()
+            stream.flush()
 
     def apply_pattern(self, pat, data, color_positions):
         if not pat.active:
@@ -272,7 +274,8 @@ class Pycolor:
                     data = data.encode('utf-8')
                     color_positions.clear()
                     color_positions.update(colorpos)
-
+            elif pat.filter and pat.regex.search(data):
+                return None
             return data
 
         fields = re_split(pat.separator.encode('utf-8'), data)
@@ -335,8 +338,15 @@ class Pycolor:
 
                 update_positions(color_positions, replace_ranges)
                 Pycolor.update_color_positions(color_positions, colorpos)
+            return b''.join(fields)
 
-        return b''.join(fields)
+        if pat.filter:
+            for field_idx in field_idxlist:
+                match = pat.regex.search(fields[field_idx])
+                if match is not None:
+                    return None
+
+        return data
 
     def pat_schrep(self, pattern, string):
         color_positions = {}
