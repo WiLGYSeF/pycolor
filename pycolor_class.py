@@ -432,9 +432,9 @@ class Pycolor:
         self.linenum = 0
 
     def is_color_enabled(self):
-        if self.color_mode == 'on':
+        if self.color_mode in ('always', 'on', '1'):
             return True
-        if self.color_mode == 'off':
+        if self.color_mode in ('never', 'off', '0'):
             return False
         return not Pycolor.is_being_redirected()
 
