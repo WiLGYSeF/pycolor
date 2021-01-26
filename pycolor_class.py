@@ -22,6 +22,9 @@ class Pycolor:
         self.current_profile = None
         self.linenum = 0
 
+        self.stdout = sys.stdout
+        self.stderr = sys.stderr
+
     def load_file(self, fname):
         with open(fname, 'r') as file:
             profiles = self.parse_file(file)
@@ -185,17 +188,10 @@ class Pycolor:
 
         self.set_current_profile(profile)
 
-        if profile is not None:
-            stdout_cb = self.stdout_cb
-            stderr_cb = self.stderr_cb
-        else:
-            stdout_cb = Pycolor.stdout_base_cb
-            stderr_cb = Pycolor.stderr_base_cb
-
         return execute.execute(
             cmd,
-            stdout_cb,
-            stderr_cb,
+            self.stdout_cb,
+            self.stderr_cb,
             buffer_line=self.current_profile.buffer_line
         )
 
@@ -443,20 +439,10 @@ class Pycolor:
         return not Pycolor.is_being_redirected()
 
     def stdout_cb(self, data):
-        self.data_callback(sys.stdout, data)
+        self.data_callback(self.stdout, data)
 
     def stderr_cb(self, data):
-        self.data_callback(sys.stderr, data)
-
-    @staticmethod
-    def stdout_base_cb(data):
-        sys.stdout.buffer.write(data)
-        sys.stdout.flush()
-
-    @staticmethod
-    def stderr_base_cb(data):
-        sys.stderr.buffer.write(data)
-        sys.stderr.flush()
+        self.data_callback(self.stderr, data)
 
     @staticmethod
     def is_being_redirected():
