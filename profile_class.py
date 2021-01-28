@@ -27,7 +27,14 @@ class Profile:
             raise ValueError()
 
         for pattern_cfg in get_type(cfg, 'patterns', list, []):
-            self.patterns.append(self.init_pattern(pattern_cfg))
+            pattern = Pattern(pattern_cfg)
+
+            if 'replace' in pattern_cfg:
+                pattern.replace = pattern_cfg['replace'].encode('utf-8')
+            if 'replace_all' in pattern_cfg:
+                pattern.replace_all = pattern_cfg['replace_all'].encode('utf-8')
+
+            self.patterns.append(pattern)
 
         for argpat in get_type(cfg, 'arg_patterns', list, []):
             if 'expression' not in argpat:
@@ -40,14 +47,3 @@ class Profile:
                 'match_not': get_type(argpat, 'match_not', bool, False),
                 'optional': get_type(argpat, 'optional', bool, False)
             })
-
-    def init_pattern(self, cfg):
-        pattern = Pattern(cfg)
-
-        if 'replace' in cfg:
-            pattern.replace = cfg['replace'].encode('utf-8')
-
-        if 'replace_all' in cfg:
-            pattern.replace_all = cfg['replace_all'].encode('utf-8')
-
-        return pattern
