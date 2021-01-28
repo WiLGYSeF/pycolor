@@ -9,91 +9,91 @@ RESULT = 'result'
 
 FORMAT_CONTEXT_FIELDSEP_STRINGS = [
     {
-        STRING: '%S1',
+        STRING: '%F1',
         CONTEXT: {
             'fields': [b'this', b' ', b'is', b' ', b'a', b' ', b'test']
         },
         RESULT: 'this'
     },
     {
-        STRING: '%S2 %S1 %S3 %S4?',
+        STRING: '%F2 %F1 %F3 %F4?',
         CONTEXT: {
             'fields': [b'this', b' ', b'is', b' ', b'a', b' ', b'test']
         },
         RESULT: 'is this a test?'
     },
     {
-        STRING: '%S4%Se2%(S-1)%(Se-3)%S3',
+        STRING: '%F4%Fs2%(F-1)%(Fs-3)%F3',
         CONTEXT: {
             'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
         },
         RESULT: 'test   test   a'
     },
     {
-        STRING: '%(S1*3)',
+        STRING: '%(F1*3)',
         CONTEXT: {
             'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
         },
         RESULT: 'this   is    a'
     },
     {
-        STRING: '%(S*3)',
+        STRING: '%(F*3)',
         CONTEXT: {
             'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
         },
         RESULT: 'this   is    a'
     },
     {
-        STRING: '%(S*)',
+        STRING: '%(F*)',
         CONTEXT: {
             'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
         },
         RESULT: 'this   is    a test'
     },
     {
-        STRING: '%(S*-1)',
+        STRING: '%(F*-1)',
         CONTEXT: {
             'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
         },
         RESULT: 'this   is    a test'
     },
     {
-        STRING: '%(S2*-2)%(Se-1)',
+        STRING: '%(F2*-2)%(Fs-1)',
         CONTEXT: {
             'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
         },
         RESULT: 'is    a '
     },
     {
-        STRING: '%(S2*-3)',
+        STRING: '%(F2*-3)',
         CONTEXT: {
             'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
         },
         RESULT: 'is'
     },
     {
-        STRING: '%(S3*-3)',
+        STRING: '%(F3*-3)',
         CONTEXT: {
             'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
         },
         RESULT: ''
     },
     {
-        STRING: '%(Se3)',
+        STRING: '%(Fs3)',
         CONTEXT: {
             'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
         },
         RESULT: '    '
     },
     {
-        STRING: '%(Se10)',
+        STRING: '%(Fs10)',
         CONTEXT: {
             'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
         },
         RESULT: ''
     },
     {
-        STRING: '%(S1*3,+)',
+        STRING: '%(F1*3,+)',
         CONTEXT: {
             'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
         },

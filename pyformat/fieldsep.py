@@ -1,7 +1,10 @@
+CHAR_SEPARATOR = 's'
+
+
 def get_fields(formatter, context):
     last_field_num = idx_to_num(len(context['fields']))
 
-    if formatter[0] == 'e':
+    if formatter[0] == CHAR_SEPARATOR:
         return get_join_field(int(formatter[1:]), context)
 
     comma_idx = formatter.find(',')
