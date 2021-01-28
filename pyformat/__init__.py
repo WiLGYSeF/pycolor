@@ -4,6 +4,10 @@ from pyformat import fieldsep
 
 FORMAT_CHAR_VALID = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
+FORMAT_COLOR = 'C'
+FORMAT_GROUP = 'G'
+FORMAT_FIELD = 'F'
+
 
 def format_string(string, context=None, return_color_positions=False):
     if context is None:
@@ -71,7 +75,7 @@ def do_format(string, formatter, idx, newidx, context):
     # FIXME: should not decode here
 
     if 'match' in context:
-        if formatter[0] == 'G':
+        if formatter[0] == FORMAT_GROUP:
             try:
                 group = int(formatter[1:])
             except ValueError:
@@ -82,7 +86,7 @@ def do_format(string, formatter, idx, newidx, context):
             except IndexError:
                 return ''
     if 'fields' in context:
-        if formatter[0] == 'S':
+        if formatter[0] == FORMAT_FIELD:
             return fieldsep.get_fields(formatter[1:], context)
 
     return string[idx:newidx]

@@ -94,15 +94,15 @@ def _colorval(color, aliases=None):
         'lightcyan': 96,
         'white': 97,
 
-        'de': 90,
-        'lk': 90,
-        'lr': 91,
-        'lg': 92,
-        'ly': 93,
-        'lb': 94,
-        'lm': 95,
-        'lc': 96,
-        'w': 97,
+        'de': 90, #darkgrey
+        'lk': 90, #darkgrey
+        'lr': 91, #lightred
+        'lg': 92, #lightgreen
+        'ly': 93, #lightyellow
+        'lb': 94, #lightblue
+        'lm': 95, #lightmagenta
+        'lc': 96, #lightcyan
+        'w': 97,  #white
     }
 
     if len(color) == 0:
