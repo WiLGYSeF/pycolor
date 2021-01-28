@@ -38,6 +38,10 @@ def read_stream(stream, callback, buffer_line=True, last=False):
     if buffer_line:
         lines = readlines(stream)
         if lines is None:
+            if last and len(read_stream.buffers[stream]) != 0:
+                callback(read_stream.buffers[stream])
+                read_stream.buffers[stream] = b''
+
             return None
 
         start = 0

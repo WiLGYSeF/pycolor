@@ -1,0 +1,18 @@
+total 76
+drwxr-xr-x 2 wilgysef wilgysef  4096 Jan 26 17:50 [0m[01;34m__pycache__[0m
+-rw-r--r-- 1 wilgysef wilgysef     0 Jan 26 17:50 a.txt
+-rw-r--r-- 1 wilgysef wilgysef  2662 Jan 26 17:10 execute.py
+drwxr-xr-x 2 wilgysef wilgysef  4096 Jan 26 17:18 [01;34mhtmlcov[0m
+-rw-r--r-- 1 wilgysef wilgysef  3118 Jan 22 23:42 main.py
+-rw-r--r-- 1 wilgysef wilgysef  2100 Jan 26 16:20 pattern.py
+-rw-r--r-- 1 wilgysef wilgysef  1626 Jan 26 16:24 profile_class.py
+-rwxr-xr-x 1 wilgysef wilgysef   104 Jan 22 11:23 [01;32mpycolor.py[0m
+-rw-r--r-- 1 wilgysef wilgysef 14619 Jan 26 17:50 pycolor_class.py
+drwxrwxr-x 3 wilgysef wilgysef  4096 Jan 26 16:40 [01;34mpyformat[0m
+-rw-r--r-- 1 wilgysef wilgysef  2581 Jan 26 16:40 search_replace.py
+-rw-r--r-- 1 wilgysef wilgysef   448 Jan 22 11:23 split.py
+-rw-rw-r-- 1 wilgysef wilgysef   193 Jan  6 16:26 static_vars.py
+drwxrwxr-x 2 wilgysef wilgysef  4096 Jan 20 14:50 [01;34mtest_scripts[0m
+drwxrwxr-x 6 wilgysef wilgysef  4096 Jan 26 16:52 [01;34mtests[0m
+-rw-rw-r-- 1 wilgysef wilgysef   186 Jan 26 14:44 todo.txt
+-rw-rw-r-- 1 wilgysef wilgysef   351 Jan  6 15:53 which.py

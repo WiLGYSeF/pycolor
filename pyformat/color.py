@@ -147,7 +147,14 @@ def _colorval(color, aliases=None):
     return str(val)
 
 def is_ansi_reset(string):
-    return string == '\x1b[0m'
+    match = re.fullmatch('\x1b\\[([0-9;]+)m', string)
+    if match is None:
+        return False
+
+    return re.fullmatch(r'0+', list(filter(
+        lambda x: len(x) != 0,
+        match[1].split(';')
+    ))[-1]) is not None
 
 def hex_to_rgb(string):
     match = re.fullmatch(

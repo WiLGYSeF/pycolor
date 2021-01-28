@@ -35,6 +35,16 @@ FORMAT_COLOR_STRING_ALIASES = [
     }
 ]
 
+IS_ANSI_RESET = {
+    '': False,
+    'abcdef': False,
+    '\x1b[0m': True,
+    '\x1b[31;0m': True,
+    '\x1b[0;31m': False,
+    '\x1b[0;m': True,
+    '\x1b[00m': True,
+}
+
 HEX_TO_RGBS = {
     '0xffffff': (255, 255, 255),
     '0xfff': (255, 255, 255),
@@ -67,6 +77,10 @@ class ColorTest(unittest.TestCase):
                     'color_aliases': entry[ALIASES]
                 }
             ), entry[RESULT])
+
+    def test_is_ansi_reset(self):
+        for key, val in IS_ANSI_RESET.items():
+            self.assertEqual(pyformat.color.is_ansi_reset(key), val)
 
     def test_hex_to_rgb(self):
         for key, val in HEX_TO_RGBS.items():
