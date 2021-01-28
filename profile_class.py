@@ -1,17 +1,18 @@
 import re
 
+from get_type import get_type
 from pattern import Pattern
 
 
 class Profile:
     def __init__(self, cfg):
-        self.name = cfg.get('name')
-        self.name_regex = cfg.get('name_regex')
-        self.profile_name = cfg.get('profile_name')
-        self.which = cfg.get('which')
-        self.buffer_line = cfg.get('buffer_line', True)
-        self.all_args_must_match = cfg.get('all_args_must_match', False)
-        self.from_profiles = cfg.get('from_profiles', [])
+        self.name = get_type(cfg, 'name', str, None)
+        self.name_regex = get_type(cfg, 'name_regex', str, None)
+        self.profile_name = get_type(cfg, 'profile_name', str, None)
+        self.which = get_type(cfg, 'which', str, None)
+        self.buffer_line = get_type(cfg, 'buffer_line', bool, True)
+        self.all_args_must_match = get_type(cfg, 'all_args_must_match', bool, False)
+        self.from_profiles = get_type(cfg, 'from_profiles', list, [])
         self.patterns = []
         self.arg_patterns = []
 
@@ -25,10 +26,17 @@ class Profile:
         ]):
             raise ValueError()
 
-        for pattern_cfg in cfg.get('patterns', []):
-            self.patterns.append(self.init_pattern(pattern_cfg))
+        for pattern_cfg in get_type(cfg, 'patterns', list, []):
+            pattern = Pattern(pattern_cfg)
 
-        for argpat in cfg.get('arg_patterns', []):
+            if 'replace' in pattern_cfg:
+                pattern.replace = pattern_cfg['replace'].encode('utf-8')
+            if 'replace_all' in pattern_cfg:
+                pattern.replace_all = pattern_cfg['replace_all'].encode('utf-8')
+
+            self.patterns.append(pattern)
+
+        for argpat in get_type(cfg, 'arg_patterns', list, []):
             if 'expression' not in argpat:
                 continue
 
@@ -36,17 +44,6 @@ class Profile:
                 'expression': argpat['expression'],
                 'regex': re.compile(argpat['expression']),
                 'position': argpat.get('position', '*'),
-                'match_not': argpat.get('match_not', False),
-                'optional': argpat.get('optional', False)
+                'match_not': get_type(argpat, 'match_not', bool, False),
+                'optional': get_type(argpat, 'optional', bool, False)
             })
-
-    def init_pattern(self, cfg):
-        pattern = Pattern(cfg)
-
-        if 'replace' in cfg:
-            pattern.replace = cfg['replace'].encode('utf-8')
-
-        if 'replace_all' in cfg:
-            pattern.replace_all = cfg['replace_all'].encode('utf-8')
-
-        return pattern
