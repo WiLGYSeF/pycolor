@@ -55,31 +55,22 @@ def check_pycolor_execute(
     if stderr is not None:
         stderr.close()
 
-    pycobj.stdout.seek(0)
-    data = pycobj.stdout.read()
+    def test_stream(stream, fname, testdata):
+        stream.seek(0)
+        data = stream.read()
 
-    if print_output:
-        print(data)
-    if write_output:
-        write_file(filename_prefix + '.out.txt', data)
+        if print_output:
+            print(data)
+        if write_output:
+            write_file(fname, data)
 
-    if output_expected is not None:
-        self.assertEqual(data, output_expected)
-    else:
-        self.assertEqual(data, '')
+        if testdata is not None:
+            self.assertEqual(data, testdata)
+        else:
+            self.assertEqual(data, '')
 
-    pycobj.stderr.seek(0)
-    data = pycobj.stderr.read()
-
-    if print_output:
-        print(data)
-    if write_output:
-        write_file(filename_prefix + '.out.err.txt', data)
-
-    if output_expected_err is not None:
-        self.assertEqual(data, output_expected_err)
-    else:
-        self.assertEqual(data, '')
+    test_stream(pycobj.stdout, filename_prefix + '.out.txt', output_expected)
+    test_stream(pycobj.stderr, filename_prefix + '.out.err.txt', output_expected_err)
 
 @contextmanager
 def execute_patch(obj, stdout_stream, stderr_stream):
