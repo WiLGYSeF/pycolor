@@ -230,16 +230,7 @@ class Pycolor:
             stream.flush()
 
     def apply_pattern(self, pat, data, color_positions):
-        if not pat.active:
-            if pat.activation_regex is None or not re.search(pat.activation_regex, data):
-                return data
-            pat.active = True
-
-        if pat.deactivation_regex is not None and re.search(pat.deactivation_regex, data):
-            pat.active = False
-            return data
-
-        if not pat.is_line_active(self.linenum):
+        if not pat.is_active(self.linenum, data):
             return data
 
         if pat.separator is None:

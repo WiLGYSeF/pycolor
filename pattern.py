@@ -56,9 +56,25 @@ class Pattern:
             self.min_fields = -1
             self.max_fields = -1
 
-    def is_line_active(self, linenum):
+    def is_active(self, linenum, data):
+        def active():
+            self.active = True
+            return True
+
+        def inactive():
+            self.active = False
+            return False
+
         if self.activation_line > -1 and self.activation_line > linenum:
-            return False
+            return inactive()
         if self.deactivation_line > -1 and self.deactivation_line <= linenum:
-            return False
-        return True
+            return active()
+
+        if self.active:
+            if self.deactivation_regex is not None and re.search(self.deactivation_regex, data):
+                return inactive()
+        else:
+            if self.activation_regex is not None and re.search(self.activation_regex, data):
+                return active()
+
+        return self.active
