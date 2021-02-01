@@ -20,3 +20,9 @@ class LsTest(unittest.TestCase):
 
     def test_numbers_from_profile(self):
         check_pycolor_execute(self, ['ls', '-l'], MOCKED_DATA, 'numbers-from-profile')
+
+    def test_filter_py(self):
+        check_pycolor_execute(self, ['ls', '-l'], MOCKED_DATA, 'filter-py')
+
+    def test_filter_field_py(self):
+        check_pycolor_execute(self, ['ls', '-l'], MOCKED_DATA, 'filter-field-py')
