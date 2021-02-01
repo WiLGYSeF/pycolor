@@ -1,0 +1,10 @@
+Filesystem        Type       Size  Used Avail Use% Mounted on
+udev              devtmpfs   3.8G     0  3.8G   0% /dev
+tmpfs             tmpfs      785M  1.8M  783M   1% /run
+/dev/nvme0n1p3    ext4       232G   78G  154G  34% /
+tmpfs             tmpfs      3.9G   25M  3.9G   1% /dev/shm
+tmpfs             tmpfs      5.0M  4.0K  5.0M   1% /run/lock
+tmpfs             tmpfs      3.9G     0  3.9G   0% /sys/fs/cgroup
+/dev/nvme0n1p2    ext4       705M   86M  570M  13% /boot
+/dev/nvme0n1p1    vfat       511M  5.9M  505M   2% /boot/efi
+tmpfs             tmpfs      785M   97K  785M   1% /run/user/1000

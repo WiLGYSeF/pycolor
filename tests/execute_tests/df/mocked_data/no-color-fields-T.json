@@ -1,0 +1,22 @@
+{
+	"profiles": [
+		{
+			"name": "df",
+			"arg_patterns": [
+				{
+					"expression": "-[A-Za-z]*T[A-Za-z]*",
+					"match_not": true
+				}
+			],
+			"patterns": [
+				{
+					"separator": " +",
+					"field": 0,
+					"expression": ".*",
+					"replace_all": "%F1%Fs2%Cb%F2%Cz%Fs3%Cr%F3%Cz%Fs4%Cg%F4%Cz%Fs5%Cb%F5%Cz%Fs6%F(6*)",
+					"activation_line": 2
+				}
+			]
+		}
+	]
+}
