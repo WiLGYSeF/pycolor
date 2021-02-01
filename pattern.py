@@ -92,4 +92,4 @@ class Pattern:
             if self.activation_regex is not None and re.search(self.activation_regex, data):
                 return active()
 
-        return self.active
+        return active()
