@@ -34,6 +34,9 @@ def check_pycolor_execute(
             return None
 
     def write_file(fname, data):
+        if len(data) == 0:
+            return
+
         with open(fname, 'w') as file:
             file.write(data)
             print('Wrote to ' + fname)
