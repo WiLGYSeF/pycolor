@@ -5,8 +5,8 @@ from pyformat import fieldsep
 FORMAT_CHAR_VALID = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
 FORMAT_COLOR = 'C'
-FORMAT_GROUP = 'G'
 FORMAT_FIELD = 'F'
+FORMAT_GROUP = 'G'
 
 
 def format_string(string, context=None, return_color_positions=False):

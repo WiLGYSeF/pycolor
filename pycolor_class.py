@@ -342,7 +342,7 @@ class Pycolor:
             string,
             replacer,
             ignore_ranges=[],
-            start_occurrance=pattern.start_occurrance,
+            start_occurrence=pattern.start_occurrence,
             max_count=pattern.max_count
         )
         return newstring, replace_ranges, color_positions

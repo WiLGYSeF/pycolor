@@ -15,7 +15,7 @@ class Pattern:
         self.expression = cfg['expression']
         self.filter = get_type(cfg, 'filter', bool, False)
 
-        self.start_occurrance = get_type(cfg, 'start_occurrance', int, 1)
+        self.start_occurrence = get_type(cfg, 'start_occurrence', int, 1)
         self.max_count = get_type(cfg, 'max_count', int, -1)
 
         self.activation_line = get_type(cfg, 'activation_line', int, -1)

@@ -205,6 +205,21 @@ class SearchReplaceTest(unittest.TestCase):
         self.assertEqual(newstring, 'hello world')
         self.assertListEqual(replace_ranges, [])
 
+    def test_two_start_occurrence_two(self):
+        newstring, replace_ranges = search_replace(
+            r'o',
+            'hello world',
+            '#',
+            start_occurrence=2
+        )
+        self.assertEqual(newstring, 'hello w#rld')
+        self.assertListEqual(replace_ranges, [
+            (
+                (7, 8),
+                (7, 8)
+            )
+        ])
+
     def test_replace_all_ignore_between(self):
         newstring, replace_ranges = search_replace(
             r'^he(.*)ld',
