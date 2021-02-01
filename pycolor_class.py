@@ -258,23 +258,10 @@ class Pycolor:
             return data
 
         fields = re_split(pat.separator, data)
-        fieldcount = pyformat.fieldsep.idx_to_num(len(fields))
-
-        if pat.min_fields > fieldcount or (
-            pat.max_fields > 0 and pat.max_fields < fieldcount
-        ):
-            return data
-
-        field_idxlist = []
-        if pat.field is not None and pat.field > 0:
-            if pat.field > fieldcount:
-                return data
-            field_idxlist = [ pyformat.fieldsep.num_to_idx(pat.field) ]
-        else:
-            field_idxlist = range(0, len(fields), 2)
+        field_idxs = pat.get_field_indexes(fields)
 
         if pat.replace_all is not None:
-            for field_idx in field_idxlist:
+            for field_idx in field_idxs:
                 match = pat.regex.search(fields[field_idx])
                 if match is None:
                     continue
@@ -295,7 +282,7 @@ class Pycolor:
                 return data.encode('utf-8')
 
         if pat.replace is not None:
-            for field_idx in field_idxlist:
+            for field_idx in field_idxs:
                 newfield, replace_ranges, colorpos = self.pat_schrep(pat, fields[field_idx])
                 fields[field_idx] = newfield
 
@@ -320,7 +307,7 @@ class Pycolor:
             return b''.join(fields)
 
         if pat.filter:
-            for field_idx in field_idxlist:
+            for field_idx in field_idxs:
                 match = pat.regex.search(fields[field_idx])
                 if match is not None:
                     return None

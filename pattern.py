@@ -1,6 +1,7 @@
 import re
 
 from get_type import get_type
+import pyformat
 
 
 class Pattern:
@@ -55,6 +56,20 @@ class Pattern:
             self.field = None
             self.min_fields = -1
             self.max_fields = -1
+
+    def get_field_indexes(self, fields):
+        fieldcount = pyformat.fieldsep.idx_to_num(len(fields))
+        if self.min_fields > fieldcount or (
+            self.max_fields > 0 and self.max_fields < fieldcount
+        ):
+            return range(0)
+
+        if self.field is not None and self.field > 0:
+            if self.field > fieldcount:
+                return range(0)
+            idx = pyformat.fieldsep.num_to_idx(self.field)
+            return range(idx, idx + 1)
+        return range(0, len(fields), 2)
 
     def is_active(self, linenum, data):
         def active():
