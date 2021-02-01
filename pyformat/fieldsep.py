@@ -2,7 +2,8 @@ CHAR_SEPARATOR = 's'
 
 
 def get_fields(formatter, context):
-    last_field_num = idx_to_num(len(context['fields']))
+    fields = context['fields']
+    last_field_num = idx_to_num(len(fields))
 
     if formatter[0] == CHAR_SEPARATOR:
         return get_join_field(int(formatter[1:]), context)
@@ -26,14 +27,14 @@ def get_fields(formatter, context):
             start = num_to_idx(int(start))
 
         if len(end) == 0:
-            end = len(context['fields'])
+            end = len(fields)
         else:
             end = int(end)
             if end < 0:
                 end += last_field_num + 1
             end = num_to_idx(end)
-            if end >= len(context['fields']):
-                end = len(context['fields']) - 1
+            if end >= len(fields):
+                end = len(fields) - 1
     else:
         number = int(number)
         if number < 0:
@@ -45,25 +46,26 @@ def get_fields(formatter, context):
     if start > end:
         return ''
 
-    newstring = context['fields'][start]
+    newstring = fields[start]
     for i in range(start + 2, end + 1, 2):
         if sep is None:
-            newstring += context['fields'][i - 1] + context['fields'][i]
+            newstring += fields[i - 1] + fields[i]
         else:
-            newstring += sep + context['fields'][i]
+            newstring += sep + fields[i]
 
     return newstring.decode('utf-8')
 
 def get_join_field(num, context):
+    fields = context['fields']
     if num < 0:
-        num += idx_to_num(len(context['fields'])) + 1
+        num += idx_to_num(len(fields)) + 1
     if num <= 1:
         return ''
 
     num = num_to_idx(num - 1) + 1
-    if num >= len(context['fields']):
+    if num >= len(fields):
         return ''
-    return context['fields'][num].decode('utf-8')
+    return fields[num].decode('utf-8')
 
 def idx_to_num(idx):
     return idx // 2 + 1
