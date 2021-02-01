@@ -1,0 +1,22 @@
+{
+	"profiles": [
+		{
+			"name": "ls",
+			"from_profiles": [
+				{
+					"name": "numbers",
+					"order": "before"
+				}
+			]
+		},
+		{
+			"profile_name": "numbers",
+			"patterns": [
+				{
+					"expression": "[0-9]+",
+					"replace": "%Cg%G0%Cz"
+				}
+			]
+		}
+	]
+}
