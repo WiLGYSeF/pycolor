@@ -105,6 +105,13 @@ FORMAT_CONTEXT_FIELDSEP_STRING = [
             'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
         },
         RESULT: 'this+is+a+test'
+    },
+    {
+        STRING: '%(F7*10,+)',
+        CONTEXT: {
+            'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
+        },
+        RESULT: ''
     }
 ]
 

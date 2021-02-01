@@ -43,7 +43,7 @@ def get_fields(formatter, context):
         start = num_to_idx(number)
         end = start
 
-    if start > end:
+    if start > end or start >= len(fields):
         return ''
 
     newstring = fields[start]
