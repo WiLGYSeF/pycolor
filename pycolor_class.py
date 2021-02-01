@@ -219,10 +219,10 @@ class Pycolor:
             if newdata is None:
                 break
 
-        if len(color_positions) > 0:
-            newdata = Pycolor.insert_color_data(newdata, color_positions)
-
         if newdata is not None:
+            if len(color_positions) > 0:
+                newdata = Pycolor.insert_color_data(newdata, color_positions)
+
             stream.buffer.write(newdata)
             if removed_newline:
                 stream.buffer.write(b'\n')
@@ -266,7 +266,7 @@ class Pycolor:
                 return None
             return data
 
-        fields = re_split(pat.separator.encode('utf-8'), data)
+        fields = re_split(pat.separator, data)
         fieldcount = pyformat.fieldsep.idx_to_num(len(fields))
 
         if pat.min_fields > fieldcount or (

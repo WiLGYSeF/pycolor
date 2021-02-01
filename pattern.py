@@ -49,7 +49,9 @@ class Pattern:
 
         if self.separator is not None and len(self.separator) == 0:
             self.separator = None
-        if self.separator is None:
+        if self.separator is not None:
+            self.separator = self.separator.encode('utf-8')
+        else:
             self.field = None
             self.min_fields = -1
             self.max_fields = -1
