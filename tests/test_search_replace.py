@@ -220,6 +220,21 @@ class SearchReplaceTest(unittest.TestCase):
             )
         ])
 
+    def test_two_max_count_one(self):
+        newstring, replace_ranges = search_replace(
+            r'o',
+            'hello world',
+            '#',
+            max_count=1
+        )
+        self.assertEqual(newstring, 'hell# world')
+        self.assertListEqual(replace_ranges, [
+            (
+                (4, 5),
+                (4, 5)
+            )
+        ])
+
     def test_replace_all_ignore_between(self):
         newstring, replace_ranges = search_replace(
             r'^he(.*)ld',
