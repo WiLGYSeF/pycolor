@@ -17,3 +17,6 @@ class LsTest(unittest.TestCase):
 
     def test_yellow_executable(self):
         check_pycolor_execute(self, ['ls'], MOCKED_DATA, 'yellow-executable')
+
+    def test_numbers_from_profile(self):
+        check_pycolor_execute(self, ['ls'], MOCKED_DATA, 'numbers-from-profile')
