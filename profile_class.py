@@ -12,7 +12,7 @@ class Profile:
         self.which = get_type(cfg, 'which', str, None)
         self.buffer_line = get_type(cfg, 'buffer_line', bool, True)
         self.all_args_must_match = get_type(cfg, 'all_args_must_match', bool, False)
-        self.from_profiles = get_type(cfg, 'from_profiles', list, [])
+        self.from_profiles = get_type(cfg, 'from_profiles', (list, str), [])
         self.patterns = []
         self.arg_patterns = []
 
