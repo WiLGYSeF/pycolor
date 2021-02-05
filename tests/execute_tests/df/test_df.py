@@ -18,3 +18,6 @@ class DfTest(unittest.TestCase):
     def test_no_color_fields_T(self): #pylint: disable=invalid-name
         check_pycolor_execute(self, ['df', '-Th'], MOCKED_DATA, 'no-color-fields-T')
         check_pycolor_execute(self, ['df', '-h', '-T'], MOCKED_DATA, 'no-color-fields-T')
+
+    def test_numbers_field(self):
+        check_pycolor_execute(self, ['df', '-h'], MOCKED_DATA, 'numbers-field')
