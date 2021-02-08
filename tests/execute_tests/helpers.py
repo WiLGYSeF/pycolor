@@ -28,7 +28,7 @@ def check_pycolor_execute(
 
     def read_file(fname):
         try:
-            with open(fname, 'r') as file:
+            with open(fname, 'rb') as file:
                 return file.read()
         except FileNotFoundError:
             return None
@@ -37,7 +37,7 @@ def check_pycolor_execute(
         if len(data) == 0:
             return
 
-        with open(fname, 'w') as file:
+        with open(fname, 'wb') as file:
             file.write(data)
             print('Wrote to ' + fname)
 
@@ -60,7 +60,7 @@ def check_pycolor_execute(
 
     def test_stream(stream, fname, testdata):
         stream.seek(0)
-        data = stream.read()
+        data = stream.buffer.read()
 
         if print_output:
             print(data)
@@ -70,7 +70,7 @@ def check_pycolor_execute(
         if testdata is not None:
             self.assertEqual(data, testdata)
         else:
-            self.assertEqual(data, '')
+            self.assertEqual(data, b'')
 
     test_stream(pycobj.stdout, filename_prefix + '.out.txt', output_expected)
     test_stream(pycobj.stderr, filename_prefix + '.out.err.txt', output_expected_err)
