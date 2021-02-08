@@ -20,6 +20,8 @@ FORMAT_COLOR_STRING = {
     '%C(red)a%C(green)b%C(last)c': '\x1b[31ma\x1b[32mb\x1b[32mc',
     '%C(red)a%C(green)b%C(prev)c': '\x1b[31ma\x1b[32mb\x1b[31mc',
     '%C(raw1;4;38;5;40)abc': '\x1b[1;4;38;5;40mabc',
+    '%C(overline)abc': '\x1b[53mabc',
+    '%C(^overline)abc': '\x1b[55mabc',
 }
 
 ALIASES = 'aliases'
