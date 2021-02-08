@@ -105,7 +105,7 @@ def get_formatter(string, idx):
     if string[idx] == '(':
         paren = 1
         idx += 1
-    elif string[idx + 1] == '(' and string[idx] in FORMAT_CHAR_VALID:
+    elif idx + 1 < len(string) and string[idx + 1] == '(' and string[idx] in FORMAT_CHAR_VALID:
         first_char_before_paren = True
         paren = 1
         idx += 2

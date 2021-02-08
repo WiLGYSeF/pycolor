@@ -16,6 +16,10 @@ GET_FORMATTER_STRINGS = [
         VALUE: (None, 0)
     },
     {
+        ARGS: ('%C', 0),
+        VALUE: ('C', 2)
+    },
+    {
         ARGS: ('%Cred', 0),
         VALUE: ('Cred', 5)
     },
