@@ -45,7 +45,7 @@ def main():
         # https://stackoverflow.com/a/3207973
         _, _, filenames = next(os.walk(PYCOLOR_CONFIG_DIR))
 
-        for fname in filenames:
+        for fname in sorted(filenames):
             fpath = os.path.join(PYCOLOR_CONFIG_DIR, fname)
             if os.path.isfile(fpath):
                 pycobj.load_file(fpath)
