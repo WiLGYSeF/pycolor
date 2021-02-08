@@ -33,14 +33,17 @@ def format_string(string, context=None, return_color_positions=False):
             formatter, newidx = get_formatter(string, idx)
             if formatter is not None:
                 result = do_format(string, formatter, idx, newidx, context)
+                apppend_result = True
+
                 if is_color_format(formatter):
                     if return_color_positions:
                         color_positions[len(newstring)] = result
-                    else:
-                        newstring += result
-                else:
-                    newstring += result
+                        apppend_result = False
 
+                if apppend_result:
+                    if isinstance(result, bytes):
+                        result = result.decode('utf-8')
+                    newstring += result
                 idx = newidx
                 continue
 
@@ -72,8 +75,6 @@ def do_format(string, formatter, idx, newidx, context):
         context['last_colors'].append(colorstr)
         return colorstr
 
-    # FIXME: should not decode here
-
     if 'match' in context:
         if formatter[0] == FORMAT_GROUP:
             try:
@@ -82,7 +83,7 @@ def do_format(string, formatter, idx, newidx, context):
                 group = formatter[1:]
 
             try:
-                return context['match'][group].decode('utf-8')
+                return context['match'][group]
             except IndexError:
                 return ''
     if 'fields' in context:
