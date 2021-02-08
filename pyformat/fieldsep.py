@@ -44,7 +44,7 @@ def get_fields(formatter, context):
         end = start
 
     if start > end or start >= len(fields):
-        return ''
+        return b''
 
     newstring = fields[start]
     for i in range(start + 2, end + 1, 2):
@@ -53,19 +53,19 @@ def get_fields(formatter, context):
         else:
             newstring += sep + fields[i]
 
-    return newstring.decode('utf-8')
+    return newstring
 
 def get_join_field(num, context):
     fields = context['fields']
     if num < 0:
         num += idx_to_num(len(fields)) + 1
     if num <= 1:
-        return ''
+        return b''
 
     num = num_to_idx(num - 1) + 1
     if num >= len(fields):
-        return ''
-    return fields[num].decode('utf-8')
+        return b''
+    return fields[num]
 
 def idx_to_num(idx):
     return idx // 2 + 1

@@ -123,28 +123,28 @@ GET_JOIN_FIELD = [
         CONTEXT: {
             'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
         },
-        RESULT: '    '
+        RESULT: b'    '
     },
     {
         FIELD: 0,
         CONTEXT: {
             'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
         },
-        RESULT: ''
+        RESULT: b''
     },
     {
         FIELD: 1,
         CONTEXT: {
             'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
         },
-        RESULT: ''
+        RESULT: b''
     },
     {
         FIELD: 2,
         CONTEXT: {
             'fields': [b'this', b'   ', b'is', b'    ', b'a', b' ', b'test']
         },
-        RESULT: '   '
+        RESULT: b'   '
     },
 ]
 
