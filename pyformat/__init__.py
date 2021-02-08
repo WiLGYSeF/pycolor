@@ -41,8 +41,6 @@ def format_string(string, context=None, return_color_positions=False):
                         apppend_result = False
 
                 if apppend_result:
-                    if isinstance(result, bytes):
-                        result = result.decode('utf-8')
                     newstring += result
                 idx = newidx
                 continue

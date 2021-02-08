@@ -203,11 +203,11 @@ class Pycolor:
         if self.current_profile.buffer_line:
             self.linenum += 1
 
-            if newdata[-1] == ord('\n'):
+            if newdata[-1] == '\n':
                 newdata = newdata[:-1]
                 removed_newline = True
         else:
-            self.linenum += data.count(b'\n')
+            self.linenum += data.count('\n')
 
         for pat in self.current_profile.patterns:
             if not pat.enabled:
@@ -223,9 +223,9 @@ class Pycolor:
             if len(color_positions) > 0:
                 newdata = Pycolor.insert_color_data(newdata, color_positions)
 
-            stream.buffer.write(newdata)
+            stream.write(newdata)
             if removed_newline:
-                stream.buffer.write(b'\n')
+                stream.write('\n')
 
             stream.flush()
 
@@ -242,7 +242,7 @@ class Pycolor:
                 match = pat.regex.search(data)
                 if match is not None:
                     data, colorpos = pyformat.format_string(
-                        pat.replace_all.decode('utf-8'),
+                        pat.replace_all,
                         context={
                             'color_enabled': self.is_color_enabled(),
                             'color_aliases': self.color_aliases,
@@ -250,7 +250,6 @@ class Pycolor:
                         },
                         return_color_positions=True
                     )
-                    data = data.encode('utf-8')
                     color_positions.clear()
                     color_positions.update(colorpos)
             elif pat.filter and pat.regex.search(data):
@@ -267,7 +266,7 @@ class Pycolor:
                     continue
 
                 data, colorpos = pyformat.format_string(
-                    pat.replace_all.decode('utf-8'),
+                    pat.replace_all,
                     context={
                         'color_enabled': self.is_color_enabled(),
                         'color_aliases': self.color_aliases,
@@ -279,7 +278,7 @@ class Pycolor:
 
                 color_positions.clear()
                 color_positions.update(colorpos)
-                return data.encode('utf-8')
+                return data
 
         if pat.replace is not None:
             for field_idx in field_idxs:
@@ -304,7 +303,7 @@ class Pycolor:
 
                 update_positions(color_positions, replace_ranges)
                 Pycolor.update_color_positions(color_positions, colorpos)
-            return b''.join(fields)
+            return ''.join(fields)
 
         if pat.filter:
             for field_idx in field_idxs:
@@ -319,7 +318,7 @@ class Pycolor:
 
         def replacer(match):
             newstring, colorpos = pyformat.format_string(
-                pattern.replace.decode('utf-8'),
+                pattern.replace,
                 context={
                     'color_enabled': self.is_color_enabled(),
                     'color_aliases': self.color_aliases,
@@ -335,7 +334,7 @@ class Pycolor:
                     del colorpos[key]
 
             color_positions.update(colorpos)
-            return newstring.encode('utf-8')
+            return newstring
 
         newstring, replace_ranges = search_replace(
             pattern.regex,
@@ -349,11 +348,11 @@ class Pycolor:
 
     @staticmethod
     def insert_color_data(data, color_positions):
-        colored_data = b''
+        colored_data = ''
         last = 0
 
         for key in sorted(color_positions.keys()):
-            colored_data += data[last:key] + color_positions[key].encode('utf-8')
+            colored_data += data[last:key] + color_positions[key]
             last = key
 
         return colored_data + data[last:]

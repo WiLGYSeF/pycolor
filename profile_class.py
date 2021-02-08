@@ -30,9 +30,9 @@ class Profile:
             pattern = Pattern(pattern_cfg)
 
             if 'replace' in pattern_cfg:
-                pattern.replace = pattern_cfg['replace'].encode('utf-8')
+                pattern.replace = pattern_cfg['replace']
             if 'replace_all' in pattern_cfg:
-                pattern.replace_all = pattern_cfg['replace_all'].encode('utf-8')
+                pattern.replace_all = pattern_cfg['replace_all']
 
             self.patterns.append(pattern)
 

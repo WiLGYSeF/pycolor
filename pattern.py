@@ -21,7 +21,7 @@ class Pattern:
         self.activation_line = get_type(cfg, 'activation_line', int, -1)
         self.deactivation_line = get_type(cfg, 'deactivation_line', int, -1)
 
-        self.regex = re.compile(cfg['expression'].encode('utf-8'))
+        self.regex = re.compile(cfg['expression'])
 
         self.replace = None
         self.replace_all = None
@@ -34,13 +34,13 @@ class Pattern:
         if cfg.get('activation_expression') is not None:
             self.activation_expression = cfg['activation_expression']
             self.activation_regex = re.compile(
-                cfg['activation_expression'].encode('utf-8')
+                cfg['activation_expression']
             )
             self.active = False
         if cfg.get('deactivation_expression') is not None:
             self.deactivation_expression = cfg['deactivation_expression']
             self.deactivation_regex = re.compile(
-                cfg['deactivation_expression'].encode('utf-8')
+                cfg['deactivation_expression']
             )
 
         self.separator = get_type(cfg, 'separator', str, None)
@@ -51,7 +51,7 @@ class Pattern:
         if self.separator is not None and len(self.separator) == 0:
             self.separator = None
         if self.separator is not None:
-            self.separator = self.separator.encode('utf-8')
+            self.separator = self.separator
         else:
             self.field = None
             self.min_fields = -1
