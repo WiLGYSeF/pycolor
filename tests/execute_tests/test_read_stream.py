@@ -7,84 +7,116 @@ from execute import read_stream
 class ReadStreamTest(unittest.TestCase):
     def test_empty(self):
         stream = StreamObj(b'')
-        self.assertIsNone(stream.read_stream(buffer_line=True, last=True))
-        self.assertIsNone(stream.read_stream(buffer_line=False, last=True))
-        self.assertIsNone(stream.read_stream(buffer_line=True, last=False))
-        self.assertIsNone(stream.read_stream(buffer_line=False, last=False))
+        self.assertEqual(
+            stream.read_stream(buffer_line=True, last=True),
+            []
+        )
+        self.assertEqual(
+            stream.read_stream(buffer_line=False, last=True),
+            []
+        )
+        self.assertEqual(
+            stream.read_stream(buffer_line=True, last=False),
+            []
+        )
+        self.assertEqual(
+            stream.read_stream(buffer_line=False, last=False),
+            []
+        )
 
     def test_oneline_buflf_last(self):
         stream = StreamObj(b'abc\n')
         self.assertEqual(
             stream.read_stream(buffer_line=True, last=True),
-            'abc\n'
+            ['abc\n']
         )
 
     def test_oneline_buflf(self):
         stream = StreamObj(b'abc\n')
         self.assertEqual(
             stream.read_stream(buffer_line=True, last=False),
-            'abc\n'
+            ['abc\n']
         )
 
     def test_oneline_last(self):
         stream = StreamObj(b'abc\n')
         self.assertEqual(
             stream.read_stream(buffer_line=False, last=True),
-            'abc\n'
+            ['abc\n']
         )
 
     def test_oneline(self):
         stream = StreamObj(b'abc\n')
         self.assertEqual(
             stream.read_stream(buffer_line=False, last=False),
-            'abc\n'
+            ['abc\n']
         )
 
     def test_oneline_buflf_last_nolf(self):
         stream = StreamObj(b'abc')
         self.assertEqual(
             stream.read_stream(buffer_line=True, last=True),
-            'abc'
+            ['abc']
         )
 
     def test_oneline_buflf_nolf(self):
         stream = StreamObj(b'abc')
-        self.assertIsNone(stream.read_stream(buffer_line=True, last=False))
+        self.assertEqual(
+            stream.read_stream(buffer_line=True, last=False),
+            []
+        )
 
     def test_oneline_last_nolf(self):
         stream = StreamObj(b'abc')
         self.assertEqual(
             stream.read_stream(buffer_line=False, last=True),
-            'abc'
+            ['abc']
         )
 
     def test_oneline_nolf(self):
         stream = StreamObj(b'abc')
         self.assertEqual(
             stream.read_stream(buffer_line=False, last=False),
-            'abc'
+            ['abc']
         )
 
-    @unittest.skip
     def test_twoline_buflf_last(self):
-        stream = BytesIO()
-        indata = [
+        stream = StreamObj([
             b'abc\n',
             b'123\n'
-        ]
+        ])
 
-        for line in indata:
-            stream.write(line)
-        stream.seek(0)
+        callback_data = stream.read_stream(buffer_line=True, last=True)
+        for i in range(len(stream.data)):
+            self.assertEqual(
+                callback_data[i],
+                stream.data[i].decode('utf-8')
+            )
 
-        counter = 0
+    def test_twoline_buflf(self):
+        stream = StreamObj([
+            b'abc\n',
+            b'123\n'
+        ])
 
-        def callback(data):
-            nonlocal counter
-            self.assertEqual(data, indata[counter])
-            counter += 1
+        callback_data = stream.read_stream(buffer_line=True, last=False)
+        for i in range(len(stream.data)):
+            self.assertEqual(
+                callback_data[i],
+                stream.data[i].decode('utf-8')
+            )
 
-        read_stream(stream, callback, buffer_line=True, last=True)
+    def test_twoline_last(self):
+        stream = StreamObj([
+            b'abc\n123\n'
+        ])
+
+        callback_data = stream.read_stream(buffer_line=False, last=True)
+        for i in range(len(stream.data)):
+            self.assertEqual(
+                callback_data[i],
+                stream.data[i].decode('utf-8')
+            )
 
 
 class StreamObj:
@@ -110,12 +142,13 @@ class StreamObj:
 
     def callback(self, data):
         self.callback_data += data
-        self.last_callback_data = data
+        self.last_callback_data.append(data)
 
         if callable(self.callback_func):
             self.callback_func(data)
 
     def read_stream(self, buffer_line=True, encoding='utf-8', last=False):
+        self.last_callback_data = []
         result = read_stream(
             self.stream,
             self.callback,
@@ -123,6 +156,4 @@ class StreamObj:
             encoding=encoding,
             last=last
         )
-        if result is None or not result:
-            self.last_callback_data = None
         return self.last_callback_data
