@@ -1,5 +1,6 @@
 import fcntl
 import os
+import signal
 import subprocess
 
 from static_vars import static_vars
@@ -103,6 +104,12 @@ def execute(cmd, stdout_callback, stderr_callback, buffer_line=True, encoding='u
         stderr=subprocess.PIPE,
         encoding=encoding
     ) as process:
+        def signal_handler(sig, frame):
+            # SIGINT is passed through to the subprocess
+            pass
+
+        signal.signal(signal.SIGINT, signal_handler)
+
         nonblock(process.stdout)
         nonblock(process.stderr)
 
@@ -113,4 +120,5 @@ def execute(cmd, stdout_callback, stderr_callback, buffer_line=True, encoding='u
         _read(process.stdout, stdout_callback, last=True)
         _read(process.stdout, stdout_callback, last=True)
 
+        signal.signal(signal.SIGINT, signal.default_int_handler)
         return process.poll()
