@@ -125,6 +125,12 @@ class Pattern:
             self.active = False
             return False
 
+        if len(self.activation_ranges) != 0:
+            idx, result = bsearch_closest(self.activation_ranges, linenum, lambda x, y: x[0] - y)
+            if not result:
+                idx -= 1
+            return active() if self.activation_ranges[idx][1] else inactive()
+
         if self.activation_line > -1:
             return inactive() if self.activation_line > linenum else active()
         if self.deactivation_line > -1:
