@@ -63,7 +63,7 @@ def check_pycolor_execute(
         data = stream.buffer.read()
 
         if print_output:
-            print(data)
+            print(data.decode('utf-8'))
         if write_output:
             write_file(fname, data)
 
