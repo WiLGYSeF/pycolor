@@ -188,6 +188,30 @@ class ReadStreamTest(unittest.TestCase):
             ['\n']
         )
 
+    def test_twoline_buflf_last_nolf(self):
+        stream = StreamObj([
+            b'ab',
+            b'c',
+            b'\n123'
+        ])
+
+        self.assertEqual(
+            stream.read_stream(buffer_line=True, last=False),
+            []
+        )
+        self.assertEqual(
+            stream.read_stream(buffer_line=True, last=False),
+            []
+        )
+        self.assertEqual(
+            stream.read_stream(buffer_line=True, last=False),
+            ['abc\n']
+        )
+        self.assertEqual(
+            stream.read_stream(buffer_line=True, last=True),
+            ['123']
+        )
+
 
 class StreamObj:
     def __init__(self, data, callback=None):
