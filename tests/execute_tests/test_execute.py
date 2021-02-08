@@ -4,7 +4,6 @@ import unittest
 import execute
 
 
-# TODO: more test cases
 class ExecuteTest(unittest.TestCase):
     def test_execute_date(self):
         def stdout_cb(data):
