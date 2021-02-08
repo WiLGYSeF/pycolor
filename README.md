@@ -18,12 +18,15 @@ __After:__
 
 ![sample colored df output](/docs/images/sample-df-output-colored.png)
 
+[Sample df configuration file.](/docs/sample-config/df.json)
+
 ----
 
 pycolor can also be aliased in `~/.bashrc` like so:
 ```bash
 alias rsync='pycolor rsync'
 ```
+
 __Before:__
 
 ![sample rsync output](/docs/images/sample-rsync-output.png)
@@ -31,5 +34,7 @@ __Before:__
 __After:__ (note pycolor omitted lines with trailing slashes in addition to coloring output for better readability)
 
 ![sample colored rsync output](/docs/images/sample-rsync-output-colored.png)
+
+[Sample rsync configuration file.](/docs/sample-config/rsync.json)
 
 # Configuration
