@@ -18,8 +18,27 @@ class Pattern:
         self.start_occurrence = get_type(cfg, 'start_occurrence', int, 1)
         self.max_count = get_type(cfg, 'max_count', int, -1)
 
-        self.activation_line = get_type(cfg, 'activation_line', int, -1)
-        self.deactivation_line = get_type(cfg, 'deactivation_line', int, -1)
+        if 'activation_lines' in cfg:
+            self.activation_line = get_type(cfg, 'activation_lines', list, [])
+        else:
+            self.activation_line = get_type(cfg, 'activation_line', (list, int), -1)
+        if 'deactivation_lines' in cfg:
+            self.deactivation_line = get_type(cfg, 'deactivation_lines', list, [])
+        else:
+            self.deactivation_line = get_type(cfg, 'deactivation_line', (list, int), -1)
+
+        self.activation_ranges = []
+
+        if isinstance(self.activation_line, list) or isinstance(self.deactivation_line, list):
+            def as_list(var):
+                return var if isinstance(var, list) else [ var ]
+
+            self.activation_ranges = Pattern.get_activation_ranges(
+                as_list(self.activation_line),
+                as_list(self.deactivation_line),
+            )
+            self.activation_line = -1
+            self.deactivation_line = -1
 
         self.regex = re.compile(cfg['expression'])
 
@@ -70,6 +89,32 @@ class Pattern:
             idx = pyformat.fieldsep.num_to_idx(self.field)
             return range(idx, idx + 1)
         return range(0, len(fields), 2)
+
+    @staticmethod
+    def get_activation_ranges(activations, deactivations):
+        ranges = []
+        ranges.extend(map(lambda x: (x, True), activations))
+        ranges.extend(map(lambda x: (x, False), deactivations))
+        ranges.sort(key=lambda x: x[0])
+
+        idx = 0
+        while idx < len(ranges) and ranges[idx][0] < 0:
+            idx += 1
+        if idx == len(ranges):
+            return []
+
+        new_ranges = [ ranges[idx] ]
+
+        while idx < len(ranges):
+            if all([
+                ranges[idx][0] >= 0,
+                ranges[idx][0] != new_ranges[-1][0],
+                ranges[idx][1] != new_ranges[-1][1]
+            ]):
+                new_ranges.append(ranges[idx])
+            idx += 1
+
+        return new_ranges
 
     def is_active(self, linenum, data):
         def active():
