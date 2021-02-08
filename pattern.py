@@ -126,7 +126,11 @@ class Pattern:
             return False
 
         if len(self.activation_ranges) != 0:
-            idx, result = bsearch_closest(self.activation_ranges, linenum, lambda x, y: x[0] - y)
+            idx, result = bsearch_closest(
+                self.activation_ranges,
+                linenum,
+                cmp_fnc=lambda x, y: x[0] - y
+            )
             if not result:
                 idx -= 1
             return active() if self.activation_ranges[idx][1] else inactive()
@@ -145,10 +149,7 @@ class Pattern:
 
         return active()
 
-def bsearch_closest(arr, val, cmp_fnc=None):
-    if cmp_fnc is None:
-        cmp_fnc = lambda x, y: x - y
-
+def bsearch_closest(arr, val, cmp_fnc=lambda x, y: x - y):
     low, mid, high = 0, 0, len(arr) - 1
     while low <= high:
         mid = (high + low) // 2
