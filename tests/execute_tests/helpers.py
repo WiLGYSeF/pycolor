@@ -77,23 +77,32 @@ def check_pycolor_execute(
 
 @contextmanager
 def execute_patch(obj, stdout_stream, stderr_stream):
-    def execute(cmd, stdout_callback, stderr_callback, buffer_line=True):
+    def execute(cmd, stdout_callback, stderr_callback, buffer_line=True, encoding='utf-8'):
+        def _read(stream, callback, last=False):
+            return read_stream(
+                stream,
+                callback,
+                buffer_line=buffer_line,
+                encoding=encoding,
+                last=last
+            )
+
         while True:
             result_stdout = None
             result_stderr = None
 
             if stdout_stream is not None:
-                result_stdout = read_stream(stdout_stream, stdout_callback, buffer_line=buffer_line)
+                result_stdout = _read(stdout_stream, stdout_callback)
             if stderr_stream is not None:
-                result_stderr = read_stream(stderr_stream, stderr_callback, buffer_line=buffer_line)
+                result_stderr = _read(stderr_stream, stderr_callback)
 
             if result_stdout is None and result_stderr is None:
                 break
 
         if stdout_stream is not None:
-            read_stream(stdout_stream, stdout_callback, buffer_line=buffer_line, last=True)
+            _read(stdout_stream, stdout_callback, last=True)
         if stderr_stream is not None:
-            read_stream(stderr_stream, stderr_callback, buffer_line=buffer_line, last=True)
+            _read(stderr_stream, stderr_callback, last=True)
         return 0
 
     with patch(obj, 'execute', execute):
