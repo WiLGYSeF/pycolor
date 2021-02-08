@@ -138,3 +138,18 @@ class Pattern:
                 return active()
 
         return active()
+
+def bsearch_closest(arr, val, cmp_fnc=None):
+    if cmp_fnc is None:
+        cmp_fnc = lambda x, y: x - y
+
+    low, mid, high = 0, 0, len(arr) - 1
+    while low <= high:
+        mid = (high + low) // 2
+        if cmp_fnc(arr[mid], val) < 0:
+            low = mid + 1
+        elif cmp_fnc(arr[mid], val) > 0:
+            high = mid - 1
+        else:
+            return mid, True
+    return (high + low) // 2 + 1, False
