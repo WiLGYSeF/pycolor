@@ -11,7 +11,7 @@ def get_fields(formatter, context):
     comma_idx = formatter.find(',')
     if comma_idx != -1:
         number = formatter[:comma_idx]
-        sep = formatter[comma_idx + 1:].encode('utf-8')
+        sep = formatter[comma_idx + 1:]
     else:
         number = formatter
         sep = None
@@ -44,7 +44,7 @@ def get_fields(formatter, context):
         end = start
 
     if start > end or start >= len(fields):
-        return b''
+        return ''
 
     newstring = fields[start]
     for i in range(start + 2, end + 1, 2):
@@ -60,11 +60,11 @@ def get_join_field(num, context):
     if num < 0:
         num += idx_to_num(len(fields)) + 1
     if num <= 1:
-        return b''
+        return ''
 
     num = num_to_idx(num - 1) + 1
     if num >= len(fields):
-        return b''
+        return ''
     return fields[num]
 
 def idx_to_num(idx):

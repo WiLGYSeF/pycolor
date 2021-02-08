@@ -9,24 +9,24 @@ RESULT = 'result'
 
 INSERT_COLOR_DATA = [
     {
-        DATA: b'this is a test',
+        DATA: 'this is a test',
         COLOR_POS: {},
-        RESULT: b'this is a test'
+        RESULT: 'this is a test'
     },
     {
-        DATA: b'this is a test',
+        DATA: 'this is a test',
         COLOR_POS: {
             5: '\x1b[31m'
         },
-        RESULT: b'this \x1b[31mis a test'
+        RESULT: 'this \x1b[31mis a test'
     },
     {
-        DATA: b'this is a test',
+        DATA: 'this is a test',
         COLOR_POS: {
             5: '\x1b[31m',
             7: '\x1b[0m'
         },
-        RESULT: b'this \x1b[31mis\x1b[0m a test'
+        RESULT: 'this \x1b[31mis\x1b[0m a test'
     },
 ]
 
