@@ -125,10 +125,10 @@ class Pattern:
             self.active = False
             return False
 
-        if self.activation_line > -1 and self.activation_line > linenum:
-            return inactive()
-        if self.deactivation_line > -1 and self.deactivation_line <= linenum:
-            return active()
+        if self.activation_line > -1:
+            return inactive() if self.activation_line > linenum else active()
+        if self.deactivation_line > -1:
+            return inactive() if self.deactivation_line <= linenum else active()
 
         if self.active:
             if self.deactivation_regex is not None and re.search(self.deactivation_regex, data):
