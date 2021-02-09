@@ -52,15 +52,11 @@ class Pattern:
 
         if cfg.get('activation_expression') is not None:
             self.activation_expression = cfg['activation_expression']
-            self.activation_regex = re.compile(
-                cfg['activation_expression']
-            )
+            self.activation_regex = re.compile(cfg['activation_expression'])
             self.active = False
         if cfg.get('deactivation_expression') is not None:
             self.deactivation_expression = cfg['deactivation_expression']
-            self.deactivation_regex = re.compile(
-                cfg['deactivation_expression']
-            )
+            self.deactivation_regex = re.compile(cfg['deactivation_expression'])
 
         self.separator = get_type(cfg, 'separator', str, None)
         self.field = get_type(cfg, 'field', int, None)
@@ -133,7 +129,8 @@ class Pattern:
             )
             if not result:
                 idx -= 1
-            return active() if self.activation_ranges[idx][1] else inactive()
+            if not self.activation_ranges[idx][1]:
+                return inactive()
 
         if self.activation_line > -1 and self.activation_line > linenum:
             return inactive()
