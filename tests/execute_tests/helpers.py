@@ -5,6 +5,7 @@ import os
 from tests.testutils import patch
 
 from execute import read_stream
+import main
 import pycolor_class
 
 
@@ -16,39 +17,15 @@ def check_pycolor_execute(
     print_output=False,
     write_output=False
 ):
-    pycobj = pycolor_class.Pycolor(color_mode='always')
+    pycobj = create_pycolor_object()
     filename_prefix = os.path.join(mocked_data_dir, test_name)
     pycobj.load_file(filename_prefix + '.json')
-
-    def open_fstream(fname):
-        try:
-            return open(fname, 'rb')
-        except FileNotFoundError:
-            return None
-
-    def read_file(fname):
-        try:
-            with open(fname, 'rb') as file:
-                return file.read()
-        except FileNotFoundError:
-            return None
-
-    def write_file(fname, data):
-        if len(data) == 0:
-            return
-
-        with open(fname, 'wb') as file:
-            file.write(data)
-            print('Wrote to ' + fname)
 
     stdout = open_fstream(filename_prefix + '.txt')
     stderr = open_fstream(filename_prefix + '.err.txt')
 
     output_expected = read_file(filename_prefix + '.out.txt')
     output_expected_err = read_file(filename_prefix + '.out.err.txt')
-
-    pycobj.stdout = io.TextIOWrapper(io.BytesIO())
-    pycobj.stderr = io.TextIOWrapper(io.BytesIO())
 
     with execute_patch(pycolor_class.execute, stdout, stderr):
         pycobj.execute(cmd)
@@ -62,9 +39,9 @@ def check_pycolor_execute(
         stream.seek(0)
         data = stream.buffer.read()
 
-        if print_output:
+        if print_output: #pragma: no cover
             print(data.decode('utf-8'))
-        if write_output:
+        if write_output: #pragma: no cover
             write_file(fname, data)
 
         if testdata is not None:
@@ -74,6 +51,46 @@ def check_pycolor_execute(
 
     test_stream(pycobj.stdout, filename_prefix + '.out.txt', output_expected)
     test_stream(pycobj.stderr, filename_prefix + '.out.err.txt', output_expected_err)
+
+def check_pycolor_stdin(
+    self,
+    profile_name,
+    mocked_data_dir,
+    test_name,
+    print_output=False,
+    write_output=False
+):
+    pycobj = create_pycolor_object()
+    filename_prefix = os.path.join(mocked_data_dir, test_name)
+    pycobj.load_file(filename_prefix + '.json')
+
+    stdin = io.TextIOWrapper(io.BytesIO(read_file(filename_prefix + '.txt')))
+    output_expected = read_file(filename_prefix + '.out.txt')
+
+    pycobj.set_current_profile(pycobj.get_profile_by_name(profile_name))
+    main.read_input_stream(pycobj, stdin)
+
+    def test_stream(stream, fname, testdata):
+        stream.seek(0)
+        data = stream.buffer.read()
+
+        if print_output: #pragma: no cover
+            print(data.decode('utf-8'))
+        if write_output: #pragma: no cover
+            write_file(fname, data)
+
+        if testdata is not None:
+            self.assertEqual(data, testdata)
+        else:
+            self.assertEqual(data, b'')
+
+    test_stream(pycobj.stdout, filename_prefix + '.out.txt', output_expected)
+
+def create_pycolor_object():
+    pycobj = pycolor_class.Pycolor(color_mode='always')
+    pycobj.stdout = io.TextIOWrapper(io.BytesIO())
+    pycobj.stderr = io.TextIOWrapper(io.BytesIO())
+    return pycobj
 
 @contextmanager
 def execute_patch(obj, stdout_stream, stderr_stream):
@@ -107,3 +124,24 @@ def execute_patch(obj, stdout_stream, stderr_stream):
 
     with patch(obj, 'execute', execute):
         yield
+
+def open_fstream(fname):
+    try:
+        return open(fname, 'rb')
+    except FileNotFoundError:
+        return None
+
+def read_file(fname):
+    try:
+        with open(fname, 'rb') as file:
+            return file.read()
+    except FileNotFoundError:
+        return None
+
+def write_file(fname, data): #pragma: no cover
+    if len(data) == 0:
+        return
+
+    with open(fname, 'wb') as file:
+        file.write(data)
+        print('Wrote to ' + fname)
