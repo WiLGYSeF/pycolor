@@ -1,15 +1,20 @@
 # Pycolor
 ![build](https://travis-ci.com/WiLGYSeF/pycolor.svg?branch=master)
 
-1. [Example Usage](#example-usage).
-2. [Configuration](#configuration).
-3. [Formatting Strings](#formatting-strings).
+1. [Installation](#installation).
+2. [Example Usage](#example-usage).
+3. [Configuration](#configuration).
+4. [Formatting Strings](#formatting-strings).
 	1. [Color Formatting](#colors).
 	2. [Group Formatting](#groups).
 	3. [Field Formatting](#fields).
 
 A Python wrapper program that executes commands to perform real-time terminal output coloring using ANSI color codes.
 Color formatting can be added to program output using JSON configuration files and regular expressions to improve readability of the output.
+
+# Installation
+
+Save this project into somewhere like `~/.local/bin/pycolor-py/` and create a symlink at `~/.local/bin/pycolor` pointed to `~/.local/bin/pycolor-py/pycolor.py`.
 
 # Example Usage
 
