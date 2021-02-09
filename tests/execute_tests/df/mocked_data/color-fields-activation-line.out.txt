@@ -1,0 +1,10 @@
+Filesystem            Size  Used Avail Use% Mounted on
+udev                  3.8G     0  3.8G   0% /dev
+tmpfs                 [34m785M[0m  [31m1.8M[0m  [32m783M[0m   [34m1%[0m /run
+/dev/nvme0n1p3        [34m232G[0m   [31m78G[0m  [32m154G[0m  [34m34%[0m /
+tmpfs                 [34m3.9G[0m   [31m25M[0m  [32m3.9G[0m   [34m1%[0m /dev/shm
+tmpfs                 [34m5.0M[0m  [31m4.0K[0m  [32m5.0M[0m   [34m1%[0m /run/lock
+tmpfs                 [34m3.9G[0m     [31m0[0m  [32m3.9G[0m   [34m0%[0m /sys/fs/cgroup
+/dev/nvme0n1p2        [34m705M[0m   [31m86M[0m  [32m570M[0m  [34m13%[0m /boot
+/dev/nvme0n1p1        511M  5.9M  505M   2% /boot/efi
+tmpfs                 785M   97K  785M   1% /run/user/1000

@@ -24,3 +24,6 @@ class DfTest(unittest.TestCase):
 
     def test_color_fields_stdin(self):
         check_pycolor_stdin(self, 'df', MOCKED_DATA, 'color-fields')
+
+    def test_color_fields_activation_line(self):
+        check_pycolor_execute(self, ['df', '-h'], MOCKED_DATA, 'color-fields-activation-line')
