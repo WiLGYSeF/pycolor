@@ -3,6 +3,9 @@
 1. [Example Usage](#example-usage).
 2. [Configuration](#configuration).
 3. [Formatting Strings](#formatting-strings).
+	1. [Color Formatting](#colors).
+	2. [Group Formatting](#groups).
+	3. [Field Formatting](#fields).
 
 A Python wrapper program that executes commands to perform real-time terminal output coloring using ANSI color codes.
 Color formatting can be added to program output using JSON configuration files and regular expressions to improve readability of the output.
@@ -45,6 +48,8 @@ When looking for a profile to use, pycolor will select the last matching profile
 
 Patterns are applied first-to-last for each profile.
 
+TODO: describe configuration.
+
 Configuration file template:
 ```json
 {
@@ -71,9 +76,9 @@ Valid formatting argument characters are upper/lowercase letters and numbers, un
 
 ## Colors
 
-To colorize output through a replace pattern use `%C<color argument>`
+To colorize output through a replace pattern use `%C<color argument>`.
 
-### Recognized colors:
+### Recognized Colors:
 | Color Argument | Aliases | ANSI Code | Description |
 |---|---|---|---|
 | reset | normal, res, nor, z | `\e[0m` | Resets all ANSI color formatting |
@@ -104,7 +109,7 @@ To colorize output through a replace pattern use `%C<color argument>`
 | lightcyan | lc | `\e[96m` | Light cyan color |
 | white | w | `\e[97m` | White color |
 
-### Modifier characters
+### Modifier Characters
 
 You can select multiple colors by separating them with `;` (must be wrapped in parentheses). e.g. `%C(bold;red)`.
 
@@ -115,12 +120,67 @@ If a `^` is prepended before a style (e.g. `%C(^italic)` produces `\e[23m`), the
 
 ### Special Colors
 
-#### 256-color
+#### 256-Color
 If a color format is just a number (e.g. `%C130`), then it will use the 256-color set (in this case, a brown color): `\e[38;5;130m`.
 This also works for background colors as well (e.g. `%C(^130)` produces `\e[48;5;130m`).
 
-#### 24-bit color
+TODO: add 256-color table here.
+
+#### 24-bit Color
 24-bit color is also supported similarly to 256-color by using hex codes (`%C0xffaa00` will produce orange: `\e[38;2;255;170;0m`).
 
-### Raw codes
+### Raw Codes
 If for some reason you would like to use raw codes in the color formats: `%C(raw1;3;36)` will produce bold, italic, cyan (`\e[1;3;36m`).
+
+## Groups
+
+Regex groups can be referenced with the format: `%G<group number or name>`.
+`%G0` will be the text that the pattern's `expression` property matches. `%G1` will be the first matching group, `%G2` will be the second, etc. If the regex group is named, it can also be referenced (e.g. `%Gmyregexgroup`).
+
+## Fields
+
+If the pattern's `separator` property is set, then fields and their separators can be referenced in the format string.
+
+To get a field's text, use `%F<field number>`. 
+If a output line is `this is a test`, and the pattern `separator` property is ` `, the format string `%F2 %F1 %F3 %F4` will format to `is this a test` for that line.
+
+To get the field separator string, use `%Fs<field number>`. This will return the field separator string that precedes the field number. (e.g. `%Fs3` will get the field separator string that comes before the third field `%F3`).
+
+If `separator` is set to `#+`, and the output line is `a#b##c###d##e#f`, the field format values will be:
+
+### Field Number Formats
+| Field Format | Value |
+|---|---|
+| `%F1` | `a` |
+| `%Fs2` | `#` |
+| `%F2` | `b` |
+| `%Fs3` | `##` |
+| `%F3` | `c` |
+| `%Fs4` | `###` |
+| `%F4` | `d` |
+| `%Fs5` | `##` |
+| `%F5` | `e` |
+| `%Fs6` | `#` |
+| `%F6` | `f` |
+
+### Negative Indexing
+
+Field formats support negative indexing, so `%F(-1)_%F(-2)` will format to `f_e` in the previous example.
+
+### Field Ranges
+
+Giving a range of fields is possible using the `*` character.
+A sample table is given below, using the same example as above:
+
+| Field Format | Value |
+|---|---|
+| `%F(*3)` | `a#b##c` |
+| `%F(1*3)` | `a#b##c` |
+| `%F(2*3)` | `b##c` |
+| `%F(2*4)` | `b##c###d` |
+| `%F(4*)` | `d##e#f` |
+
+### Separator replacement
+
+If you want to format using field ranges, but want to override the separator used to be a constant-length string, use `%F(<start range>*<end range>,<separator>)`.
+Using the previous input as an example, `%F(*4,_)` formats to  `a_b_c_d`.
