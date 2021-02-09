@@ -2,6 +2,7 @@
 	"profiles": [
 		{
 			"name": "df",
+			"profile_name": "df",
 			"patterns": [
 				{
 					"separator": " +",

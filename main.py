@@ -9,12 +9,12 @@ PYCOLOR_CONFIG_DIR = os.path.join(os.getenv('HOME'), '.pycolor')
 PYCOLOR_CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), '.pycolor.json')
 
 
-def main():
-    my_args, cmd_args = get_my_args(sys.argv)
+def main(args, stdin_stream=sys.stdin):
+    my_args, cmd_args = get_my_args(args)
 
     read_stdin = False
     if len(cmd_args) == 0:
-        if not sys.stdin.isatty():
+        if not stdin_stream.isatty():
             read_stdin = True
         else:
             sys.exit(1)
@@ -42,13 +42,7 @@ def main():
         pycobj.load_file(PYCOLOR_CONFIG_DEFAULT)
 
     if os.path.exists(PYCOLOR_CONFIG_DIR):
-        # https://stackoverflow.com/a/3207973
-        _, _, filenames = next(os.walk(PYCOLOR_CONFIG_DIR))
-
-        for fname in sorted(filenames):
-            fpath = os.path.join(PYCOLOR_CONFIG_DIR, fname)
-            if os.path.isfile(fpath):
-                pycobj.load_file(fpath)
+        load_config_files(pycobj, PYCOLOR_CONFIG_DIR)
 
     for fname in load_files:
         pycobj.load_file(fname)
@@ -66,26 +60,37 @@ def main():
             sys.exit(1)
 
         pycobj.set_current_profile(profile)
-
-        while True:
-            result = read_stream(
-                sys.stdin.buffer,
-                pycobj.stdout_cb,
-                buffer_line=profile.buffer_line
-            )
-            if result is None:
-                break
-
-        read_stream(
-            sys.stdin.buffer,
-            pycobj.stdout_cb,
-            buffer_line=profile.buffer_line,
-            last=True
-        )
+        read_input_stream(pycobj, stdin_stream)
         sys.exit(0)
 
     returncode = pycobj.execute(cmd_args, profile=profile)
     sys.exit(returncode)
+
+def read_input_stream(pycobj, stream):
+    while True:
+        result = read_stream(
+            stream.buffer,
+            pycobj.stdout_cb,
+            buffer_line=pycobj.current_profile.buffer_line
+        )
+        if result is None:
+            break
+
+    read_stream(
+        stream.buffer,
+        pycobj.stdout_cb,
+        buffer_line=pycobj.current_profile.buffer_line,
+        last=True
+    )
+
+def load_config_files(pycobj, path):
+    # https://stackoverflow.com/a/3207973
+    _, _, filenames = next(os.walk(path))
+
+    for fname in sorted(filenames):
+        filepath = os.path.join(path, fname)
+        if os.path.isfile(filepath):
+            pycobj.load_file(filepath)
 
 def get_my_args(argv, start_idx=1):
     my_args = []
@@ -121,4 +126,4 @@ def get_arg(string, default=None):
 
 
 if __name__ == '__main__': #pragma: no cover
-    main()
+    main(sys.argv, stdin_stream=sys.stdin)
