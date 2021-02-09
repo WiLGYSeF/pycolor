@@ -38,6 +38,7 @@ def _colorval(color, aliases=None):
         'reverse': 7,
         'hidden': 8,
         'conceal': 8,
+        'strike': 9,
         'strikethrough': 9,
         'crossed': 9,
         'crossedout': 9,
