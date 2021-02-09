@@ -203,11 +203,11 @@ class Pycolor:
         if self.current_profile.buffer_line:
             self.linenum += 1
 
-            if newdata[-1] == ord('\n'):
+            if newdata[-1] == '\n':
                 newdata = newdata[:-1]
                 removed_newline = True
         else:
-            self.linenum += data.count(b'\n')
+            self.linenum += data.count('\n')
 
         for pat in self.current_profile.patterns:
             if not pat.enabled:
@@ -219,27 +219,18 @@ class Pycolor:
             if newdata is None:
                 break
 
-        if len(color_positions) > 0:
-            newdata = Pycolor.insert_color_data(newdata, color_positions)
-
         if newdata is not None:
-            stream.buffer.write(newdata)
+            if len(color_positions) > 0:
+                newdata = Pycolor.insert_color_data(newdata, color_positions)
+
+            stream.write(newdata)
             if removed_newline:
-                stream.buffer.write(b'\n')
+                stream.write('\n')
 
             stream.flush()
 
     def apply_pattern(self, pat, data, color_positions):
-        if not pat.active:
-            if pat.activation_regex is None or not re.search(pat.activation_regex, data):
-                return data
-            pat.active = True
-
-        if pat.deactivation_regex is not None and re.search(pat.deactivation_regex, data):
-            pat.active = False
-            return data
-
-        if not pat.is_line_active(self.linenum):
+        if not pat.is_active(self.linenum, data):
             return data
 
         if pat.separator is None:
@@ -251,7 +242,7 @@ class Pycolor:
                 match = pat.regex.search(data)
                 if match is not None:
                     data, colorpos = pyformat.format_string(
-                        pat.replace_all.decode('utf-8'),
+                        pat.replace_all,
                         context={
                             'color_enabled': self.is_color_enabled(),
                             'color_aliases': self.color_aliases,
@@ -259,37 +250,23 @@ class Pycolor:
                         },
                         return_color_positions=True
                     )
-                    data = data.encode('utf-8')
                     color_positions.clear()
                     color_positions.update(colorpos)
             elif pat.filter and pat.regex.search(data):
                 return None
             return data
 
-        fields = re_split(pat.separator.encode('utf-8'), data)
-        fieldcount = pyformat.fieldsep.idx_to_num(len(fields))
-
-        if pat.min_fields > fieldcount or (
-            pat.max_fields > 0 and pat.max_fields < fieldcount
-        ):
-            return data
-
-        field_idxlist = []
-        if pat.field is not None and pat.field > 0:
-            if pat.field > fieldcount:
-                return data
-            field_idxlist = [ pyformat.fieldsep.num_to_idx(pat.field) ]
-        else:
-            field_idxlist = range(0, len(fields), 2)
+        fields = re_split(pat.separator, data)
+        field_idxs = pat.get_field_indexes(fields)
 
         if pat.replace_all is not None:
-            for field_idx in field_idxlist:
+            for field_idx in field_idxs:
                 match = pat.regex.search(fields[field_idx])
                 if match is None:
                     continue
 
                 data, colorpos = pyformat.format_string(
-                    pat.replace_all.decode('utf-8'),
+                    pat.replace_all,
                     context={
                         'color_enabled': self.is_color_enabled(),
                         'color_aliases': self.color_aliases,
@@ -301,10 +278,10 @@ class Pycolor:
 
                 color_positions.clear()
                 color_positions.update(colorpos)
-                return data.encode('utf-8')
+                return data
 
         if pat.replace is not None:
-            for field_idx in field_idxlist:
+            for field_idx in field_idxs:
                 newfield, replace_ranges, colorpos = self.pat_schrep(pat, fields[field_idx])
                 fields[field_idx] = newfield
 
@@ -326,10 +303,10 @@ class Pycolor:
 
                 update_positions(color_positions, replace_ranges)
                 Pycolor.update_color_positions(color_positions, colorpos)
-            return b''.join(fields)
+            return ''.join(fields)
 
         if pat.filter:
-            for field_idx in field_idxlist:
+            for field_idx in field_idxs:
                 match = pat.regex.search(fields[field_idx])
                 if match is not None:
                     return None
@@ -341,7 +318,7 @@ class Pycolor:
 
         def replacer(match):
             newstring, colorpos = pyformat.format_string(
-                pattern.replace.decode('utf-8'),
+                pattern.replace,
                 context={
                     'color_enabled': self.is_color_enabled(),
                     'color_aliases': self.color_aliases,
@@ -357,25 +334,25 @@ class Pycolor:
                     del colorpos[key]
 
             color_positions.update(colorpos)
-            return newstring.encode('utf-8')
+            return newstring
 
         newstring, replace_ranges = search_replace(
             pattern.regex,
             string,
             replacer,
             ignore_ranges=[],
-            start_occurrance=pattern.start_occurrance,
+            start_occurrence=pattern.start_occurrence,
             max_count=pattern.max_count
         )
         return newstring, replace_ranges, color_positions
 
     @staticmethod
     def insert_color_data(data, color_positions):
-        colored_data = b''
+        colored_data = ''
         last = 0
 
         for key in sorted(color_positions.keys()):
-            colored_data += data[last:key] + color_positions[key].encode('utf-8')
+            colored_data += data[last:key] + color_positions[key]
             last = key
 
         return colored_data + data[last:]

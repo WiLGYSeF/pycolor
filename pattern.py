@@ -1,6 +1,7 @@
 import re
 
 from get_type import get_type
+import pyformat
 
 
 class Pattern:
@@ -14,13 +15,13 @@ class Pattern:
         self.expression = cfg['expression']
         self.filter = get_type(cfg, 'filter', bool, False)
 
-        self.start_occurrance = get_type(cfg, 'start_occurrance', int, 1)
+        self.start_occurrence = get_type(cfg, 'start_occurrence', int, 1)
         self.max_count = get_type(cfg, 'max_count', int, -1)
 
         self.activation_line = get_type(cfg, 'activation_line', int, -1)
         self.deactivation_line = get_type(cfg, 'deactivation_line', int, -1)
 
-        self.regex = re.compile(cfg['expression'].encode('utf-8'))
+        self.regex = re.compile(cfg['expression'])
 
         self.replace = None
         self.replace_all = None
@@ -33,13 +34,13 @@ class Pattern:
         if cfg.get('activation_expression') is not None:
             self.activation_expression = cfg['activation_expression']
             self.activation_regex = re.compile(
-                cfg['activation_expression'].encode('utf-8')
+                cfg['activation_expression']
             )
             self.active = False
         if cfg.get('deactivation_expression') is not None:
             self.deactivation_expression = cfg['deactivation_expression']
             self.deactivation_regex = re.compile(
-                cfg['deactivation_expression'].encode('utf-8')
+                cfg['deactivation_expression']
             )
 
         self.separator = get_type(cfg, 'separator', str, None)
@@ -49,14 +50,46 @@ class Pattern:
 
         if self.separator is not None and len(self.separator) == 0:
             self.separator = None
-        if self.separator is None:
+        if self.separator is not None:
+            self.separator = self.separator
+        else:
             self.field = None
             self.min_fields = -1
             self.max_fields = -1
 
-    def is_line_active(self, linenum):
+    def get_field_indexes(self, fields):
+        fieldcount = pyformat.fieldsep.idx_to_num(len(fields))
+        if self.min_fields > fieldcount or (
+            self.max_fields > 0 and self.max_fields < fieldcount
+        ):
+            return range(0)
+
+        if self.field is not None and self.field > 0:
+            if self.field > fieldcount:
+                return range(0)
+            idx = pyformat.fieldsep.num_to_idx(self.field)
+            return range(idx, idx + 1)
+        return range(0, len(fields), 2)
+
+    def is_active(self, linenum, data):
+        def active():
+            self.active = True
+            return True
+
+        def inactive():
+            self.active = False
+            return False
+
         if self.activation_line > -1 and self.activation_line > linenum:
-            return False
+            return inactive()
         if self.deactivation_line > -1 and self.deactivation_line <= linenum:
-            return False
-        return True
+            return active()
+
+        if self.active:
+            if self.deactivation_regex is not None and re.search(self.deactivation_regex, data):
+                return inactive()
+        else:
+            if self.activation_regex is not None and re.search(self.activation_regex, data):
+                return active()
+
+        return active()

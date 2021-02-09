@@ -12,7 +12,7 @@ class Profile:
         self.which = get_type(cfg, 'which', str, None)
         self.buffer_line = get_type(cfg, 'buffer_line', bool, True)
         self.all_args_must_match = get_type(cfg, 'all_args_must_match', bool, False)
-        self.from_profiles = get_type(cfg, 'from_profiles', list, [])
+        self.from_profiles = get_type(cfg, 'from_profiles', (list, str), [])
         self.patterns = []
         self.arg_patterns = []
 
@@ -30,9 +30,9 @@ class Profile:
             pattern = Pattern(pattern_cfg)
 
             if 'replace' in pattern_cfg:
-                pattern.replace = pattern_cfg['replace'].encode('utf-8')
+                pattern.replace = pattern_cfg['replace']
             if 'replace_all' in pattern_cfg:
-                pattern.replace_all = pattern_cfg['replace_all'].encode('utf-8')
+                pattern.replace_all = pattern_cfg['replace_all']
 
             self.patterns.append(pattern)
 

@@ -1,0 +1,35 @@
+{
+	"profiles": [
+		{
+			"name": "ls",
+			"from_profiles": [
+				{
+					"name": "numbers",
+					"order": "before"
+				},
+				{
+					"name": "permissions",
+					"order": "after"
+				}
+			]
+		},
+		{
+			"profile_name": "numbers",
+			"patterns": [
+				{
+					"expression": "[0-9]+",
+					"replace": "%Cg%G0%Cz"
+				}
+			]
+		},
+		{
+			"profile_name": "permissions",
+			"patterns": [
+				{
+					"expression": "^[d-][rwx]{9}",
+					"replace": "%Cy%G0%Cz"
+				}
+			]
+		}
+	]
+}

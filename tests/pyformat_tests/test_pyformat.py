@@ -16,6 +16,10 @@ GET_FORMATTER_STRINGS = [
         VALUE: (None, 0)
     },
     {
+        ARGS: ('%C', 0),
+        VALUE: ('C', 2)
+    },
+    {
         ARGS: ('%Cred', 0),
         VALUE: ('Cred', 5)
     },
@@ -62,8 +66,8 @@ FORMAT_CONTEXT_GROUP_STRINGS = [
     {
         STRING: '%G1 abc %G1',
         CONTEXT: {
-            'match': Match(b'abc 123 abc', {
-                1: b'123'
+            'match': Match('abc 123 abc', {
+                1: '123'
             })
         },
         RESULT: '123 abc 123'
@@ -76,9 +80,9 @@ FORMAT_CONTEXT_GROUP_STRINGS = [
     {
         STRING: '%Gname abc %Gname',
         CONTEXT: {
-            'match': Match(b'abc 123 abc', {
-                1: b'123',
-                'name': b'123'
+            'match': Match('abc 123 abc', {
+                1: '123',
+                'name': '123'
             })
         },
         RESULT: '123 abc 123'
@@ -86,8 +90,8 @@ FORMAT_CONTEXT_GROUP_STRINGS = [
     {
         STRING: '%Ginvalid abc %Ginvalid',
         CONTEXT: {
-            'match': Match(b'abc 123 abc', {
-                1: b'123'
+            'match': Match('abc 123 abc', {
+                1: '123'
             })
         },
         RESULT: ' abc '

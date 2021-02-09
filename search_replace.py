@@ -1,10 +1,10 @@
 import re
 
 
-def search_replace(pattern, string, replace, ignore_ranges=None, start_occurrance=1, max_count=-1):
+def search_replace(pattern, string, replace, ignore_ranges=None, start_occurrence=1, max_count=-1):
     if ignore_ranges is None:
         ignore_ranges = []
-    start_occurrance = max(1, start_occurrance)
+    start_occurrence = max(1, start_occurrence)
 
     newstring = string[:0] #str or bytes
     count = 0
@@ -17,9 +17,10 @@ def search_replace(pattern, string, replace, ignore_ranges=None, start_occurranc
     else:
         regex = re.compile(pattern)
 
-    if not callable(replace):
-        repl = replace
-        replace = lambda x: repl
+    if callable(replace):
+        replf = replace
+    else:
+        replf = lambda x: replace
 
     igidx = 0
     replace_diff = 0
@@ -38,23 +39,22 @@ def search_replace(pattern, string, replace, ignore_ranges=None, start_occurranc
 
         count += 1
 
-        if count >= start_occurrance and (max_count < 0 or replace_count < max_count):
-            repl = replace(match)
+        if count >= start_occurrence and (max_count < 0 or replace_count < max_count):
+            replace_string = replf(match)
+            newstring += string[last:match.start()] + replace_string
+
+            start = match.start() + replace_diff
+            end = match.start() + len(replace_string) + replace_diff
+            replace_diff = end - match.end()
+
+            replace_ranges.append((
+                match.span(),
+                (start, end)
+            ))
             replace_count += 1
         else:
-            repl = string[match.start():match.end()]
-
-        newstring += string[last:match.start()] + repl
+            newstring += string[last:match.end()]
         last = match.end()
-
-        start = match.start() + replace_diff
-        end = match.start() + len(repl) + replace_diff
-        replace_diff = end - match.end()
-
-        replace_ranges.append((
-            match.span(),
-            (start, end)
-        ))
 
     return newstring + string[last:], replace_ranges
 

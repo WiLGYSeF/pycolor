@@ -5,8 +5,8 @@ from pyformat import fieldsep
 FORMAT_CHAR_VALID = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
 FORMAT_COLOR = 'C'
-FORMAT_GROUP = 'G'
 FORMAT_FIELD = 'F'
+FORMAT_GROUP = 'G'
 
 
 def format_string(string, context=None, return_color_positions=False):
@@ -33,14 +33,15 @@ def format_string(string, context=None, return_color_positions=False):
             formatter, newidx = get_formatter(string, idx)
             if formatter is not None:
                 result = do_format(string, formatter, idx, newidx, context)
+                apppend_result = True
+
                 if is_color_format(formatter):
                     if return_color_positions:
                         color_positions[len(newstring)] = result
-                    else:
-                        newstring += result
-                else:
-                    newstring += result
+                        apppend_result = False
 
+                if apppend_result:
+                    newstring += result
                 idx = newidx
                 continue
 
@@ -72,8 +73,6 @@ def do_format(string, formatter, idx, newidx, context):
         context['last_colors'].append(colorstr)
         return colorstr
 
-    # FIXME: should not decode here
-
     if 'match' in context:
         if formatter[0] == FORMAT_GROUP:
             try:
@@ -82,7 +81,7 @@ def do_format(string, formatter, idx, newidx, context):
                 group = formatter[1:]
 
             try:
-                return context['match'][group].decode('utf-8')
+                return context['match'][group]
             except IndexError:
                 return ''
     if 'fields' in context:
@@ -106,7 +105,7 @@ def get_formatter(string, idx):
     if string[idx] == '(':
         paren = 1
         idx += 1
-    elif string[idx + 1] == '(' and string[idx] in FORMAT_CHAR_VALID:
+    elif idx + 1 < len(string) and string[idx + 1] == '(' and string[idx] in FORMAT_CHAR_VALID:
         first_char_before_paren = True
         paren = 1
         idx += 2

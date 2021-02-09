@@ -1,5 +1,5 @@
-def get_type(obj, val, val_type, default=None):
-    result = obj.get(val, default)
+def get_type(obj, key, val_type, default=None):
+    result = obj.get(key, default)
     if not isinstance(result, val_type):
         return default
     return result

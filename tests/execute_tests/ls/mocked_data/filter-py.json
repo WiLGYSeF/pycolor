@@ -1,0 +1,13 @@
+{
+	"profiles": [
+		{
+			"name": "ls",
+			"patterns": [
+				{
+					"expression": "\\.py$",
+					"filter": true
+				}
+			]
+		}
+	]
+}
