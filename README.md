@@ -1,4 +1,5 @@
 # Pycolor
+![build](https://travis-ci.com/WiLGYSeF/pycolor.svg?branch=master)
 
 1. [Example Usage](#example-usage).
 2. [Configuration](#configuration).
@@ -141,7 +142,7 @@ Regex groups can be referenced with the format: `%G<group number or name>`.
 
 If the pattern's `separator` property is set, then fields and their separators can be referenced in the format string.
 
-To get a field's text, use `%F<field number>`. 
+To get a field's text, use `%F<field number>`.
 If a output line is `this is a test`, and the pattern `separator` property is ` `, the format string `%F2 %F1 %F3 %F4` will format to `is this a test` for that line.
 
 To get the field separator string, use `%Fs<field number>`. This will return the field separator string that precedes the field number. (e.g. `%Fs3` will get the field separator string that comes before the third field `%F3`).
