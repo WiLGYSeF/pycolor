@@ -201,9 +201,8 @@ class Pycolor:
         removed_newline = False
 
         if self.current_profile.buffer_line:
-            self.linenum += 1
-
             if newdata[-1] == '\n':
+                self.linenum += 1
                 newdata = newdata[:-1]
                 removed_newline = True
         else:
