@@ -5,7 +5,7 @@ import os
 from tests.testutils import patch
 
 from execute import read_stream
-import main
+import pycolor
 import pycolor_class
 
 
@@ -68,7 +68,7 @@ def check_pycolor_stdin(
     output_expected = read_file(filename_prefix + '.out.txt')
 
     pycobj.set_current_profile(pycobj.get_profile_by_name(profile_name))
-    main.read_input_stream(pycobj, stdin)
+    pycolor.read_input_stream(pycobj, stdin)
 
     def test_stream(stream, fname, testdata):
         stream.seek(0)
