@@ -11,23 +11,17 @@ def nonblock(file):
     flag = fcntl.fcntl(fde, fcntl.F_GETFL)
     fcntl.fcntl(fde, fcntl.F_SETFL, flag | os.O_NONBLOCK)
 
-def readlines(stream, encoding='utf-8'):
+def readlines(stream):
     # file.readlines() is broken
-    try:
-        data = stream.read()
-        if data is None or len(data) == 0:
-            return None
-    except TypeError:
+    data = stream.read()
+    if data is None or len(data) == 0:
         return None
-
-    if isinstance(data, bytes):
-        data = data.decode(encoding)
 
     lines = []
     last = 0
 
     for idx in range(len(data)): #pylint: disable=consider-using-enumerate
-        if data[idx] == '\n':
+        if is_eol(data[idx]):
             lines.append(data[last:idx + 1])
             last = idx + 1
 
@@ -39,54 +33,59 @@ def readlines(stream, encoding='utf-8'):
 def read_stream(stream, callback, buffer_line=True, encoding='utf-8', last=False):
     did_callback = False
 
+    def do_callback(data):
+        nonlocal did_callback
+        did_callback = True
+        return callback(data.decode(encoding))
+
     if stream not in read_stream.buffers:
-        read_stream.buffers[stream] = ''
+        read_stream.buffers[stream] = b''
 
     if buffer_line:
-        lines = readlines(stream, encoding=encoding)
+        lines = readlines(stream)
         if lines is None:
             if last and len(read_stream.buffers[stream]) != 0:
-                callback(read_stream.buffers[stream])
-                read_stream.buffers[stream] = ''
-
+                do_callback(read_stream.buffers[stream])
+                read_stream.buffers[stream] = b''
             return None
 
         start = 0
 
-        if lines[0][-1] == '\n':
-            callback(read_stream.buffers[stream] + lines[0])
-            did_callback = True
-
-            read_stream.buffers[stream] = ''
+        if is_eol(lines[0][-1]):
+            do_callback(read_stream.buffers[stream] + lines[0])
+            read_stream.buffers[stream] = b''
             start = 1
 
         for i in range(start, len(lines) - 1):
-            callback(lines[i])
-            did_callback = True
+            do_callback(lines[i])
 
-        if lines[-1][-1] != '\n':
+        if not is_eol(lines[-1][-1]):
             read_stream.buffers[stream] += lines[-1]
 
             if last:
-                callback(read_stream.buffers[stream])
-                did_callback = True
-
-                read_stream.buffers[stream] = ''
+                do_callback(read_stream.buffers[stream])
+                read_stream.buffers[stream] = b''
         elif len(lines) > 1:
-            callback(lines[-1])
-            did_callback = True
+            do_callback(lines[-1])
     else:
-        try:
-            data = stream.read()
-            if data is None or len(data) == 0:
-                return None
-        except TypeError:
+        data = stream.read()
+        if data is None or len(data) == 0:
             return None
 
-        callback(data.decode(encoding))
-        did_callback = True
+        do_callback(data)
 
     return did_callback
+
+def is_eol(char):
+    ceol = '\n\r'
+
+    if isinstance(char, str):
+        return chr in ceol
+
+    for k in ceol:
+        if char == ord(k):
+            return True
+    return False
 
 def execute(cmd, stdout_callback, stderr_callback, buffer_line=True, encoding='utf-8'):
     def _read(stream, callback, last=False):
@@ -101,8 +100,7 @@ def execute(cmd, stdout_callback, stderr_callback, buffer_line=True, encoding='u
     with subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        encoding=encoding
+        stderr=subprocess.PIPE
     ) as process:
         def signal_handler(sig, frame):
             # SIGINT is passed through to the subprocess
