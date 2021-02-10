@@ -39,6 +39,7 @@ class Pattern:
             )
             self.activation_line = -1
             self.deactivation_line = -1
+            self.active = False
 
         self.regex = re.compile(cfg['expression'])
 
@@ -127,9 +128,13 @@ class Pattern:
                 linenum,
                 cmp_fnc=lambda x, y: x[0] - y
             )
+
             if not result:
-                idx -= 1
-            if not self.activation_ranges[idx][1]:
+                if idx != 0:
+                    idx -= 1
+            if idx == 0 and self.activation_ranges[0][0] > linenum and self.activation_ranges[0][1]:
+                return inactive()
+            if self.activation_ranges[idx][0] <= linenum and not self.activation_ranges[idx][1]:
                 return inactive()
 
         if self.activation_line > -1 and self.activation_line > linenum:
