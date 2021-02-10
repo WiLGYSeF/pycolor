@@ -19,26 +19,22 @@ class Pattern:
         self.max_count = get_type(cfg, 'max_count', int, -1)
 
         if 'activation_lines' in cfg:
-            self.activation_line = get_type(cfg, 'activation_lines', list, [])
+            activation_line = get_type(cfg, 'activation_lines', list, [])
         else:
-            self.activation_line = get_type(cfg, 'activation_line', (list, int), -1)
+            activation_line = get_type(cfg, 'activation_line', (list, int), -1)
         if 'deactivation_lines' in cfg:
-            self.deactivation_line = get_type(cfg, 'deactivation_lines', list, [])
+            deactivation_line = get_type(cfg, 'deactivation_lines', list, [])
         else:
-            self.deactivation_line = get_type(cfg, 'deactivation_line', (list, int), -1)
+            deactivation_line = get_type(cfg, 'deactivation_line', (list, int), -1)
 
-        self.activation_ranges = []
+        def as_list(var):
+            return var if isinstance(var, list) else [ var ]
 
-        if isinstance(self.activation_line, list) or isinstance(self.deactivation_line, list):
-            def as_list(var):
-                return var if isinstance(var, list) else [ var ]
-
-            self.activation_ranges = Pattern.get_activation_ranges(
-                as_list(self.activation_line),
-                as_list(self.deactivation_line),
-            )
-            self.activation_line = -1
-            self.deactivation_line = -1
+        self.activation_ranges = Pattern.get_activation_ranges(
+            as_list(activation_line),
+            as_list(deactivation_line),
+        )
+        if len(self.activation_ranges) != 0:
             self.active = False
 
         self.regex = re.compile(cfg['expression'])
@@ -66,9 +62,7 @@ class Pattern:
 
         if self.separator is not None and len(self.separator) == 0:
             self.separator = None
-        if self.separator is not None:
-            self.separator = self.separator
-        else:
+        if self.separator is None:
             self.field = None
             self.min_fields = -1
             self.max_fields = -1
@@ -132,15 +126,9 @@ class Pattern:
             if not result:
                 if idx != 0:
                     idx -= 1
-            if idx == 0 and self.activation_ranges[0][0] > linenum and self.activation_ranges[0][1]:
-                return inactive()
-            if self.activation_ranges[idx][0] <= linenum and not self.activation_ranges[idx][1]:
-                return inactive()
-
-        if self.activation_line > -1 and self.activation_line > linenum:
-            return inactive()
-        if self.deactivation_line > -1 and self.deactivation_line <= linenum:
-            return inactive()
+            if idx == 0 and self.activation_ranges[0][0] > linenum:
+                return inactive() if self.activation_ranges[0][1] else active()
+            return active() if self.activation_ranges[idx][1] else inactive()
 
         if self.active:
             if self.deactivation_regex is not None and re.search(self.deactivation_regex, data):
@@ -149,7 +137,7 @@ class Pattern:
             if self.activation_regex is not None and re.search(self.activation_regex, data):
                 return active()
 
-        return active()
+        return self.active
 
 def bsearch_closest(arr, val, cmp_fnc=lambda x, y: x - y):
     low, mid, high = 0, 0, len(arr) - 1
