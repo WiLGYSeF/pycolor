@@ -53,47 +53,18 @@ class Pycolor:
         return profiles
 
     def include_from_profile(self, patterns, from_profiles):
-        if isinstance(from_profiles, str):
-            fromprof = self.get_profile_by_name(from_profiles)
-            if fromprof is None:
-                raise Exception()
+        for fprof in from_profiles:
+            if not fprof.enabled:
+                continue
 
-            patterns.extend(fromprof.patterns)
-            return
-
-        for fromprof_cfg in from_profiles:
-            if isinstance(fromprof_cfg, dict):
-                if not fromprof_cfg.get('enabled', True):
-                    continue
-
-                if len(fromprof_cfg.get('name', '')) == 0:
-                    raise Exception()
-
-                fromprof = self.get_profile_by_name(fromprof_cfg['name'])
-                if fromprof is None:
-                    raise Exception()
-
-                if 'order' in fromprof_cfg:
-                    if fromprof_cfg['order'] not in ('before', 'after', 'disabled'):
-                        raise ValueError()
-
-                    if fromprof_cfg['order'] == 'before':
-                        orig_patterns = patterns.copy()
-                        patterns.clear()
-                        patterns.extend(fromprof.patterns)
-                        patterns.extend(orig_patterns)
-                    elif fromprof_cfg['order'] == 'after':
-                        patterns.extend(fromprof.patterns)
-                else:
-                    patterns.extend(fromprof.patterns)
-            elif isinstance(fromprof_cfg, str):
-                fromprof = self.get_profile_by_name(fromprof_cfg)
-                if fromprof is None:
-                    raise Exception()
-
+            fromprof = self.get_profile_by_name(fprof.name)
+            if fprof.order == 'before':
+                orig_patterns = patterns.copy()
+                patterns.clear()
                 patterns.extend(fromprof.patterns)
-            else:
-                raise ValueError()
+                patterns.extend(orig_patterns)
+            elif fprof.order == 'after':
+                patterns.extend(fromprof.patterns)
 
     def get_profile_by_name(self, name):
         return self.named_profiles.get(name)

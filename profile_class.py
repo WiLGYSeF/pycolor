@@ -1,6 +1,7 @@
 import jsonschema
 
 import argpattern
+import fromprofile
 import pattern
 
 
@@ -32,9 +33,9 @@ class Profile:
         self.which = cfg.get('which')
         self.buffer_line = cfg.get('buffer_line', True)
         self.all_args_must_match = cfg.get('all_args_must_match', False)
-        self.from_profiles = cfg.get('from_profiles', [])
-        self.patterns = []
         self.arg_patterns = []
+        self.from_profiles = []
+        self.patterns = []
 
         if self.profile_name is not None and len(self.profile_name) == 0:
             self.profile_name = None
@@ -48,6 +49,14 @@ class Profile:
 
         for argpat in cfg.get('arg_patterns', []):
             self.arg_patterns.append(argpattern.ArgPattern(argpat))
+
+        if 'from_profiles' in cfg:
+            from_profiles = cfg['from_profiles']
+            if isinstance(from_profiles, list):
+                for fromprof in from_profiles:
+                    self.from_profiles.append(fromprofile.FromProfile(fromprof))
+            else:
+                self.from_profiles.append(fromprofile.FromProfile(from_profiles))
 
         for pat in cfg.get('patterns', []):
             self.patterns.append(pattern.Pattern(pat))
