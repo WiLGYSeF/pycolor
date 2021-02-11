@@ -53,47 +53,18 @@ class Pycolor:
         return profiles
 
     def include_from_profile(self, patterns, from_profiles):
-        if isinstance(from_profiles, str):
-            fromprof = self.get_profile_by_name(from_profiles)
-            if fromprof is None:
-                raise Exception()
+        for fprof in from_profiles:
+            if not fprof.enabled:
+                continue
 
-            patterns.extend(fromprof.patterns)
-            return
-
-        for fromprof_cfg in from_profiles:
-            if isinstance(fromprof_cfg, dict):
-                if not fromprof_cfg.get('enabled', True):
-                    continue
-
-                if len(fromprof_cfg.get('name', '')) == 0:
-                    raise Exception()
-
-                fromprof = self.get_profile_by_name(fromprof_cfg['name'])
-                if fromprof is None:
-                    raise Exception()
-
-                if 'order' in fromprof_cfg:
-                    if fromprof_cfg['order'] not in ('before', 'after', 'disabled'):
-                        raise ValueError()
-
-                    if fromprof_cfg['order'] == 'before':
-                        orig_patterns = patterns.copy()
-                        patterns.clear()
-                        patterns.extend(fromprof.patterns)
-                        patterns.extend(orig_patterns)
-                    elif fromprof_cfg['order'] == 'after':
-                        patterns.extend(fromprof.patterns)
-                else:
-                    patterns.extend(fromprof.patterns)
-            elif isinstance(fromprof_cfg, str):
-                fromprof = self.get_profile_by_name(fromprof_cfg)
-                if fromprof is None:
-                    raise Exception()
-
+            fromprof = self.get_profile_by_name(fprof.name)
+            if fprof.order == 'before':
+                orig_patterns = patterns.copy()
+                patterns.clear()
                 patterns.extend(fromprof.patterns)
-            else:
-                raise ValueError()
+                patterns.extend(orig_patterns)
+            elif fprof.order == 'after':
+                patterns.extend(fromprof.patterns)
 
     def get_profile_by_name(self, name):
         return self.named_profiles.get(name)
@@ -133,17 +104,17 @@ class Pycolor:
 
         for argpat in arg_patterns:
             matches = False
-            for idx in Pycolor.get_arg_range(len(args), argpat.get('position')):
-                if argpat['regex'].fullmatch(args[idx]):
-                    if argpat.get('match_not', False):
+            for idx in argpat.get_arg_range(len(args)):
+                if argpat.regex.fullmatch(args[idx]):
+                    if argpat.match_not:
                         return False
                     idx_matches.add(idx)
                     matches = True
 
             if not any([
                 matches,
-                argpat.get('match_not', False),
-                argpat.get('optional', False)
+                argpat.match_not,
+                argpat.optional
             ]):
                 return False
 
@@ -151,36 +122,6 @@ class Pycolor:
             return False
 
         return True
-
-    @staticmethod
-    def get_arg_range(arglen, position):
-        if position is None:
-            return range(arglen)
-
-        if isinstance(position, int):
-            if position > arglen:
-                return range(0)
-            return range(position - 1, position)
-
-        match = re.fullmatch(r'([<>+-])?(\*|[0-9]+)', position)
-        if match is None:
-            return range(arglen)
-
-        index = match[2]
-        if index == '*':
-            return range(arglen)
-        index = int(index)
-
-        arg_range = None
-        modifier = match[1]
-
-        if modifier is None:
-            arg_range = range(index - 1, min(index, arglen))
-        elif modifier in ('>', '+'):
-            arg_range = range(index - 1, arglen)
-        elif modifier in ('<', '-'):
-            arg_range = range(0, min(index, arglen))
-        return arg_range
 
     def execute(self, cmd, profile=None):
         if profile is None:
