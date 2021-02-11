@@ -12,8 +12,10 @@ PROFILE_SCHEMA = {
         'name_regex': {'type' : 'string'},
         'profile_name': {'type': 'string'},
         'which': {'type': 'string'},
+
         'buffer_line': {'type': 'boolean'},
         'all_args_must_match': {'type': 'boolean'},
+
         'from_profiles': {'type': ['array', 'string']},
 
         'arg_patterns': {'type': 'array'},

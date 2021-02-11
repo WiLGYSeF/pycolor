@@ -31,7 +31,12 @@ PATTERN_SCHEMA = {
         'stdout_only': {'type' : 'boolean'},
         'stderr_only': {'type' : 'boolean'},
     },
-    'required': ['expression']
+    'required': ['expression'],
+    'dependencies': {
+        'field': ['separator'],
+        'min_fields': ['separator'],
+        'max_fields': ['separator'],
+    }
 }
 
 
