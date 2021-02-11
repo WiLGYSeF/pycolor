@@ -133,17 +133,17 @@ class Pycolor:
 
         for argpat in arg_patterns:
             matches = False
-            for idx in Pycolor.get_arg_range(len(args), argpat.get('position')):
-                if argpat['regex'].fullmatch(args[idx]):
-                    if argpat.get('match_not', False):
+            for idx in argpat.get_arg_range(len(args)):
+                if argpat.regex.fullmatch(args[idx]):
+                    if argpat.match_not:
                         return False
                     idx_matches.add(idx)
                     matches = True
 
             if not any([
                 matches,
-                argpat.get('match_not', False),
-                argpat.get('optional', False)
+                argpat.match_not,
+                argpat.optional
             ]):
                 return False
 
@@ -151,36 +151,6 @@ class Pycolor:
             return False
 
         return True
-
-    @staticmethod
-    def get_arg_range(arglen, position):
-        if position is None:
-            return range(arglen)
-
-        if isinstance(position, int):
-            if position > arglen:
-                return range(0)
-            return range(position - 1, position)
-
-        match = re.fullmatch(r'([<>+-])?(\*|[0-9]+)', position)
-        if match is None:
-            return range(arglen)
-
-        index = match[2]
-        if index == '*':
-            return range(arglen)
-        index = int(index)
-
-        arg_range = None
-        modifier = match[1]
-
-        if modifier is None:
-            arg_range = range(index - 1, min(index, arglen))
-        elif modifier in ('>', '+'):
-            arg_range = range(index - 1, arglen)
-        elif modifier in ('<', '-'):
-            arg_range = range(0, min(index, arglen))
-        return arg_range
 
     def execute(self, cmd, profile=None):
         if profile is None:
