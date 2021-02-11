@@ -6,9 +6,9 @@
 2. [Example Usage](#example-usage).
 3. [Configuration](#configuration).
 4. [Formatting Strings](#formatting-strings).
-	1. [Color Formatting](#colors).
-	2. [Group Formatting](#groups).
-	3. [Field Formatting](#fields).
+	- [Color Formatting](#colors).
+	- [Group Formatting](#groups).
+	- [Field Formatting](#fields).
 
 A Python wrapper program that executes commands to perform real-time terminal output coloring using ANSI color codes.
 Color formatting can be added to program output using JSON configuration files and regular expressions to improve readability of the output.
@@ -77,15 +77,22 @@ Use formatting strings to color/manipulate the program output in real-time. A fo
 - `C` is the format type
 - `red` is the argument that is passed to the formatter
 
-Formatting strings can also be written like `%C(red)` or `%(Cred)` if the formatter is followed by other characters: e.g `%Credhello` is invalid, but `%C(red)hello` formats `hello` in red.
+Formatting strings can also be written like `%C(red)` or `%(Cred)` if the formatter is followed by other characters: e.g `%Credhello` is invalid, but `%C(red)hello` formats the string `hello` in red.
+
+A literal `%` can be used in a format string by using `%%`.
+E.g. the format string `The total is %C(red)15%%` will become `The total is 15%`, where the `15%` part is in red.
 
 Valid formatting argument characters are upper/lowercase letters and numbers, unless the argument is encapsulated in parentheses, then everything in the parenthesis pair is used.
 
+[Check `/docs/sample-config/` for examples of formatting strings being used for actual programs](/docs/sample-config/).
+
 ## Colors
+
+[Click here for a list of all attributes and color codes](https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_%28Select_Graphic_Rendition%29_parameters).
 
 To colorize output through a replace pattern use `%C<color argument>`.
 
-### Recognized Colors:
+### Recognized Attributes, Colors:
 | Color Argument | Aliases | ANSI Code | Description |
 |---|---|---|---|
 | reset | normal, res, nor, z | `\e[0m` | Resets all ANSI color formatting |
@@ -104,7 +111,7 @@ To colorize output through a replace pattern use `%C<color argument>`.
 | blue | b | `\e[34m` | Blue color |
 | magenta | m | `\e[35m` | Magenta color |
 | cyan | c | `\e[36m` | Cyan color |
-| grey | e | `\e[37m` | Grey color |
+| grey | gray, e | `\e[37m` | Grey color |
 | default |  | `\e[39m` | Default color |
 | overline | overlined, ove | `\e[53m` | Overline characters |
 | darkgrey | darkgray, de, lk | `\e[90m` | Dark grey color |
@@ -131,12 +138,12 @@ If a `^` is prepended before a style (e.g. `%C(^italic)` produces `\e[23m`), the
 If a color format is just a number (e.g. `%C130`), then it will use the 256-color set (in this case, a brown color): `\e[38;5;130m`.
 This also works for background colors as well (e.g. `%C(^130)` produces `\e[48;5;130m`).
 
-TODO: add 256-color table here.
+[Click here to see the 256-color table](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit).
 
 #### 24-bit Color
-24-bit color is also supported similarly to 256-color by using hex codes (`%C0xffaa00` will produce orange: `\e[38;2;255;170;0m`).
+24-bit color is also supported similarly to 256-color by using hex codes (`%C0xffaa00` or `%C0xfa0` will produce orange: `\e[38;2;255;170;0m`).
 
-### Raw Codes
+### Raw ANSI Codes
 If for some reason you would like to use raw codes in the color formats: `%C(raw1;3;36)` will produce bold, italic, cyan (`\e[1;3;36m`).
 
 ## Groups
@@ -155,7 +162,6 @@ To get the field separator string, use `%Fs<field number>`. This will return the
 
 If `separator` is set to `#+`, and the output line is `a#b##c###d##e#f`, the field format values will be:
 
-### Field Number Formats
 | Field Format | Value |
 |---|---|
 | `%F1` | `a` |
