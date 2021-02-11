@@ -2,9 +2,6 @@ import re
 
 import jsonschema
 
-from get_type import get_type
-import pyformat
-
 
 ARGPATTERN_SCHEMA = {
     'type': 'object',
