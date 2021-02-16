@@ -96,6 +96,18 @@ SET_STATE_BY_STRING = [
             colorstate.CONCEAL: True,
         }
     },
+    {
+        STRING: '\x1b[31;38;5;130m',
+        RESULT: {
+            colorstate.COLOR_FOREGROUND: '38;5;130',
+        }
+    },
+    {
+        STRING: '\x1b[38;5;130;31m',
+        RESULT: {
+            colorstate.COLOR_FOREGROUND: '31',
+        }
+    },
 ]
 
 SET_STATE_BY_CODES = [

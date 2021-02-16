@@ -47,17 +47,28 @@ class ColorState:
                 )
             ))
 
-            i = 0
-            while i < len(codes):
-                code = codes[i]
-                if code in (38, 48):
-                    color = None
-                    if i + 1 < len(codes):
-                        if codes[i + 1] == 5 and i + 2 < len(codes):
+            codelist.extend(self.set_special_color_states(codes))
+
+        self.set_state_by_codes(codelist)
+
+    def set_special_color_states(self, codes):
+        newcodes = []
+
+        i = 0
+        while i < len(codes):
+            code = codes[i]
+            if code in (38, 48):
+                color = None
+                if i + 1 < len(codes):
+                    if codes[i + 1] == 5:
+                        if i + 2 < len(codes):
                             if codes[i + 2] < 256:
                                 color = '%d;5;%d' % (code, codes[i + 2])
-                            codes.pop(i)
-                        elif codes[i + 1] == 2 and i + 4 < len(codes):
+                            i += 2
+                        else:
+                            i = len(codes)
+                    elif codes[i + 1] == 2:
+                        if i + 4 < len(codes):
                             if codes[i + 2] < 256 and codes[i + 3] < 256 and codes[i + 4] < 256:
                                 color = '%d;2;%d;%d;%d' % (
                                     code,
@@ -65,23 +76,30 @@ class ColorState:
                                     codes[i + 3],
                                     codes[i + 4]
                                 )
-                            codes.pop(i)
-                            codes.pop(i)
-                            codes.pop(i)
-                        codes.pop(i)
+                            i += 4
+                        else:
+                            i = len(codes)
 
-                    if color is not None:
-                        if code == 38:
-                            self.color_state[COLOR_FOREGROUND] = color
-                        elif code == 48:
-                            self.color_state[COLOR_BACKGROUND] = color
-                    codes.pop(i)
-
+                if color is not None:
+                    if code == 38:
+                        self.color_state[COLOR_FOREGROUND] = color
+                        newcodes = list(filter(
+                            lambda x: not (x >= 30 and x <= 39),
+                            newcodes
+                        ))
+                    elif code == 48:
+                        self.color_state[COLOR_BACKGROUND] = color
+                        newcodes = list(filter(
+                            lambda x: not (x >= 40 and x <= 49),
+                            newcodes
+                        ))
                 i += 1
+                continue
 
-            codelist.extend(codes)
+            newcodes.append(code)
+            i += 1
 
-        self.set_state_by_codes(codelist)
+        return newcodes
 
     def set_state_by_codes(self, codes):
         style_code_enable = {
