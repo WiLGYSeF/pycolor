@@ -176,10 +176,12 @@ class ColorState:
 
         return state
 
-    def get_changed_state(self):
-        return self.get_state_by_keys(self.diff_keys(ColorState()))
+    def get_changed_state(self, compare_state=None):
+        if compare_state is None:
+            compare_state = ColorState()
+        return self.get_state_by_keys(self.diff_keys(compare_state))
 
-    def get_string(self):
+    def get_string(self, compare_state=None):
         styles = {
             BOLD: 1,
             DIM: 2,
@@ -193,7 +195,7 @@ class ColorState:
             OVERLINE: 53
         }
 
-        state = self.get_changed_state()
+        state = self.get_changed_state(compare_state)
         codes = []
 
         for key, val in styles.items():
