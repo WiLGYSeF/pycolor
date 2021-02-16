@@ -71,6 +71,19 @@ SET_STATE_BY_CODES = [
             colorstate.STRIKETHROUGH: True,
         }
     },
+    {
+        CODES: [31],
+        RESULT: {
+            colorstate.COLOR_FOREGROUND: 31,
+        }
+    },
+    {
+        CODES: [31, 43],
+        RESULT: {
+            colorstate.COLOR_FOREGROUND: 31,
+            colorstate.COLOR_BACKGROUND: 43,
+        }
+    },
 ]
 
 

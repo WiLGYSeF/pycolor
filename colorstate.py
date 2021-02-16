@@ -82,3 +82,7 @@ class ColorState:
                 self.color_state[style_code_enable[code]] = True
             elif code in style_code_disable:
                 self.color_state[style_code_disable[code]] = False
+            elif code >= 30 and code <= 39:
+                self.color_state[COLOR_FOREGROUND] = code
+            elif code >= 40 and code <= 49:
+                self.color_state[COLOR_BACKGROUND] = code
