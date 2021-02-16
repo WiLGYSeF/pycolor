@@ -40,6 +40,10 @@ SET_STATE_BY_STRING = [
         }
     },
     {
+        STRING: '\x1b[1;0m',
+        RESULT: {}
+    },
+    {
         STRING: '\x1b[;m',
         RESULT: {}
     },

@@ -34,6 +34,10 @@ DEFAULT_COLOR_STATE = {
 
 class ColorState:
     def __init__(self):
+        self.color_state = {}
+        self.reset()
+
+    def reset(self):
         self.color_state = DEFAULT_COLOR_STATE.copy()
 
     def set_state_by_string(self, string):
@@ -131,7 +135,9 @@ class ColorState:
         }
 
         for code in codes:
-            if code in style_code_enable:
+            if code == 0:
+                self.reset()
+            elif code in style_code_enable:
                 self.color_state[style_code_enable[code]] = True
             elif code in style_code_disable:
                 self.color_state[style_code_disable[code]] = False
