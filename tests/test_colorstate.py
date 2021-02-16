@@ -3,8 +3,49 @@ import unittest
 import colorstate
 
 
+STRING = 'string'
 CODES = 'codes'
 RESULT = 'result'
+
+SET_STATE_BY_STRING = [
+    {
+        STRING: '',
+        RESULT: {}
+    },
+    {
+        STRING: '\x1b[1m',
+        RESULT: {
+            colorstate.BOLD: True
+        }
+    },
+    {
+        STRING: '\x1b[3mtesting\x1b[9m',
+        RESULT: {
+            colorstate.ITALIC: True,
+            colorstate.STRIKETHROUGH: True
+        }
+    },
+    {
+        STRING: '\x1b[3;9m',
+        RESULT: {
+            colorstate.ITALIC: True,
+            colorstate.STRIKETHROUGH: True
+        }
+    },
+    {
+        STRING: '\x1b[3;;9m',
+        RESULT: {
+            colorstate.ITALIC: True,
+            colorstate.STRIKETHROUGH: True
+        }
+    },
+    {
+        STRING: '\x1b[31m',
+        RESULT: {
+            colorstate.COLOR_FOREGROUND: 31,
+        }
+    },
+]
 
 SET_STATE_BY_CODES = [
     {
@@ -34,6 +75,17 @@ SET_STATE_BY_CODES = [
 
 
 class ColorState(unittest.TestCase):
+    def test_set_state_by_string(self):
+        for entry in SET_STATE_BY_STRING:
+            state = colorstate.ColorState()
+            state.set_state_by_string(entry[STRING])
+
+            expected_result = colorstate.DEFAULT_COLOR_STATE.copy()
+            expected_result.update(entry[RESULT])
+
+            self.assertDictEqual(state.color_state, expected_result)
+
+
     def test_set_state_by_codes(self):
         for entry in SET_STATE_BY_CODES:
             state = colorstate.ColorState()

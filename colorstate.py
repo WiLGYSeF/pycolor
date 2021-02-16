@@ -1,3 +1,6 @@
+import re
+
+
 BOLD = 'bold'
 DIM = 'dim'
 ITALIC = 'italic'
@@ -32,6 +35,20 @@ DEFAULT_COLOR_STATE = {
 class ColorState:
     def __init__(self):
         self.color_state = DEFAULT_COLOR_STATE.copy()
+
+    def set_state_by_string(self, string):
+        codes = []
+        for match in re.finditer(r'\x1b\[([0-9;]+)m', string):
+            matched_codes = map(
+                lambda x: int(x),
+                filter(
+                    lambda x: len(x) != 0,
+                    match[1].split(';')
+                )
+            )
+            codes.extend(matched_codes)
+
+        self.set_state_by_codes(codes)
 
     def set_state_by_codes(self, codes):
         style_code_enable = {
