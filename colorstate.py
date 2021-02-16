@@ -57,46 +57,48 @@ class ColorState:
         i = 0
         while i < len(codes):
             code = codes[i]
-            if code in (38, 48):
-                color = None
-                if i + 1 < len(codes):
-                    if codes[i + 1] == 5:
-                        if i + 2 < len(codes):
-                            if codes[i + 2] < 256:
-                                color = '%d;5;%d' % (code, codes[i + 2])
-                            i += 2
-                        else:
-                            i = len(codes)
-                    elif codes[i + 1] == 2:
-                        if i + 4 < len(codes):
-                            if codes[i + 2] < 256 and codes[i + 3] < 256 and codes[i + 4] < 256:
-                                color = '%d;2;%d;%d;%d' % (
-                                    code,
-                                    codes[i + 2],
-                                    codes[i + 3],
-                                    codes[i + 4]
-                                )
-                            i += 4
-                        else:
-                            i = len(codes)
-
-                if color is not None:
-                    if code == 38:
-                        self.color_state[COLOR_FOREGROUND] = color
-                        newcodes = list(filter(
-                            lambda x: not (x >= 30 and x <= 39),
-                            newcodes
-                        ))
-                    elif code == 48:
-                        self.color_state[COLOR_BACKGROUND] = color
-                        newcodes = list(filter(
-                            lambda x: not (x >= 40 and x <= 49),
-                            newcodes
-                        ))
+            if code not in (38, 48):
+                newcodes.append(code)
                 i += 1
                 continue
 
-            newcodes.append(code)
+            if i + 1 == len(codes):
+                break
+
+            color = None
+            if codes[i + 1] == 5:
+                if i + 2 < len(codes):
+                    if codes[i + 2] < 256:
+                        color = '%d;5;%d' % (code, codes[i + 2])
+                    i += 2
+                else:
+                    i = len(codes)
+            elif codes[i + 1] == 2:
+                if i + 4 < len(codes):
+                    if codes[i + 2] < 256 and codes[i + 3] < 256 and codes[i + 4] < 256:
+                        color = '%d;2;%d;%d;%d' % (
+                            code,
+                            codes[i + 2],
+                            codes[i + 3],
+                            codes[i + 4]
+                        )
+                    i += 4
+                else:
+                    i = len(codes)
+
+            if color is not None:
+                if code == 38:
+                    self.color_state[COLOR_FOREGROUND] = color
+                    newcodes = list(filter(
+                        lambda x: not (x >= 30 and x <= 39),
+                        newcodes
+                    ))
+                elif code == 48:
+                    self.color_state[COLOR_BACKGROUND] = color
+                    newcodes = list(filter(
+                        lambda x: not (x >= 40 and x <= 49),
+                        newcodes
+                    ))
             i += 1
 
         return newcodes
