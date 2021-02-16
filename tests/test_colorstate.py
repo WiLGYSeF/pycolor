@@ -8,6 +8,10 @@ RESULT = 'result'
 
 SET_STATE_BY_CODES = [
     {
+        CODES: [-4],
+        RESULT: {}
+    },
+    {
         CODES: [1],
         RESULT: {
             colorstate.BOLD: True
@@ -21,8 +25,10 @@ SET_STATE_BY_CODES = [
         }
     },
     {
-        CODES: [-4],
-        RESULT: {}
+        CODES: [3, 9, 23, 27],
+        RESULT: {
+            colorstate.STRIKETHROUGH: True,
+        }
     },
 ]
 
