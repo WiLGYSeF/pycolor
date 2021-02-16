@@ -2,6 +2,7 @@ import json
 import re
 import sys
 
+from colorstate import ColorState
 import execute
 from profile_class import Profile
 import pyformat
@@ -24,6 +25,8 @@ class Pycolor:
 
         self.stdout = sys.stdout
         self.stderr = sys.stderr
+
+        self.color_state = ColorState()
 
     def load_file(self, fname):
         with open(fname, 'r') as file:
