@@ -6,7 +6,7 @@ import pyformat.color
 
 FORMAT_COLOR_STRING = {
     'abc%C(red)abc': 'abc\x1b[31mabc',
-    r'abc\%C(red)abc': r'abc\%C(red)abc',
+    'abc%%C(red)abc': 'abc%C(red)abc',
     '%Cinvalid': '',
     '%C': '',
     '%Cred%Cblue': '\x1b[31m\x1b[34m',

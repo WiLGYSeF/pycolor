@@ -20,16 +20,12 @@ def format_string(string, context=None, return_color_positions=False):
     idx = 0
 
     while idx < len(string):
-        char = string[idx]
-        if char == '\\':
-            newstring += '\\'
-            if idx < len(string) - 1:
-                newstring += string[idx + 1]
+        if string[idx] == '%':
+            if idx + 1 < len(string) and string[idx + 1] == '%':
+                newstring += '%'
+                idx += 2
+                continue
 
-            idx += 2
-            continue
-
-        if char == '%':
             formatter, newidx = get_formatter(string, idx)
             if formatter is not None:
                 result = do_format(string, formatter, idx, newidx, context)
@@ -45,7 +41,7 @@ def format_string(string, context=None, return_color_positions=False):
                 idx = newidx
                 continue
 
-        newstring += char
+        newstring += string[idx]
         idx += 1
 
     if return_color_positions:
@@ -81,9 +77,13 @@ def do_format(string, formatter, idx, newidx, context):
                 group = formatter[1:]
 
             try:
-                return context['match'][group]
+                matchgroup = context['match'][group]
             except IndexError:
+                matchgroup = None
+
+            if matchgroup is None:
                 return ''
+            return matchgroup
     if 'fields' in context:
         if formatter[0] == FORMAT_FIELD:
             return fieldsep.get_fields(formatter[1:], context)
