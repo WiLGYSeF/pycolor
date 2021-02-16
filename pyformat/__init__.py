@@ -77,9 +77,13 @@ def do_format(string, formatter, idx, newidx, context):
                 group = formatter[1:]
 
             try:
-                return context['match'][group]
+                matchgroup = context['match'][group]
             except IndexError:
+                matchgroup = None
+
+            if matchgroup is None:
                 return ''
+            return matchgroup
     if 'fields' in context:
         if formatter[0] == FORMAT_FIELD:
             return fieldsep.get_fields(formatter[1:], context)

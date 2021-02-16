@@ -43,6 +43,16 @@ FORMAT_CONTEXT_GROUP_STRINGS = [
         RESULT: '123 abc 123'
     },
     {
+        STRING: '%Gname abc %Gname',
+        CONTEXT: {
+            'match': Match(' 123 ', {
+                1: None,
+                'name': None
+            })
+        },
+        RESULT: ' abc '
+    },
+    {
         STRING: '%Ginvalid abc %Ginvalid',
         CONTEXT: {
             'match': Match('abc 123 abc', {
