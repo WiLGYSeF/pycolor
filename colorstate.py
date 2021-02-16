@@ -27,8 +27,8 @@ DEFAULT_COLOR_STATE = {
 
     OVERLINE: False,
 
-    COLOR_FOREGROUND: 39,
-    COLOR_BACKGROUND: 49
+    COLOR_FOREGROUND: '39',
+    COLOR_BACKGROUND: '49'
 }
 
 
@@ -37,18 +37,49 @@ class ColorState:
         self.color_state = DEFAULT_COLOR_STATE.copy()
 
     def set_state_by_string(self, string):
-        codes = []
+        codelist = []
         for match in re.finditer(r'\x1b\[([0-9;]+)m', string):
-            matched_codes = map(
+            codes = list(map(
                 lambda x: int(x),
                 filter(
                     lambda x: len(x) != 0,
                     match[1].split(';')
                 )
-            )
-            codes.extend(matched_codes)
+            ))
 
-        self.set_state_by_codes(codes)
+            i = 0
+            while i < len(codes):
+                code = codes[i]
+                if code in (38, 48):
+                    color = None
+                    if i + 1 < len(codes):
+                        if codes[i + 1] == 5 and i + 2 < len(codes):
+                            color = '%d;5;%d' % (code, codes[i + 2])
+                            codes.pop(i)
+                        elif codes[i + 1] == 2 and i + 4 < len(codes):
+                            color = '%d;2;%d;%d;%d' % (
+                                code,
+                                codes[i + 2],
+                                codes[i + 3],
+                                codes[i + 4]
+                            )
+                            codes.pop(i)
+                            codes.pop(i)
+                            codes.pop(i)
+                        codes.pop(i)
+
+                    if color is not None:
+                        if code == 38:
+                            self.color_state[COLOR_FOREGROUND] = color
+                        elif code == 48:
+                            self.color_state[COLOR_BACKGROUND] = color
+                    codes.pop(i)
+
+                i += 1
+
+            codelist.extend(codes)
+
+        self.set_state_by_codes(codelist)
 
     def set_state_by_codes(self, codes):
         style_code_enable = {
@@ -83,6 +114,6 @@ class ColorState:
             elif code in style_code_disable:
                 self.color_state[style_code_disable[code]] = False
             elif code >= 30 and code <= 39:
-                self.color_state[COLOR_FOREGROUND] = code
+                self.color_state[COLOR_FOREGROUND] = str(code)
             elif code >= 40 and code <= 49:
-                self.color_state[COLOR_BACKGROUND] = code
+                self.color_state[COLOR_BACKGROUND] = str(code)

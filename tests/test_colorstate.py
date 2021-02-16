@@ -40,9 +40,41 @@ SET_STATE_BY_STRING = [
         }
     },
     {
+        STRING: '\x1b[;m',
+        RESULT: {}
+    },
+    {
         STRING: '\x1b[31m',
         RESULT: {
-            colorstate.COLOR_FOREGROUND: 31,
+            colorstate.COLOR_FOREGROUND: '31'
+        }
+    },
+    {
+        STRING: '\x1b[1;38;5;130;5m',
+        RESULT: {
+            colorstate.BOLD: True,
+            colorstate.BLINK: True,
+            colorstate.COLOR_FOREGROUND: '38;5;130',
+        }
+    },
+    {
+        STRING: '\x1b[5;48;2;255;170;0;1m',
+        RESULT: {
+            colorstate.BOLD: True,
+            colorstate.BLINK: True,
+            colorstate.COLOR_BACKGROUND: '48;2;255;170;0',
+        }
+    },
+    {
+        STRING: '\x1b[1;38;5m',
+        RESULT: {
+            colorstate.BOLD: True
+        }
+    },
+    {
+        STRING: '\x1b[5;48;2;255;170;m',
+        RESULT: {
+            colorstate.BLINK: True
         }
     },
 ]
@@ -74,14 +106,14 @@ SET_STATE_BY_CODES = [
     {
         CODES: [31],
         RESULT: {
-            colorstate.COLOR_FOREGROUND: 31,
+            colorstate.COLOR_FOREGROUND: '31',
         }
     },
     {
         CODES: [31, 43],
         RESULT: {
-            colorstate.COLOR_FOREGROUND: 31,
-            colorstate.COLOR_BACKGROUND: 43,
+            colorstate.COLOR_FOREGROUND: '31',
+            colorstate.COLOR_BACKGROUND: '43',
         }
     },
 ]
