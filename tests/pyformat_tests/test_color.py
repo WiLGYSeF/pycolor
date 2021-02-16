@@ -1,8 +1,12 @@
 import unittest
 
+from colorstate import ColorState
 import pyformat
 import pyformat.color
 
+
+STRING = 'string'
+RESULT = 'result'
 
 FORMAT_COLOR_STRING = {
     'abc%C(red)abc': 'abc\x1b[31mabc',
@@ -30,10 +34,16 @@ FORMAT_COLOR_STRING_LAST = {
     '%C(bold)a%C(yellow)b\x1b[3;31mc%C(last)d': '\x1b[1ma\x1b[33mb\x1b[3;31mc\x1b[23;33md',
 }
 
-ALIASES = 'aliases'
-STRING = 'string'
-RESULT = 'result'
+STATE = 'state'
+FORMAT_COLOR_STRING_SOFT_RESET = [
+    {
+        STATE: ColorState('\x1b[31m'),
+        STRING: 'a%C(underline;yellow)b\x1b[3;31mc%C(cyan)d%C(soft)e',
+        RESULT: 'a\x1b[4;33mb\x1b[3;31mc\x1b[36md\x1b[23;24;31me',
+    }
+]
 
+ALIASES = 'aliases'
 FORMAT_COLOR_STRING_ALIASES = [
     {
         ALIASES: {
@@ -73,6 +83,15 @@ class ColorTest(unittest.TestCase):
     def test_format_color_string_last(self):
         for key, val in FORMAT_COLOR_STRING_LAST.items():
             self.assertEqual(pyformat.format_string(key), val)
+
+    def test_format_color_string_soft_reset(self):
+        for entry in FORMAT_COLOR_STRING_SOFT_RESET:
+            self.assertEqual(pyformat.format_string(
+                entry[STRING],
+                context={
+                    'color_state': entry[STATE]
+                }
+            ), entry[RESULT])
 
     def test_format_color_string_color_disabled(self):
         self.assertEqual(pyformat.format_string(

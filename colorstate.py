@@ -35,14 +35,15 @@ DEFAULT_COLOR_STATE = {
 class ColorState:
     def __init__(self, state=None):
         self.color_state = {}
+        self.reset()
 
         if state is not None:
-            if isinstance(state, str):
+            if isinstance(state, ColorState):
+                self.set_state_by_state(state.color_state)
+            elif isinstance(state, str):
                 self.set_state_by_string(state)
             else:
                 self.set_state_by_state(state)
-        else:
-            self.reset()
 
     def reset(self):
         self.color_state = DEFAULT_COLOR_STATE.copy()
