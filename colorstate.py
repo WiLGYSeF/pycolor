@@ -33,12 +33,20 @@ DEFAULT_COLOR_STATE = {
 
 
 class ColorState:
-    def __init__(self):
+    def __init__(self, state=None):
         self.color_state = {}
-        self.reset()
+
+        if state is not None:
+            self.set_state_by_state(state)
+        else:
+            self.reset()
 
     def reset(self):
         self.color_state = DEFAULT_COLOR_STATE.copy()
+
+    def set_state_by_state(self, state):
+        for key, val in state.items():
+            self.color_state[key] = val
 
     def set_state_by_string(self, string):
         codelist = []
@@ -164,3 +172,36 @@ class ColorState:
 
     def get_changed_state(self):
         return self.get_state_by_keys(self.diff_keys(ColorState()))
+
+    def get_string(self):
+        styles = {
+            BOLD: 1,
+            DIM: 2,
+            ITALIC: 3,
+            UNDERLINE: 4,
+            BLINK: 5,
+            INVERT: 7,
+            CONCEAL: 8,
+            STRIKETHROUGH: 9,
+
+            OVERLINE: 53
+        }
+
+        state = self.get_changed_state()
+        codes = []
+
+        for key, val in styles.items():
+            if state.get(key, False):
+                codes.append(str(val))
+
+        if COLOR_FOREGROUND in state:
+            codes.append(state[COLOR_FOREGROUND])
+        if COLOR_BACKGROUND in state:
+            codes.append(state[COLOR_BACKGROUND])
+
+        if len(codes) == 0:
+            return ''
+        return '\x1b[%sm' % ';'.join(codes)
+
+    def __str__(self):
+        return self.get_string()

@@ -5,6 +5,7 @@ import colorstate
 
 STRING = 'string'
 CODES = 'codes'
+STATE = 'state'
 RESULT = 'result'
 
 SET_STATE_BY_STRING = [
@@ -153,6 +154,34 @@ SET_STATE_BY_CODES = [
     },
 ]
 
+GET_STRING = [
+    {
+        STATE: {},
+        RESULT: ''
+    },
+    {
+        STATE: {
+            colorstate.BOLD: True
+        },
+        RESULT: '\x1b[1m'
+    },
+    {
+        STATE: {
+            colorstate.COLOR_FOREGROUND: '31',
+            colorstate.COLOR_BACKGROUND: '43',
+        },
+        RESULT: '\x1b[31;43m'
+    },
+    {
+        STATE: {
+            colorstate.UNDERLINE: True,
+            colorstate.COLOR_FOREGROUND: '38;5;130',
+            colorstate.COLOR_BACKGROUND: '47',
+        },
+        RESULT: '\x1b[4;38;5;130;47m'
+    }
+]
+
 
 class ColorState(unittest.TestCase):
     def test_set_state_by_string(self):
@@ -175,3 +204,8 @@ class ColorState(unittest.TestCase):
             expected_result.update(entry[RESULT])
 
             self.assertDictEqual(state.color_state, expected_result)
+
+    def test_get_string(self):
+        for entry in GET_STRING:
+            state = colorstate.ColorState(entry[STATE])
+            self.assertEqual(str(state), entry[RESULT])
