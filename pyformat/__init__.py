@@ -1,3 +1,4 @@
+from colorstate import ColorState
 from pyformat import color
 from pyformat import fieldsep
 
@@ -13,11 +14,17 @@ def format_string(string, context=None, return_color_positions=False):
     if context is None:
         context = {}
 
-    context['last_colors'] = []
+    if 'color_state' in context:
+        context['color_state_current'] = context['color_state'].copy()
+    else:
+        context['color_state_current'] = ColorState()
+
+    context['past_color_states'] = [ context['color_state_current'].copy() ]
 
     newstring = ''
     color_positions = {}
     idx = 0
+    last_format_idx = 0
 
     while idx < len(string):
         if string[idx] == '%':
@@ -28,16 +35,22 @@ def format_string(string, context=None, return_color_positions=False):
 
             formatter, newidx = get_formatter(string, idx)
             if formatter is not None:
+                context['color_state_current'].set_state_by_string(newstring[last_format_idx:])
+
                 result = do_format(string, formatter, idx, newidx, context)
                 apppend_result = True
 
                 if is_color_format(formatter):
                     if return_color_positions:
                         color_positions[len(newstring)] = result
+                        context['color_state_current'].set_state_by_string(result)
                         apppend_result = False
+
+                last_format_idx = len(newstring)
 
                 if apppend_result:
                     newstring += result
+
                 idx = newidx
                 continue
 
@@ -46,7 +59,6 @@ def format_string(string, context=None, return_color_positions=False):
 
     if return_color_positions:
         return newstring, color_positions
-
     return newstring
 
 def do_format(string, formatter, idx, newidx, context):
@@ -55,9 +67,17 @@ def do_format(string, formatter, idx, newidx, context):
             return ''
 
         if formatter[1:].lower() == 'prev':
-            return get_lastcolor(context['last_colors'], '2')
+            return get_lastcolor(
+                context['past_color_states'],
+                '2',
+                current=context['color_state_current']
+            )
         if formatter[1:].lower().startswith('last'):
-            return get_lastcolor(context['last_colors'], formatter[5:])
+            return get_lastcolor(
+                context['past_color_states'],
+                formatter[5:],
+                current=context['color_state_current']
+            )
 
         colorstr = color.get_color(
             formatter[1:],
@@ -66,7 +86,10 @@ def do_format(string, formatter, idx, newidx, context):
         if colorstr is None:
             colorstr = ''
 
-        context['last_colors'].append(colorstr)
+        newstate = context['past_color_states'][-1].copy()
+        newstate.set_state_by_string(colorstr)
+        context['past_color_states'].append(newstate)
+
         return colorstr
 
     if 'match' in context:
@@ -137,9 +160,12 @@ def get_formatter(string, idx):
 def is_color_format(string):
     return string[0] == 'C'
 
-def get_lastcolor(colors, string):
+def get_lastcolor(colors, string, current=None):
     if len(colors) == 0:
         return ''
+
+    if current is None:
+        current = ColorState()
 
     try:
         last_idx = -int(string)
@@ -153,4 +179,4 @@ def get_lastcolor(colors, string):
     elif -last_idx > len(colors):
         last_idx = 0
 
-    return colors[last_idx]
+    return colors[last_idx].get_string(compare_state=current)

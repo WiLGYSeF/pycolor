@@ -167,6 +167,8 @@ class Pycolor:
                 newdata = Pycolor.insert_color_data(newdata, color_positions)
 
             stream.write(newdata)
+            self.color_state.set_state_by_string(newdata)
+
             if removed_newline:
                 stream.write('\n')
 
@@ -187,6 +189,7 @@ class Pycolor:
                     data, colorpos = pyformat.format_string(
                         pat.replace_all,
                         context={
+                            'color_state': self.color_state,
                             'color_enabled': self.is_color_enabled(),
                             'color_aliases': self.color_aliases,
                             'match': match
@@ -211,6 +214,7 @@ class Pycolor:
                 data, colorpos = pyformat.format_string(
                     pat.replace_all,
                     context={
+                        'color_state': self.color_state,
                         'color_enabled': self.is_color_enabled(),
                         'color_aliases': self.color_aliases,
                         'fields': fields,
@@ -263,6 +267,7 @@ class Pycolor:
             newstring, colorpos = pyformat.format_string(
                 pattern.replace,
                 context={
+                    'color_state': self.color_state,
                     'color_enabled': self.is_color_enabled(),
                     'color_aliases': self.color_aliases,
                     'match': match

@@ -6,6 +6,7 @@ import colorstate
 STRING = 'string'
 CODES = 'codes'
 STATE = 'state'
+STATE_PREV = 'state_prev'
 RESULT = 'result'
 
 SET_STATE_BY_STRING = [
@@ -179,11 +180,20 @@ GET_STRING = [
             colorstate.COLOR_BACKGROUND: '47',
         },
         RESULT: '\x1b[4;38;5;130;47m'
-    }
+    },
+    {
+        STATE: {
+            colorstate.BLINK: False
+        },
+        STATE_PREV: {
+            colorstate.BLINK: True
+        },
+        RESULT: '\x1b[25m'
+    },
 ]
 
 
-class ColorState(unittest.TestCase):
+class ColorStateTest(unittest.TestCase):
     def test_set_state_by_string(self):
         for entry in SET_STATE_BY_STRING:
             state = colorstate.ColorState()
@@ -208,4 +218,10 @@ class ColorState(unittest.TestCase):
     def test_get_string(self):
         for entry in GET_STRING:
             state = colorstate.ColorState(entry[STATE])
-            self.assertEqual(str(state), entry[RESULT])
+            if STATE_PREV in entry:
+                self.assertEqual(
+                    state.get_string(compare_state=colorstate.ColorState(entry[STATE_PREV])),
+                    entry[RESULT]
+                )
+            else:
+                self.assertEqual(str(state), entry[RESULT])
