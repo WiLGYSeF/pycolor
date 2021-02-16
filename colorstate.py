@@ -199,8 +199,11 @@ class ColorState:
         codes = []
 
         for key, val in styles.items():
-            if state.get(key, False):
-                codes.append(str(val))
+            if key in state:
+                if state[key]:
+                    codes.append(str(val))
+                else:
+                    codes.append(str(val + 20))
 
         if COLOR_FOREGROUND in state:
             codes.append(state[COLOR_FOREGROUND])
