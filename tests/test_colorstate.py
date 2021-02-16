@@ -66,12 +66,6 @@ SET_STATE_BY_STRING = [
         }
     },
     {
-        STRING: '\x1b[1;38m',
-        RESULT: {
-            colorstate.BOLD: True
-        }
-    },
-    {
         STRING: '\x1b[1;38;5m',
         RESULT: {
             colorstate.BOLD: True
@@ -81,6 +75,25 @@ SET_STATE_BY_STRING = [
         STRING: '\x1b[5;48;2;255;170;m',
         RESULT: {
             colorstate.BLINK: True
+        }
+    },
+    {
+        STRING: '\x1b[1;38m',
+        RESULT: {
+            colorstate.BOLD: True
+        }
+    },
+    {
+        STRING: '\x1b[1;38;5;256m',
+        RESULT: {
+            colorstate.BOLD: True
+        }
+    },
+    {
+        STRING: '\x1b[8;38;2;256;170;0;1m',
+        RESULT: {
+            colorstate.BOLD: True,
+            colorstate.CONCEAL: True,
         }
     },
 ]

@@ -54,15 +54,17 @@ class ColorState:
                     color = None
                     if i + 1 < len(codes):
                         if codes[i + 1] == 5 and i + 2 < len(codes):
-                            color = '%d;5;%d' % (code, codes[i + 2])
+                            if codes[i + 2] < 256:
+                                color = '%d;5;%d' % (code, codes[i + 2])
                             codes.pop(i)
                         elif codes[i + 1] == 2 and i + 4 < len(codes):
-                            color = '%d;2;%d;%d;%d' % (
-                                code,
-                                codes[i + 2],
-                                codes[i + 3],
-                                codes[i + 4]
-                            )
+                            if codes[i + 2] < 256 and codes[i + 3] < 256 and codes[i + 4] < 256:
+                                color = '%d;2;%d;%d;%d' % (
+                                    code,
+                                    codes[i + 2],
+                                    codes[i + 3],
+                                    codes[i + 4]
+                                )
                             codes.pop(i)
                             codes.pop(i)
                             codes.pop(i)
