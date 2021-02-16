@@ -12,24 +12,26 @@ OVERLINE = 'overline'
 COLOR_FOREGROUND = 'color_foreground'
 COLOR_BACKGROUND = 'color_background'
 
+DEFAULT_COLOR_STATE = {
+    BOLD: False,
+    DIM: False,
+    ITALIC: False,
+    UNDERLINE: False,
+    BLINK: False,
+    INVERT: False,
+    CONCEAL: False,
+    STRIKETHROUGH: False,
+
+    OVERLINE: False,
+
+    COLOR_FOREGROUND: 39,
+    COLOR_BACKGROUND: 49
+}
+
 
 class ColorState:
     def __init__(self):
-        self.color_state = {
-            BOLD: False,
-            DIM: False,
-            ITALIC: False,
-            UNDERLINE: False,
-            BLINK: False,
-            INVERT: False,
-            CONCEAL: False,
-            STRIKETHROUGH: False,
-
-            OVERLINE: False,
-
-            COLOR_FOREGROUND: 39,
-            COLOR_BACKGROUND: 49
-        }
+        self.color_state = DEFAULT_COLOR_STATE.copy()
 
     def set_state_by_codes(self, codes):
         style_code_enable = {
