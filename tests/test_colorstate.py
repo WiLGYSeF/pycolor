@@ -66,6 +66,12 @@ SET_STATE_BY_STRING = [
         }
     },
     {
+        STRING: '\x1b[1;38m',
+        RESULT: {
+            colorstate.BOLD: True
+        }
+    },
+    {
         STRING: '\x1b[1;38;5m',
         RESULT: {
             colorstate.BOLD: True
