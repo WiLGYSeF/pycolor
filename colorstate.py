@@ -145,3 +145,22 @@ class ColorState:
                 self.color_state[COLOR_FOREGROUND] = str(code)
             elif (code >= 40 and code <= 49) or (code >= 100 and code <= 107):
                 self.color_state[COLOR_BACKGROUND] = str(code)
+
+    def diff_keys(self, state):
+        diff_keys = []
+
+        for key, val in self.color_state.items():
+            if val != state.color_state[key]:
+                diff_keys.append(key)
+
+        return diff_keys
+
+    def get_state_by_keys(self, keys):
+        state = {}
+        for k in keys:
+            state[k] = self.color_state[k]
+
+        return state
+
+    def get_changed_state(self):
+        return self.get_state_by_keys(self.diff_keys(ColorState()))
