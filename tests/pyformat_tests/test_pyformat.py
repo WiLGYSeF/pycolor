@@ -45,7 +45,8 @@ FORMAT_STRINGS = {
     '': '',
     'abc': 'abc',
     'abc%': 'abc%',
-    'abc\\': 'abc\\',
+    '20%% complete': '20% complete',
+    'abc\\123': 'abc\\123',
 }
 
 class Match:
