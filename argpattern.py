@@ -6,7 +6,7 @@ import jsonschema
 ARGPATTERN_SCHEMA = {
     'type': 'object',
     'properties': {
-        'expression': {'type': 'string'},
+        'expression': {'type': ['array', 'string']},
         'position': {'type': ['string', 'integer', 'null']},
 
         'match_not': {'type': 'boolean'},
@@ -21,6 +21,8 @@ class ArgPattern:
         jsonschema.validate(instance=cfg, schema=ARGPATTERN_SCHEMA)
 
         self.expression = cfg['expression']
+        if isinstance(self.expression, list):
+            self.expression = ''.join(self.expression)
         self.regex = re.compile(self.expression)
 
         self.position = cfg.get('position', '*')

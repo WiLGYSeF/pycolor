@@ -9,7 +9,7 @@ PROFILE_SCHEMA = {
     'type': 'object',
     'properties': {
         'name': {'type' : 'string'},
-        'name_regex': {'type' : 'string'},
+        'name_regex': {'type' : ['array', 'string']},
         'profile_name': {'type': 'string'},
         'which': {'type': 'string'},
 
@@ -38,6 +38,9 @@ class Profile:
         self.arg_patterns = []
         self.from_profiles = []
         self.patterns = []
+
+        if isinstance(self.name_regex, list):
+            self.name_regex = ''.join(self.name_regex)
 
         if self.profile_name is not None and len(self.profile_name) == 0:
             self.profile_name = None
