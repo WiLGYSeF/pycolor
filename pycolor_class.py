@@ -1,3 +1,4 @@
+import datetime
 import json
 import re
 import sys
@@ -166,6 +167,19 @@ class Pycolor:
         if newdata is not None:
             if len(color_positions) > 0:
                 newdata = Pycolor.insert_color_data(newdata, color_positions)
+
+            if self.current_profile.timestamp != False:
+                timestamp = '%Y-%m-%d %H:%M:%S: '
+                if isinstance(self.current_profile.timestamp, str):
+                    timestamp = self.current_profile.timestamp
+
+                stream.write(self.color_state_orig.get_string(
+                    compare_state=self.color_state
+                ))
+                stream.write(datetime.datetime.strftime(datetime.datetime.now(), timestamp))
+                stream.write(self.color_state.get_string(
+                    compare_state=self.color_state_orig
+                ))
 
             stream.write(newdata)
             self.color_state.set_state_by_string(newdata)

@@ -16,6 +16,7 @@ PROFILE_SCHEMA = {
         'buffer_line': {'type': 'boolean'},
         'all_args_must_match': {'type': 'boolean'},
         'soft_reset_eol': {'type': 'boolean'},
+        'timestamp': {'type': ['boolean', 'string']},
 
         'from_profiles': {'type': ['array', 'string']},
 
@@ -34,11 +35,15 @@ class Profile:
         self.name_regex = cfg.get('name_regex')
         self.profile_name = cfg.get('profile_name')
         self.which = cfg.get('which')
+
         self.buffer_line = cfg.get('buffer_line', True)
         self.all_args_must_match = cfg.get('all_args_must_match', False)
         self.soft_reset_eol = cfg.get('soft_reset_eol', False)
-        self.arg_patterns = []
+        self.timestamp = cfg.get('timestamp', False)
+
         self.from_profiles = []
+
+        self.arg_patterns = []
         self.patterns = []
 
         if isinstance(self.name_regex, list):
