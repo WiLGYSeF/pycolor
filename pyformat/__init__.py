@@ -79,7 +79,7 @@ def do_format(string, formatter, idx, newidx, context):
                 current=context['color_state_current']
             )
         if formatter[1:] in ('s', 'soft'):
-            return context['color_state'].get_string(
+            return context['color_state_orig'].get_string(
                 compare_state=context['color_state_current']
             )
 

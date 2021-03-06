@@ -15,6 +15,7 @@ PROFILE_SCHEMA = {
 
         'buffer_line': {'type': 'boolean'},
         'all_args_must_match': {'type': 'boolean'},
+        'soft_reset_eol': {'type': 'boolean'},
 
         'from_profiles': {'type': ['array', 'string']},
 
@@ -35,6 +36,7 @@ class Profile:
         self.which = cfg.get('which')
         self.buffer_line = cfg.get('buffer_line', True)
         self.all_args_must_match = cfg.get('all_args_must_match', False)
+        self.soft_reset_eol = cfg.get('soft_reset_eol', False)
         self.arg_patterns = []
         self.from_profiles = []
         self.patterns = []

@@ -26,7 +26,8 @@ class Pycolor:
         self.stdout = sys.stdout
         self.stderr = sys.stderr
 
-        self.color_state = ColorState()
+        self.color_state_orig = ColorState()
+        self.color_state = self.color_state_orig.copy()
 
     def load_file(self, fname):
         with open(fname, 'r') as file:
@@ -169,6 +170,11 @@ class Pycolor:
             stream.write(newdata)
             self.color_state.set_state_by_string(newdata)
 
+            if self.current_profile.soft_reset_eol:
+                stream.write(self.color_state_orig.get_string(
+                    compare_state=self.color_state
+                ))
+
             if removed_newline:
                 stream.write('\n')
 
@@ -189,6 +195,7 @@ class Pycolor:
                     data, colorpos = pyformat.format_string(
                         pat.replace_all,
                         context={
+                            'color_state_orig': self.color_state_orig,
                             'color_state': self.color_state,
                             'color_enabled': self.is_color_enabled(),
                             'color_aliases': self.color_aliases,
@@ -214,6 +221,7 @@ class Pycolor:
                 data, colorpos = pyformat.format_string(
                     pat.replace_all,
                     context={
+                        'color_state_orig': self.color_state_orig,
                         'color_state': self.color_state,
                         'color_enabled': self.is_color_enabled(),
                         'color_aliases': self.color_aliases,
@@ -267,6 +275,7 @@ class Pycolor:
             newstring, colorpos = pyformat.format_string(
                 pattern.replace,
                 context={
+                    'color_state_orig': self.color_state_orig,
                     'color_state': self.color_state,
                     'color_enabled': self.is_color_enabled(),
                     'color_aliases': self.color_aliases,

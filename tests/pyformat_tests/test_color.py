@@ -89,7 +89,8 @@ class ColorTest(unittest.TestCase):
             self.assertEqual(pyformat.format_string(
                 entry[STRING],
                 context={
-                    'color_state': entry[STATE]
+                    'color_state_orig': entry[STATE],
+                    'color_state': entry[STATE],
                 }
             ), entry[RESULT])
 

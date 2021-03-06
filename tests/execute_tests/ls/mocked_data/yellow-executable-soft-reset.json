@@ -1,0 +1,14 @@
+{
+	"profiles": [
+		{
+			"name": "ls",
+			"soft_reset_eol": true,
+			"patterns": [
+				{
+					"expression": "^...x..x..x .*",
+					"replace_all": "%C(yellow;underline)%G0"
+				}
+			]
+		}
+	]
+}
