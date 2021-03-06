@@ -131,6 +131,7 @@ If a `^` is prepended before a color (e.g. `%C(^red)`), then it is used to set t
 The color formatting for bold, red-on-yellow text can be written as `%C(bold;red;^yellow)hello`, or `%C(bol;r;^y)hello`, which will produce `\e[1;31;43mhello`.
 
 If a `^` is prepended before a style (e.g. `%C(^italic)` produces `\e[23m`), then the style is turned off.
+Note that for turning off bold (`%C(^bold)` i.e. `\e[21m`) instead turns on double underline for some terminals.
 
 ### Special Colors
 
