@@ -1,5 +1,5 @@
 # Pycolor
-![build](https://travis-ci.com/WiLGYSeF/pycolor.svg?branch=master)
+[![Build Status](https://www.travis-ci.com/WiLGYSeF/pycolor.svg?branch=master)](https://www.travis-ci.com/WiLGYSeF/pycolor)
 [![codecov](https://codecov.io/gh/WiLGYSeF/pycolor/branch/master/graph/badge.svg?token=7ASXFQTOOG)](https://codecov.io/gh/WiLGYSeF/pycolor)
 
 1. [Installation](#installation).
