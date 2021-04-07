@@ -215,5 +215,11 @@ class ColorState:
             return ''
         return '\x1b[%sm' % ';'.join(codes)
 
+    @staticmethod
+    def from_str(string):
+        state = ColorState()
+        state.set_state_by_string(string)
+        return state
+
     def __str__(self):
         return self.get_string()

@@ -13,8 +13,9 @@ from which import which
 
 
 class Pycolor:
-    def __init__(self, color_mode='auto'):
+    def __init__(self, color_mode='auto', debug=0):
         self.color_mode = color_mode
+        self.debug = debug
 
         self.profiles = []
         self.named_profiles = {}
@@ -133,6 +134,19 @@ class Pycolor:
             profile = self.get_profile_by_command(cmd[0], cmd[1:])
 
         self.set_current_profile(profile)
+        if self.debug > 0:
+            name = None
+            for pname in [
+                profile.profile_name,
+                profile.which,
+                profile.name,
+                profile.name_regex,
+            ]:
+                if pname is not None and len(pname) != 0:
+                    name = pname
+                    break
+
+            self.debug_print(1, 'using profile "%s"' % name)
 
         return execute.execute(
             cmd,
@@ -151,25 +165,41 @@ class Pycolor:
                 self.linenum += 1
                 newdata = newdata[:-1]
                 removed_newline = True
+
+            self.debug_print(1, 'got data: ln %d: %s' % (self.linenum, newdata.encode('utf-8')))
         else:
             self.linenum += data.count('\n')
 
+            self.debug_print(1, 'got data: %s' % newdata.encode('utf-8'))
+
+        color_pos_len = len(color_positions)
         for pat in self.current_profile.patterns:
             if not pat.enabled:
                 continue
             if pat.stdout_only and stream != sys.stdout or pat.stderr_only and stream != sys.stderr:
                 continue
 
-            newdata = self.apply_pattern(pat, newdata, color_positions)
-            if newdata is None:
+            applied = self.apply_pattern(pat, newdata, color_positions)
+            if applied is None:
+                newdata = None
                 break
 
+            if newdata != applied or len(color_positions) > color_pos_len:
+                if self.debug >= 3:
+                    changed = Pycolor.insert_color_data(applied, color_positions)
+                    self.debug_print(3, 'applying: %s' % (changed.encode('utf-8')))
+
+                newdata = applied
+                color_pos_len = len(color_positions)
+
         if newdata is not None:
-            if len(color_positions) > 0:
+            if len(color_positions) != 0:
                 newdata = Pycolor.insert_color_data(newdata, color_positions)
 
+            self.debug_print(2, 'writing:  %s' % (newdata.encode('utf-8')))
+
             if self.current_profile.buffer_line:
-                if self.current_profile.timestamp != False:
+                if self.current_profile.timestamp != False: #pylint: disable=singleton-comparison
                     timestamp = '%Y-%m-%d %H:%M:%S: '
                     if isinstance(self.current_profile.timestamp, str):
                         timestamp = self.current_profile.timestamp
@@ -393,6 +423,21 @@ class Pycolor:
 
     def stderr_cb(self, data):
         self.data_callback(self.stderr, data)
+
+    def debug_print(self, lvl, *args):
+        if self.debug < lvl:
+            return
+
+        if self.is_color_enabled():
+            reset = pyformat.format_string('%Cz%Cde')
+            oldstate = str(self.color_state)
+            if len(oldstate) == 0:
+                oldstate = pyformat.format_string('%Cz')
+        else:
+            reset = ''
+            oldstate = ''
+
+        print('%s    DEBUG%d: %s%s' % (reset, lvl, ' '.join(args), oldstate))
 
     @staticmethod
     def is_being_redirected():

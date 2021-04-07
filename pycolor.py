@@ -9,7 +9,7 @@ from pycolor_class import Pycolor
 
 
 CONFIG_DEFAULT_NAME = '.pycolor.json'
-CONFIG_DIR = os.path.join(os.getenv('HOME'), '.pycolor')
+CONFIG_DIR = os.path.join(os.getenv('HOME'), '.pycolor.d')
 CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), CONFIG_DEFAULT_NAME)
 
 
@@ -31,6 +31,14 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         action='store', metavar='NAME',
         help='specifically use this profile even if it does not match the current arguments'
     )
+    parser.add_argument('-t', '--timestamp',
+        action='store', metavar='FORMAT', default=False, nargs='?',
+        help='force enable "timestamp" for all profiles'
+    )
+    parser.add_argument('-v', '--verbose',
+        action='count', default=0,
+        help='enable debug mode to assist in configuring profiles'
+    )
 
     argspace, cmd_args = parser.parse_known_args(args)
     if len(cmd_args) != 0 and cmd_args[0] == '--':
@@ -41,7 +49,7 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
 
     read_stdin = len(cmd_args) == 0
 
-    pycobj = Pycolor(color_mode=argspace.color)
+    pycobj = Pycolor(color_mode=argspace.color, debug=argspace.verbose)
     pycobj.stdout = stdout_stream
     pycobj.stderr = stderr_stream
 
@@ -53,6 +61,13 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
     else:
         for fname in argspace.load_file:
             pycobj.load_file(fname)
+
+    if argspace.timestamp != False: #pylint: disable=singleton-comparison
+        if argspace.timestamp is None:
+            argspace.timestamp = True
+
+        for prof in pycobj.profiles:
+            prof.timestamp = argspace.timestamp
 
     profile = None
     if argspace.profile is not None:
