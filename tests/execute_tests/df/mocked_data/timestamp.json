@@ -1,0 +1,15 @@
+{
+	"profiles": [
+		{
+			"name": "df",
+			"profile_name": "df",
+			"timestamp": "%Y%m%d %H%M%S: ",
+			"patterns": [
+				{
+					"expression": ".*",
+					"replace_all": "%Cr%G0"
+				}
+			]
+		}
+	]
+}

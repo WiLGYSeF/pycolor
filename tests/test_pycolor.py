@@ -1,94 +1,137 @@
+import io
+import os
 import unittest
 
+from tests.execute_tests.helpers import execute_patch, open_fstream, read_file, test_stream
+from tests.testutils import patch
 import pycolor
+import pycolor_class
 
 
-ARGV = 'argv'
-MY_ARGS = 'my_args'
-CMD_ARGS = 'cmd_args'
-START_IDX = 'start_idx'
+MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_data')
 
-GET_MY_ARGS = [
+ARGS = 'args'
+SUBSET = 'subset'
+RESULT = 'result'
+
+CONSECUTIVE_END_ARGS = [
     {
-        ARGV: [],
-        MY_ARGS: [],
-        CMD_ARGS: [],
-        START_IDX: 0
+        ARGS: [],
+        SUBSET: [],
+        RESULT: True
     },
     {
-        ARGV: ['ls'],
-        MY_ARGS: [],
-        CMD_ARGS: ['ls'],
-        START_IDX: 0
+        ARGS: ['--color', 'on', 'abc'],
+        SUBSET: [],
+        RESULT: True
     },
     {
-        ARGV: ['pycolor'],
-        MY_ARGS: [],
-        CMD_ARGS: [],
-        START_IDX: 1
+        ARGS: ['abc'],
+        SUBSET: ['abc'],
+        RESULT: True
     },
     {
-        ARGV: ['ls', '-l'],
-        MY_ARGS: [],
-        CMD_ARGS: ['ls', '-l'],
-        START_IDX: 0
+        ARGS: ['--color', 'on', 'abc'],
+        SUBSET: ['abc'],
+        RESULT: True
     },
     {
-        ARGV: ['pycolor', 'ls', '-l'],
-        MY_ARGS: [],
-        CMD_ARGS: ['ls', '-l'],
-        START_IDX: 1
+        ARGS: ['--', 'asdf', '--color', 'on', 'abc'],
+        SUBSET: ['asdf', '--color', 'on', 'abc'],
+        RESULT: True
     },
     {
-        ARGV: ['pycolor', '--color', 'ls', '-l'],
-        MY_ARGS: ['--color'],
-        CMD_ARGS: ['ls', '-l'],
-        START_IDX: 1
+        ARGS: ['asdf', '--color', 'on', 'abc'],
+        SUBSET: ['asdf', 'abc'],
+        RESULT: False
     },
     {
-        ARGV: ['pycolor', '--test', '--color', 'ls', '-l'],
-        MY_ARGS: ['--test', '--color'],
-        CMD_ARGS: ['ls', '-l'],
-        START_IDX: 1
+        ARGS: ['asdf', 'abc', '--color', 'on'],
+        SUBSET: ['asdf', 'abc'],
+        RESULT: False
     },
     {
-        ARGV: ['pycolor', '--test', 'abc', '--color', 'ls', '-l'],
-        MY_ARGS: ['--test'],
-        CMD_ARGS: ['abc', '--color', 'ls', '-l'],
-        START_IDX: 1
+        ARGS: ['asdf', 'abc', '--color', 'on'],
+        SUBSET: ['nowhere'],
+        RESULT: False
     },
     {
-        ARGV: ['pycolor', '--color', '--', 'ls', '-l'],
-        MY_ARGS: ['--color'],
-        CMD_ARGS: ['ls', '-l'],
-        START_IDX: 1
+        ARGS: ['asdf', 'abc', '--color', 'on'],
+        SUBSET: ['abc'],
+        RESULT: False
     },
     {
-        ARGV: ['pycolor', '--', '--weirdname'],
-        MY_ARGS: [],
-        CMD_ARGS: ['--weirdname'],
-        START_IDX: 1
+        ARGS: ['ee', 'asdf', 'abc'],
+        SUBSET: ['asdf', 'abc', '123', '4'],
+        RESULT: False
     },
 ]
 
-GET_ARGS = {
-    'invalid': ValueError(),
-    '--asdf': ('asdf', None),
-    '--asdf=': ('asdf', ''),
-    '--asdf=test': ('asdf', 'test')
-}
 
+class PycolorTest(unittest.TestCase):
+    def test_main_ls_numbers(self):
+        self.check_pycolor_main(['ls', '-l'], MOCKED_DATA, 'ls_numbers')
 
-class MainTest(unittest.TestCase):
-    def test_get_my_args(self):
-        for entry in GET_MY_ARGS:
-            my_args, cmd_args = pycolor.get_my_args(entry[ARGV], start_idx=entry[START_IDX])
-            self.assertListEqual(my_args, entry[MY_ARGS])
-            self.assertListEqual(cmd_args, entry[CMD_ARGS])
+    def test_main_ls_numbers_with_dashdash(self):
+        self.check_pycolor_main(['--', 'ls', '-l'], MOCKED_DATA, 'ls_numbers')
 
-    def test_get_arg(self):
-        for string, val in GET_ARGS.items():
-            if isinstance(val, Exception):
-                self.assertRaises(Exception, pycolor.get_arg, string)
-            else:
-                self.assertTupleEqual(pycolor.get_arg(string), val)
+    def test_main_invalid_consecutive_args(self):
+        with self.assertRaises(SystemExit):
+            self.check_pycolor_main(['ls', '-l', '--color', 'on'], MOCKED_DATA, 'ls_numbers')
+
+    def test_main_no_profile_stdin(self):
+        with self.assertRaises(SystemExit), patch(pycolor, 'printerr', lambda x: x):
+            self.check_pycolor_main([], MOCKED_DATA, 'ls_numbers')
+
+    def test_consecutive_end_args(self):
+        for entry in CONSECUTIVE_END_ARGS:
+            self.assertEqual(
+                pycolor.consecutive_end_args(entry[ARGS], entry[SUBSET]),
+                entry[RESULT]
+            )
+
+    def check_pycolor_main(self,
+        args,
+        mocked_data_dir,
+        test_name,
+        print_output=False,
+        write_output=False
+    ):
+        filename_prefix = os.path.join(mocked_data_dir, test_name)
+        stdout = io.TextIOWrapper(io.BytesIO())
+        stderr = io.TextIOWrapper(io.BytesIO())
+
+        args = ['--load-file', filename_prefix + '.json', '--color', 'always'] + args
+
+        stdout_in = open_fstream(filename_prefix + '.txt')
+        stderr_in = open_fstream(filename_prefix + '.err.txt')
+
+        with execute_patch(pycolor_class.execute, stdout_in, stderr_in):
+            try:
+                pycolor.main(args, stdout_stream=stdout, stderr_stream=stderr)
+            except SystemExit as sexc:
+                if sexc.code != 0:
+                    raise sexc
+            finally:
+                if stdout_in is not None:
+                    stdout_in.close()
+                if stderr_in is not None:
+                    stderr_in.close()
+
+        output_expected = read_file(filename_prefix + '.out.txt')
+        output_expected_err = read_file(filename_prefix + '.out.err.txt')
+
+        test_stream(self,
+            stdout,
+            filename_prefix + '.out.txt',
+            output_expected,
+            print_output,
+            write_output
+        )
+        test_stream(self,
+            stderr,
+            filename_prefix + '.out.err.txt',
+            output_expected_err,
+            print_output,
+            write_output
+        )

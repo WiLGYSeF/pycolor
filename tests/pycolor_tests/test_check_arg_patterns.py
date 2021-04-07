@@ -1,6 +1,6 @@
-import re
 import unittest
 
+from argpattern import ArgPattern
 from pycolor_class import Pycolor
 
 
@@ -13,7 +13,7 @@ CHECK_ARG_PATTERNS = [
         ARGS: ['-l'],
         ARGPATTERNS: [
             {
-                'regex': re.compile('-l'),
+                'expression': '-l',
                 'position': '*',
                 'match_not': False,
                 'optional': False
@@ -25,7 +25,7 @@ CHECK_ARG_PATTERNS = [
         ARGS: ['-l'],
         ARGPATTERNS: [
             {
-                'regex': re.compile('-a'),
+                'expression': '-a',
                 'position': '*',
                 'match_not': False,
                 'optional': False
@@ -37,7 +37,7 @@ CHECK_ARG_PATTERNS = [
         ARGS: ['-lA'],
         ARGPATTERNS: [
             {
-                'regex': re.compile('-[A-Za-z]*l[A-Za-z]*'),
+                'expression': '-[A-Za-z]*l[A-Za-z]*',
                 'position': '*',
                 'match_not': False,
                 'optional': False
@@ -49,7 +49,7 @@ CHECK_ARG_PATTERNS = [
         ARGS: ['-l', '-a'],
         ARGPATTERNS: [
             {
-                'regex': re.compile('-l'),
+                'expression': '-l',
                 'position': 1,
                 'match_not': False,
                 'optional': False
@@ -61,7 +61,7 @@ CHECK_ARG_PATTERNS = [
         ARGS: ['-l', '-a'],
         ARGPATTERNS: [
             {
-                'regex': re.compile('-l'),
+                'expression': '-l',
                 'position': 2,
                 'match_not': False,
                 'optional': False
@@ -73,7 +73,7 @@ CHECK_ARG_PATTERNS = [
         ARGS: ['-l'],
         ARGPATTERNS: [
             {
-                'regex': re.compile('-l'),
+                'expression': '-l',
                 'position': '*',
                 'match_not': True,
                 'optional': False
@@ -85,13 +85,13 @@ CHECK_ARG_PATTERNS = [
         ARGS: ['-l'],
         ARGPATTERNS: [
             {
-                'regex': re.compile('-l'),
+                'expression': '-l',
                 'position': '*',
                 'match_not': False,
                 'optional': False
             },
             {
-                'regex': re.compile('-a'),
+                'expression': '-a',
                 'position': '*',
                 'match_not': False,
                 'optional': False
@@ -103,13 +103,13 @@ CHECK_ARG_PATTERNS = [
         ARGS: ['-l'],
         ARGPATTERNS: [
             {
-                'regex': re.compile('-l'),
+                'expression': '-l',
                 'position': '*',
                 'match_not': False,
                 'optional': False
             },
             {
-                'regex': re.compile('-a'),
+                'expression': '-a',
                 'position': '*',
                 'match_not': False,
                 'optional': True
@@ -123,7 +123,8 @@ CHECK_ARG_PATTERNS = [
 class CheckArgPatternsTest(unittest.TestCase):
     def test_check_arg_patterns(self):
         for entry in CHECK_ARG_PATTERNS:
+            argpats = map(lambda x: ArgPattern(x), entry[ARGPATTERNS])
             self.assertEqual(
-                Pycolor.check_arg_patterns(entry[ARGS], entry[ARGPATTERNS]),
+                Pycolor.check_arg_patterns(entry[ARGS], argpats),
                 entry[RESULT]
             )

@@ -1,7 +1,9 @@
+import datetime
 import json
 import re
 import sys
 
+from colorstate import ColorState
 import execute
 from profile_class import Profile
 import pyformat
@@ -11,8 +13,9 @@ from which import which
 
 
 class Pycolor:
-    def __init__(self, color_mode='auto'):
+    def __init__(self, color_mode='auto', debug=0):
         self.color_mode = color_mode
+        self.debug = debug
 
         self.profiles = []
         self.named_profiles = {}
@@ -24,6 +27,9 @@ class Pycolor:
 
         self.stdout = sys.stdout
         self.stderr = sys.stderr
+
+        self.color_state_orig = ColorState()
+        self.color_state = self.color_state_orig.copy()
 
     def load_file(self, fname):
         with open(fname, 'r') as file:
@@ -53,47 +59,18 @@ class Pycolor:
         return profiles
 
     def include_from_profile(self, patterns, from_profiles):
-        if isinstance(from_profiles, str):
-            fromprof = self.get_profile_by_name(from_profiles)
-            if fromprof is None:
-                raise Exception()
+        for fprof in from_profiles:
+            if not fprof.enabled:
+                continue
 
-            patterns.extend(fromprof.patterns)
-            return
-
-        for fromprof_cfg in from_profiles:
-            if isinstance(fromprof_cfg, dict):
-                if not fromprof_cfg.get('enabled', True):
-                    continue
-
-                if len(fromprof_cfg.get('name', '')) == 0:
-                    raise Exception()
-
-                fromprof = self.get_profile_by_name(fromprof_cfg['name'])
-                if fromprof is None:
-                    raise Exception()
-
-                if 'order' in fromprof_cfg:
-                    if fromprof_cfg['order'] not in ('before', 'after', 'disabled'):
-                        raise ValueError()
-
-                    if fromprof_cfg['order'] == 'before':
-                        orig_patterns = patterns.copy()
-                        patterns.clear()
-                        patterns.extend(fromprof.patterns)
-                        patterns.extend(orig_patterns)
-                    elif fromprof_cfg['order'] == 'after':
-                        patterns.extend(fromprof.patterns)
-                else:
-                    patterns.extend(fromprof.patterns)
-            elif isinstance(fromprof_cfg, str):
-                fromprof = self.get_profile_by_name(fromprof_cfg)
-                if fromprof is None:
-                    raise Exception()
-
+            fromprof = self.get_profile_by_name(fprof.name)
+            if fprof.order == 'before':
+                orig_patterns = patterns.copy()
+                patterns.clear()
                 patterns.extend(fromprof.patterns)
-            else:
-                raise ValueError()
+                patterns.extend(orig_patterns)
+            elif fprof.order == 'after':
+                patterns.extend(fromprof.patterns)
 
     def get_profile_by_name(self, name):
         return self.named_profiles.get(name)
@@ -133,17 +110,17 @@ class Pycolor:
 
         for argpat in arg_patterns:
             matches = False
-            for idx in Pycolor.get_arg_range(len(args), argpat.get('position')):
-                if argpat['regex'].fullmatch(args[idx]):
-                    if argpat.get('match_not', False):
+            for idx in argpat.get_arg_range(len(args)):
+                if argpat.regex.fullmatch(args[idx]):
+                    if argpat.match_not:
                         return False
                     idx_matches.add(idx)
                     matches = True
 
             if not any([
                 matches,
-                argpat.get('match_not', False),
-                argpat.get('optional', False)
+                argpat.match_not,
+                argpat.optional
             ]):
                 return False
 
@@ -152,41 +129,24 @@ class Pycolor:
 
         return True
 
-    @staticmethod
-    def get_arg_range(arglen, position):
-        if position is None:
-            return range(arglen)
-
-        if isinstance(position, int):
-            if position > arglen:
-                return range(0)
-            return range(position - 1, position)
-
-        match = re.fullmatch(r'([<>+-])?(\*|[0-9]+)', position)
-        if match is None:
-            return range(arglen)
-
-        index = match[2]
-        if index == '*':
-            return range(arglen)
-        index = int(index)
-
-        arg_range = None
-        modifier = match[1]
-
-        if modifier is None:
-            arg_range = range(index - 1, min(index, arglen))
-        elif modifier in ('>', '+'):
-            arg_range = range(index - 1, arglen)
-        elif modifier in ('<', '-'):
-            arg_range = range(0, min(index, arglen))
-        return arg_range
-
     def execute(self, cmd, profile=None):
         if profile is None:
             profile = self.get_profile_by_command(cmd[0], cmd[1:])
 
         self.set_current_profile(profile)
+        if self.debug > 0:
+            name = None
+            for pname in [
+                profile.profile_name,
+                profile.which,
+                profile.name,
+                profile.name_regex,
+            ]:
+                if pname is not None and len(pname) != 0:
+                    name = pname
+                    break
+
+            self.debug_print(1, 'using profile "%s"' % name)
 
         return execute.execute(
             cmd,
@@ -205,26 +165,64 @@ class Pycolor:
                 self.linenum += 1
                 newdata = newdata[:-1]
                 removed_newline = True
+
+            self.debug_print(1, 'got data: ln %d: %s' % (self.linenum, newdata.encode('utf-8')))
         else:
             self.linenum += data.count('\n')
 
+            self.debug_print(1, 'got data: %s' % newdata.encode('utf-8'))
+
+        color_pos_len = len(color_positions)
         for pat in self.current_profile.patterns:
             if not pat.enabled:
                 continue
             if pat.stdout_only and stream != sys.stdout or pat.stderr_only and stream != sys.stderr:
                 continue
 
-            newdata = self.apply_pattern(pat, newdata, color_positions)
-            if newdata is None:
+            applied = self.apply_pattern(pat, newdata, color_positions)
+            if applied is None:
+                newdata = None
                 break
 
+            if newdata != applied or len(color_positions) > color_pos_len:
+                if self.debug >= 3:
+                    changed = Pycolor.insert_color_data(applied, color_positions)
+                    self.debug_print(3, 'applying: %s' % (changed.encode('utf-8')))
+
+                newdata = applied
+                color_pos_len = len(color_positions)
+
         if newdata is not None:
-            if len(color_positions) > 0:
+            if len(color_positions) != 0:
                 newdata = Pycolor.insert_color_data(newdata, color_positions)
 
+            self.debug_print(2, 'writing:  %s' % (newdata.encode('utf-8')))
+
+            if self.current_profile.buffer_line:
+                if self.current_profile.timestamp != False: #pylint: disable=singleton-comparison
+                    timestamp = '%Y-%m-%d %H:%M:%S: '
+                    if isinstance(self.current_profile.timestamp, str):
+                        timestamp = self.current_profile.timestamp
+
+                    stream.write(self.color_state_orig.get_string(
+                        compare_state=self.color_state
+                    ))
+                    stream.write(datetime.datetime.strftime(datetime.datetime.now(), timestamp))
+                    stream.write(self.color_state.get_string(
+                        compare_state=self.color_state_orig
+                    ))
+
             stream.write(newdata)
-            if removed_newline:
-                stream.write('\n')
+            self.color_state.set_state_by_string(newdata)
+
+            if self.current_profile.buffer_line:
+                if self.current_profile.soft_reset_eol:
+                    stream.write(self.color_state_orig.get_string(
+                        compare_state=self.color_state
+                    ))
+
+                if removed_newline:
+                    stream.write('\n')
 
             stream.flush()
 
@@ -243,6 +241,8 @@ class Pycolor:
                     data, colorpos = pyformat.format_string(
                         pat.replace_all,
                         context={
+                            'color_state_orig': self.color_state_orig,
+                            'color_state': self.color_state,
                             'color_enabled': self.is_color_enabled(),
                             'color_aliases': self.color_aliases,
                             'match': match
@@ -267,6 +267,8 @@ class Pycolor:
                 data, colorpos = pyformat.format_string(
                     pat.replace_all,
                     context={
+                        'color_state_orig': self.color_state_orig,
+                        'color_state': self.color_state,
                         'color_enabled': self.is_color_enabled(),
                         'color_aliases': self.color_aliases,
                         'fields': fields,
@@ -319,6 +321,8 @@ class Pycolor:
             newstring, colorpos = pyformat.format_string(
                 pattern.replace,
                 context={
+                    'color_state_orig': self.color_state_orig,
+                    'color_state': self.color_state,
                     'color_enabled': self.is_color_enabled(),
                     'color_aliases': self.color_aliases,
                     'match': match
@@ -419,6 +423,21 @@ class Pycolor:
 
     def stderr_cb(self, data):
         self.data_callback(self.stderr, data)
+
+    def debug_print(self, lvl, *args):
+        if self.debug < lvl:
+            return
+
+        if self.is_color_enabled():
+            reset = pyformat.format_string('%Cz%Cde')
+            oldstate = str(self.color_state)
+            if len(oldstate) == 0:
+                oldstate = pyformat.format_string('%Cz')
+        else:
+            reset = ''
+            oldstate = ''
+
+        print('%s    DEBUG%d: %s%s' % (reset, lvl, ' '.join(args), oldstate))
 
     @staticmethod
     def is_being_redirected():

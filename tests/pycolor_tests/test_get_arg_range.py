@@ -1,6 +1,6 @@
 import unittest
 
-from pycolor_class import Pycolor
+from argpattern import ArgPattern
 
 
 ARGLEN = 'arglen'
@@ -85,6 +85,9 @@ class GetArgRangeTest(unittest.TestCase):
     def test_get_arg_range(self):
         for entry in GET_ARG_RANGES:
             self.assertListEqual(
-                list(Pycolor.get_arg_range(entry[ARGLEN], entry[POSITION])),
+                list(ArgPattern({
+                    'expression': '',
+                    'position': entry[POSITION]
+                }).get_arg_range(entry[ARGLEN])),
                 entry[RANGE]
             )

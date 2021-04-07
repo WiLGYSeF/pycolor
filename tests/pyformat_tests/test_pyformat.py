@@ -1,5 +1,6 @@
 import unittest
 
+from colorstate import ColorState
 import pyformat
 
 
@@ -45,58 +46,9 @@ FORMAT_STRINGS = {
     '': '',
     'abc': 'abc',
     'abc%': 'abc%',
-    'abc\\': 'abc\\',
+    '20%% complete': '20% complete',
+    'abc\\123': 'abc\\123',
 }
-
-class Match:
-    def __init__(self, string, groupdict):
-        self.string = string
-        self._groupdict = groupdict
-
-    def __getitem__(self, group):
-        if group not in self._groupdict:
-            raise IndexError()
-        return self._groupdict[group]
-
-STRING = 'string'
-CONTEXT = 'context'
-RESULT = 'result'
-
-FORMAT_CONTEXT_GROUP_STRINGS = [
-    {
-        STRING: '%G1 abc %G1',
-        CONTEXT: {
-            'match': Match('abc 123 abc', {
-                1: '123'
-            })
-        },
-        RESULT: '123 abc 123'
-    },
-    {
-        STRING: '%ZZZ',
-        CONTEXT: {},
-        RESULT: '%ZZZ'
-    },
-    {
-        STRING: '%Gname abc %Gname',
-        CONTEXT: {
-            'match': Match('abc 123 abc', {
-                1: '123',
-                'name': '123'
-            })
-        },
-        RESULT: '123 abc 123'
-    },
-    {
-        STRING: '%Ginvalid abc %Ginvalid',
-        CONTEXT: {
-            'match': Match('abc 123 abc', {
-                1: '123'
-            })
-        },
-        RESULT: ' abc '
-    }
-]
 
 COLORS = 'colors'
 STRING = 'string'
@@ -108,83 +60,93 @@ GET_LASTCOLORS = [
         VALUE: ''
     },
     {
-        COLORS: ['\x1b[31m'],
+        COLORS: [ '\x1b[31m' ],
         STRING: '',
         VALUE: '\x1b[31m'
     },
     {
-        COLORS: ['\x1b[31m'],
+        COLORS: [ '\x1b[31m' ],
         STRING: '1',
         VALUE: '\x1b[31m'
     },
     {
-        COLORS: ['\x1b[31m'],
+        COLORS: [ '\x1b[31m' ],
         STRING: '0',
         VALUE: '\x1b[31m'
     },
     {
-        COLORS: ['\x1b[31m'],
+        COLORS: [ '\x1b[31m' ],
         STRING: '-1',
         VALUE: '\x1b[31m'
     },
     {
-        COLORS: ['\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m'],
+        COLORS: [ '\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m' ],
         STRING: 'invalid',
         VALUE: '\x1b[34m'
     },
     {
-        COLORS: ['\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m'],
+        COLORS: [ '\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m' ],
         STRING: '',
         VALUE: '\x1b[34m'
     },
     {
-        COLORS: ['\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m'],
+        COLORS: [ '\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m' ],
         STRING: '1',
         VALUE: '\x1b[34m'
     },
     {
-        COLORS: ['\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m'],
+        COLORS: [ '\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m' ],
         STRING: '2',
         VALUE: '\x1b[33m'
     },
     {
-        COLORS: ['\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m'],
+        COLORS: [ '\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m' ],
         STRING: '3',
         VALUE: '\x1b[32m'
     },
     {
-        COLORS: ['\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m'],
+        COLORS: [ '\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m' ],
         STRING: '4',
         VALUE: '\x1b[31m'
     },
     {
-        COLORS: ['\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m'],
+        COLORS: [ '\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m' ],
         STRING: '5',
         VALUE: '\x1b[31m'
     },
     {
-        COLORS: ['\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m'],
+        COLORS: [ '\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m' ],
+        STRING: '23',
+        VALUE: '\x1b[31m'
+    },
+    {
+        COLORS: [ '\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m' ],
         STRING: '-1',
         VALUE: '\x1b[31m'
     },
     {
-        COLORS: ['\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m'],
+        COLORS: [ '\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m' ],
         STRING: '-2',
         VALUE: '\x1b[32m'
     },
     {
-        COLORS: ['\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m'],
+        COLORS: [ '\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m' ],
         STRING: '-3',
         VALUE: '\x1b[33m'
     },
     {
-        COLORS: ['\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m'],
+        COLORS: [ '\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m' ],
         STRING: '-4',
         VALUE: '\x1b[34m'
     },
     {
-        COLORS: ['\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m'],
+        COLORS: [ '\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m' ],
         STRING: '-5',
+        VALUE: '\x1b[34m'
+    },
+    {
+        COLORS: [ '\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[34m' ],
+        STRING: '-15',
         VALUE: '\x1b[34m'
     },
 ]
@@ -199,13 +161,12 @@ class PyformatTest(unittest.TestCase):
         for key, val in FORMAT_STRINGS.items():
             self.assertEqual(pyformat.format_string(key), val)
 
-    def test_format_context_group_string(self):
-        for entry in FORMAT_CONTEXT_GROUP_STRINGS:
-            self.assertEqual(
-                pyformat.format_string(entry[STRING], context=entry[CONTEXT]),
-                entry[RESULT]
-            )
-
     def test_get_lastcolor(self):
         for entry in GET_LASTCOLORS:
-            self.assertEqual(pyformat.get_lastcolor(entry[COLORS], entry[STRING]), entry[VALUE])
+            self.assertEqual(
+                pyformat.get_lastcolor(list(map(
+                    lambda x: ColorState(x),
+                    entry[COLORS]
+                )), entry[STRING]),
+                entry[VALUE]
+            )

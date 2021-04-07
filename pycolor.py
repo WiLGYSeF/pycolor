@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 import sys
 
@@ -7,58 +8,77 @@ from execute import read_stream
 from pycolor_class import Pycolor
 
 
-PYCOLOR_CONFIG_DIR = os.path.join(os.getenv('HOME'), '.pycolor')
-PYCOLOR_CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), '.pycolor.json')
+CONFIG_DEFAULT_NAME = '.pycolor.json'
+CONFIG_DIR = os.path.join(os.getenv('HOME'), '.pycolor.d')
+CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), CONFIG_DEFAULT_NAME)
 
 
-def main(args, stdin_stream=sys.stdin):
-    my_args, cmd_args = get_my_args(args)
+def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=sys.stdin):
+    parser = argparse.ArgumentParser(
+        description='do real-time output coloring and formatting of programs',
+        usage='%(prog)s [options] COMMAND ARG ...'
+    )
+    parser.add_argument('--color',
+        action='store', default='auto', nargs='?',
+        choices=['auto', 'always', 'never', 'on', 'off'],
+        help='enable/disable coloring output. if auto is selected, color will be enabled for terminal output but disabled on output redirection. on=always, off=never (default auto)'
+    )
+    parser.add_argument('--load-file',
+        action='append', metavar='FILE', default=[],
+        help='use this config file containing profiles'
+    )
+    parser.add_argument('--profile',
+        action='store', metavar='NAME',
+        help='specifically use this profile even if it does not match the current arguments'
+    )
+    parser.add_argument('-t', '--timestamp',
+        action='store', metavar='FORMAT', default=False, nargs='?',
+        help='force enable "timestamp" for all profiles'
+    )
+    parser.add_argument('-v', '--verbose',
+        action='count', default=0,
+        help='enable debug mode to assist in configuring profiles'
+    )
 
-    read_stdin = False
-    if len(cmd_args) == 0:
-        if not stdin_stream.isatty():
-            read_stdin = True
-        else:
-            sys.exit(1)
+    argspace, cmd_args = parser.parse_known_args(args)
+    if len(cmd_args) != 0 and cmd_args[0] == '--':
+        cmd_args = cmd_args[1:]
+    if not consecutive_end_args(args, cmd_args):
+        parser.print_help(stdout_stream)
+        sys.exit(1)
 
-    pycobj = Pycolor()
-    load_files = []
-    profile_name = None
+    read_stdin = len(cmd_args) == 0
 
-    for arg in my_args:
-        argname, argval = get_arg(arg)
-        if argname == 'color':
-            if argval is None:
-                argval = 'auto'
-            pycobj.color_mode = argval
-        elif argname == 'load-file':
-            if argval is None:
-                raise Exception()
-            load_files.append(argval)
-        elif argname == 'profile':
-            if argval is None:
-                raise Exception()
-            profile_name = argval
+    pycobj = Pycolor(color_mode=argspace.color, debug=argspace.verbose)
+    pycobj.stdout = stdout_stream
+    pycobj.stderr = stderr_stream
 
-    if os.path.isfile(PYCOLOR_CONFIG_DEFAULT):
-        pycobj.load_file(PYCOLOR_CONFIG_DEFAULT)
+    if len(argspace.load_file) == 0:
+        if os.path.isfile(CONFIG_DEFAULT):
+            pycobj.load_file(CONFIG_DEFAULT)
+        if os.path.exists(CONFIG_DIR):
+            load_config_files(pycobj, CONFIG_DIR)
+    else:
+        for fname in argspace.load_file:
+            pycobj.load_file(fname)
 
-    if os.path.exists(PYCOLOR_CONFIG_DIR):
-        load_config_files(pycobj, PYCOLOR_CONFIG_DIR)
+    if argspace.timestamp != False: #pylint: disable=singleton-comparison
+        if argspace.timestamp is None:
+            argspace.timestamp = True
 
-    for fname in load_files:
-        pycobj.load_file(fname)
+        for prof in pycobj.profiles:
+            prof.timestamp = argspace.timestamp
 
     profile = None
-    if profile_name is not None:
-        profile = pycobj.get_profile_by_name(profile_name)
+    if argspace.profile is not None:
+        profile = pycobj.get_profile_by_name(argspace.profile)
         if profile is None:
-            print('ERROR: profile with name "%s" not found' % profile_name, file=sys.stderr)
+            printerr('ERROR: profile with name "%s" not found' % argspace.profile)
             sys.exit(1)
 
     if read_stdin:
         if profile is None:
-            print('ERROR: no profile selected with --profile', file=sys.stderr)
+            printerr('ERROR: no profile selected with --profile')
             sys.exit(1)
 
         pycobj.set_current_profile(profile)
@@ -67,6 +87,28 @@ def main(args, stdin_stream=sys.stdin):
 
     returncode = pycobj.execute(cmd_args, profile=profile)
     sys.exit(returncode)
+
+def consecutive_end_args(args, subset):
+    lensub = len(subset)
+    if lensub == 0:
+        return True
+    lenarg = len(args)
+    if lenarg < lensub:
+        return False
+
+    for i in range(lenarg):
+        if args[i] != subset[0]:
+            continue
+
+        off = 1
+        i += 1
+        while i < lenarg and off < lensub:
+            if args[i] != subset[off]:
+                return False
+            off += 1
+            i += 1
+        return i == lenarg and off == lensub
+    return False
 
 def read_input_stream(pycobj, stream):
     while True:
@@ -94,38 +136,9 @@ def load_config_files(pycobj, path):
         if os.path.isfile(filepath):
             pycobj.load_file(filepath)
 
-def get_my_args(argv, start_idx=1):
-    my_args = []
-    cmd_args = []
-
-    idx = start_idx
-    while idx < len(argv):
-        arg = argv[idx]
-        if arg == '--':
-            idx += 1
-            break
-        if not arg.startswith('--'):
-            break
-
-        my_args.append(arg)
-        idx += 1
-
-    while idx < len(argv):
-        cmd_args.append(argv[idx])
-        idx += 1
-
-    return my_args, cmd_args
-
-def get_arg(string, default=None):
-    if not string.startswith('--'):
-        raise ValueError()
-
-    idx = string.find('=')
-    if idx == -1:
-        return string[2:], default
-
-    return string[2:idx], string[idx + 1:]
+def printerr(*args):
+    print(*args, file=sys.stderr)
 
 
 if __name__ == '__main__': #pragma: no cover
-    main(sys.argv, stdin_stream=sys.stdin)
+    main(sys.argv[1:])

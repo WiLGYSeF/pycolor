@@ -1,31 +1,66 @@
 import re
 
-from get_type import get_type
+import jsonschema
+
 import pyformat
+
+
+PATTERN_SCHEMA = {
+    'type': 'object',
+    'properties': {
+        'expression': {'type': ['array', 'string']},
+        'enabled': {'type' : 'boolean'},
+
+        'replace': {'type': ['array', 'string']},
+        'replace_all': {'type': ['array', 'string']},
+        'filter': {'type': 'boolean'},
+
+        'start_occurrence': {'type': 'integer'},
+        'max_count': {'type': 'integer'},
+
+        'activation_line': {'type': ['array', 'integer']},
+        'deactivation_line': {'type': ['array', 'integer']},
+        'activation_expression': {'type': ['array', 'string']},
+        'deactivation_expression': {'type': ['array', 'string']},
+
+        'separator': {'type': ['array', 'string']},
+        'field': {'type': 'integer'},
+        'min_fields': {'type': 'integer'},
+        'max_fields': {'type': 'integer'},
+
+        'stdout_only': {'type' : 'boolean'},
+        'stderr_only': {'type' : 'boolean'},
+    },
+    'required': ['expression'],
+    'dependencies': {
+        'field': ['separator'],
+        'min_fields': ['separator'],
+        'max_fields': ['separator'],
+    }
+}
 
 
 class Pattern:
     def __init__(self, cfg):
-        self.enabled = get_type(cfg, 'enabled', bool, True)
+        jsonschema.validate(instance=cfg, schema=PATTERN_SCHEMA)
+
+        self.enabled = cfg.get('enabled', True)
         self.active = True
 
-        self.stdout_only = get_type(cfg, 'stdout_only', bool, False)
-        self.stderr_only = get_type(cfg, 'stderr_only', bool, False)
+        self.stdout_only = cfg.get('stdout_only', False)
+        self.stderr_only = cfg.get('stderr_only', False)
 
         self.expression = cfg['expression']
-        self.filter = get_type(cfg, 'filter', bool, False)
+        self.filter = cfg.get('filter', False)
 
-        self.start_occurrence = get_type(cfg, 'start_occurrence', int, 1)
-        self.max_count = get_type(cfg, 'max_count', int, -1)
+        self.start_occurrence = cfg.get('start_occurrence', 1)
+        self.max_count = cfg.get('max_count', -1)
 
-        if 'activation_lines' in cfg:
-            activation_line = get_type(cfg, 'activation_lines', list, [])
-        else:
-            activation_line = get_type(cfg, 'activation_line', (list, int), -1)
-        if 'deactivation_lines' in cfg:
-            deactivation_line = get_type(cfg, 'deactivation_lines', list, [])
-        else:
-            deactivation_line = get_type(cfg, 'deactivation_line', (list, int), -1)
+        activation_line = cfg.get('activation_line', -1)
+        deactivation_line = cfg.get('deactivation_line', -1)
+
+        if isinstance(self.expression, list):
+            self.expression = ''.join(self.expression)
 
         def as_list(var):
             return var if isinstance(var, list) else [ var ]
@@ -37,28 +72,35 @@ class Pattern:
         if len(self.activation_ranges) != 0:
             self.active = False
 
-        self.regex = re.compile(cfg['expression'])
+        self.regex = re.compile(self.expression)
 
         self.replace = None
         self.replace_all = None
 
-        self.activation_expression = None
+        self.activation_expression = cfg.get('activation_expression')
         self.activation_regex = None
-        self.deactivation_expression = None
+        self.deactivation_expression = cfg.get('deactivation_expression')
         self.deactivation_regex = None
 
         if cfg.get('activation_expression') is not None:
-            self.activation_expression = cfg['activation_expression']
-            self.activation_regex = re.compile(cfg['activation_expression'])
+            if isinstance(self.activation_expression, list):
+                self.activation_expression = ''.join(self.activation_expression)
+
+            self.activation_regex = re.compile(self.activation_expression)
             self.active = False
         if cfg.get('deactivation_expression') is not None:
-            self.deactivation_expression = cfg['deactivation_expression']
-            self.deactivation_regex = re.compile(cfg['deactivation_expression'])
+            if isinstance(self.deactivation_expression, list):
+                self.deactivation_expression = ''.join(self.deactivation_expression)
 
-        self.separator = get_type(cfg, 'separator', str, None)
-        self.field = get_type(cfg, 'field', int, None)
-        self.min_fields = get_type(cfg, 'min_fields', int, -1)
-        self.max_fields = get_type(cfg, 'max_fields', int, -1)
+            self.deactivation_regex = re.compile(self.deactivation_expression)
+
+        self.separator = cfg.get('separator')
+        if isinstance(self.separator, list):
+            self.separator = ''.join(self.separator)
+
+        self.field = cfg.get('field')
+        self.min_fields = cfg.get('min_fields', -1)
+        self.max_fields = cfg.get('max_fields', -1)
 
         if self.separator is not None and len(self.separator) == 0:
             self.separator = None
@@ -66,6 +108,13 @@ class Pattern:
             self.field = None
             self.min_fields = -1
             self.max_fields = -1
+
+        self.replace = cfg.get('replace')
+        if isinstance(self.replace, list):
+            self.replace = ''.join(self.replace)
+        self.replace_all = cfg.get('replace_all')
+        if isinstance(self.replace_all, list):
+            self.replace_all = ''.join(self.replace_all)
 
     def get_field_indexes(self, fields):
         fieldcount = pyformat.fieldsep.idx_to_num(len(fields))

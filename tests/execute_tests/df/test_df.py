@@ -1,6 +1,8 @@
+import datetime
 import os
 import unittest
-import unittest.mock
+
+from freezegun import freeze_time
 
 from tests.execute_tests.helpers import check_pycolor_execute, check_pycolor_stdin
 
@@ -30,3 +32,7 @@ class DfTest(unittest.TestCase):
 
     def test_color_fields_activation_line_list(self):
         check_pycolor_execute(self, ['df', '-h'], MOCKED_DATA, 'color-fields-activation-line-list')
+
+    @freeze_time('1997-01-31 12:34:56')
+    def test_timestamp(self):
+        check_pycolor_execute(self, ['df', '-h'], MOCKED_DATA, 'timestamp')
