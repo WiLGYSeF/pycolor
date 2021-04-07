@@ -33,18 +33,13 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
     )
 
     argspace, cmd_args = parser.parse_known_args(args)
-    if cmd_args[0] == '--':
+    if len(cmd_args) != 0 and cmd_args[0] == '--':
         cmd_args = cmd_args[1:]
     if not consecutive_end_args(args, cmd_args):
         parser.print_help(stdout_stream)
         sys.exit(1)
 
-    read_stdin = False
-    if len(cmd_args) == 0:
-        if not stdin_stream.isatty():
-            read_stdin = True
-        else:
-            sys.exit(1)
+    read_stdin = len(cmd_args) == 0
 
     pycobj = Pycolor(color_mode=argspace.color)
     pycobj.stdout = stdout_stream

@@ -3,6 +3,7 @@ import os
 import unittest
 
 from tests.execute_tests.helpers import execute_patch, open_fstream, read_file, test_stream
+from tests.testutils import patch
 import pycolor
 import pycolor_class
 
@@ -77,6 +78,10 @@ class PycolorTest(unittest.TestCase):
     def test_main_invalid_consecutive_args(self):
         with self.assertRaises(SystemExit):
             self.check_pycolor_main(['ls', '-l', '--color', 'on'], MOCKED_DATA, 'ls_numbers')
+
+    def test_main_no_profile_stdin(self):
+        with self.assertRaises(SystemExit), patch(pycolor, 'printerr', lambda x: x):
+            self.check_pycolor_main([], MOCKED_DATA, 'ls_numbers')
 
     def test_consecutive_end_args(self):
         for entry in CONSECUTIVE_END_ARGS:
