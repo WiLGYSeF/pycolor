@@ -35,22 +35,20 @@ def check_pycolor_execute(
     if stderr is not None:
         stderr.close()
 
-    def test_stream(stream, fname, testdata):
-        stream.seek(0)
-        data = stream.buffer.read()
-
-        if print_output: #pragma: no cover
-            print(data.decode('utf-8'))
-        if write_output: #pragma: no cover
-            write_file(fname, data)
-
-        if testdata is not None:
-            self.assertEqual(data, testdata)
-        else:
-            self.assertEqual(data, b'')
-
-    test_stream(pycobj.stdout, filename_prefix + '.out.txt', output_expected)
-    test_stream(pycobj.stderr, filename_prefix + '.out.err.txt', output_expected_err)
+    test_stream(self,
+        pycobj.stdout,
+        filename_prefix + '.out.txt',
+        output_expected,
+        print_output,
+        write_output
+    )
+    test_stream(self,
+        pycobj.stderr,
+        filename_prefix + '.out.err.txt',
+        output_expected_err,
+        print_output,
+        write_output
+    )
 
 def check_pycolor_stdin(
     self,
@@ -70,21 +68,27 @@ def check_pycolor_stdin(
     pycobj.set_current_profile(pycobj.get_profile_by_name(profile_name))
     pycolor.read_input_stream(pycobj, stdin)
 
-    def test_stream(stream, fname, testdata):
-        stream.seek(0)
-        data = stream.buffer.read()
+    test_stream(self,
+        pycobj.stdout,
+        filename_prefix + '.out.txt',
+        output_expected,
+        print_output,
+        write_output
+    )
 
-        if print_output: #pragma: no cover
-            print(data.decode('utf-8'))
-        if write_output: #pragma: no cover
-            write_file(fname, data)
+def test_stream(self, stream, fname, testdata, print_output, write_output):
+    stream.seek(0)
+    data = stream.buffer.read()
 
-        if testdata is not None:
-            self.assertEqual(data, testdata)
-        else:
-            self.assertEqual(data, b'')
+    if print_output: #pragma: no cover
+        print(data.decode('utf-8'))
+    if write_output: #pragma: no cover
+        write_file(fname, data)
 
-    test_stream(pycobj.stdout, filename_prefix + '.out.txt', output_expected)
+    if testdata is not None:
+        self.assertEqual(data, testdata)
+    else:
+        self.assertEqual(data, b'')
 
 def create_pycolor_object():
     pycobj = pycolor_class.Pycolor(color_mode='always')
