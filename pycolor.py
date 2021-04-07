@@ -31,6 +31,10 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         action='store', metavar='NAME',
         help='specifically use this profile even if it does not match the current arguments'
     )
+    parser.add_argument('-t', '--timestamp',
+        action='store', metavar='FORMAT', default=False, nargs='?',
+        help='force enable "timestamp" for all profiles'
+    )
     parser.add_argument('-v', '--verbose',
         action='count', default=0,
         help='enable debug mode to assist in configuring profiles'
@@ -57,6 +61,13 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
     else:
         for fname in argspace.load_file:
             pycobj.load_file(fname)
+
+    if argspace.timestamp != False: #pylint: disable=singleton-comparison
+        if argspace.timestamp is None:
+            argspace.timestamp = True
+
+        for prof in pycobj.profiles:
+            prof.timestamp = argspace.timestamp
 
     profile = None
     if argspace.profile is not None:
