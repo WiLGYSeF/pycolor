@@ -31,6 +31,10 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         action='store', metavar='NAME',
         help='specifically use this profile even if it does not match the current arguments'
     )
+    parser.add_argument('-v', '--verbose',
+        action='count', default=0,
+        help='enable debug mode to assist in configuring profiles'
+    )
 
     argspace, cmd_args = parser.parse_known_args(args)
     if len(cmd_args) != 0 and cmd_args[0] == '--':
@@ -41,7 +45,7 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
 
     read_stdin = len(cmd_args) == 0
 
-    pycobj = Pycolor(color_mode=argspace.color)
+    pycobj = Pycolor(color_mode=argspace.color, debug=argspace.verbose)
     pycobj.stdout = stdout_stream
     pycobj.stderr = stderr_stream
 
