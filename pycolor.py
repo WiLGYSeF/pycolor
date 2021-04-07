@@ -8,11 +8,12 @@ from execute import read_stream
 from pycolor_class import Pycolor
 
 
-PYCOLOR_CONFIG_DIR = os.path.join(os.getenv('HOME'), '.pycolor')
-PYCOLOR_CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), '.pycolor.json')
+CONFIG_DEFAULT_NAME = '.pycolor.json'
+CONFIG_DIR = os.path.join(os.getenv('HOME'), '.pycolor')
+CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), CONFIG_DEFAULT_NAME)
 
 
-def main(args, stdin_stream=sys.stdin):
+def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=sys.stdin):
     parser = argparse.ArgumentParser(
         description='do real-time output coloring and formatting of programs',
         usage='%(prog)s [options] COMMAND ARG ...'
@@ -24,7 +25,7 @@ def main(args, stdin_stream=sys.stdin):
     )
     parser.add_argument('--load-file',
         action='append', metavar='FILE', default=[],
-        help='load config file containing profiles'
+        help='use this config file containing profiles'
     )
     parser.add_argument('--profile',
         action='store', metavar='NAME',
@@ -32,29 +33,26 @@ def main(args, stdin_stream=sys.stdin):
     )
 
     argspace, cmd_args = parser.parse_known_args(args)
-    if cmd_args[0] == '--':
+    if len(cmd_args) != 0 and cmd_args[0] == '--':
         cmd_args = cmd_args[1:]
     if not consecutive_end_args(args, cmd_args):
-        parser.print_help()
+        parser.print_help(stdout_stream)
         sys.exit(1)
 
-    read_stdin = False
-    if len(cmd_args) == 0:
-        if not stdin_stream.isatty():
-            read_stdin = True
-        else:
-            sys.exit(1)
+    read_stdin = len(cmd_args) == 0
 
     pycobj = Pycolor(color_mode=argspace.color)
+    pycobj.stdout = stdout_stream
+    pycobj.stderr = stderr_stream
 
-    if os.path.isfile(PYCOLOR_CONFIG_DEFAULT):
-        pycobj.load_file(PYCOLOR_CONFIG_DEFAULT)
-
-    if os.path.exists(PYCOLOR_CONFIG_DIR):
-        load_config_files(pycobj, PYCOLOR_CONFIG_DIR)
-
-    for fname in argspace.load_file:
-        pycobj.load_file(fname)
+    if len(argspace.load_file) == 0:
+        if os.path.isfile(CONFIG_DEFAULT):
+            pycobj.load_file(CONFIG_DEFAULT)
+        if os.path.exists(CONFIG_DIR):
+            load_config_files(pycobj, CONFIG_DIR)
+    else:
+        for fname in argspace.load_file:
+            pycobj.load_file(fname)
 
     profile = None
     if argspace.profile is not None:
@@ -128,4 +126,4 @@ def printerr(*args):
 
 
 if __name__ == '__main__': #pragma: no cover
-    main(sys.argv[1:], stdin_stream=sys.stdin)
+    main(sys.argv[1:])
