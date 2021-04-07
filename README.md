@@ -35,7 +35,7 @@ __After:__
 
 Pycolor can also be aliased in `~/.bashrc` like so:
 ```bash
-alias rsync='pycolor rsync'
+alias rsync='pycolor -- rsync'
 ```
 
 __Before:__
@@ -49,7 +49,7 @@ __After:__ (note Pycolor omitted lines with trailing slashes in addition to colo
 [Sample rsync configuration file.](/docs/sample-config/rsync.json)
 
 # Configuration
-Pycolor will first try to load configuration from `~/.pycolor.json` before loading files found in `~/.pycolor/` in filename order.
+Pycolor will first try to load configuration from `~/.pycolor.json` before loading files found in `~/.pycolor.d/` in filename order.
 
 When looking for a profile to use, pycolor will select the last matching profile based on the `name` or `which` property.
 

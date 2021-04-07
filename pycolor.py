@@ -9,7 +9,7 @@ from pycolor_class import Pycolor
 
 
 CONFIG_DEFAULT_NAME = '.pycolor.json'
-CONFIG_DIR = os.path.join(os.getenv('HOME'), '.pycolor')
+CONFIG_DIR = os.path.join(os.getenv('HOME'), '.pycolor.d')
 CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), CONFIG_DEFAULT_NAME)
 
 
