@@ -4,7 +4,6 @@ import argparse
 import os
 import sys
 
-from args import get_my_args, get_arg
 from execute import read_stream
 from pycolor_class import Pycolor
 
@@ -14,7 +13,30 @@ PYCOLOR_CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), '.pycolor.json')
 
 
 def main(args, stdin_stream=sys.stdin):
-    my_args, cmd_args = get_my_args(args)
+    parser = argparse.ArgumentParser(
+        description='do real-time output coloring of programs',
+        usage='%(prog)s [options] COMMAND ARG ...'
+    )
+    parser.add_argument('--color',
+        action='store', default='auto', nargs='?',
+        choices=['auto', 'always', 'never', 'on', 'off'],
+        help=''
+    )
+    parser.add_argument('--load-file',
+        action='append', default=[],
+        help=''
+    )
+    parser.add_argument('--profile',
+        action='store',
+        help=''
+    )
+
+    argspace, cmd_args = parser.parse_known_args(args)
+    if cmd_args[0] == '--':
+        cmd_args = cmd_args[1:]
+    if not consecutive_end_args(args, cmd_args):
+        parser.print_help()
+        sys.exit(1)
 
     read_stdin = False
     if len(cmd_args) == 0:
@@ -23,24 +45,7 @@ def main(args, stdin_stream=sys.stdin):
         else:
             sys.exit(1)
 
-    pycobj = Pycolor()
-    load_files = []
-    profile_name = None
-
-    for arg in my_args:
-        argname, argval = get_arg(arg)
-        if argname == 'color':
-            if argval is None:
-                argval = 'auto'
-            pycobj.color_mode = argval
-        elif argname == 'load-file':
-            if argval is None:
-                raise Exception()
-            load_files.append(argval)
-        elif argname == 'profile':
-            if argval is None:
-                raise Exception()
-            profile_name = argval
+    pycobj = Pycolor(color_mode=argspace.color)
 
     if os.path.isfile(PYCOLOR_CONFIG_DEFAULT):
         pycobj.load_file(PYCOLOR_CONFIG_DEFAULT)
@@ -48,14 +53,14 @@ def main(args, stdin_stream=sys.stdin):
     if os.path.exists(PYCOLOR_CONFIG_DIR):
         load_config_files(pycobj, PYCOLOR_CONFIG_DIR)
 
-    for fname in load_files:
+    for fname in argspace.load_file:
         pycobj.load_file(fname)
 
     profile = None
-    if profile_name is not None:
-        profile = pycobj.get_profile_by_name(profile_name)
+    if argspace.profile is not None:
+        profile = pycobj.get_profile_by_name(argspace.profile)
         if profile is None:
-            print('ERROR: profile with name "%s" not found' % profile_name, file=sys.stderr)
+            print('ERROR: profile with name "%s" not found' % argspace.profile, file=sys.stderr)
             sys.exit(1)
 
     if read_stdin:
@@ -69,6 +74,28 @@ def main(args, stdin_stream=sys.stdin):
 
     returncode = pycobj.execute(cmd_args, profile=profile)
     sys.exit(returncode)
+
+def consecutive_end_args(args, subset):
+    lensub = len(subset)
+    if lensub == 0:
+        return True
+    lenarg = len(args)
+    if lenarg < lensub:
+        return False
+
+    for i in range(lenarg):
+        if args[i] != subset[0]:
+            continue
+
+        off = 1
+        i += 1
+        while i < lenarg and off < lensub:
+            if args[i] != subset[off]:
+                return False
+            off += 1
+            i += 1
+        return i == lenarg and off == lensub
+    return False
 
 def read_input_stream(pycobj, stream):
     while True:
@@ -98,4 +125,4 @@ def load_config_files(pycobj, path):
 
 
 if __name__ == '__main__': #pragma: no cover
-    main(sys.argv, stdin_stream=sys.stdin)
+    main(sys.argv[1:], stdin_stream=sys.stdin)
