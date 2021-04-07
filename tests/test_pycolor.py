@@ -71,6 +71,9 @@ class PycolorTest(unittest.TestCase):
     def test_main_ls_numbers(self):
         self.check_pycolor_main(['ls', '-l'], MOCKED_DATA, 'ls_numbers')
 
+    def test_main_ls_numbers_with_dashdash(self):
+        self.check_pycolor_main(['--', 'ls', '-l'], MOCKED_DATA, 'ls_numbers')
+
     def test_consecutive_end_args(self):
         for entry in CONSECUTIVE_END_ARGS:
             self.assertEqual(
