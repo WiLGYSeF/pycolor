@@ -14,21 +14,21 @@ PYCOLOR_CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), '.pycolor.json')
 
 def main(args, stdin_stream=sys.stdin):
     parser = argparse.ArgumentParser(
-        description='do real-time output coloring of programs',
+        description='do real-time output coloring and formatting of programs',
         usage='%(prog)s [options] COMMAND ARG ...'
     )
     parser.add_argument('--color',
         action='store', default='auto', nargs='?',
         choices=['auto', 'always', 'never', 'on', 'off'],
-        help=''
+        help='enable/disable coloring output. if auto is selected, color will be enabled for terminal output but disabled on output redirection. on=always, off=never (default auto)'
     )
     parser.add_argument('--load-file',
-        action='append', default=[],
-        help=''
+        action='append', metavar='FILE', default=[],
+        help='load config file containing profiles'
     )
     parser.add_argument('--profile',
-        action='store',
-        help=''
+        action='store', metavar='NAME',
+        help='specifically use this profile even if it does not match the current arguments'
     )
 
     argspace, cmd_args = parser.parse_known_args(args)
