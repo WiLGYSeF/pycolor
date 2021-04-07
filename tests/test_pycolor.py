@@ -74,6 +74,10 @@ class PycolorTest(unittest.TestCase):
     def test_main_ls_numbers_with_dashdash(self):
         self.check_pycolor_main(['--', 'ls', '-l'], MOCKED_DATA, 'ls_numbers')
 
+    def test_main_invalid_consecutive_args(self):
+        with self.assertRaises(SystemExit):
+            self.check_pycolor_main(['ls', '-l', '--color', 'on'], MOCKED_DATA, 'ls_numbers')
+
     def test_consecutive_end_args(self):
         for entry in CONSECUTIVE_END_ARGS:
             self.assertEqual(
@@ -103,6 +107,11 @@ class PycolorTest(unittest.TestCase):
             except SystemExit as sexc:
                 if sexc.code != 0:
                     raise sexc
+            finally:
+                if stdout_in is not None:
+                    stdout_in.close()
+                if stderr_in is not None:
+                    stderr_in.close()
 
         output_expected = read_file(filename_prefix + '.out.txt')
         output_expected_err = read_file(filename_prefix + '.out.err.txt')
@@ -121,8 +130,3 @@ class PycolorTest(unittest.TestCase):
             print_output,
             write_output
         )
-
-        if stdout_in is not None:
-            stdout_in.close()
-        if stderr_in is not None:
-            stderr_in.close()

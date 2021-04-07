@@ -36,7 +36,7 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
     if cmd_args[0] == '--':
         cmd_args = cmd_args[1:]
     if not consecutive_end_args(args, cmd_args):
-        parser.print_help()
+        parser.print_help(stdout_stream)
         sys.exit(1)
 
     read_stdin = False
