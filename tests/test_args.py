@@ -1,6 +1,6 @@
 import unittest
 
-import pycolor
+import args
 
 
 ARGV = 'argv'
@@ -79,16 +79,16 @@ GET_ARGS = {
 }
 
 
-class MainTest(unittest.TestCase):
+class ArgsTest(unittest.TestCase):
     def test_get_my_args(self):
         for entry in GET_MY_ARGS:
-            my_args, cmd_args = pycolor.get_my_args(entry[ARGV], start_idx=entry[START_IDX])
+            my_args, cmd_args = args.get_my_args(entry[ARGV], start_idx=entry[START_IDX])
             self.assertListEqual(my_args, entry[MY_ARGS])
             self.assertListEqual(cmd_args, entry[CMD_ARGS])
 
     def test_get_arg(self):
         for string, val in GET_ARGS.items():
             if isinstance(val, Exception):
-                self.assertRaises(Exception, pycolor.get_arg, string)
+                self.assertRaises(Exception, args.get_arg, string)
             else:
-                self.assertTupleEqual(pycolor.get_arg(string), val)
+                self.assertTupleEqual(args.get_arg(string), val)

@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 import sys
 
+from args import get_my_args, get_arg
 from execute import read_stream
 from pycolor_class import Pycolor
 
@@ -93,38 +95,6 @@ def load_config_files(pycobj, path):
         filepath = os.path.join(path, fname)
         if os.path.isfile(filepath):
             pycobj.load_file(filepath)
-
-def get_my_args(argv, start_idx=1):
-    my_args = []
-    cmd_args = []
-
-    idx = start_idx
-    while idx < len(argv):
-        arg = argv[idx]
-        if arg == '--':
-            idx += 1
-            break
-        if not arg.startswith('--'):
-            break
-
-        my_args.append(arg)
-        idx += 1
-
-    while idx < len(argv):
-        cmd_args.append(argv[idx])
-        idx += 1
-
-    return my_args, cmd_args
-
-def get_arg(string, default=None):
-    if not string.startswith('--'):
-        raise ValueError()
-
-    idx = string.find('=')
-    if idx == -1:
-        return string[2:], default
-
-    return string[2:idx], string[idx + 1:]
 
 
 if __name__ == '__main__': #pragma: no cover
