@@ -60,12 +60,12 @@ def main(args, stdin_stream=sys.stdin):
     if argspace.profile is not None:
         profile = pycobj.get_profile_by_name(argspace.profile)
         if profile is None:
-            print('ERROR: profile with name "%s" not found' % argspace.profile, file=sys.stderr)
+            printerr('ERROR: profile with name "%s" not found' % argspace.profile)
             sys.exit(1)
 
     if read_stdin:
         if profile is None:
-            print('ERROR: no profile selected with --profile', file=sys.stderr)
+            printerr('ERROR: no profile selected with --profile')
             sys.exit(1)
 
         pycobj.set_current_profile(profile)
@@ -122,6 +122,9 @@ def load_config_files(pycobj, path):
         filepath = os.path.join(path, fname)
         if os.path.isfile(filepath):
             pycobj.load_file(filepath)
+
+def printerr(*args):
+    print(*args, file=sys.stderr)
 
 
 if __name__ == '__main__': #pragma: no cover
