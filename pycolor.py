@@ -68,6 +68,7 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
 
         for prof in pycobj.profiles:
             prof.timestamp = argspace.timestamp
+        pycobj.profile_default.timestamp = argspace.timestamp
 
     profile = None
     if argspace.profile is not None:

@@ -23,6 +23,10 @@ class Pycolor:
         self.color_aliases = {}
 
         self.current_profile = None
+        self.profile_default = Profile({
+            'profile_name': 'none_found_default',
+            'buffer_line': True
+        })
         self.linenum = 0
 
         self.stdout = sys.stdout
@@ -134,6 +138,8 @@ class Pycolor:
             profile = self.get_profile_by_command(cmd[0], cmd[1:])
 
         self.set_current_profile(profile)
+        profile = self.current_profile
+
         if self.debug > 0:
             name = None
             for pname in [
@@ -402,10 +408,7 @@ class Pycolor:
 
     def set_current_profile(self, profile):
         if profile is None:
-            self.current_profile = Profile({
-                'profile_name': 'none_found',
-                'buffer_line': True
-            })
+            self.current_profile = self.profile_default
         else:
             self.current_profile = profile
 
