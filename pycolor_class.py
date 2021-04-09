@@ -218,7 +218,9 @@ class Pycolor:
                         compare_state=self.color_state_orig
                     ))
 
-            stream.write(newdata)
+            stream.flush()
+            # TODO: should we handle unicode differently?
+            stream.buffer.write(newdata.encode('utf-8'))
             self.color_state.set_state_by_string(newdata)
 
             if self.current_profile.buffer_line:
