@@ -1,0 +1,13 @@
+{
+	"profiles": [
+		{
+			"name": "ls",
+			"patterns": [
+				{
+					"expression": "[0-9]+",
+					"replace": "%Cg%G0%Cz"
+				}
+			]
+		}
+	]
+}

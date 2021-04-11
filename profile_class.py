@@ -17,6 +17,7 @@ PROFILE_SCHEMA = {
         'all_args_must_match': {'type': 'boolean'},
         'soft_reset_eol': {'type': 'boolean'},
         'timestamp': {'type': ['boolean', 'string']},
+        'less_output': {'type': 'boolean'},
 
         'from_profiles': {'type': ['array', 'string']},
 
@@ -40,6 +41,7 @@ class Profile:
         self.all_args_must_match = cfg.get('all_args_must_match', False)
         self.soft_reset_eol = cfg.get('soft_reset_eol', False)
         self.timestamp = cfg.get('timestamp', False)
+        self.less_output = cfg.get('less_output', False)
 
         self.from_profiles = []
 

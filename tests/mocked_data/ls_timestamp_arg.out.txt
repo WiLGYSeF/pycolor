@@ -1,0 +1,22 @@
+2000-01-02 03:45:56: total [32m108[0m
+2000-01-02 03:45:56: -rw-rw-r-- [32m1[0m wilgysef wilgysef  [32m8096[0m Apr  [32m7[0m [32m13[0m:[32m53[0m README.md
+2000-01-02 03:45:56: drwxr-xr-x [32m2[0m wilgysef wilgysef  [32m4096[0m Apr  [32m7[0m [32m14[0m:[32m00[0m __pycache__
+2000-01-02 03:45:56: -rw-rw-r-- [32m1[0m wilgysef wilgysef  [32m1664[0m Apr  [32m7[0m [32m13[0m:[32m53[0m argpattern.py
+2000-01-02 03:45:56: -rw-rw-r-- [32m1[0m wilgysef wilgysef  [32m5933[0m Apr  [32m7[0m [32m13[0m:[32m53[0m colorstate.py
+2000-01-02 03:45:56: drwxr-xr-x [32m4[0m wilgysef wilgysef  [32m4096[0m Feb  [32m8[0m [32m20[0m:[32m45[0m docs
+2000-01-02 03:45:56: -rw-r--r-- [32m1[0m wilgysef wilgysef  [32m3199[0m Feb  [32m9[0m [32m20[0m:[32m36[0m execute.py
+2000-01-02 03:45:56: -rw-r--r-- [32m1[0m wilgysef wilgysef   [32m588[0m Feb [32m11[0m [32m14[0m:[32m07[0m fromprofile.py
+2000-01-02 03:45:56: drwxr-xr-x [32m2[0m wilgysef wilgysef  [32m4096[0m Apr  [32m7[0m [32m12[0m:[32m04[0m htmlcov
+2000-01-02 03:45:56: -rw-rw-r-- [32m1[0m wilgysef wilgysef  [32m6613[0m Apr  [32m7[0m [32m13[0m:[32m53[0m pattern.py
+2000-01-02 03:45:56: -rw-rw-r-- [32m1[0m wilgysef wilgysef  [32m2238[0m Apr  [32m7[0m [32m13[0m:[32m53[0m profile_class.py
+2000-01-02 03:45:56: -rwxrwxr-x [32m1[0m wilgysef wilgysef  [32m3917[0m Apr  [32m7[0m [32m13[0m:[32m59[0m pycolor.py
+2000-01-02 03:45:56: -rw-rw-r-- [32m1[0m wilgysef wilgysef [32m13150[0m Apr  [32m7[0m [32m13[0m:[32m53[0m pycolor_class.py
+2000-01-02 03:45:56: drwxrwxr-x [32m3[0m wilgysef wilgysef  [32m4096[0m Apr  [32m7[0m [32m13[0m:[32m53[0m pyformat
+2000-01-02 03:45:56: -rw-rw-r-- [32m1[0m wilgysef wilgysef    [32m30[0m Apr  [32m7[0m [32m13[0m:[32m53[0m requirements.txt
+2000-01-02 03:45:56: -rw-r--r-- [32m1[0m wilgysef wilgysef  [32m2645[0m Feb  [32m8[0m [32m20[0m:[32m45[0m search_replace.py
+2000-01-02 03:45:56: -rw-r--r-- [32m1[0m wilgysef wilgysef   [32m448[0m Jan [32m22[0m [32m11[0m:[32m23[0m split.py
+2000-01-02 03:45:56: -rw-rw-r-- [32m1[0m wilgysef wilgysef   [32m193[0m Jan  [32m6[0m [32m16[0m:[32m26[0m static_vars.py
+2000-01-02 03:45:56: drwxrwxr-x [32m2[0m wilgysef wilgysef  [32m4096[0m Feb  [32m9[0m [32m19[0m:[32m45[0m test_scripts
+2000-01-02 03:45:56: drwxrwxr-x [32m7[0m wilgysef wilgysef  [32m4096[0m Apr  [32m7[0m [32m13[0m:[32m53[0m tests
+2000-01-02 03:45:56: -rw-rw-r-- [32m1[0m wilgysef wilgysef   [32m285[0m Apr  [32m7[0m [32m13[0m:[32m31[0m todo.txt
+2000-01-02 03:45:56: -rw-rw-r-- [32m1[0m wilgysef wilgysef   [32m351[0m Jan  [32m6[0m [32m15[0m:[32m53[0m which.py
