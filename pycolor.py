@@ -70,18 +70,12 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
     if argspace.timestamp != False: #pylint: disable=singleton-comparison
         if argspace.timestamp is None:
             argspace.timestamp = True
-
-        for prof in pycobj.profiles:
-            prof.timestamp = argspace.timestamp
-        pycobj.profile_default.timestamp = argspace.timestamp
+        override_profile_conf(pycobj, 'timestamp', argspace.timestamp)
 
     if argspace.less != False: #pylint: disable=singleton-comparison
         if argspace.less is None:
             argspace.less = True
-
-        for prof in pycobj.profiles:
-            prof.less_output = argspace.less
-        pycobj.profile_default.less_output = argspace.less
+        override_profile_conf(pycobj, 'less_output', argspace.less)
 
     profile = None
     if argspace.profile is not None:
@@ -140,6 +134,11 @@ def read_input_stream(pycobj, stream):
         buffer_line=pycobj.current_profile.buffer_line,
         last=True
     )
+
+def override_profile_conf(pycobj, attr, val):
+    for prof in pycobj.profiles:
+        setattr(prof, attr, val)
+    setattr(pycobj.profile_default, attr, val)
 
 def load_config_files(pycobj, path):
     # https://stackoverflow.com/a/3207973
