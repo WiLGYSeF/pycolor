@@ -1,38 +1,27 @@
 import datetime
 import io
-import json
 import os
-import re
 import sys
 import tempfile
 
 from colorstate import ColorState
 import execute
-from profile_class import Profile
 import pyformat
+from profileloader import ProfileLoader
 from search_replace import search_replace, update_positions
 from split import re_split
 from which import which
 
 
 class Pycolor:
-    def __init__(self, color_mode='auto', debug=0):
-        self.color_mode = color_mode
-        self.debug = debug
+    def __init__(self, **kwargs):
+        self.color_mode = kwargs.get('color_mode', 'auto')
+        self.debug = kwargs.get('debug', 0)
 
-        self.profiles = []
-        self.named_profiles = {}
-
-        self.color_aliases = {}
-
+        self.profloader = ProfileLoader()
         self.current_profile = None
-        self.profile_default = Profile({
-            'profile_name': 'none_found_default',
-            'buffer_line': True
-        })
-        self.linenum = 0
 
-        self.less_process = None
+        self.linenum = 0
 
         self.stdout = sys.stdout
         self.stderr = sys.stderr
@@ -40,124 +29,28 @@ class Pycolor:
         self.color_state_orig = ColorState()
         self.color_state = self.color_state_orig.copy()
 
+    @property
+    def profiles(self):
+        return self.profloader.profiles
+
+    @property
+    def profile_default(self):
+        return self.profloader.profile_default
+
     def load_file(self, fname):
-        with open(fname, 'r') as file:
-            profiles = self.parse_file(file)
-
-            for prof in profiles:
-                self.profiles.append(prof)
-
-                if prof.profile_name is not None:
-                    self.named_profiles[prof.profile_name] = prof
-
-            for prof in profiles:
-                self.include_from_profile(
-                    prof.patterns,
-                    prof.from_profiles
-                )
-
-    def parse_file(self, file):
-        config = json.loads(file.read())
-        profiles = []
-
-        self.color_aliases.update(config.get('color_aliases', {}))
-
-        for cfg in config.get('profiles', []):
-            profiles.append(Profile(cfg))
-
-        return profiles
-
-    def include_from_profile(self, patterns, from_profiles):
-        for fprof in from_profiles:
-            if not fprof.enabled:
-                continue
-
-            fromprof = self.get_profile_by_name(fprof.name)
-            if fprof.order == 'before':
-                orig_patterns = patterns.copy()
-                patterns.clear()
-                patterns.extend(fromprof.patterns)
-                patterns.extend(orig_patterns)
-            elif fprof.order == 'after':
-                patterns.extend(fromprof.patterns)
+        self.profloader.load_file(fname)
 
     def get_profile_by_name(self, name):
-        return self.named_profiles.get(name)
-
-    def get_profile_by_command(self, command, args):
-        matches = []
-
-        for prof in self.profiles:
-            if not any([
-                prof.which,
-                prof.name,
-                prof.name_regex
-            ]):
-                continue
-
-            if prof.which is not None:
-                result = which(command)
-                if result is not None and result.decode('utf-8') != prof.which:
-                    continue
-            if prof.name is not None and command != prof.name:
-                continue
-            if prof.name_regex is not None and not re.fullmatch(prof.name_regex, command):
-                continue
-
-            if not Pycolor.check_arg_patterns(args, prof.arg_patterns, prof.all_args_must_match):
-                continue
-
-            matches.append(prof)
-
-        if len(matches) == 0:
-            return None
-        return matches[-1]
-
-    @staticmethod
-    def check_arg_patterns(args, arg_patterns, all_must_match=False):
-        idx_matches = set()
-
-        for argpat in arg_patterns:
-            matches = False
-            for idx in argpat.get_arg_range(len(args)):
-                if argpat.regex.fullmatch(args[idx]):
-                    if argpat.match_not:
-                        return False
-                    idx_matches.add(idx)
-                    matches = True
-
-            if not any([
-                matches,
-                argpat.match_not,
-                argpat.optional
-            ]):
-                return False
-
-        if all_must_match and len(idx_matches) != len(args):
-            return False
-
-        return True
+        return self.profloader.get_profile_by_name(name)
 
     def execute(self, cmd, profile=None):
         if profile is None:
-            profile = self.get_profile_by_command(cmd[0], cmd[1:])
+            profile = self.profloader.get_profile_by_command(cmd[0], cmd[1:])
 
         self.set_current_profile(profile)
         profile = self.current_profile
 
-        if self.debug > 0:
-            name = None
-            for pname in [
-                profile.profile_name,
-                profile.which,
-                profile.name,
-                profile.name_regex,
-            ]:
-                if pname is not None and len(pname) != 0:
-                    name = pname
-                    break
-
-            self.debug_print(1, 'using profile "%s"' % name)
+        self.debug_print(1, 'using profile "%s"' % profile.get_name())
 
         if profile.less_output:
             tmpfile = tempfile.NamedTemporaryFile()
@@ -167,7 +60,7 @@ class Pycolor:
             cmd,
             self.stdout_cb,
             self.stderr_cb,
-            buffer_line=self.current_profile.buffer_line
+            buffer_line=profile.buffer_line
         )
 
         if profile.less_output:
@@ -179,7 +72,7 @@ class Pycolor:
             else:
                 less_path = which('less')
 
-            # does not delete tempfile
+            # TODO: does not delete tempfile
             os.execv(less_path, [less_path, '-FKRSX', tmpfile.name])
             sys.exit(0)
         return retcode
@@ -276,7 +169,7 @@ class Pycolor:
                             'color_state_orig': self.color_state_orig,
                             'color_state': self.color_state,
                             'color_enabled': self.is_color_enabled(),
-                            'color_aliases': self.color_aliases,
+                            'color_aliases': self.profloader.color_aliases,
                             'match': match
                         },
                         return_color_positions=True
@@ -302,7 +195,7 @@ class Pycolor:
                         'color_state_orig': self.color_state_orig,
                         'color_state': self.color_state,
                         'color_enabled': self.is_color_enabled(),
-                        'color_aliases': self.color_aliases,
+                        'color_aliases': self.profloader.color_aliases,
                         'fields': fields,
                         'match': match
                     },
@@ -356,7 +249,7 @@ class Pycolor:
                     'color_state_orig': self.color_state_orig,
                     'color_state': self.color_state,
                     'color_enabled': self.is_color_enabled(),
-                    'color_aliases': self.color_aliases,
+                    'color_aliases': self.profloader.color_aliases,
                     'match': match
                 },
                 return_color_positions=True
@@ -434,7 +327,7 @@ class Pycolor:
 
     def set_current_profile(self, profile):
         if profile is None:
-            self.current_profile = self.profile_default
+            self.current_profile = self.profloader.profile_default
         else:
             self.current_profile = profile
 
