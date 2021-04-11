@@ -21,7 +21,8 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
     parser.add_argument('--color',
         action='store', default='auto', nargs='?',
         choices=['auto', 'always', 'never', 'on', 'off'],
-        help='enable/disable coloring output. if auto is selected, color will be enabled for terminal output but disabled on output redirection. on=always, off=never (default auto)'
+        help='enable/disable coloring output. if auto is selected, color will be enabled for'
+        + ' terminal output but disabled on output redirection. on=always, off=never (default auto)'
     )
     parser.add_argument('--load-file',
         action='append', metavar='FILE', default=[],
@@ -33,11 +34,11 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
     )
     parser.add_argument('-t', '--timestamp',
         action='store', metavar='FORMAT', default=False, nargs='?',
-        help='force enable "timestamp" for all profiles'
+        help='force enable "timestamp" for all profiles with an optional FORMAT'
     )
     parser.add_argument('--less',
-        action='store_true', default=False,
-        help='force enable "less_output" for all profiles'
+        action='store', metavar='PATH', default=False, nargs='?',
+        help='force enable "less_output" for all profiles with an optional PATH to the less binary'
     )
     parser.add_argument('-v', '--verbose',
         action='count', default=0,
@@ -74,10 +75,13 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
             prof.timestamp = argspace.timestamp
         pycobj.profile_default.timestamp = argspace.timestamp
 
-    if argspace.less:
+    if argspace.less != False: #pylint: disable=singleton-comparison
+        if argspace.less is None:
+            argspace.less = True
+
         for prof in pycobj.profiles:
-            prof.less_output = True
-        pycobj.profile_default.less_output = True
+            prof.less_output = argspace.less
+        pycobj.profile_default.less_output = argspace.less
 
     profile = None
     if argspace.profile is not None:

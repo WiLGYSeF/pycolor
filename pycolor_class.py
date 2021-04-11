@@ -174,8 +174,13 @@ class Pycolor:
             self.stdout.flush()
             self.stderr.flush()
 
+            if isinstance(profile.less_output, str):
+                less_path = profile.less_output
+            else:
+                less_path = which('less')
+
             # does not delete tempfile
-            os.execv(which('less'), ['less', '-FKRSX', tmpfile.name])
+            os.execv(less_path, [less_path, '-FKRSX', tmpfile.name])
             sys.exit(0)
         return retcode
 
@@ -223,7 +228,7 @@ class Pycolor:
             self.debug_print(2, 'writing:  %s' % (newdata.encode('utf-8')))
 
             if self.current_profile.buffer_line:
-                if self.current_profile.timestamp != False: #pylint: disable=singleton-comparison
+                if self.current_profile.timestamp:
                     timestamp = '%Y-%m-%d %H:%M:%S: '
                     if isinstance(self.current_profile.timestamp, str):
                         timestamp = self.current_profile.timestamp
