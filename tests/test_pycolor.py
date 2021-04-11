@@ -2,6 +2,8 @@ import io
 import os
 import unittest
 
+from freezegun import freeze_time
+
 from tests.execute_tests.helpers import execute_patch, open_fstream, read_file, test_stream
 from tests.testutils import patch
 import pycolor
@@ -80,8 +82,20 @@ class PycolorTest(unittest.TestCase):
             self.check_pycolor_main(['ls', '-l', '--color', 'on'], MOCKED_DATA, 'ls_numbers')
 
     def test_main_no_profile_stdin(self):
-        with self.assertRaises(SystemExit), patch(pycolor, 'printerr', lambda x: x):
+        with self.assertRaises(SystemExit), patch(pycolor, 'printerr', lambda x: None):
             self.check_pycolor_main([], MOCKED_DATA, 'ls_numbers')
+
+    @freeze_time('2000-01-02 03:45:56')
+    def test_main_ls_timestamp_arg(self):
+        self.check_pycolor_main(['--timestamp', '--', 'ls', '-l'], MOCKED_DATA, 'ls_timestamp_arg')
+
+    @freeze_time('2000-01-02 03:45:56')
+    def test_main_ls_timestamp_arg_default_profile(self):
+        self.check_pycolor_main(
+            ['--timestamp', '--', 'ls', '-l'],
+            MOCKED_DATA,
+            'ls_timestamp_arg_default_profile'
+        )
 
     def test_consecutive_end_args(self):
         for entry in CONSECUTIVE_END_ARGS:
@@ -94,9 +108,11 @@ class PycolorTest(unittest.TestCase):
         args,
         mocked_data_dir,
         test_name,
-        print_output=False,
-        write_output=False
+        **kwargs
     ):
+        print_output = kwargs.get('print_output', False)
+        write_output = kwargs.get('write_output', False)
+
         filename_prefix = os.path.join(mocked_data_dir, test_name)
         stdout = io.TextIOWrapper(io.BytesIO())
         stderr = io.TextIOWrapper(io.BytesIO())
