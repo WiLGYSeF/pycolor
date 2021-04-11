@@ -35,6 +35,10 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         action='store', metavar='FORMAT', default=False, nargs='?',
         help='force enable "timestamp" for all profiles'
     )
+    parser.add_argument('--less',
+        action='store_true', default=False,
+        help='force enable "less_output" for all profiles'
+    )
     parser.add_argument('-v', '--verbose',
         action='count', default=0,
         help='enable debug mode to assist in configuring profiles'
@@ -69,6 +73,11 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         for prof in pycobj.profiles:
             prof.timestamp = argspace.timestamp
         pycobj.profile_default.timestamp = argspace.timestamp
+
+    if argspace.less:
+        for prof in pycobj.profiles:
+            prof.less_output = True
+        pycobj.profile_default.less_output = True
 
     profile = None
     if argspace.profile is not None:
