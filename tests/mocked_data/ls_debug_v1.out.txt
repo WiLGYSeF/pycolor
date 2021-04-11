@@ -1,0 +1,45 @@
+[0m[90m    DEBUG1: using profile "ls"[0m
+[0m[90m    DEBUG1: received: ln 1: b'total 108'[0m
+total [32m108[0m
+[0m[90m    DEBUG1: received: ln 2: b'-rw-rw-r-- 1 wilgysef wilgysef  8096 Apr  7 13:53 README.md'[0m
+-rw-rw-r-- [32m1[0m wilgysef wilgysef  [32m8096[0m Apr  [32m7[0m [32m13[0m:[32m53[0m README.md
+[0m[90m    DEBUG1: received: ln 3: b'drwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 14:00 __pycache__'[0m
+drwxr-xr-x [32m2[0m wilgysef wilgysef  [32m4096[0m Apr  [32m7[0m [32m14[0m:[32m00[0m __pycache__
+[0m[90m    DEBUG1: received: ln 4: b'-rw-rw-r-- 1 wilgysef wilgysef  1664 Apr  7 13:53 argpattern.py'[0m
+-rw-rw-r-- [32m1[0m wilgysef wilgysef  [32m1664[0m Apr  [32m7[0m [32m13[0m:[32m53[0m argpattern.py
+[0m[90m    DEBUG1: received: ln 5: b'-rw-rw-r-- 1 wilgysef wilgysef  5933 Apr  7 13:53 colorstate.py'[0m
+-rw-rw-r-- [32m1[0m wilgysef wilgysef  [32m5933[0m Apr  [32m7[0m [32m13[0m:[32m53[0m colorstate.py
+[0m[90m    DEBUG1: received: ln 6: b'drwxr-xr-x 4 wilgysef wilgysef  4096 Feb  8 20:45 docs'[0m
+drwxr-xr-x [32m4[0m wilgysef wilgysef  [32m4096[0m Feb  [32m8[0m [32m20[0m:[32m45[0m docs
+[0m[90m    DEBUG1: received: ln 7: b'-rw-r--r-- 1 wilgysef wilgysef  3199 Feb  9 20:36 execute.py'[0m
+-rw-r--r-- [32m1[0m wilgysef wilgysef  [32m3199[0m Feb  [32m9[0m [32m20[0m:[32m36[0m execute.py
+[0m[90m    DEBUG1: received: ln 8: b'-rw-r--r-- 1 wilgysef wilgysef   588 Feb 11 14:07 fromprofile.py'[0m
+-rw-r--r-- [32m1[0m wilgysef wilgysef   [32m588[0m Feb [32m11[0m [32m14[0m:[32m07[0m fromprofile.py
+[0m[90m    DEBUG1: received: ln 9: b'drwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 12:04 htmlcov'[0m
+drwxr-xr-x [32m2[0m wilgysef wilgysef  [32m4096[0m Apr  [32m7[0m [32m12[0m:[32m04[0m htmlcov
+[0m[90m    DEBUG1: received: ln 10: b'-rw-rw-r-- 1 wilgysef wilgysef  6613 Apr  7 13:53 pattern.py'[0m
+-rw-rw-r-- [32m1[0m wilgysef wilgysef  [32m6613[0m Apr  [32m7[0m [32m13[0m:[32m53[0m pattern.py
+[0m[90m    DEBUG1: received: ln 11: b'-rw-rw-r-- 1 wilgysef wilgysef  2238 Apr  7 13:53 profile_class.py'[0m
+-rw-rw-r-- [32m1[0m wilgysef wilgysef  [32m2238[0m Apr  [32m7[0m [32m13[0m:[32m53[0m profile_class.py
+[0m[90m    DEBUG1: received: ln 12: b'-rwxrwxr-x 1 wilgysef wilgysef  3917 Apr  7 13:59 pycolor.py'[0m
+-rwxrwxr-x [32m1[0m wilgysef wilgysef  [32m3917[0m Apr  [32m7[0m [32m13[0m:[32m59[0m pycolor.py
+[0m[90m    DEBUG1: received: ln 13: b'-rw-rw-r-- 1 wilgysef wilgysef 13150 Apr  7 13:53 pycolor_class.py'[0m
+-rw-rw-r-- [32m1[0m wilgysef wilgysef [32m13150[0m Apr  [32m7[0m [32m13[0m:[32m53[0m pycolor_class.py
+[0m[90m    DEBUG1: received: ln 14: b'drwxrwxr-x 3 wilgysef wilgysef  4096 Apr  7 13:53 pyformat'[0m
+drwxrwxr-x [32m3[0m wilgysef wilgysef  [32m4096[0m Apr  [32m7[0m [32m13[0m:[32m53[0m pyformat
+[0m[90m    DEBUG1: received: ln 15: b'-rw-rw-r-- 1 wilgysef wilgysef    30 Apr  7 13:53 requirements.txt'[0m
+-rw-rw-r-- [32m1[0m wilgysef wilgysef    [32m30[0m Apr  [32m7[0m [32m13[0m:[32m53[0m requirements.txt
+[0m[90m    DEBUG1: received: ln 16: b'-rw-r--r-- 1 wilgysef wilgysef  2645 Feb  8 20:45 search_replace.py'[0m
+-rw-r--r-- [32m1[0m wilgysef wilgysef  [32m2645[0m Feb  [32m8[0m [32m20[0m:[32m45[0m search_replace.py
+[0m[90m    DEBUG1: received: ln 17: b'-rw-r--r-- 1 wilgysef wilgysef   448 Jan 22 11:23 split.py'[0m
+-rw-r--r-- [32m1[0m wilgysef wilgysef   [32m448[0m Jan [32m22[0m [32m11[0m:[32m23[0m split.py
+[0m[90m    DEBUG1: received: ln 18: b'-rw-rw-r-- 1 wilgysef wilgysef   193 Jan  6 16:26 static_vars.py'[0m
+-rw-rw-r-- [32m1[0m wilgysef wilgysef   [32m193[0m Jan  [32m6[0m [32m16[0m:[32m26[0m static_vars.py
+[0m[90m    DEBUG1: received: ln 19: b'drwxrwxr-x 2 wilgysef wilgysef  4096 Feb  9 19:45 test_scripts'[0m
+drwxrwxr-x [32m2[0m wilgysef wilgysef  [32m4096[0m Feb  [32m9[0m [32m19[0m:[32m45[0m test_scripts
+[0m[90m    DEBUG1: received: ln 20: b'drwxrwxr-x 7 wilgysef wilgysef  4096 Apr  7 13:53 tests'[0m
+drwxrwxr-x [32m7[0m wilgysef wilgysef  [32m4096[0m Apr  [32m7[0m [32m13[0m:[32m53[0m tests
+[0m[90m    DEBUG1: received: ln 21: b'-rw-rw-r-- 1 wilgysef wilgysef   285 Apr  7 13:31 todo.txt'[0m
+-rw-rw-r-- [32m1[0m wilgysef wilgysef   [32m285[0m Apr  [32m7[0m [32m13[0m:[32m31[0m todo.txt
+[0m[90m    DEBUG1: received: ln 22: b'-rw-rw-r-- 1 wilgysef wilgysef   351 Jan  6 15:53 which.py'[0m
+-rw-rw-r-- [32m1[0m wilgysef wilgysef   [32m351[0m Jan  [32m6[0m [32m15[0m:[32m53[0m which.py

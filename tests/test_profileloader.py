@@ -1,7 +1,7 @@
 import unittest
 
 from argpattern import ArgPattern
-from pycolor_class import Pycolor
+from profileloader import ProfileLoader
 
 
 ARGS = 'args'
@@ -120,11 +120,11 @@ CHECK_ARG_PATTERNS = [
 ]
 
 
-class CheckArgPatternsTest(unittest.TestCase):
+class ProfileLoaderTest(unittest.TestCase):
     def test_check_arg_patterns(self):
         for entry in CHECK_ARG_PATTERNS:
             argpats = map(lambda x: ArgPattern(x), entry[ARGPATTERNS])
             self.assertEqual(
-                Pycolor.check_arg_patterns(entry[ARGS], argpats),
+                ProfileLoader.check_arg_patterns(entry[ARGS], argpats),
                 entry[RESULT]
             )

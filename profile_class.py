@@ -74,3 +74,14 @@ class Profile:
 
         for pat in cfg.get('patterns', []):
             self.patterns.append(pattern.Pattern(pat))
+
+    def get_name(self):
+        for name in [
+            self.profile_name,
+            self.which,
+            self.name,
+            self.name_regex,
+        ]:
+            if name is not None and len(name) != 0:
+                return name
+        return None

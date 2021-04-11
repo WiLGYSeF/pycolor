@@ -1,5 +1,7 @@
+from contextlib import ExitStack
 import io
 import os
+import sys
 import unittest
 
 from freezegun import freeze_time
@@ -108,6 +110,22 @@ class PycolorTest(unittest.TestCase):
                 'ls_profile'
             )
 
+    def test_main_ls_debug_v1(self):
+        self.check_pycolor_main(
+            ['-v', '--', 'ls', '-l'],
+            MOCKED_DATA,
+            'ls_debug_v1',
+            patch_stdout=True
+        )
+
+    def test_main_ls_debug_v1_no_color(self):
+        self.check_pycolor_main(
+            ['-v', '--color=off', '--', 'ls', '-l'],
+            MOCKED_DATA,
+            'ls_debug_v1_no_color',
+            patch_stdout=True
+        )
+
     def test_consecutive_end_args(self):
         for entry in CONSECUTIVE_END_ARGS:
             self.assertEqual(
@@ -121,6 +139,7 @@ class PycolorTest(unittest.TestCase):
         test_name,
         **kwargs
     ):
+        patch_stdout = kwargs.get('patch_stdout', False)
         print_output = kwargs.get('print_output', False)
         write_output = kwargs.get('write_output', False)
 
@@ -133,7 +152,11 @@ class PycolorTest(unittest.TestCase):
         stdout_in = open_fstream(filename_prefix + '.txt')
         stderr_in = open_fstream(filename_prefix + '.err.txt')
 
-        with execute_patch(pycolor_class.execute, stdout_in, stderr_in):
+        with ExitStack() as stack:
+            stack.enter_context(execute_patch(pycolor_class.execute, stdout_in, stderr_in))
+            if patch_stdout:
+                stack.enter_context(patch(sys, 'stdout', stdout))
+
             try:
                 pycolor.main(args, stdout_stream=stdout, stderr_stream=stderr)
             except SystemExit as sexc:

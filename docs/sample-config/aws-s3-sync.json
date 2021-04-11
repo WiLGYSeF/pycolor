@@ -1,0 +1,35 @@
+{
+	"profiles": [
+		{
+			"name": "aws",
+			"arg_patterns": [
+				{
+					"expression": "s3",
+					"position": 1
+				},
+				{
+					"expression": "sync",
+					"position": 2
+				}
+			],
+			"patterns": [
+				{
+					"expression": "^delete: (.*)$",
+					"replace": "%C(bold;red)delete: %G1%Cz"
+				},
+				{
+					"expression": "^upload: (.*)$",
+					"replace": "%C(bold;green)upload: %G1%Cz"
+				},
+				{
+					"expression": "^\\(dryrun\\) delete: (.*)$",
+					"replace": "%C(red)(dryrun) delete: %G1%Cz"
+				},
+				{
+					"expression": "^\\(dryrun\\) upload: (.*)$",
+					"replace": "%C(green)(dryrun) upload: %G1%Cz"
+				}
+			]
+		}
+	]
+}

@@ -81,7 +81,7 @@ GET_ARG_RANGES = [
 ]
 
 
-class GetArgRangeTest(unittest.TestCase):
+class GetArgPatternTest(unittest.TestCase):
     def test_get_arg_range(self):
         for entry in GET_ARG_RANGES:
             self.assertListEqual(

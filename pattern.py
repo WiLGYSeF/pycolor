@@ -14,6 +14,7 @@ PATTERN_SCHEMA = {
         'replace': {'type': ['array', 'string']},
         'replace_all': {'type': ['array', 'string']},
         'filter': {'type': 'boolean'},
+        'skip_others': {'type': 'boolean'},
 
         'start_occurrence': {'type': 'integer'},
         'max_count': {'type': 'integer'},
@@ -52,6 +53,7 @@ class Pattern:
 
         self.expression = cfg['expression']
         self.filter = cfg.get('filter', False)
+        self.skip_others = cfg.get('skip_others', False)
 
         self.start_occurrence = cfg.get('start_occurrence', 1)
         self.max_count = cfg.get('max_count', -1)

@@ -12,3 +12,4 @@ def which(name):
     except subprocess.CalledProcessError as cpe:
         if cpe.returncode == 1:
             return None
+        raise cpe
