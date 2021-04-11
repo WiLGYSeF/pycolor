@@ -1,7 +1,10 @@
 import datetime
+import io
 import json
+import os
 import re
 import sys
+import tempfile
 
 from colorstate import ColorState
 import execute
@@ -28,6 +31,8 @@ class Pycolor:
             'buffer_line': True
         })
         self.linenum = 0
+
+        self.less_process = None
 
         self.stdout = sys.stdout
         self.stderr = sys.stderr
@@ -154,12 +159,30 @@ class Pycolor:
 
             self.debug_print(1, 'using profile "%s"' % name)
 
-        return execute.execute(
+        if profile.less_output:
+            tmpfile = tempfile.NamedTemporaryFile()
+            self.stdout = io.TextIOWrapper(tmpfile)
+
+        retcode = execute.execute(
             cmd,
             self.stdout_cb,
             self.stderr_cb,
             buffer_line=self.current_profile.buffer_line
         )
+
+        if profile.less_output:
+            self.stdout.flush()
+            self.stderr.flush()
+
+            if isinstance(profile.less_output, str):
+                less_path = profile.less_output
+            else:
+                less_path = which('less')
+
+            # does not delete tempfile
+            os.execv(less_path, [less_path, '-FKRSX', tmpfile.name])
+            sys.exit(0)
+        return retcode
 
     def data_callback(self, stream, data):
         newdata = data
@@ -205,7 +228,7 @@ class Pycolor:
             self.debug_print(2, 'writing:  %s' % (newdata.encode('utf-8')))
 
             if self.current_profile.buffer_line:
-                if self.current_profile.timestamp != False: #pylint: disable=singleton-comparison
+                if self.current_profile.timestamp:
                     timestamp = '%Y-%m-%d %H:%M:%S: '
                     if isinstance(self.current_profile.timestamp, str):
                         timestamp = self.current_profile.timestamp
@@ -221,6 +244,7 @@ class Pycolor:
             stream.flush()
             # TODO: should we handle unicode differently?
             stream.buffer.write(newdata.encode('utf-8'))
+
             self.color_state.set_state_by_string(newdata)
 
             if self.current_profile.buffer_line:

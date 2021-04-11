@@ -21,7 +21,8 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
     parser.add_argument('--color',
         action='store', default='auto', nargs='?',
         choices=['auto', 'always', 'never', 'on', 'off'],
-        help='enable/disable coloring output. if auto is selected, color will be enabled for terminal output but disabled on output redirection. on=always, off=never (default auto)'
+        help='enable/disable coloring output. if auto is selected, color will be enabled for'
+        + ' terminal output but disabled on output redirection. on=always, off=never (default auto)'
     )
     parser.add_argument('--load-file',
         action='append', metavar='FILE', default=[],
@@ -33,7 +34,11 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
     )
     parser.add_argument('-t', '--timestamp',
         action='store', metavar='FORMAT', default=False, nargs='?',
-        help='force enable "timestamp" for all profiles'
+        help='force enable "timestamp" for all profiles with an optional FORMAT'
+    )
+    parser.add_argument('--less',
+        action='store', metavar='PATH', default=False, nargs='?',
+        help='force enable "less_output" for all profiles with an optional PATH to the less binary'
     )
     parser.add_argument('-v', '--verbose',
         action='count', default=0,
@@ -65,10 +70,12 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
     if argspace.timestamp != False: #pylint: disable=singleton-comparison
         if argspace.timestamp is None:
             argspace.timestamp = True
+        override_profile_conf(pycobj, 'timestamp', argspace.timestamp)
 
-        for prof in pycobj.profiles:
-            prof.timestamp = argspace.timestamp
-        pycobj.profile_default.timestamp = argspace.timestamp
+    if argspace.less != False: #pylint: disable=singleton-comparison
+        if argspace.less is None:
+            argspace.less = True
+        override_profile_conf(pycobj, 'less_output', argspace.less)
 
     profile = None
     if argspace.profile is not None:
@@ -127,6 +134,11 @@ def read_input_stream(pycobj, stream):
         buffer_line=pycobj.current_profile.buffer_line,
         last=True
     )
+
+def override_profile_conf(pycobj, attr, val):
+    for prof in pycobj.profiles:
+        setattr(prof, attr, val)
+    setattr(pycobj.profile_default, attr, val)
 
 def load_config_files(pycobj, path):
     # https://stackoverflow.com/a/3207973
