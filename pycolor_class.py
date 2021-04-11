@@ -171,10 +171,12 @@ class Pycolor:
         )
 
         if profile.less_output:
-            pid = os.fork()
-            if pid == 0:
-                os.execv(which('less'), ['-FKRSX', tmpfile.name])
-                sys.exit(0)
+            self.stdout.flush()
+            self.stderr.flush()
+
+            # does not delete tempfile
+            os.execv(which('less'), ['less', '-FKRSX', tmpfile.name])
+            sys.exit(0)
         return retcode
 
     def data_callback(self, stream, data):
