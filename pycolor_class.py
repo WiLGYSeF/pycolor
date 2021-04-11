@@ -106,7 +106,7 @@ class Pycolor:
 
             matched, applied = self.apply_pattern(pat, newdata, color_positions)
             if matched:
-                if applied is None:
+                if pat.filter:
                     self.debug_print(2, 'filtered: %s' % (newdata.encode('utf-8')))
                     newdata = None
                     break
@@ -117,6 +117,8 @@ class Pycolor:
                     ))
 
                 newdata = applied
+                if pat.skip_others:
+                    break
 
         if newdata is None:
             return
@@ -162,8 +164,6 @@ class Pycolor:
             return False, None
 
         if pat.separator is None:
-            if pat.filter and pat.regex.search(data):
-                return True, None
             if pat.replace is not None:
                 data, replace_ranges, colorpos = self.pat_schrep(pat, data)
                 if len(replace_ranges) == 0:
@@ -191,7 +191,7 @@ class Pycolor:
                 color_positions.clear()
                 color_positions.update(colorpos)
                 return True, data
-            return False, None
+            return pat.regex.search(data), data
 
         fields = re_split(pat.separator, data)
         field_idxs = pat.get_field_indexes(fields)
@@ -250,11 +250,10 @@ class Pycolor:
                 return False, None
             return True, ''.join(fields)
 
-        if pat.filter:
-            for field_idx in field_idxs:
-                match = pat.regex.search(fields[field_idx])
-                if match is not None:
-                    return True, None
+        for field_idx in field_idxs:
+            match = pat.regex.search(fields[field_idx])
+            if match is not None:
+                return True, data
 
         return False, None
 
