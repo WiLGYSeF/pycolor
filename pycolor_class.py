@@ -81,12 +81,16 @@ class Pycolor:
         newdata = data
         color_positions = {}
         removed_newline = False
+        removed_carriagereturn = False
 
         if self.current_profile.buffer_line:
             if newdata[-1] == '\n':
                 self.linenum += 1
                 newdata = newdata[:-1]
                 removed_newline = True
+            elif newdata[-1] == '\r':
+                newdata = newdata[:-1]
+                removed_carriagereturn = True
 
             self.debug_print(1, 'got data: ln %d: %s' % (self.linenum, newdata.encode('utf-8')))
         else:
@@ -148,6 +152,8 @@ class Pycolor:
 
                 if removed_newline:
                     stream.write('\n')
+                elif removed_carriagereturn:
+                    stream.write('\r')
 
             stream.flush()
 
