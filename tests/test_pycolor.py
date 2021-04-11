@@ -72,7 +72,7 @@ CONSECUTIVE_END_ARGS = [
 
 class PycolorTest(unittest.TestCase):
     def test_main_ls_numbers(self):
-        self.check_pycolor_main(['ls', '-l'], MOCKED_DATA, 'ls_numbers')
+        self.check_pycolor_main(['--', 'ls', '-l'], MOCKED_DATA, 'ls_numbers')
 
     def test_main_ls_numbers_with_dashdash(self):
         self.check_pycolor_main(['--', 'ls', '-l'], MOCKED_DATA, 'ls_numbers')
@@ -96,6 +96,17 @@ class PycolorTest(unittest.TestCase):
             MOCKED_DATA,
             'ls_timestamp_arg_default_profile'
         )
+
+    def test_main_ls_profile(self):
+        self.check_pycolor_main(['--profile', 'none', '--', 'ls', '-l'], MOCKED_DATA, 'ls_profile')
+
+    def test_main_ls_profile_fail(self):
+        with self.assertRaises(SystemExit), patch(pycolor, 'printerr', lambda x: None):
+            self.check_pycolor_main(
+                ['--profile', 'invalid', '--', 'ls', '-l'],
+                MOCKED_DATA,
+                'ls_profile'
+            )
 
     def test_consecutive_end_args(self):
         for entry in CONSECUTIVE_END_ARGS:
