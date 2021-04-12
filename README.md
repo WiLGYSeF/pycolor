@@ -99,7 +99,7 @@ To colorize output through a replace pattern use `%C<color argument>`.
 | bold | bright, bol, bri | `\e[1m` | Bold characters |
 | dim |  | `\e[2m` | Dim characters |
 | italic | ita | `\e[3m` | Italicize characters |
-| underline | underlined, und | `\e[4m` | Underline characters |
+| underline | underlined, ul, und | `\e[4m` | Underline characters |
 | blink | bli | `\e[5m` | Blink characters |
 | invert | reverse, inv, rev | `\e[7m` | Invert characters |
 | hidden | conceal, hid, con | `\e[8m` | Hide characters |
@@ -113,7 +113,7 @@ To colorize output through a replace pattern use `%C<color argument>`.
 | cyan | c | `\e[36m` | Cyan color |
 | grey | gray, e | `\e[37m` | Grey color |
 | default |  | `\e[39m` | Default color |
-| overline | overlined, ove | `\e[53m` | Overline characters |
+| overline | overlined, ol, ove | `\e[53m` | Overline characters |
 | darkgrey | darkgray, de, lk | `\e[90m` | Dark grey color |
 | lightred | lr | `\e[91m` | Light red color |
 | lightgreen | lg | `\e[92m` | Light green color |

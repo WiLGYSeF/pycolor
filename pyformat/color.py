@@ -49,6 +49,7 @@ def _colorval(color, aliases=None):
         'bol': 1,
         'bri': 1,
         'ita': 3,
+        'ul': 4,
         'und': 4,
         'bli': 5,
         'inv': 7,
@@ -83,6 +84,7 @@ def _colorval(color, aliases=None):
         'overline': 53,
         'overlined': 53,
 
+        'ol': 53,
         'ove': 53,
 
         'darkgray': 90,
