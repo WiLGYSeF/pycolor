@@ -163,7 +163,7 @@ class Pycolor:
         if not pat.is_active(self.linenum, data):
             return False, None
 
-        if pat.separator is None:
+        if pat.separator_regex is None:
             if pat.replace is not None:
                 data, replace_ranges, colorpos = self.pat_schrep(pat, data)
                 if len(replace_ranges) == 0:
@@ -193,7 +193,7 @@ class Pycolor:
                 return True, data
             return pat.regex.search(data), data
 
-        fields = re_split(pat.separator, data)
+        fields = re_split(pat.separator_regex, data)
         field_idxs = pat.get_field_indexes(fields)
 
         if pat.replace_all is not None:
