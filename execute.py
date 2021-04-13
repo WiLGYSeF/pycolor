@@ -2,6 +2,7 @@ import fcntl
 import os
 import signal
 import subprocess
+import time
 
 from static_vars import static_vars
 
@@ -114,6 +115,7 @@ def execute(cmd, stdout_callback, stderr_callback, buffer_line=True, encoding='u
         while process.poll() is None:
             _read(process.stdout, stdout_callback)
             _read(process.stderr, stderr_callback)
+            time.sleep(0.000001)
 
         _read(process.stdout, stdout_callback, last=True)
         _read(process.stdout, stdout_callback, last=True)
