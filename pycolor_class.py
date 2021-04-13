@@ -99,9 +99,11 @@ class Pycolor:
             self.debug_print(1, 'received: %s', newdata.encode('utf-8'))
 
         for pat in self.current_profile.patterns:
-            if not pat.enabled:
-                continue
-            if pat.stdout_only and stream != sys.stdout or pat.stderr_only and stream != sys.stderr:
+            if any((
+                not pat.enabled,
+                pat.stdout_only and stream != self.stdout,
+                pat.stderr_only and stream != self.stderr
+            )):
                 continue
 
             matched, applied = self.apply_pattern(pat, newdata, color_positions)
