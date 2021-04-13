@@ -77,11 +77,8 @@ def read_stream(stream, callback, buffer_line=True, encoding='utf-8', last=False
     return did_callback
 
 def is_eol(char):
-    ceol = '\n\r'
-    for k in ceol:
-        if char == ord(k):
-            return True
-    return False
+    # '\n' and '\r'
+    return char == 10 or char == 13 #pylint: disable=consider-using-in
 
 def execute(cmd, stdout_callback, stderr_callback, buffer_line=True, encoding='utf-8'):
     def _read(stream, callback, last=False):
