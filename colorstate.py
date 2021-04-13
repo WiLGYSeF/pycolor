@@ -31,6 +31,8 @@ DEFAULT_COLOR_STATE = {
     COLOR_BACKGROUND: '49'
 }
 
+ANSI_REGEX = re.compile(r'\x1b\[([0-9;]+)m')
+
 
 class ColorState:
     def __init__(self, state=None):
@@ -57,7 +59,7 @@ class ColorState:
 
     def set_state_by_string(self, string):
         codelist = []
-        for match in re.finditer(r'\x1b\[([0-9;]+)m', string):
+        for match in ANSI_REGEX.finditer(string):
             codes = list(map(
                 lambda x: int(x),
                 filter(

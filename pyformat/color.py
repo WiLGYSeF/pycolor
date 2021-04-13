@@ -1,11 +1,16 @@
 import re
 
 
+RAW_REGEX = re.compile(r'r(?:aw)?([0-9;]+)')
+ANSI_REGEX = re.compile(r'\x1b\[([0-9;]+)m')
+HEX_REGEX = re.compile(r'(?:0x)?(?:(?P<six>[0-9a-f]{6})|(?P<three>[0-9a-f]{3}))')
+
+
 def get_color(colorstr, aliases=None):
     if aliases is None:
         aliases = {}
 
-    match = re.fullmatch(r'r(?:aw)?([0-9;]+)', colorstr)
+    match = RAW_REGEX.fullmatch(colorstr)
     if match:
         return '\x1b[%sm' % match[1]
 
@@ -150,20 +155,17 @@ def _colorval(color, aliases=None):
     return str(val)
 
 def is_ansi_reset(string):
-    match = re.fullmatch('\x1b\\[([0-9;]+)m', string)
+    match = ANSI_REGEX.fullmatch(string)
     if match is None:
         return False
 
-    return re.fullmatch(r'0+', list(filter(
-        lambda x: len(x) != 0,
-        match[1].split(';')
-    ))[-1]) is not None
+    for char in match[1].split(';')[-1]:
+        if char not in '0;':
+            return False
+    return True
 
 def hex_to_rgb(string):
-    match = re.fullmatch(
-        r'(?:0x)?(?:(?P<six>[0-9a-f]{6})|(?P<three>[0-9a-f]{3}))',
-        string
-    )
+    match = HEX_REGEX.fullmatch(string)
     if match is None:
         raise ValueError()
 
