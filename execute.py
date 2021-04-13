@@ -51,7 +51,6 @@ def read_stream(stream, callback, buffer_line=True, encoding='utf-8', last=False
             return None
 
         start = 0
-
         if is_eol(lines[0][-1]):
             do_callback(read_stream.buffers[stream] + lines[0])
             read_stream.buffers[stream] = b''
@@ -79,10 +78,6 @@ def read_stream(stream, callback, buffer_line=True, encoding='utf-8', last=False
 
 def is_eol(char):
     ceol = '\n\r'
-
-    if isinstance(char, str):
-        return chr in ceol
-
     for k in ceol:
         if char == ord(k):
             return True
