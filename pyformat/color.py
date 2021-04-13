@@ -121,6 +121,18 @@ def _colorval(color, aliases=None):
         color = color[1:]
         toggle = True
 
+    val = colors.get(color.lower())
+    if val is not None:
+        if toggle:
+            if val >= 30 and val <= 39 or val >= 90 and val <= 97:
+                val += 10
+            elif val >= 1 and val <= 8:
+                val += 20
+            elif val == 53:
+                val = 55
+
+        return str(val)
+
     try:
         return '%d;5;%d' % (
             48 if toggle else 38,
@@ -140,19 +152,7 @@ def _colorval(color, aliases=None):
     except ValueError:
         pass
 
-    if color.lower() not in colors:
-        return None
-
-    val = colors[color.lower()]
-    if toggle:
-        if val >= 30 and val <= 39 or val >= 90 and val <= 97:
-            val += 10
-        elif val >= 1 and val <= 8:
-            val += 20
-        elif val == 53:
-            val = 55
-
-    return str(val)
+    return None
 
 def is_ansi_reset(string):
     match = ANSI_REGEX.fullmatch(string)

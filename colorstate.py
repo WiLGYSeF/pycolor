@@ -67,7 +67,6 @@ class ColorState:
                     match[1].split(';')
                 )
             ))
-
             codelist.extend(self.set_special_color_states(codes))
 
         self.set_state_by_codes(codelist)
