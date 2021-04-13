@@ -107,7 +107,7 @@ def execute(cmd, stdout_callback, stderr_callback, buffer_line=True, encoding='u
         while process.poll() is None:
             _read(process.stdout, stdout_callback)
             _read(process.stderr, stderr_callback)
-            time.sleep(0.001)
+            time.sleep(0.0001)
 
         _read(process.stdout, stdout_callback, last=True)
         _read(process.stdout, stdout_callback, last=True)
