@@ -16,6 +16,13 @@ from which import which
 class Pycolor:
     def __init__(self, **kwargs):
         self.color_mode = kwargs.get('color_mode', 'auto')
+        """
+        0 - no debug
+        1 - print received data
+        2 - print written data
+        3 - print after each pattern applied
+        4 - print line numbers before received data
+        """
         self.debug = kwargs.get('debug', 0)
 
         self.profloader = ProfileLoader()
@@ -92,11 +99,11 @@ class Pycolor:
                 newdata = newdata[:-1]
                 removed_carriagereturn = True
 
-            self.debug_print(1, 'received: ln %d: %s', self.linenum, newdata.encode('utf-8'))
+            self.debug_print(4, 'on line %d', self.linenum)
         else:
             self.linenum += data.count('\n')
 
-            self.debug_print(1, 'received: %s', newdata.encode('utf-8'))
+        self.debug_print(1, 'received: %s', newdata.encode('utf-8'))
 
         for pat in self.current_profile.patterns:
             if any((

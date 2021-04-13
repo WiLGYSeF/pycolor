@@ -126,6 +126,22 @@ class PycolorTest(unittest.TestCase):
             patch_stdout=True
         )
 
+    def test_main_ls_debug_v2(self):
+        self.check_pycolor_main(
+            ['-vv', '--', 'ls', '-l'],
+            MOCKED_DATA,
+            'ls_debug_v2',
+            patch_stdout=True
+        )
+
+    def test_main_ls_debug_v3(self):
+        self.check_pycolor_main(
+            ['-vvv', '--', 'ls', '-l'],
+            MOCKED_DATA,
+            'ls_debug_v3',
+            patch_stdout=True
+        )
+
     def test_consecutive_end_args(self):
         for entry in CONSECUTIVE_END_ARGS:
             self.assertEqual(
