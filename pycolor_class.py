@@ -16,6 +16,13 @@ from which import which
 class Pycolor:
     def __init__(self, **kwargs):
         self.color_mode = kwargs.get('color_mode', 'auto')
+        """
+        0 - no debug
+        1 - print received data
+        2 - print written data
+        3 - print after each pattern applied
+        4 - print line numbers before received data
+        """
         self.debug = kwargs.get('debug', 0)
 
         self.profloader = ProfileLoader()
@@ -50,7 +57,7 @@ class Pycolor:
         self.set_current_profile(profile)
         profile = self.current_profile
 
-        self.debug_print(1, 'using profile "%s"' % profile.get_name())
+        self.debug_print(1, 'using profile "%s"', profile.get_name())
 
         if profile.less_output:
             tmpfile = tempfile.NamedTemporaryFile()
@@ -92,29 +99,31 @@ class Pycolor:
                 newdata = newdata[:-1]
                 removed_carriagereturn = True
 
-            self.debug_print(1, 'received: ln %d: %s' % (self.linenum, newdata.encode('utf-8')))
+            self.debug_print(4, 'on line %d', self.linenum)
         else:
             self.linenum += data.count('\n')
 
-            self.debug_print(1, 'received: %s' % newdata.encode('utf-8'))
+        self.debug_print(1, 'received: %s', newdata.encode('utf-8'))
 
         for pat in self.current_profile.patterns:
-            if not pat.enabled:
-                continue
-            if pat.stdout_only and stream != sys.stdout or pat.stderr_only and stream != sys.stderr:
+            if any((
+                not pat.enabled,
+                pat.stdout_only and stream != self.stdout,
+                pat.stderr_only and stream != self.stderr
+            )):
                 continue
 
             matched, applied = self.apply_pattern(pat, newdata, color_positions)
             if matched:
                 if pat.filter:
-                    self.debug_print(2, 'filtered: %s' % (newdata.encode('utf-8')))
+                    self.debug_print(2, 'filtered: %s', newdata.encode('utf-8'))
                     newdata = None
                     break
 
                 if self.debug >= 3:
-                    self.debug_print(3, 'applying: %s' % (
+                    self.debug_print(3, 'applying: %s',
                         Pycolor.insert_color_data(applied, color_positions).encode('utf-8')
-                    ))
+                    )
 
                 newdata = applied
                 if pat.skip_others:
@@ -126,7 +135,7 @@ class Pycolor:
         if len(color_positions) != 0:
             newdata = Pycolor.insert_color_data(newdata, color_positions)
 
-        self.debug_print(2, 'writing:  %s' % (newdata.encode('utf-8')))
+        self.debug_print(2, 'writing:  %s', newdata.encode('utf-8'))
 
         if self.current_profile.buffer_line and self.current_profile.timestamp:
             timestamp = '%Y-%m-%d %H:%M:%S: '
@@ -163,7 +172,7 @@ class Pycolor:
         if not pat.is_active(self.linenum, data):
             return False, None
 
-        if pat.separator is None:
+        if pat.separator_regex is None:
             if pat.replace is not None:
                 data, replace_ranges, colorpos = self.pat_schrep(pat, data)
                 if len(replace_ranges) == 0:
@@ -193,7 +202,7 @@ class Pycolor:
                 return True, data
             return pat.regex.search(data), data
 
-        fields = re_split(pat.separator, data)
+        fields = re_split(pat.separator_regex, data)
         field_idxs = pat.get_field_indexes(fields)
 
         if pat.replace_all is not None:
@@ -364,7 +373,7 @@ class Pycolor:
     def stderr_cb(self, data):
         self.data_callback(self.stderr, data)
 
-    def debug_print(self, lvl, *args):
+    def debug_print(self, lvl, val, *args):
         if self.debug < lvl:
             return
 
@@ -377,7 +386,7 @@ class Pycolor:
             reset = ''
             oldstate = ''
 
-        print('%s    DEBUG%d: %s%s' % (reset, lvl, ' '.join(args), oldstate))
+        print('%s    DEBUG%d: %s%s' % (reset, lvl, val % args, oldstate))
 
     @staticmethod
     def is_being_redirected():

@@ -99,14 +99,15 @@ class Pattern:
         self.separator = cfg.get('separator')
         if isinstance(self.separator, list):
             self.separator = ''.join(self.separator)
+        self.separator_regex = None
 
         self.field = cfg.get('field')
         self.min_fields = cfg.get('min_fields', -1)
         self.max_fields = cfg.get('max_fields', -1)
 
-        if self.separator is not None and len(self.separator) == 0:
-            self.separator = None
-        if self.separator is None:
+        if self.separator is not None and len(self.separator) != 0:
+            self.separator_regex = re.compile(self.separator)
+        else:
             self.field = None
             self.min_fields = -1
             self.max_fields = -1

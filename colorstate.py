@@ -31,33 +31,51 @@ DEFAULT_COLOR_STATE = {
     COLOR_BACKGROUND: '49'
 }
 
+ANSI_REGEX = re.compile(r'\x1b\[([0-9;]+)m')
+
 
 class ColorState:
     def __init__(self, state=None):
         self.color_state = {}
+        self.state_changed = set()
         self.reset()
 
         if state is not None:
-            if isinstance(state, ColorState):
-                self.set_state_by_state(state.color_state)
-            elif isinstance(state, str):
-                self.set_state_by_string(state)
-            else:
-                self.set_state_by_state(state)
+            self.set(state)
 
     def reset(self):
         self.color_state = DEFAULT_COLOR_STATE.copy()
+        self.state_changed = set()
 
     def copy(self):
         return ColorState(self.color_state)
 
+    def set(self, value):
+        if isinstance(value, ColorState):
+            self.set_state_by_state(value)
+        elif isinstance(value, dict):
+            self.set_state_by_dict(value)
+        elif isinstance(value, str):
+            self.set_state_by_string(value)
+        elif isinstance(value, (list, tuple)):
+            self.set_state_by_codes(value)
+        else:
+            raise ValueError()
+
     def set_state_by_state(self, state):
-        for key, val in state.items():
+        for key, val in state.color_state.items():
             self.color_state[key] = val
+        for val in state.state_changed:
+            self.state_changed.add(val)
+
+    def set_state_by_dict(self, dct):
+        for key, val in dct.items():
+            self.color_state[key] = val
+            self.state_changed.add(key)
 
     def set_state_by_string(self, string):
         codelist = []
-        for match in re.finditer(r'\x1b\[([0-9;]+)m', string):
+        for match in ANSI_REGEX.finditer(string):
             codes = list(map(
                 lambda x: int(x),
                 filter(
@@ -65,7 +83,6 @@ class ColorState:
                     match[1].split(';')
                 )
             ))
-
             codelist.extend(self.set_special_color_states(codes))
 
         self.set_state_by_codes(codelist)
@@ -108,12 +125,16 @@ class ColorState:
             if color is not None:
                 if code == 38:
                     self.color_state[COLOR_FOREGROUND] = color
+                    self.state_changed.add(COLOR_FOREGROUND)
+
                     newcodes = list(filter(
                         lambda x: not (x >= 30 and x <= 39),
                         newcodes
                     ))
                 elif code == 48:
                     self.color_state[COLOR_BACKGROUND] = color
+                    self.state_changed.add(COLOR_BACKGROUND)
+
                     newcodes = list(filter(
                         lambda x: not (x >= 40 and x <= 49),
                         newcodes
@@ -153,13 +174,19 @@ class ColorState:
             if code == 0:
                 self.reset()
             elif code in style_code_enable:
-                self.color_state[style_code_enable[code]] = True
+                code = style_code_enable[code]
+                self.color_state[code] = True
+                self.state_changed.add(code)
             elif code in style_code_disable:
-                self.color_state[style_code_disable[code]] = False
+                code = style_code_disable[code]
+                self.color_state[code] = False
+                self.state_changed.add(code)
             elif (code >= 30 and code <= 39) or (code >= 90 and code <= 97):
                 self.color_state[COLOR_FOREGROUND] = str(code)
+                self.state_changed.add(COLOR_FOREGROUND)
             elif (code >= 40 and code <= 49) or (code >= 100 and code <= 107):
                 self.color_state[COLOR_BACKGROUND] = str(code)
+                self.state_changed.add(COLOR_BACKGROUND)
 
     def diff_keys(self, state):
         diff_keys = []
@@ -174,7 +201,6 @@ class ColorState:
         state = {}
         for k in keys:
             state[k] = self.color_state[k]
-
         return state
 
     def get_changed_state(self, compare_state=None):

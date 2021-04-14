@@ -38,9 +38,14 @@ STATE = 'state'
 FORMAT_COLOR_STRING_SOFT_RESET = [
     {
         STATE: ColorState('\x1b[31m'),
-        STRING: 'a%C(underline;yellow)b\x1b[3;31mc%C(cyan)d%C(soft)e',
-        RESULT: 'a\x1b[4;33mb\x1b[3;31mc\x1b[36md\x1b[23;24;31me',
-    }
+        STRING: 'a%C(underline;yellow)b\x1b[3;32mc%C(cyan)d%C(soft)e',
+        RESULT: 'a\x1b[4;33mb\x1b[3;32mc\x1b[36md\x1b[23;24;31me',
+    },
+    {
+        STATE: ColorState(),
+        STRING: 'a%C(b)s%C(str;bol)d%C(soft)f',
+        RESULT: 'a\x1b[34ms\x1b[9;1md\x1b[21;29;39mf',
+    },
 ]
 
 ALIASES = 'aliases'

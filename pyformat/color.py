@@ -1,11 +1,16 @@
 import re
 
 
+RAW_REGEX = re.compile(r'r(?:aw)?([0-9;]+)')
+ANSI_REGEX = re.compile(r'\x1b\[([0-9;]+)m')
+HEX_REGEX = re.compile(r'(?:0x)?(?:(?P<six>[0-9a-f]{6})|(?P<three>[0-9a-f]{3}))')
+
+
 def get_color(colorstr, aliases=None):
     if aliases is None:
         aliases = {}
 
-    match = re.fullmatch(r'r(?:aw)?([0-9;]+)', colorstr)
+    match = RAW_REGEX.fullmatch(colorstr)
     if match:
         return '\x1b[%sm' % match[1]
 
@@ -49,6 +54,7 @@ def _colorval(color, aliases=None):
         'bol': 1,
         'bri': 1,
         'ita': 3,
+        'ul': 4,
         'und': 4,
         'bli': 5,
         'inv': 7,
@@ -83,6 +89,7 @@ def _colorval(color, aliases=None):
         'overline': 53,
         'overlined': 53,
 
+        'ol': 53,
         'ove': 53,
 
         'darkgray': 90,
@@ -114,6 +121,18 @@ def _colorval(color, aliases=None):
         color = color[1:]
         toggle = True
 
+    val = colors.get(color.lower())
+    if val is not None:
+        if toggle:
+            if val >= 30 and val <= 39 or val >= 90 and val <= 97:
+                val += 10
+            elif val >= 1 and val <= 8:
+                val += 20
+            elif val == 53:
+                val = 55
+
+        return str(val)
+
     try:
         return '%d;5;%d' % (
             48 if toggle else 38,
@@ -133,35 +152,20 @@ def _colorval(color, aliases=None):
     except ValueError:
         pass
 
-    if color.lower() not in colors:
-        return None
-
-    val = colors[color.lower()]
-    if toggle:
-        if val >= 30 and val <= 39 or val >= 90 and val <= 97:
-            val += 10
-        elif val >= 1 and val <= 8:
-            val += 20
-        elif val == 53:
-            val = 55
-
-    return str(val)
+    return None
 
 def is_ansi_reset(string):
-    match = re.fullmatch('\x1b\\[([0-9;]+)m', string)
+    match = ANSI_REGEX.fullmatch(string)
     if match is None:
         return False
 
-    return re.fullmatch(r'0+', list(filter(
-        lambda x: len(x) != 0,
-        match[1].split(';')
-    ))[-1]) is not None
+    for char in match[1].split(';')[-1]:
+        if char not in '0;':
+            return False
+    return True
 
 def hex_to_rgb(string):
-    match = re.fullmatch(
-        r'(?:0x)?(?:(?P<six>[0-9a-f]{6})|(?P<three>[0-9a-f]{3}))',
-        string
-    )
+    match = HEX_REGEX.fullmatch(string)
     if match is None:
         raise ValueError()
 

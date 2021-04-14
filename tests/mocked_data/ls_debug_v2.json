@@ -1,0 +1,17 @@
+{
+	"profiles": [
+		{
+			"name": "ls",
+			"patterns": [
+				{
+					"expression": "[0-9]+",
+					"replace": "%Cg%G0%Cz"
+				},
+				{
+					"expression": "^d[rwxs-]{9}.*",
+					"replace_all": "%C(bold;b)%G0%Cz"
+				}
+			]
+		}
+	]
+}
