@@ -190,6 +190,15 @@ GET_STRING = [
         },
         RESULT: '\x1b[25m'
     },
+    {
+        STATE: colorstate.ColorState('\x1b[2m'),
+        RESULT: '\x1b[2m'
+    },
+    {
+        STATE: [1, 25, 44],
+        STATE_PREV: [3, 5, 34],
+        RESULT: '\x1b[1;23;25;39;44m'
+    }
 ]
 
 
@@ -203,7 +212,6 @@ class ColorStateTest(unittest.TestCase):
             expected_result.update(entry[RESULT])
 
             self.assertDictEqual(state.color_state, expected_result)
-
 
     def test_set_state_by_codes(self):
         for entry in SET_STATE_BY_CODES:

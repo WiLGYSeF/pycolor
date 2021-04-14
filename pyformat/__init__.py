@@ -66,25 +66,26 @@ def do_format(string, formatter, idx, newidx, context):
         if not context.get('color_enabled', True):
             return ''
 
-        if formatter[1:] == 'prev':
+        formatter = formatter[1:]
+        if formatter == 'prev':
             return get_lastcolor(
                 context['past_color_states'],
                 '2',
                 current=context['color_state_current']
             )
-        if formatter[1:].startswith('last'):
+        if formatter.startswith('last'):
             return get_lastcolor(
                 context['past_color_states'],
-                formatter[5:],
+                formatter[4:],
                 current=context['color_state_current']
             )
-        if formatter[1:] in ('s', 'soft'):
+        if formatter in ('s', 'soft'):
             return context['color_state_orig'].get_string(
                 compare_state=context['color_state_current']
             )
 
         colorstr = color.get_color(
-            formatter[1:],
+            formatter,
             aliases=context.get('color_aliases', {})
         )
         if colorstr is None:
