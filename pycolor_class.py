@@ -172,6 +172,13 @@ class Pycolor:
         if not pat.is_active(self.linenum, data):
             return False, None
 
+        context = {
+            'color_state_orig': self.color_state_orig,
+            'color_state': self.color_state,
+            'color_enabled': self.is_color_enabled(),
+            'color_aliases': self.profloader.color_aliases,
+        }
+
         if pat.separator_regex is None:
             if pat.replace is not None:
                 data, replace_ranges, colorpos = self.pat_schrep(pat, data)
@@ -186,15 +193,11 @@ class Pycolor:
                 if match is None:
                     return False, None
 
+                context['match'] = match
+
                 data, colorpos = pyformat.format_string(
                     pat.replace_all,
-                    context={
-                        'color_state_orig': self.color_state_orig,
-                        'color_state': self.color_state,
-                        'color_enabled': self.is_color_enabled(),
-                        'color_aliases': self.profloader.color_aliases,
-                        'match': match
-                    },
+                    context=context,
                     return_color_positions=True
                 )
                 color_positions.clear()
@@ -211,16 +214,12 @@ class Pycolor:
                 if match is None:
                     continue
 
+                context['fields'] = fields
+                context['match'] = match
+
                 data, colorpos = pyformat.format_string(
                     pat.replace_all,
-                    context={
-                        'color_state_orig': self.color_state_orig,
-                        'color_state': self.color_state,
-                        'color_enabled': self.is_color_enabled(),
-                        'color_aliases': self.profloader.color_aliases,
-                        'fields': fields,
-                        'match': match
-                    },
+                    context=context,
                     return_color_positions=True
                 )
 
