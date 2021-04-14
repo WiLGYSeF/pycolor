@@ -36,3 +36,6 @@ class DfTest(unittest.TestCase):
     @freeze_time('1997-01-31 12:34:56')
     def test_timestamp(self):
         check_pycolor_execute(self, ['df', '-h'], MOCKED_DATA, 'timestamp')
+
+    def test_color_fields_list(self):
+        check_pycolor_execute(self, ['df', '-h'], MOCKED_DATA, 'color-fields-list')

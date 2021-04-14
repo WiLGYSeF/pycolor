@@ -179,7 +179,12 @@ class Pycolor:
             'color_aliases': self.profloader.color_aliases,
         }
 
-        if pat.separator_regex is None:
+        if pat.separator_regex is not None:
+            fields = re_split(pat.separator_regex, data)
+            field_idxs = pat.get_field_indexes(fields)
+            context['fields'] = fields
+
+        if pat.separator_regex is None or (pat.field is not None and pat.field < 0):
             if pat.replace is not None:
                 data, replace_ranges, colorpos = self.pat_schrep(pat, data)
                 if len(replace_ranges) == 0:
@@ -205,16 +210,12 @@ class Pycolor:
                 return True, data
             return pat.regex.search(data), data
 
-        fields = re_split(pat.separator_regex, data)
-        field_idxs = pat.get_field_indexes(fields)
-
         if pat.replace_all is not None:
             for field_idx in field_idxs:
                 match = pat.regex.search(fields[field_idx])
                 if match is None:
                     continue
 
-                context['fields'] = fields
                 context['match'] = match
 
                 data, colorpos = pyformat.format_string(
