@@ -44,17 +44,26 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         action='count', default=0,
         help='enable debug mode to assist in configuring profiles'
     )
+    parser.add_argument('--execv',
+        action='store_true', default=True,
+        help='use execv() if no profile matches the given command (default true)'
+    )
+    parser.add_argument('--no-execv',
+        dest='execv', action='store_false', default=False,
+        help='do not use execv() if no profile matches the given command'
+    )
 
     argspace, cmd_args = parser.parse_known_args(args)
     if len(cmd_args) != 0 and cmd_args[0] == '--':
         cmd_args = cmd_args[1:]
+
     if not consecutive_end_args(args, cmd_args):
         parser.print_help(stdout_stream)
         sys.exit(1)
 
     read_stdin = len(cmd_args) == 0
 
-    pycobj = Pycolor(color_mode=argspace.color, debug=argspace.verbose)
+    pycobj = Pycolor(color_mode=argspace.color, debug=argspace.verbose, execv=argspace.execv)
     pycobj.stdout = stdout_stream
     pycobj.stderr = stderr_stream
 

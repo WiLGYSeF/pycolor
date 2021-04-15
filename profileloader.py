@@ -93,6 +93,13 @@ class ProfileLoader:
             return None
         return matches[-1]
 
+    def is_default_profile(self, profile):
+        return all((
+            profile == self.profile_default,
+            profile.timestamp == False, #pylint: disable=singleton-comparison
+            profile.less_output == False #pylint: disable=singleton-comparison
+        ))
+
     @staticmethod
     def check_arg_patterns(args, arg_patterns, all_must_match=False):
         idx_matches = set()

@@ -24,6 +24,7 @@ class Pycolor:
         4 - print line numbers before received data
         """
         self.debug = kwargs.get('debug', 0)
+        self.execv = kwargs.get('execv', False)
 
         self.profloader = ProfileLoader()
         self.current_profile = None
@@ -56,6 +57,11 @@ class Pycolor:
 
         self.set_current_profile(profile)
         profile = self.current_profile
+
+        if self.profloader.is_default_profile(profile) and self.debug == 0 and self.execv:
+            cmd_path = which(cmd[0])
+            os.execv(cmd_path.decode('utf-8'), cmd)
+            sys.exit(0)
 
         self.debug_print(1, 'using profile "%s"', profile.get_name())
 

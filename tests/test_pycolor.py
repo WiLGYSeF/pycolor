@@ -76,9 +76,6 @@ class PycolorTest(unittest.TestCase):
     def test_main_ls_numbers(self):
         self.check_pycolor_main(['--', 'ls', '-l'], MOCKED_DATA, 'ls_numbers')
 
-    def test_main_ls_numbers_with_dashdash(self):
-        self.check_pycolor_main(['--', 'ls', '-l'], MOCKED_DATA, 'ls_numbers')
-
     def test_main_invalid_consecutive_args(self):
         with self.assertRaises(SystemExit):
             self.check_pycolor_main(['ls', '-l', '--color', 'on'], MOCKED_DATA, 'ls_numbers')
