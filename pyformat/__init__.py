@@ -15,12 +15,13 @@ def format_string(string, context=None, return_color_positions=False):
     if context is None:
         context = {}
 
-    if 'color_state' in context:
-        context['color_state_current'] = context['color_state'].copy()
-    else:
-        context['color_state_current'] = ColorState()
+    if context.get('color_enabled', True):
+        if 'color_state' in context:
+            context['color_state_current'] = context['color_state'].copy()
+        else:
+            context['color_state_current'] = ColorState()
 
-    context['past_color_states'] = [ context['color_state_current'].copy() ]
+        context['past_color_states'] = [ context['color_state_current'].copy() ]
 
     newstring = ''
     color_positions = {}
@@ -36,7 +37,8 @@ def format_string(string, context=None, return_color_positions=False):
 
             formatter, value, newidx = get_formatter(string, idx)
             if formatter is not None:
-                context['color_state_current'].set_state_by_string(newstring[last_format_idx:])
+                if context.get('color_enabled', True):
+                    context['color_state_current'].set_state_by_string(newstring[last_format_idx:])
 
                 result = do_format(string, formatter, value, idx, newidx, context)
                 apppend_result = True
@@ -44,7 +46,8 @@ def format_string(string, context=None, return_color_positions=False):
                 if formatter == FORMAT_COLOR:
                     if return_color_positions:
                         color_positions[len(newstring)] = result
-                        context['color_state_current'].set_state_by_string(result)
+                        if context.get('color_enabled', True):
+                            context['color_state_current'].set_state_by_string(result)
                         apppend_result = False
 
                 last_format_idx = len(newstring)
@@ -98,7 +101,17 @@ def do_format(string, formatter, value, idx, newidx, context):
         return colorstr
 
     if formatter == FORMAT_PADDING:
-        pass
+        comma = value.find(',')
+        if comma != -1:
+            try:
+                padval = int(value[0:comma])
+                value = value[comma + 1:]
+
+                newcontext = context.copy()
+                newcontext['color_enabled'] = False
+                return ' ' * (padval - len(format_string(value, context=newcontext)))
+            except ValueError:
+                pass
 
     if formatter == FORMAT_GROUP and 'match' in context:
         try:
@@ -153,6 +166,9 @@ def get_formatter(string, idx):
             break
         if paren == -1 and char not in FORMAT_CHAR_VALID:
             break
+        if char == '\\':
+            idx += 2
+            continue
 
         if char == '(':
             paren += 1

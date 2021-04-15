@@ -1,4 +1,3 @@
-import datetime
 import os
 import unittest
 
@@ -39,3 +38,6 @@ class DfTest(unittest.TestCase):
 
     def test_color_fields_list(self):
         check_pycolor_execute(self, ['df', '-h'], MOCKED_DATA, 'color-fields-list')
+
+    def test_color_fields_pad(self):
+        check_pycolor_execute(self, ['df', '-h'], MOCKED_DATA, 'color-fields-pad')

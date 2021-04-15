@@ -43,6 +43,10 @@ GET_FORMATTER_STRINGS = [
     {
         ARGS: ('%C(ab(c)d)e', 0),
         VALUE: ('C', 'ab(c)d', 10)
+    },
+    {
+        ARGS: (r'%C(ab\(c)d)e', 0),
+        VALUE: ('C', r'ab\(c', 9)
     }
 ]
 
