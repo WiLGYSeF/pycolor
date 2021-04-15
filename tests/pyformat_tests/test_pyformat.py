@@ -10,35 +10,43 @@ VALUE = 'value'
 GET_FORMATTER_STRINGS = [
     {
         ARGS: ('', 0),
-        VALUE: (None, 0)
+        VALUE: (None, None, 0)
     },
     {
         ARGS: ('abc', 0),
-        VALUE: (None, 0)
+        VALUE: (None, None, 0)
+    },
+    {
+        ARGS: ('%', 0),
+        VALUE: (None, None, 0)
     },
     {
         ARGS: ('%C', 0),
-        VALUE: ('C', 2)
+        VALUE: ('C', '', 2)
     },
     {
         ARGS: ('%Cred', 0),
-        VALUE: ('Cred', 5)
+        VALUE: ('C', 'red', 5)
     },
     {
         ARGS: ('%Cred-orange', 0),
-        VALUE: ('Cred', 5)
+        VALUE: ('C', 'red', 5)
     },
     {
         ARGS: ('abc%Cred-orange', 3),
-        VALUE: ('Cred', 8)
-    },
-    {
-        ARGS: ('abc%(Cred-orange)abc', 3),
-        VALUE: ('Cred-orange', 17)
+        VALUE: ('C', 'red', 8)
     },
     {
         ARGS: ('abc%C(red-orange)abc', 3),
-        VALUE: ('Cred-orange', 17)
+        VALUE: ('C', 'red-orange', 17)
+    },
+    {
+        ARGS: ('%C(ab(c)d)e', 0),
+        VALUE: ('C', 'ab(c)d', 10)
+    },
+    {
+        ARGS: (r'%C(ab\(c)d)e', 0),
+        VALUE: ('C', r'ab\(c', 9)
     }
 ]
 
