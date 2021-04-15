@@ -101,15 +101,18 @@ def do_format(string, formatter, value, idx, newidx, context):
         return colorstr
 
     if formatter == FORMAT_PADDING:
-        comma = value.find(',')
-        if comma != -1:
+        value_sep = value.find(';')
+        if value_sep != -1:
             try:
-                padval = int(value[0:comma])
-                value = value[comma + 1:]
+                spl = value[0:value_sep].split(',')
+                padval = int(spl[0])
+                sep = ' ' if len(spl) == 1 else spl[1][0]
+
+                value = value[value_sep + 1:]
 
                 newcontext = context.copy()
                 newcontext['color_enabled'] = False
-                return ' ' * (padval - len(format_string(value, context=newcontext)))
+                return sep * (padval - len(format_string(value, context=newcontext)))
             except ValueError:
                 pass
 

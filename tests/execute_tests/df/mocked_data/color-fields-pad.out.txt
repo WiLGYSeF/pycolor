@@ -1,4 +1,4 @@
-Filesystem      | Size  Used Avail Use% Mounted on
+Filesystem______| Size  Used Avail Use% Mounted on
 udev              [34m3.8G[0m     [31m0[0m  [32m3.8G[0m   [34m0%[0m /dev
 tmpfs             [34m785M[0m  [31m1.8M[0m  [32m783M[0m   [34m1%[0m /run
 /dev/nvme0n1p3    [34m232G[0m   [31m78G[0m  [32m154G[0m  [34m34%[0m /
