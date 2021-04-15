@@ -4,10 +4,12 @@ import subprocess
 
 def which(name):
     try:
-        output = subprocess.check_output([
-            'where' if os.name == 'nt' else 'which',
-            name
-        ])
+        if os.name == 'nt':
+            cmd = [ 'where', name ]
+        else:
+            cmd = [ 'which', '--', name ]
+
+        output = subprocess.check_output(cmd)
         return output[:-1] if output[-1] == ord('\n') else output
     except subprocess.CalledProcessError as cpe:
         if cpe.returncode == 1:
