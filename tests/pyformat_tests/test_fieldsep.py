@@ -25,91 +25,91 @@ FORMAT_CONTEXT_FIELDSEP_STRING = [
         RESULT: 'is this a test?'
     },
     {
-        STRING: '%F4%Fs2%(F-1)%(Fs-3)%F3',
+        STRING: '%F4%Fs2%F(-1)%F(s-3)%F3',
         CONTEXT: {
             'fields': FIELDS_THIS_IS_A_TEST
         },
         RESULT: 'test   test   a'
     },
     {
-        STRING: '%(F1*3)',
+        STRING: '%F(1*3)',
         CONTEXT: {
             'fields': FIELDS_THIS_IS_A_TEST
         },
         RESULT: 'this   is    a'
     },
     {
-        STRING: '%(F*3)',
+        STRING: '%F(*3)',
         CONTEXT: {
             'fields': FIELDS_THIS_IS_A_TEST
         },
         RESULT: 'this   is    a'
     },
     {
-        STRING: '%(F*)',
+        STRING: '%F(*)',
         CONTEXT: {
             'fields': FIELDS_THIS_IS_A_TEST
         },
         RESULT: 'this   is    a test'
     },
     {
-        STRING: '%(F*-1)',
+        STRING: '%F(*-1)',
         CONTEXT: {
             'fields': FIELDS_THIS_IS_A_TEST
         },
         RESULT: 'this   is    a test'
     },
     {
-        STRING: '%(F2*-2)%(Fs-1)',
+        STRING: '%F(2*-2)%F(s-1)',
         CONTEXT: {
             'fields': FIELDS_THIS_IS_A_TEST
         },
         RESULT: 'is    a '
     },
     {
-        STRING: '%(F2*-3)',
+        STRING: '%F(2*-3)',
         CONTEXT: {
             'fields': FIELDS_THIS_IS_A_TEST
         },
         RESULT: 'is'
     },
     {
-        STRING: '%(F3*-3)',
+        STRING: '%F(3*-3)',
         CONTEXT: {
             'fields': FIELDS_THIS_IS_A_TEST
         },
         RESULT: ''
     },
     {
-        STRING: '%(Fs3)',
+        STRING: '%F(s3)',
         CONTEXT: {
             'fields': FIELDS_THIS_IS_A_TEST
         },
         RESULT: '    '
     },
     {
-        STRING: '%(Fs10)',
+        STRING: '%F(s10)',
         CONTEXT: {
             'fields': FIELDS_THIS_IS_A_TEST
         },
         RESULT: ''
     },
     {
-        STRING: '%(F1*3,+)',
+        STRING: '%F(1*3,+)',
         CONTEXT: {
             'fields': FIELDS_THIS_IS_A_TEST
         },
         RESULT: 'this+is+a'
     },
     {
-        STRING: '%(F1*8,+)',
+        STRING: '%F(1*8,+)',
         CONTEXT: {
             'fields': FIELDS_THIS_IS_A_TEST
         },
         RESULT: 'this+is+a+test'
     },
     {
-        STRING: '%(F7*10,+)',
+        STRING: '%F(7*10,+)',
         CONTEXT: {
             'fields': FIELDS_THIS_IS_A_TEST
         },
