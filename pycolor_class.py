@@ -97,11 +97,11 @@ class Pycolor:
         removed_carriagereturn = False
 
         if self.current_profile.buffer_line:
-            if newdata[-1] == '\n':
+            if len(newdata) != 0 and newdata[-1] == '\n':
                 self.linenum += 1
                 newdata = newdata[:-1]
                 removed_newline = True
-            elif newdata[-1] == '\r':
+            if len(newdata) != 0 and newdata[-1] == '\r':
                 newdata = newdata[:-1]
                 removed_carriagereturn = True
 
@@ -167,10 +167,10 @@ class Pycolor:
                     compare_state=self.color_state
                 ))
 
+            if removed_carriagereturn:
+                stream.write('\r')
             if removed_newline:
                 stream.write('\n')
-            elif removed_carriagereturn:
-                stream.write('\r')
 
         stream.flush()
 
