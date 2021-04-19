@@ -162,8 +162,11 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
             for fde in masters:
                 os.close(fde)
 
-        _read(stdout, stdout_callback, data=b'', last=True)
-        _read(stderr, stderr_callback, data=b'', last=True)
+            _read(stdout, stdout_callback, data=b'', last=True)
+            _read(stderr, stderr_callback, data=b'', last=True)
+        else:
+            _read(stdout, stdout_callback, last=True)
+            _read(stderr, stderr_callback, last=True)
 
         return process.poll()
 
