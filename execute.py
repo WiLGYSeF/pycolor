@@ -8,6 +8,7 @@ from static_vars import static_vars
 
 
 def nonblock(file):
+    # TODO: not compatible with windows
     fde = file.fileno()
     flag = fcntl.fcntl(fde, fcntl.F_GETFL)
     fcntl.fcntl(fde, fcntl.F_SETFL, flag | os.O_NONBLOCK)
@@ -110,7 +111,7 @@ def execute(cmd, stdout_callback, stderr_callback, buffer_line=True, encoding='u
             time.sleep(0.0001)
 
         _read(process.stdout, stdout_callback, last=True)
-        _read(process.stdout, stdout_callback, last=True)
+        _read(process.stderr, stderr_callback, last=True)
 
         signal.signal(signal.SIGINT, signal.default_int_handler)
         return process.poll()
