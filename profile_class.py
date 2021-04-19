@@ -18,6 +18,7 @@ PROFILE_SCHEMA = {
         'soft_reset_eol': {'type': 'boolean'},
         'timestamp': {'type': ['boolean', 'string']},
         'less_output': {'type': 'boolean'},
+        'tty': {'type': 'boolean'},
 
         'from_profiles': {'type': ['array', 'string']},
 
@@ -42,6 +43,7 @@ class Profile:
         self.soft_reset_eol = cfg.get('soft_reset_eol', False)
         self.timestamp = cfg.get('timestamp', False)
         self.less_output = cfg.get('less_output', False)
+        self.tty = cfg.get('tty', False)
 
         self.from_profiles = []
 

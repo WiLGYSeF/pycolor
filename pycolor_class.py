@@ -73,7 +73,8 @@ class Pycolor:
             cmd,
             self.stdout_cb,
             self.stderr_cb,
-            buffer_line=profile.buffer_line
+            buffer_line=profile.buffer_line,
+            tty=profile.tty
         )
 
         if profile.less_output:

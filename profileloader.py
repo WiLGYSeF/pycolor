@@ -97,7 +97,7 @@ class ProfileLoader:
         return all((
             profile == self.profile_default,
             profile.timestamp == False, #pylint: disable=singleton-comparison
-            profile.less_output == False #pylint: disable=singleton-comparison
+            profile.less_output == False, #pylint: disable=singleton-comparison
         ))
 
     @staticmethod

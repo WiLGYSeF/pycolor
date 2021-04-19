@@ -46,11 +46,19 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
     )
     parser.add_argument('--execv',
         action='store_true', default=True,
-        help='use execv() if no profile matches the given command (default true)'
+        help='use execv() if no profile matches the given command (default)'
     )
     parser.add_argument('--no-execv',
-        dest='execv', action='store_false', default=False,
+        dest='execv', action='store_false',
         help='do not use execv() if no profile matches the given command'
+    )
+    parser.add_argument('--tty',
+        action='store_true', default=False,
+        help='run the command in a pseudo-terminal'
+    )
+    parser.add_argument('--no-tty',
+        dest='tty', action='store_false',
+        help='do not run the command in a pseudo-terminal (default)'
     )
 
     argspace, cmd_args = parser.parse_known_args(args)
@@ -76,15 +84,18 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         for fname in argspace.load_file:
             pycobj.load_file(fname)
 
-    if argspace.timestamp != False: #pylint: disable=singleton-comparison
+    if argspace.timestamp is not False:
         if argspace.timestamp is None:
             argspace.timestamp = True
         override_profile_conf(pycobj, 'timestamp', argspace.timestamp)
 
-    if argspace.less != False: #pylint: disable=singleton-comparison
+    if argspace.less is not False:
         if argspace.less is None:
             argspace.less = True
         override_profile_conf(pycobj, 'less_output', argspace.less)
+
+    if argspace.tty:
+        override_profile_conf(pycobj, 'tty', argspace.tty)
 
     profile = None
     if argspace.profile is not None:
@@ -127,6 +138,7 @@ def consecutive_end_args(args, subset):
         return i == lenarg and off == lensub
     return False
 
+# TODO: cleanup
 def read_input_stream(pycobj, stream):
     while True:
         result = read_stream(

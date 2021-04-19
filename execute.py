@@ -1,13 +1,21 @@
 from contextlib import contextmanager
 import errno
+import fcntl
 import os
 import pty
 import select
 import signal
 import subprocess
+import time
 
 from static_vars import static_vars
 
+
+def nonblock(file):
+    # TODO: not compatible with windows
+    fde = file.fileno()
+    flag = fcntl.fcntl(fde, fcntl.F_GETFL)
+    fcntl.fcntl(fde, fcntl.F_SETFL, flag | os.O_NONBLOCK)
 
 def readlines(stream, data=None):
     if data is None:
@@ -87,7 +95,11 @@ def is_eol_idx(string, idx):
         return idx + 1
     return idx if is_eol(string[idx]) else False
 
-def execute(cmd, stdout_callback, stderr_callback, buffer_line=True, encoding='utf-8'):
+def execute(cmd, stdout_callback, stderr_callback, **kwargs):
+    buffer_line = kwargs.get('buffer_line', True)
+    tty = kwargs.get('tty', False)
+    encoding = kwargs.get('encoding', 'utf-8')
+
     def _read(stream, callback, data=None, last=False):
         return read_stream(
             stream,
@@ -98,38 +110,57 @@ def execute(cmd, stdout_callback, stderr_callback, buffer_line=True, encoding='u
             last=last
         )
 
-    # https://stackoverflow.com/a/31953436
-    masters, slaves = zip(pty.openpty(), pty.openpty())
+    if tty:
+        # https://stackoverflow.com/a/31953436
+        masters, slaves = zip(pty.openpty(), pty.openpty())
 
     with ignore_sigint():
-        process = subprocess.Popen(cmd, stdin=slaves[0], stdout=slaves[0], stderr=slaves[1])
+        if tty:
+            process = subprocess.Popen(cmd, stdin=slaves[0], stdout=slaves[0], stderr=slaves[1])
+            stdout = masters[0]
+            stderr = masters[1]
+        else:
+            process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout = process.stdout
+            stderr = process.stderr
 
-        stdout = masters[0]
-        stderr = masters[1]
+            nonblock(stdout)
+            nonblock(stderr)
 
-        for fde in slaves:
-            os.close(fde) # no input
+        if tty:
+            for fde in slaves:
+                os.close(fde) # no input
 
         readable = {
             stdout: stdout_callback,
             stderr: stderr_callback
         }
-        while readable:
+
+        while readable and process.poll() is None:
+            # TODO: not compatible with windows
             for fde in select.select(readable, [], [])[0]:
+                do_read = False
                 try:
-                    data = os.read(fde, 1024)
+                    if isinstance(fde, int):
+                        data = os.read(fde, 1024)
+                        do_read = True
+                    else:
+                        data = None
+                        do_read = True
                 except OSError as ose:
                     if ose.errno != errno.EIO:
                         raise
                     del readable[fde]
                 else:
-                    if data:
+                    if do_read:
                         _read(fde, readable[fde], data=data)
                     else:
                         del readable[fde]
+            time.sleep(0.001)
 
-        for fde in masters:
-            os.close(fde)
+        if tty:
+            for fde in masters:
+                os.close(fde)
 
         _read(stdout, stdout_callback, data=b'', last=True)
         _read(stderr, stderr_callback, data=b'', last=True)
