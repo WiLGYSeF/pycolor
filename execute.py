@@ -1,10 +1,10 @@
+from contextlib import contextmanager
 import errno
 import os
 import pty
 import select
 import signal
 import subprocess
-import time
 
 from static_vars import static_vars
 
@@ -101,12 +101,8 @@ def execute(cmd, stdout_callback, stderr_callback, buffer_line=True, encoding='u
     # https://stackoverflow.com/a/31953436
     masters, slaves = zip(pty.openpty(), pty.openpty())
 
-    with subprocess.Popen(cmd, stdin=slaves[0], stdout=slaves[0], stderr=slaves[1]) as process:
-        def signal_handler(sig, frame):
-            # SIGINT is passed through to the subprocess
-            pass
-
-        signal.signal(signal.SIGINT, signal_handler)
+    with ignore_sigint():
+        process = subprocess.Popen(cmd, stdin=slaves[0], stdout=slaves[0], stderr=slaves[1])
 
         stdout = masters[0]
         stderr = masters[1]
@@ -138,6 +134,15 @@ def execute(cmd, stdout_callback, stderr_callback, buffer_line=True, encoding='u
         _read(stdout, stdout_callback, data=b'', last=True)
         _read(stderr, stderr_callback, data=b'', last=True)
 
-        signal.signal(signal.SIGINT, signal.default_int_handler)
-
         return process.poll()
+
+@contextmanager
+def ignore_sigint():
+    def signal_handler(sig, frame):
+        pass
+
+    try:
+        signal.signal(signal.SIGINT, signal_handler)
+        yield
+    finally:
+        signal.signal(signal.SIGINT, signal.default_int_handler)
