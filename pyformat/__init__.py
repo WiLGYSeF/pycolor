@@ -115,6 +115,7 @@ def do_format(string, formatter, value, idx, newidx, context):
                 return sep * (padval - len(format_string(value, context=newcontext)))
             except ValueError:
                 pass
+        return ''
 
     if formatter == FORMAT_GROUP and 'match' in context:
         try:
