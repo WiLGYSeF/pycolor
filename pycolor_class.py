@@ -178,6 +178,8 @@ class Pycolor:
     def apply_pattern(self, pat, data, color_positions):
         if not pat.is_active(self.linenum, data):
             return False, None
+        if pat.super_regex is not None and not pat.super_regex.search(data):
+            return False, None
 
         context = {
             'color_state_orig': self.color_state_orig,
