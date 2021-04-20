@@ -145,17 +145,7 @@ class Pycolor:
         self.debug_print(2, 'writing:  %s', newdata.encode('utf-8'))
 
         if self.current_profile.buffer_line and self.current_profile.timestamp:
-            timestamp = '%Y-%m-%d %H:%M:%S: '
-            if isinstance(self.current_profile.timestamp, str):
-                timestamp = self.current_profile.timestamp
-
-            stream.write(self.color_state_orig.get_string(
-                compare_state=self.color_state
-            ))
-            stream.write(datetime.datetime.strftime(datetime.datetime.now(), timestamp))
-            stream.write(self.color_state.get_string(
-                compare_state=self.color_state_orig
-            ))
+            self.write_timestamp(stream)
 
         stream.flush()
         stream.buffer.write(newdata.encode('utf-8'))
@@ -354,6 +344,19 @@ class Pycolor:
             max_count=pattern.max_count
         )
         return newstring, replace_ranges, color_positions
+
+    def write_timestamp(self, stream):
+        timestamp = '%Y-%m-%d %H:%M:%S: '
+        if isinstance(self.current_profile.timestamp, str):
+            timestamp = self.current_profile.timestamp
+
+        stream.write(self.color_state_orig.get_string(
+            compare_state=self.color_state
+        ))
+        stream.write(datetime.datetime.strftime(datetime.datetime.now(), timestamp))
+        stream.write(self.color_state.get_string(
+            compare_state=self.color_state_orig
+        ))
 
     @staticmethod
     def insert_color_data(data, color_positions):
