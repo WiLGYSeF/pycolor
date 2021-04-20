@@ -14,6 +14,7 @@ PATTERN_SCHEMA = {
 
         'replace': {'type': ['array', 'string']},
         'replace_all': {'type': ['array', 'string']},
+        'replace_groups': {'type': ['array', 'object']},
         'filter': {'type': 'boolean'},
         'skip_others': {'type': 'boolean'},
 
@@ -83,6 +84,7 @@ class Pattern:
 
         self.replace = None
         self.replace_all = None
+        self.replace_groups = cfg.get('replace_groups', {})
 
         self.activation_expression = cfg.get('activation_expression')
         self.activation_regex = None

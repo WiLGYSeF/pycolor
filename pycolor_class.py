@@ -194,14 +194,6 @@ class Pycolor:
             context['fields'] = fields
 
         if pat.separator_regex is None or (pat.field is not None and pat.field < 0):
-            if pat.replace is not None:
-                data, replace_ranges, colorpos = self.pat_schrep(pat, data)
-                if len(replace_ranges) == 0:
-                    return False, None
-
-                update_positions(color_positions, replace_ranges)
-                Pycolor.update_color_positions(color_positions, colorpos)
-                return True, data
             if pat.replace_all is not None:
                 match = pat.regex.search(data)
                 if match is None:
@@ -217,6 +209,54 @@ class Pycolor:
                 color_positions.clear()
                 color_positions.update(colorpos)
                 return True, data
+            if pat.replace is not None:
+                data, replace_ranges, colorpos = self.pat_schrep(pat, data)
+                if len(replace_ranges) == 0:
+                    return False, None
+
+                update_positions(color_positions, replace_ranges)
+                Pycolor.update_color_positions(color_positions, colorpos)
+                return True, data
+            if len(pat.replace_groups) != 0:
+                match = pat.regex.search(data)
+                if match is not None:
+                    context['match'] = match
+
+                    last = match.start(0)
+                    new_match_data = data[:last]
+                    choffset = 0
+                    replace_ranges = []
+
+                    for i in range(1, len(match.groups()) + 1):
+                        new_match_data += data[last:match.start(i)]
+                        istr = str(i)
+                        if istr in pat.replace_groups:
+                            context['match_curr'] = match.group(i)
+                            format_data, colorpos = pyformat.format_string(
+                                pat.replace_groups.get(istr),
+                                context=context,
+                                return_color_positions=True
+                            )
+                            new_match_data += format_data
+
+                            colorpos = Pycolor.offset_color_positions(colorpos, match.start(i))
+                            choffset += len(format_data) - (match.end(i) - match.start(i))
+                            update_positions(colorpos, replace_ranges)
+                            replace_ranges.append((
+                                match.span(i),
+                                (
+                                    match.start(i) + choffset,
+                                    match.start(i) + choffset + len(format_data)
+                                )
+                            ))
+                            Pycolor.update_color_positions(color_positions, colorpos)
+                        else:
+                            new_match_data += match.group(i)
+                        last = match.end(i)
+
+                    new_match_data += data[match.end(0):]
+                    return True, new_match_data
+                return False, None
             return pat.regex.search(data), data
 
         if pat.replace_all is not None:
@@ -361,6 +401,13 @@ class Pycolor:
                 if key > last:
                     del color_positions[key]
 
+    @staticmethod
+    def offset_color_positions(color_positions, offset):
+        newpos = {}
+        for key, val in color_positions.items():
+            newpos[key + offset] = val
+        return newpos
+
     def set_current_profile(self, profile):
         if profile is None:
             self.current_profile = self.profloader.profile_default
@@ -374,7 +421,7 @@ class Pycolor:
             return True
         if self.color_mode in ('never', 'off', '0'):
             return False
-        return not Pycolor.is_being_redirected()
+        return not self.is_being_redirected()
 
     def stdout_cb(self, data):
         self.data_callback(self.stdout, data)
@@ -397,6 +444,5 @@ class Pycolor:
 
         print('%s    DEBUG%d: %s%s' % (reset, lvl, val % args, oldstate))
 
-    @staticmethod
-    def is_being_redirected():
-        return not sys.stdout.isatty()
+    def is_being_redirected(self):
+        return not self.stdout.isatty()

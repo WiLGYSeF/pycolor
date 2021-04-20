@@ -1,0 +1,18 @@
+{
+	"profiles": [
+		{
+			"name": "ls",
+			"patterns": [
+				{
+					"expression": "..x (\\d+) +([^ ]+) ([^ ]+) +(\\d+)",
+					"replace_groups": {
+						"1": "a%Clb%Gc%Cz",
+						"2": "%Clg%Gc%Cz: ",
+						"3": "%Cg%Gc%Cz",
+						"4": "%Cb%Gc%Cz"
+					}
+				}
+			]
+		}
+	]
+}

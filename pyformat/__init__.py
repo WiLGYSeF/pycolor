@@ -118,6 +118,9 @@ def do_format(string, formatter, value, idx, newidx, context):
         return ''
 
     if formatter == FORMAT_GROUP and 'match' in context:
+        if value == 'c' and 'match_curr' in context:
+            return context['match_curr']
+
         try:
             group = int(value)
             context['match_incr'] = group + 1
