@@ -13,7 +13,6 @@ PROFILE_SCHEMA = {
         'profile_name': {'type': 'string'},
         'which': {'type': 'string'},
 
-        'buffer_line': {'type': 'boolean'},
         'all_args_must_match': {'type': 'boolean'},
         'min_args': {'type': 'integer'},
         'max_args': {'type': 'integer'},
@@ -40,7 +39,6 @@ class Profile:
         self.profile_name = cfg.get('profile_name')
         self.which = cfg.get('which')
 
-        self.buffer_line = cfg.get('buffer_line', True)
         self.all_args_must_match = cfg.get('all_args_must_match', False)
         self.min_args = cfg.get('min_args')
         self.max_args = cfg.get('max_args')

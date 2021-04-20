@@ -40,7 +40,7 @@ def readlines(stream, data=None):
     return lines
 
 @static_vars(buffers={})
-def read_stream(stream, callback, data=None, buffer_line=True, encoding='utf-8', last=False):
+def read_stream(stream, callback, data=None, encoding='utf-8', last=False):
     did_callback = False
 
     def do_callback(data):
@@ -51,38 +51,30 @@ def read_stream(stream, callback, data=None, buffer_line=True, encoding='utf-8',
     if stream not in read_stream.buffers:
         read_stream.buffers[stream] = b''
 
-    if buffer_line:
-        lines = readlines(stream, data)
-        if lines is None:
-            if last and len(read_stream.buffers[stream]) != 0:
-                do_callback(read_stream.buffers[stream])
-                read_stream.buffers[stream] = b''
-            return None
-
-        start = 0
-        if is_eol(lines[0][-1]):
-            do_callback(read_stream.buffers[stream] + lines[0])
+    lines = readlines(stream, data)
+    if lines is None:
+        if last and len(read_stream.buffers[stream]) != 0:
+            do_callback(read_stream.buffers[stream])
             read_stream.buffers[stream] = b''
-            start = 1
+        return None
 
-        for i in range(start, len(lines) - 1):
-            do_callback(lines[i])
+    start = 0
+    if is_eol(lines[0][-1]):
+        do_callback(read_stream.buffers[stream] + lines[0])
+        read_stream.buffers[stream] = b''
+        start = 1
 
-        if not is_eol(lines[-1][-1]):
-            read_stream.buffers[stream] += lines[-1]
+    for i in range(start, len(lines) - 1):
+        do_callback(lines[i])
 
-            if last:
-                do_callback(read_stream.buffers[stream])
-                read_stream.buffers[stream] = b''
-        elif len(lines) > 1:
-            do_callback(lines[-1])
-    else:
-        if data is None:
-            data = stream.read()
-            if data is None or len(data) == 0:
-                return None
+    if not is_eol(lines[-1][-1]):
+        read_stream.buffers[stream] += lines[-1]
 
-        do_callback(data)
+        if last:
+            do_callback(read_stream.buffers[stream])
+            read_stream.buffers[stream] = b''
+    elif len(lines) > 1:
+        do_callback(lines[-1])
 
     return did_callback
 
@@ -96,7 +88,6 @@ def is_eol_idx(string, idx):
     return idx if is_eol(string[idx]) else False
 
 def execute(cmd, stdout_callback, stderr_callback, **kwargs):
-    buffer_line = kwargs.get('buffer_line', True)
     tty = kwargs.get('tty', False)
     encoding = kwargs.get('encoding', 'utf-8')
 
@@ -105,7 +96,6 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
             stream,
             callback,
             data=data,
-            buffer_line=buffer_line,
             encoding=encoding,
             last=last
         )

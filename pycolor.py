@@ -138,23 +138,11 @@ def consecutive_end_args(args, subset):
         return i == lenarg and off == lensub
     return False
 
-# TODO: cleanup
 def read_input_stream(pycobj, stream):
     while True:
-        result = read_stream(
-            stream.buffer,
-            pycobj.stdout_cb,
-            buffer_line=pycobj.current_profile.buffer_line
-        )
-        if result is None:
+        if read_stream(stream.buffer, pycobj.stdout_cb) is None:
             break
-
-    read_stream(
-        stream.buffer,
-        pycobj.stdout_cb,
-        buffer_line=pycobj.current_profile.buffer_line,
-        last=True
-    )
+    read_stream(stream.buffer, pycobj.stdout_cb, last=True)
 
 def override_profile_conf(pycobj, attr, val):
     for prof in pycobj.profiles:
