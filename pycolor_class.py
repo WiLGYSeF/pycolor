@@ -73,7 +73,6 @@ class Pycolor:
             cmd,
             self.stdout_cb,
             self.stderr_cb,
-            buffer_line=profile.buffer_line,
             tty=profile.tty
         )
 
@@ -97,19 +96,15 @@ class Pycolor:
         removed_newline = False
         removed_carriagereturn = False
 
-        if self.current_profile.buffer_line:
-            if len(newdata) != 0 and newdata[-1] == '\n':
-                self.linenum += 1
-                newdata = newdata[:-1]
-                removed_newline = True
-            if len(newdata) != 0 and newdata[-1] == '\r':
-                newdata = newdata[:-1]
-                removed_carriagereturn = True
+        if len(newdata) != 0 and newdata[-1] == '\n':
+            self.linenum += 1
+            newdata = newdata[:-1]
+            removed_newline = True
+        if len(newdata) != 0 and newdata[-1] == '\r':
+            newdata = newdata[:-1]
+            removed_carriagereturn = True
 
-            self.debug_print(4, 'on line %d', self.linenum)
-        else:
-            self.linenum += data.count('\n')
-
+        self.debug_print(4, 'on line %d', self.linenum)
         self.debug_print(1, 'received: %s', newdata.encode('utf-8'))
 
         for pat in self.current_profile.patterns:
@@ -144,7 +139,7 @@ class Pycolor:
 
         self.debug_print(2, 'writing:  %s', newdata.encode('utf-8'))
 
-        if self.current_profile.buffer_line and self.current_profile.timestamp:
+        if self.current_profile.timestamp:
             self.write_timestamp(stream)
 
         stream.flush()
@@ -152,16 +147,15 @@ class Pycolor:
 
         self.color_state.set_state_by_string(newdata)
 
-        if self.current_profile.buffer_line:
-            if self.current_profile.soft_reset_eol:
-                stream.write(self.color_state_orig.get_string(
-                    compare_state=self.color_state
-                ))
+        if self.current_profile.soft_reset_eol:
+            stream.write(self.color_state_orig.get_string(
+                compare_state=self.color_state
+            ))
 
-            if removed_carriagereturn:
-                stream.write('\r')
-            if removed_newline:
-                stream.write('\n')
+        if removed_carriagereturn:
+            stream.write('\r')
+        if removed_newline:
+            stream.write('\n')
 
         stream.flush()
 

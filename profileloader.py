@@ -14,7 +14,6 @@ class ProfileLoader:
 
         self.profile_default = Profile({
             'profile_name': 'none_found_default',
-            'buffer_line': True
         })
 
     def load_file(self, fname):
