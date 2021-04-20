@@ -38,3 +38,10 @@ class LsTest(unittest.TestCase):
 
     def test_yellow_executable_replace_groups(self):
         check_pycolor_execute(self, ['ls', '-l'], MOCKED_DATA, 'yellow-executable-replace-groups')
+
+    def test_yellow_executable_replace_groups_list(self):
+        check_pycolor_execute(self,
+            ['ls', '-l'],
+            MOCKED_DATA,
+            'yellow-executable-replace-groups-list'
+        )

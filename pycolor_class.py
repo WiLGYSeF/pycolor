@@ -229,11 +229,16 @@ class Pycolor:
 
                     for i in range(1, len(match.groups()) + 1):
                         new_match_data += data[last:match.start(i)]
-                        istr = str(i)
-                        if istr in pat.replace_groups:
+                        replace_val = None
+                        if isinstance(pat.replace_groups, dict):
+                            replace_val = pat.replace_groups.get(str(i))
+                        elif isinstance(pat.replace_groups, list) and i <= len(pat.replace_groups):
+                            replace_val = pat.replace_groups[i - 1]
+
+                        if replace_val is not None:
                             context['match_curr'] = match.group(i)
                             format_data, colorpos = pyformat.format_string(
-                                pat.replace_groups.get(istr),
+                                replace_val,
                                 context=context,
                                 return_color_positions=True
                             )
