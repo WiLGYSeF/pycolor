@@ -1,0 +1,3 @@
+/dev/nvme0n1p1: UUID="a52f-7e68" TYPE="vfat" PARTLABEL="EFI System Partition" PARTUUID="248a1be8-754c-494d-bfb7-7dfcf993a832"
+/dev/nvme0n1p2: UUID="e7a425a9-3def-46b9-8caf-3606ac28df15" TYPE="ext4" PARTUUID="2f669b33-41e8-4955-a37d-cd9b4270ecef"
+/dev/nvme0n1p3: UUID="da8faa69-4efd-4b0b-afd2-e55f101ed7f6" TYPE="ext4" PARTUUID="1189bedc-2c8d-44f5-ac18-f96433249ad9"

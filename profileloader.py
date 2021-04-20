@@ -14,7 +14,6 @@ class ProfileLoader:
 
         self.profile_default = Profile({
             'profile_name': 'none_found_default',
-            'buffer_line': True
         })
 
     def load_file(self, fname):
@@ -58,7 +57,14 @@ class ProfileLoader:
                 patterns.extend(fromprof.patterns)
 
     def get_profile_by_name(self, name):
-        return self.named_profiles.get(name)
+        profile = self.named_profiles.get(name)
+        if profile is not None:
+            return profile
+
+        for prof in self.profiles:
+            if prof.name == name:
+                return prof
+        return None
 
     def get_profile_by_command(self, command, args):
         matches = []
@@ -80,6 +86,11 @@ class ProfileLoader:
             if prof.name_regex is not None and not re.fullmatch(prof.name_regex, command):
                 continue
 
+            if prof.min_args is not None and prof.min_args > len(args):
+                continue
+            if prof.max_args is not None and prof.max_args < len(args):
+                continue
+
             if not ProfileLoader.check_arg_patterns(
                 args,
                 prof.arg_patterns,
@@ -97,7 +108,7 @@ class ProfileLoader:
         return all((
             profile == self.profile_default,
             profile.timestamp == False, #pylint: disable=singleton-comparison
-            profile.less_output == False #pylint: disable=singleton-comparison
+            profile.less_output == False, #pylint: disable=singleton-comparison
         ))
 
     @staticmethod

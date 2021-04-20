@@ -13,11 +13,13 @@ PROFILE_SCHEMA = {
         'profile_name': {'type': 'string'},
         'which': {'type': 'string'},
 
-        'buffer_line': {'type': 'boolean'},
         'all_args_must_match': {'type': 'boolean'},
+        'min_args': {'type': 'integer'},
+        'max_args': {'type': 'integer'},
         'soft_reset_eol': {'type': 'boolean'},
         'timestamp': {'type': ['boolean', 'string']},
         'less_output': {'type': 'boolean'},
+        'tty': {'type': 'boolean'},
 
         'from_profiles': {'type': ['array', 'string']},
 
@@ -37,11 +39,13 @@ class Profile:
         self.profile_name = cfg.get('profile_name')
         self.which = cfg.get('which')
 
-        self.buffer_line = cfg.get('buffer_line', True)
         self.all_args_must_match = cfg.get('all_args_must_match', False)
+        self.min_args = cfg.get('min_args')
+        self.max_args = cfg.get('max_args')
         self.soft_reset_eol = cfg.get('soft_reset_eol', False)
         self.timestamp = cfg.get('timestamp', False)
         self.less_output = cfg.get('less_output', False)
+        self.tty = cfg.get('tty', False)
 
         self.from_profiles = []
 

@@ -46,11 +46,19 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
     )
     parser.add_argument('--execv',
         action='store_true', default=True,
-        help='use execv() if no profile matches the given command (default true)'
+        help='use execv() if no profile matches the given command (default)'
     )
     parser.add_argument('--no-execv',
-        dest='execv', action='store_false', default=False,
+        dest='execv', action='store_false',
         help='do not use execv() if no profile matches the given command'
+    )
+    parser.add_argument('--tty',
+        action='store_true', default=False,
+        help='run the command in a pseudo-terminal'
+    )
+    parser.add_argument('--no-tty',
+        dest='tty', action='store_false',
+        help='do not run the command in a pseudo-terminal (default)'
     )
 
     argspace, cmd_args = parser.parse_known_args(args)
@@ -76,15 +84,18 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         for fname in argspace.load_file:
             pycobj.load_file(fname)
 
-    if argspace.timestamp != False: #pylint: disable=singleton-comparison
+    if argspace.timestamp is not False:
         if argspace.timestamp is None:
             argspace.timestamp = True
         override_profile_conf(pycobj, 'timestamp', argspace.timestamp)
 
-    if argspace.less != False: #pylint: disable=singleton-comparison
+    if argspace.less is not False:
         if argspace.less is None:
             argspace.less = True
         override_profile_conf(pycobj, 'less_output', argspace.less)
+
+    if argspace.tty:
+        override_profile_conf(pycobj, 'tty', argspace.tty)
 
     profile = None
     if argspace.profile is not None:
@@ -101,6 +112,9 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         pycobj.set_current_profile(profile)
         read_input_stream(pycobj, stdin_stream)
         sys.exit(0)
+
+    #if os.geteuid() == 0:
+    #    sys.exit(1)
 
     returncode = pycobj.execute(cmd_args, profile=profile)
     sys.exit(returncode)
@@ -129,20 +143,9 @@ def consecutive_end_args(args, subset):
 
 def read_input_stream(pycobj, stream):
     while True:
-        result = read_stream(
-            stream.buffer,
-            pycobj.stdout_cb,
-            buffer_line=pycobj.current_profile.buffer_line
-        )
-        if result is None:
+        if read_stream(stream.buffer, pycobj.stdout_cb) is None:
             break
-
-    read_stream(
-        stream.buffer,
-        pycobj.stdout_cb,
-        buffer_line=pycobj.current_profile.buffer_line,
-        last=True
-    )
+    read_stream(stream.buffer, pycobj.stdout_cb, last=True)
 
 def override_profile_conf(pycobj, attr, val):
     for prof in pycobj.profiles:

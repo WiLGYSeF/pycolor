@@ -1,5 +1,9 @@
+from contextlib import contextmanager
+import errno
 import fcntl
 import os
+import pty
+import select
 import signal
 import subprocess
 import time
@@ -13,26 +17,30 @@ def nonblock(file):
     flag = fcntl.fcntl(fde, fcntl.F_GETFL)
     fcntl.fcntl(fde, fcntl.F_SETFL, flag | os.O_NONBLOCK)
 
-def readlines(stream):
-    # file.readlines() is broken
-    data = stream.read()
+def readlines(stream, data=None):
+    if data is None:
+        data = stream.read()
     if data is None or len(data) == 0:
         return None
 
     lines = []
     last = 0
 
-    for idx in range(len(data)): #pylint: disable=consider-using-enumerate
-        if is_eol(data[idx]):
-            lines.append(data[last:idx + 1])
-            last = idx + 1
+    idx = 0
+    while idx < len(data):
+        ret = is_eol_idx(data, idx)
+        if ret is not False:
+            lines.append(data[last:ret + 1])
+            last = ret + 1
+            idx = ret
+        idx += 1
 
     if last < len(data):
         lines.append(data[last:])
     return lines
 
 @static_vars(buffers={})
-def read_stream(stream, callback, buffer_line=True, encoding='utf-8', last=False):
+def read_stream(stream, callback, data=None, encoding='utf-8', last=False):
     did_callback = False
 
     def do_callback(data):
@@ -43,37 +51,30 @@ def read_stream(stream, callback, buffer_line=True, encoding='utf-8', last=False
     if stream not in read_stream.buffers:
         read_stream.buffers[stream] = b''
 
-    if buffer_line:
-        lines = readlines(stream)
-        if lines is None:
-            if last and len(read_stream.buffers[stream]) != 0:
-                do_callback(read_stream.buffers[stream])
-                read_stream.buffers[stream] = b''
-            return None
-
-        start = 0
-        if is_eol(lines[0][-1]):
-            do_callback(read_stream.buffers[stream] + lines[0])
+    lines = readlines(stream, data)
+    if lines is None:
+        if last and len(read_stream.buffers[stream]) != 0:
+            do_callback(read_stream.buffers[stream])
             read_stream.buffers[stream] = b''
-            start = 1
+        return None
 
-        for i in range(start, len(lines) - 1):
-            do_callback(lines[i])
+    start = 0
+    if is_eol(lines[0][-1]):
+        do_callback(read_stream.buffers[stream] + lines[0])
+        read_stream.buffers[stream] = b''
+        start = 1
 
-        if not is_eol(lines[-1][-1]):
-            read_stream.buffers[stream] += lines[-1]
+    for i in range(start, len(lines) - 1):
+        do_callback(lines[i])
 
-            if last:
-                do_callback(read_stream.buffers[stream])
-                read_stream.buffers[stream] = b''
-        elif len(lines) > 1:
-            do_callback(lines[-1])
-    else:
-        data = stream.read()
-        if data is None or len(data) == 0:
-            return None
+    if not is_eol(lines[-1][-1]):
+        read_stream.buffers[stream] += lines[-1]
 
-        do_callback(data)
+        if last:
+            do_callback(read_stream.buffers[stream])
+            read_stream.buffers[stream] = b''
+    elif len(lines) > 1:
+        do_callback(lines[-1])
 
     return did_callback
 
@@ -81,37 +82,91 @@ def is_eol(char):
     # '\n' and '\r'
     return char == 10 or char == 13 #pylint: disable=consider-using-in
 
-def execute(cmd, stdout_callback, stderr_callback, buffer_line=True, encoding='utf-8'):
-    def _read(stream, callback, last=False):
+def is_eol_idx(string, idx):
+    if idx < len(string) - 1 and string[idx] == 13 and string[idx + 1] == 10:
+        return idx + 1
+    return idx if is_eol(string[idx]) else False
+
+def execute(cmd, stdout_callback, stderr_callback, **kwargs):
+    tty = kwargs.get('tty', False)
+    encoding = kwargs.get('encoding', 'utf-8')
+
+    def _read(stream, callback, data=None, last=False):
         return read_stream(
             stream,
             callback,
-            buffer_line=buffer_line,
+            data=data,
             encoding=encoding,
             last=last
         )
 
-    with subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
-    ) as process:
-        def signal_handler(sig, frame):
-            # SIGINT is passed through to the subprocess
-            pass
+    if tty:
+        # https://stackoverflow.com/a/31953436
+        masters, slaves = zip(pty.openpty(), pty.openpty())
 
-        signal.signal(signal.SIGINT, signal_handler)
+    with ignore_sigint():
+        if tty:
+            process = subprocess.Popen(cmd, stdin=slaves[0], stdout=slaves[0], stderr=slaves[1])
+            stdout = masters[0]
+            stderr = masters[1]
+        else:
+            process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout = process.stdout
+            stderr = process.stderr
 
-        nonblock(process.stdout)
-        nonblock(process.stderr)
+            nonblock(stdout)
+            nonblock(stderr)
 
-        while process.poll() is None:
-            _read(process.stdout, stdout_callback)
-            _read(process.stderr, stderr_callback)
-            time.sleep(0.0001)
+        if tty:
+            for fde in slaves:
+                os.close(fde) # no input
 
-        _read(process.stdout, stdout_callback, last=True)
-        _read(process.stderr, stderr_callback, last=True)
+        readable = {
+            stdout: stdout_callback,
+            stderr: stderr_callback
+        }
 
-        signal.signal(signal.SIGINT, signal.default_int_handler)
+        while readable and process.poll() is None:
+            # TODO: not compatible with windows
+            for fde in select.select(readable, [], [])[0]:
+                do_read = False
+                try:
+                    if isinstance(fde, int):
+                        data = os.read(fde, 1024)
+                        do_read = True
+                    else:
+                        data = None
+                        do_read = True
+                except OSError as ose:
+                    if ose.errno != errno.EIO:
+                        raise
+                    del readable[fde]
+                else:
+                    if do_read:
+                        _read(fde, readable[fde], data=data)
+                    else:
+                        del readable[fde]
+            time.sleep(0.001)
+
+        if tty:
+            for fde in masters:
+                os.close(fde)
+
+            _read(stdout, stdout_callback, data=b'', last=True)
+            _read(stderr, stderr_callback, data=b'', last=True)
+        else:
+            _read(stdout, stdout_callback, last=True)
+            _read(stderr, stderr_callback, last=True)
+
         return process.poll()
+
+@contextmanager
+def ignore_sigint():
+    def signal_handler(sig, frame):
+        pass
+
+    try:
+        signal.signal(signal.SIGINT, signal_handler)
+        yield
+    finally:
+        signal.signal(signal.SIGINT, signal.default_int_handler)

@@ -68,26 +68,31 @@ class Pycolor:
         if profile.less_output:
             tmpfile = tempfile.NamedTemporaryFile()
             self.stdout = io.TextIOWrapper(tmpfile)
+            if self.color_mode == 'auto':
+                self.color_mode = 'always'
 
         retcode = execute.execute(
             cmd,
             self.stdout_cb,
             self.stderr_cb,
-            buffer_line=profile.buffer_line
+            tty=profile.tty
         )
 
         if profile.less_output:
             self.stdout.flush()
             self.stderr.flush()
 
-            if isinstance(profile.less_output, str):
-                less_path = profile.less_output
-            else:
-                less_path = which('less')
+            pid = os.fork()
+            if pid == 0:
+                if isinstance(profile.less_output, str):
+                    less_path = profile.less_output
+                else:
+                    less_path = which('less')
 
-            # TODO: does not delete tempfile
-            os.execv(less_path, [less_path, '-FKRSX', tmpfile.name])
-            sys.exit(0)
+                os.execv(less_path, [less_path, '-FKRSX', tmpfile.name])
+                sys.exit(0)
+            os.wait()
+
         return retcode
 
     def data_callback(self, stream, data):
@@ -96,19 +101,15 @@ class Pycolor:
         removed_newline = False
         removed_carriagereturn = False
 
-        if self.current_profile.buffer_line:
-            if newdata[-1] == '\n':
-                self.linenum += 1
-                newdata = newdata[:-1]
-                removed_newline = True
-            elif newdata[-1] == '\r':
-                newdata = newdata[:-1]
-                removed_carriagereturn = True
+        if len(newdata) != 0 and newdata[-1] == '\n':
+            self.linenum += 1
+            newdata = newdata[:-1]
+            removed_newline = True
+        if len(newdata) != 0 and newdata[-1] == '\r':
+            newdata = newdata[:-1]
+            removed_carriagereturn = True
 
-            self.debug_print(4, 'on line %d', self.linenum)
-        else:
-            self.linenum += data.count('\n')
-
+        self.debug_print(4, 'on line %d', self.linenum)
         self.debug_print(1, 'received: %s', newdata.encode('utf-8'))
 
         for pat in self.current_profile.patterns:
@@ -143,34 +144,23 @@ class Pycolor:
 
         self.debug_print(2, 'writing:  %s', newdata.encode('utf-8'))
 
-        if self.current_profile.buffer_line and self.current_profile.timestamp:
-            timestamp = '%Y-%m-%d %H:%M:%S: '
-            if isinstance(self.current_profile.timestamp, str):
-                timestamp = self.current_profile.timestamp
-
-            stream.write(self.color_state_orig.get_string(
-                compare_state=self.color_state
-            ))
-            stream.write(datetime.datetime.strftime(datetime.datetime.now(), timestamp))
-            stream.write(self.color_state.get_string(
-                compare_state=self.color_state_orig
-            ))
+        if self.current_profile.timestamp:
+            self.write_timestamp(stream)
 
         stream.flush()
         stream.buffer.write(newdata.encode('utf-8'))
 
         self.color_state.set_state_by_string(newdata)
 
-        if self.current_profile.buffer_line:
-            if self.current_profile.soft_reset_eol:
-                stream.write(self.color_state_orig.get_string(
-                    compare_state=self.color_state
-                ))
+        if self.current_profile.soft_reset_eol:
+            stream.write(self.color_state_orig.get_string(
+                compare_state=self.color_state
+            ))
 
-            if removed_newline:
-                stream.write('\n')
-            elif removed_carriagereturn:
-                stream.write('\r')
+        if removed_carriagereturn:
+            stream.write('\r')
+        if removed_newline:
+            stream.write('\n')
 
         stream.flush()
 
@@ -193,14 +183,6 @@ class Pycolor:
             context['fields'] = fields
 
         if pat.separator_regex is None or (pat.field is not None and pat.field < 0):
-            if pat.replace is not None:
-                data, replace_ranges, colorpos = self.pat_schrep(pat, data)
-                if len(replace_ranges) == 0:
-                    return False, None
-
-                update_positions(color_positions, replace_ranges)
-                Pycolor.update_color_positions(color_positions, colorpos)
-                return True, data
             if pat.replace_all is not None:
                 match = pat.regex.search(data)
                 if match is None:
@@ -216,6 +198,76 @@ class Pycolor:
                 color_positions.clear()
                 color_positions.update(colorpos)
                 return True, data
+            if pat.replace is not None:
+                data, replace_ranges, colorpos = self.pat_schrep(pat, data)
+                if len(replace_ranges) == 0:
+                    return False, None
+
+                update_positions(color_positions, replace_ranges)
+                Pycolor.update_color_positions(color_positions, colorpos)
+                return True, data
+            if len(pat.replace_groups) != 0:
+                newdata = ''
+                last = 0
+                choffset = 0
+                replace_ranges = []
+
+                for match in pat.regex.finditer(data):
+                    context['match'] = match
+                    newdata += data[last:match.start(0)]
+                    last = match.start(0)
+
+                    groupdict = match.groupdict()
+                    group_idx_to_name = {}
+
+                    for i in range(1, len(match.groups()) + 1):
+                        span = match.span(i)
+                        for group in groupdict:
+                            if match.span(group) == span:
+                                group_idx_to_name[i] = group
+                                break
+
+                    for i in range(1, len(match.groups()) + 1):
+                        newdata += data[last:match.start(i)]
+                        replace_val = None
+                        if isinstance(pat.replace_groups, dict):
+                            replace_val = pat.replace_groups.get(str(i))
+                            if replace_val is None and i in group_idx_to_name:
+                                replace_val = pat.replace_groups.get(group_idx_to_name[i])
+                        elif isinstance(pat.replace_groups, list) and i <= len(pat.replace_groups):
+                            replace_val = pat.replace_groups[i - 1]
+
+                        if replace_val is not None:
+                            context['match_curr'] = match.group(i)
+                            format_data, colorpos = pyformat.format_string(
+                                replace_val,
+                                context=context,
+                                return_color_positions=True
+                            )
+                            newdata += format_data
+
+                            colorpos = Pycolor.offset_color_positions(colorpos, match.start(i))
+                            choffset += len(format_data) - (match.end(i) - match.start(i))
+                            update_positions(colorpos, replace_ranges)
+                            replace_ranges.append((
+                                match.span(i),
+                                (
+                                    match.start(i) + choffset,
+                                    match.start(i) + choffset + len(format_data)
+                                )
+                            ))
+                            Pycolor.update_color_positions(color_positions, colorpos)
+                        else:
+                            newdata += match.group(i)
+                        last = match.end(i)
+
+                    newdata += data[last:match.end(0)]
+                    last = match.end(0)
+                newdata += data[last:]
+
+                if 'match' in context:
+                    return True, newdata
+                return False, None
             return pat.regex.search(data), data
 
         if pat.replace_all is not None:
@@ -292,8 +344,7 @@ class Pycolor:
 
             if match.start() > 0:
                 for key in sorted(colorpos.keys(), reverse=True):
-                    newkey = key + match.start()
-                    colorpos[newkey] = colorpos[key]
+                    colorpos[key + match.start()] = colorpos[key]
                     del colorpos[key]
 
             color_positions.update(colorpos)
@@ -308,6 +359,19 @@ class Pycolor:
             max_count=pattern.max_count
         )
         return newstring, replace_ranges, color_positions
+
+    def write_timestamp(self, stream):
+        timestamp = '%Y-%m-%d %H:%M:%S: '
+        if isinstance(self.current_profile.timestamp, str):
+            timestamp = self.current_profile.timestamp
+
+        stream.write(self.color_state_orig.get_string(
+            compare_state=self.color_state
+        ))
+        stream.write(datetime.datetime.strftime(datetime.datetime.now(), timestamp))
+        stream.write(self.color_state.get_string(
+            compare_state=self.color_state_orig
+        ))
 
     @staticmethod
     def insert_color_data(data, color_positions):
@@ -360,20 +424,25 @@ class Pycolor:
                 if key > last:
                     del color_positions[key]
 
+    @staticmethod
+    def offset_color_positions(color_positions, offset):
+        newpos = {}
+        for key, val in color_positions.items():
+            newpos[key + offset] = val
+        return newpos
+
     def set_current_profile(self, profile):
         if profile is None:
             self.current_profile = self.profloader.profile_default
         else:
             self.current_profile = profile
 
-        self.linenum = 0
-
     def is_color_enabled(self):
         if self.color_mode in ('always', 'on', '1'):
             return True
         if self.color_mode in ('never', 'off', '0'):
             return False
-        return not Pycolor.is_being_redirected()
+        return not self.is_being_redirected()
 
     def stdout_cb(self, data):
         self.data_callback(self.stdout, data)
@@ -396,6 +465,5 @@ class Pycolor:
 
         print('%s    DEBUG%d: %s%s' % (reset, lvl, val % args, oldstate))
 
-    @staticmethod
-    def is_being_redirected():
-        return not sys.stdout.isatty()
+    def is_being_redirected(self):
+        return not self.stdout.isatty()

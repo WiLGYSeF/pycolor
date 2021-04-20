@@ -115,10 +115,15 @@ def do_format(string, formatter, value, idx, newidx, context):
                 return sep * (padval - len(format_string(value, context=newcontext)))
             except ValueError:
                 pass
+        return ''
 
     if formatter == FORMAT_GROUP and 'match' in context:
+        if value == 'c' and 'match_curr' in context:
+            return context['match_curr']
+
         try:
             group = int(value)
+            context['match_incr'] = group + 1
         except ValueError:
             group = value
 
@@ -128,6 +133,16 @@ def do_format(string, formatter, value, idx, newidx, context):
             matchgroup = None
 
         if matchgroup is None:
+            if group == 'n':
+                if 'match_incr' not in context:
+                    context['match_incr'] = 1
+
+                try:
+                    matchgroup = context['match'][context['match_incr']]
+                    context['match_incr'] += 1
+                    return matchgroup
+                except IndexError:
+                    pass
             return ''
         return matchgroup
 
