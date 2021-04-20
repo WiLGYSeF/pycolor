@@ -60,7 +60,49 @@ FORMAT_CONTEXT_GROUP_STRINGS = [
             })
         },
         RESULT: ' abc '
-    }
+    },
+    {
+        STRING: '%Gn abc %Gn',
+        CONTEXT: {
+            'match': Match('123 abc 456', {
+                1: '123',
+                2: '456'
+            })
+        },
+        RESULT: '123 abc 456'
+    },
+    {
+        STRING: '%G1 abc %G2',
+        CONTEXT: {
+            'match': Match('123 abc 456', {
+                1: '123',
+                2: '456'
+            })
+        },
+        RESULT: '123 abc 456'
+    },
+    {
+        STRING: '%G2 %Gn',
+        CONTEXT: {
+            'match': Match('123 abc 456', {
+                1: '123',
+                2: 'abc',
+                3: '456'
+            })
+        },
+        RESULT: 'abc 456'
+    },
+    {
+        STRING: '%G2 %Gn %Gn',
+        CONTEXT: {
+            'match': Match('123 abc 456', {
+                1: '123',
+                2: 'abc',
+                3: '456'
+            })
+        },
+        RESULT: 'abc 456 '
+    },
 ]
 
 
