@@ -80,6 +80,11 @@ class ProfileLoader:
             if prof.name_regex is not None and not re.fullmatch(prof.name_regex, command):
                 continue
 
+            if prof.min_args is not None and prof.min_args > len(args):
+                continue
+            if prof.max_args is not None and prof.max_args < len(args):
+                continue
+
             if not ProfileLoader.check_arg_patterns(
                 args,
                 prof.arg_patterns,
