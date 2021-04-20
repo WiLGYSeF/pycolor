@@ -82,14 +82,17 @@ class Pycolor:
             self.stdout.flush()
             self.stderr.flush()
 
-            if isinstance(profile.less_output, str):
-                less_path = profile.less_output
-            else:
-                less_path = which('less')
+            pid = os.fork()
+            if pid == 0:
+                if isinstance(profile.less_output, str):
+                    less_path = profile.less_output
+                else:
+                    less_path = which('less')
 
-            # TODO: does not delete tempfile
-            os.execv(less_path, [less_path, '-FKRSX', tmpfile.name])
-            sys.exit(0)
+                os.execv(less_path, [less_path, '-FKRSX', tmpfile.name])
+                sys.exit(0)
+            os.wait()
+
         return retcode
 
     def data_callback(self, stream, data):
@@ -428,8 +431,6 @@ class Pycolor:
             self.current_profile = self.profloader.profile_default
         else:
             self.current_profile = profile
-
-        self.linenum = 0
 
     def is_color_enabled(self):
         if self.color_mode in ('always', 'on', '1'):
