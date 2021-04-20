@@ -217,11 +217,23 @@ class Pycolor:
                     choffset = 0
                     replace_ranges = []
 
+                    groupdict = match.groupdict()
+                    group_idx_to_name = {}
+
+                    for i in range(1, len(match.groups()) + 1):
+                        span = match.span(i)
+                        for group in groupdict:
+                            if match.span(group) == span:
+                                group_idx_to_name[i] = group
+                                break
+
                     for i in range(1, len(match.groups()) + 1):
                         new_match_data += data[last:match.start(i)]
                         replace_val = None
                         if isinstance(pat.replace_groups, dict):
                             replace_val = pat.replace_groups.get(str(i))
+                            if replace_val is None and i in group_idx_to_name:
+                                replace_val = pat.replace_groups.get(group_idx_to_name[i])
                         elif isinstance(pat.replace_groups, list) and i <= len(pat.replace_groups):
                             replace_val = pat.replace_groups[i - 1]
 

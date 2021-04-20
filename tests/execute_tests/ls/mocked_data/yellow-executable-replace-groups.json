@@ -4,12 +4,12 @@
 			"name": "ls",
 			"patterns": [
 				{
-					"expression": "..x (\\d+) +([^ ]+) ([^ ]+) +(\\d+)",
+					"expression": "..x (\\d+) +([^ ]+) ([^ ]+) +(?P<fs>\\d+) ([A-Za-z]+)",
 					"replace_groups": {
+						"fs": "%Cb%Gc%Cz",
 						"1": "a%Clb%Gc%Cz",
 						"2": "%Clg%Gc%Cz: ",
-						"3": "%Cg%Gc%Cz",
-						"4": "%Cb%Gc%Cz"
+						"3": "%Cg%Gc%Cz"
 					}
 				}
 			]
