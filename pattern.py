@@ -8,11 +8,13 @@ import pyformat
 PATTERN_SCHEMA = {
     'type': 'object',
     'properties': {
-        'expression': {'type': ['array', 'string']},
         'enabled': {'type' : 'boolean'},
+        'super_expression': {'type': ['array', 'string']},
+        'expression': {'type': ['array', 'string']},
 
         'replace': {'type': ['array', 'string']},
         'replace_all': {'type': ['array', 'string']},
+        'replace_groups': {'type': ['array', 'object']},
         'filter': {'type': 'boolean'},
         'skip_others': {'type': 'boolean'},
 
@@ -51,6 +53,7 @@ class Pattern:
         self.stdout_only = cfg.get('stdout_only', False)
         self.stderr_only = cfg.get('stderr_only', False)
 
+        self.super_expression = cfg.get('super_expression')
         self.expression = cfg['expression']
         self.filter = cfg.get('filter', False)
         self.skip_others = cfg.get('skip_others', False)
@@ -61,6 +64,8 @@ class Pattern:
         activation_line = cfg.get('activation_line', -1)
         deactivation_line = cfg.get('deactivation_line', -1)
 
+        if isinstance(self.super_expression, list):
+            self.super_expression = ''.join(self.super_expression)
         if isinstance(self.expression, list):
             self.expression = ''.join(self.expression)
 
@@ -75,9 +80,11 @@ class Pattern:
             self.active = False
 
         self.regex = re.compile(self.expression)
+        self.super_regex = re.compile(self.super_expression) if self.super_expression is not None else None
 
         self.replace = None
         self.replace_all = None
+        self.replace_groups = cfg.get('replace_groups', {})
 
         self.activation_expression = cfg.get('activation_expression')
         self.activation_regex = None

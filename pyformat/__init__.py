@@ -8,18 +8,20 @@ FORMAT_CHAR_VALID = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvw
 FORMAT_COLOR = 'C'
 FORMAT_FIELD = 'F'
 FORMAT_GROUP = 'G'
+FORMAT_PADDING = 'P'
 
 
 def format_string(string, context=None, return_color_positions=False):
     if context is None:
         context = {}
 
-    if 'color_state' in context:
-        context['color_state_current'] = context['color_state'].copy()
-    else:
-        context['color_state_current'] = ColorState()
+    if context.get('color_enabled', True):
+        if 'color_state' in context:
+            context['color_state_current'] = context['color_state'].copy()
+        else:
+            context['color_state_current'] = ColorState()
 
-    context['past_color_states'] = [ context['color_state_current'].copy() ]
+        context['past_color_states'] = [ context['color_state_current'].copy() ]
 
     newstring = ''
     color_positions = {}
@@ -33,17 +35,19 @@ def format_string(string, context=None, return_color_positions=False):
                 idx += 2
                 continue
 
-            formatter, newidx = get_formatter(string, idx)
+            formatter, value, newidx = get_formatter(string, idx)
             if formatter is not None:
-                context['color_state_current'].set_state_by_string(newstring[last_format_idx:])
+                if context.get('color_enabled', True):
+                    context['color_state_current'].set_state_by_string(newstring[last_format_idx:])
 
-                result = do_format(string, formatter, idx, newidx, context)
+                result = do_format(string, formatter, value, idx, newidx, context)
                 apppend_result = True
 
-                if is_color_format(formatter):
+                if formatter == FORMAT_COLOR:
                     if return_color_positions:
                         color_positions[len(newstring)] = result
-                        context['color_state_current'].set_state_by_string(result)
+                        if context.get('color_enabled', True):
+                            context['color_state_current'].set_state_by_string(result)
                         apppend_result = False
 
                 last_format_idx = len(newstring)
@@ -61,31 +65,30 @@ def format_string(string, context=None, return_color_positions=False):
         return newstring, color_positions
     return newstring
 
-def do_format(string, formatter, idx, newidx, context):
-    if is_color_format(formatter):
+def do_format(string, formatter, value, idx, newidx, context):
+    if formatter == FORMAT_COLOR:
         if not context.get('color_enabled', True):
             return ''
 
-        formatter = formatter[1:]
-        if formatter == 'prev':
+        if value == 'prev':
             return get_lastcolor(
                 context['past_color_states'],
                 '2',
                 current=context['color_state_current']
             )
-        if formatter.startswith('last'):
+        if value.startswith('last'):
             return get_lastcolor(
                 context['past_color_states'],
-                formatter[4:],
+                value[4:],
                 current=context['color_state_current']
             )
-        if formatter in ('s', 'soft'):
+        if value in ('s', 'soft'):
             return context['color_state_orig'].get_string(
                 compare_state=context['color_state_current']
             )
 
         colorstr = color.get_color(
-            formatter,
+            value,
             aliases=context.get('color_aliases', {})
         )
         if colorstr is None:
@@ -97,73 +100,114 @@ def do_format(string, formatter, idx, newidx, context):
 
         return colorstr
 
-    if 'match' in context:
-        if formatter[0] == FORMAT_GROUP:
+    if formatter == FORMAT_PADDING:
+        value_sep = value.find(';')
+        if value_sep != -1:
             try:
-                group = int(formatter[1:])
+                spl = value[0:value_sep].split(',')
+                padval = int(spl[0])
+                sep = ' ' if len(spl) == 1 else spl[1][0]
+
+                value = value[value_sep + 1:]
+
+                newcontext = context.copy()
+                newcontext['color_enabled'] = False
+                return sep * (padval - len(format_string(value, context=newcontext)))
             except ValueError:
-                group = formatter[1:]
+                pass
+        return ''
 
-            try:
-                matchgroup = context['match'][group]
-            except IndexError:
-                matchgroup = None
+    if formatter == FORMAT_GROUP and 'match' in context:
+        if value == 'c' and 'match_curr' in context:
+            return context['match_curr']
 
-            if matchgroup is None:
-                return ''
-            return matchgroup
-    if 'fields' in context:
-        if formatter[0] == FORMAT_FIELD:
-            return fieldsep.get_fields(formatter[1:], context)
+        try:
+            group = int(value)
+            context['match_incr'] = group + 1
+        except ValueError:
+            group = value
+
+        try:
+            matchgroup = context['match'][group]
+        except IndexError:
+            matchgroup = None
+
+        if matchgroup is None:
+            if group == 'n':
+                if 'match_incr' not in context:
+                    context['match_incr'] = 1
+
+                try:
+                    matchgroup = context['match'][context['match_incr']]
+                    context['match_incr'] += 1
+                    return matchgroup
+                except IndexError:
+                    pass
+            return ''
+        return matchgroup
+
+    if formatter == FORMAT_FIELD and 'fields' in context:
+        return fieldsep.get_fields(value, context)
 
     return string[idx:newidx]
 
 def get_formatter(string, idx):
+    begin_idx = idx
     if idx >= len(string) or string[idx] != '%':
-        return None, idx
+        return None, None, begin_idx
 
     idx += 1
-
     if idx >= len(string):
-        return None, idx
+        return None, None, begin_idx
 
-    paren = 0
-    first_char_before_paren = False
-
-    if string[idx] == '(':
-        paren = 1
-        idx += 1
-    elif idx + 1 < len(string) and string[idx + 1] == '(' and string[idx] in FORMAT_CHAR_VALID:
-        first_char_before_paren = True
-        paren = 1
-        idx += 2
-
+    formatter = None
     startidx = idx
+    paren = -1
 
     while idx < len(string):
-        char = string[idx]
-        if paren != 1 and char not in FORMAT_CHAR_VALID:
+        if string[idx] not in FORMAT_CHAR_VALID:
             break
+        idx += 1
 
-        if paren == 1 and char == ')':
-            paren = -1
-            idx += 1
+    formatter = string[startidx:idx]
+    if len(formatter) == 0:
+        return None, None, begin_idx
+
+    if idx < len(string) and string[idx] == '(':
+        paren = 1
+        idx += 1
+
+    startidx = idx
+    while idx < len(string):
+        char = string[idx]
+        if paren == 0:
             break
+        if paren == -1 and char not in FORMAT_CHAR_VALID:
+            break
+        if char == '\\':
+            idx += 2
+            continue
+
+        if char == '(':
+            paren += 1
+        elif char == ')':
+            paren -= 1
 
         idx += 1
 
+    if paren > 0:
+        return None, None, begin_idx
+
     if paren == -1:
-        if first_char_before_paren:
-            formatter = string[startidx - 2] + string[startidx:idx - 1]
+        if startidx == idx:
+            value = formatter[1:]
+            formatter = formatter[0]
         else:
-            formatter = string[startidx:idx - 1]
+            value = string[startidx:idx]
     else:
-        formatter = string[startidx:idx]
+        value = string[startidx:idx - 1]
 
-    return formatter, idx
-
-def is_color_format(string):
-    return string[0] == 'C'
+    return formatter, value, idx
 
 def get_lastcolor(colors, string, current=None):
     if len(colors) == 0:

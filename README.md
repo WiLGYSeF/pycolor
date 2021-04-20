@@ -72,15 +72,16 @@ Configuration file template:
 
 # Formatting Strings
 
-Use formatting strings to color/manipulate the program output in real-time. A formatted string looks like this: `%Cred`, where
+Use formatting strings to color/manipulate the program output in real-time. A formatted string looks like this: `%C(red)`, where
 - `%` is the start of the formatter
 - `C` is the format type
 - `red` is the argument that is passed to the formatter
 
-Formatting strings can also be written like `%C(red)` or `%(Cred)` if the formatter is followed by other characters: e.g `%Credhello` is invalid, but `%C(red)hello` formats the string `hello` in red.
+Formatting strings can also be written like `%Cred`, where the first letter is used as the format type and the rest is the argument.
+`%C(red)hello` formats the string `hello` in red, but `%Credhello` is incorrect.
 
 A literal `%` can be used in a format string by using `%%`.
-E.g. the format string `The total is %C(red)15%%` will become `The total is 15%`, where the `15%` part is in red.
+E.g. the format string `The total is %C(red)15%%` will become `The total is 15%`, with the `15%` part in red.
 
 Valid formatting argument characters are upper/lowercase letters and numbers, unless the argument is encapsulated in parentheses, then everything in the parenthesis pair is used.
 

@@ -12,15 +12,8 @@ def search_replace(pattern, string, replace, ignore_ranges=None, start_occurrenc
     last = 0
     replace_ranges = []
 
-    if isinstance(pattern, re._pattern_type):
-        regex = pattern
-    else:
-        regex = re.compile(pattern)
-
-    if callable(replace):
-        replf = replace
-    else:
-        replf = lambda x: replace
+    regex = pattern if isinstance(pattern, re._pattern_type) else re.compile(pattern)
+    replf = replace if callable(replace) else lambda x: replace
 
     igidx = 0
     replace_diff = 0
@@ -28,7 +21,6 @@ def search_replace(pattern, string, replace, ignore_ranges=None, start_occurrenc
     for match in regex.finditer(string):
         while igidx < len(ignore_ranges) and ignore_ranges[igidx][1] < match.start():
             igidx += 1
-
         if igidx < len(ignore_ranges):
             ign = ignore_ranges[igidx]
             if any([

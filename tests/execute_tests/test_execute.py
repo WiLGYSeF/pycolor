@@ -7,11 +7,9 @@ import execute
 class ExecuteTest(unittest.TestCase):
     def test_execute_date(self):
         def stdout_cb(data):
-            datestr = data.rstrip('\n')
-
             self.assertEqual(
-                datestr,
-                datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+                data,
+                datetime.datetime.now().strftime('%Y%m%d%H%M%S\n')
             )
 
         def stderr_cb(data):

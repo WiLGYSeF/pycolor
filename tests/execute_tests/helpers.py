@@ -98,12 +98,13 @@ def create_pycolor_object():
 
 @contextmanager
 def execute_patch(obj, stdout_stream, stderr_stream):
-    def execute(cmd, stdout_callback, stderr_callback, buffer_line=True, encoding='utf-8'):
+    def execute(cmd, stdout_callback, stderr_callback, **kwargs):
+        encoding = kwargs.get('encoding', 'utf-8')
+
         def _read(stream, callback, last=False):
             return read_stream(
                 stream,
                 callback,
-                buffer_line=buffer_line,
                 encoding=encoding,
                 last=last
             )
