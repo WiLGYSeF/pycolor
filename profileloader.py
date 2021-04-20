@@ -58,7 +58,14 @@ class ProfileLoader:
                 patterns.extend(fromprof.patterns)
 
     def get_profile_by_name(self, name):
-        return self.named_profiles.get(name)
+        profile = self.named_profiles.get(name)
+        if profile is not None:
+            return profile
+
+        for prof in self.profiles:
+            if prof.name == name:
+                return prof
+        return None
 
     def get_profile_by_command(self, command, args):
         matches = []
