@@ -113,6 +113,9 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         read_input_stream(pycobj, stdin_stream)
         sys.exit(0)
 
+    #if os.geteuid() == 0:
+    #    sys.exit(1)
+
     returncode = pycobj.execute(cmd_args, profile=profile)
     sys.exit(returncode)
 

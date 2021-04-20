@@ -68,6 +68,8 @@ class Pycolor:
         if profile.less_output:
             tmpfile = tempfile.NamedTemporaryFile()
             self.stdout = io.TextIOWrapper(tmpfile)
+            if self.color_mode == 'auto':
+                self.color_mode = 'always'
 
         retcode = execute.execute(
             cmd,
