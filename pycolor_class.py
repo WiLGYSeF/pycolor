@@ -340,8 +340,7 @@ class Pycolor:
 
             if match.start() > 0:
                 for key in sorted(colorpos.keys(), reverse=True):
-                    newkey = key + match.start()
-                    colorpos[newkey] = colorpos[key]
+                    colorpos[key + match.start()] = colorpos[key]
                     del colorpos[key]
 
             color_positions.update(colorpos)
