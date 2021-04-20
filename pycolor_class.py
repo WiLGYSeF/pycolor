@@ -207,14 +207,15 @@ class Pycolor:
                 Pycolor.update_color_positions(color_positions, colorpos)
                 return True, data
             if len(pat.replace_groups) != 0:
-                match = pat.regex.search(data)
-                if match is not None:
-                    context['match'] = match
+                newdata = ''
+                last = 0
+                choffset = 0
+                replace_ranges = []
 
+                for match in pat.regex.finditer(data):
+                    context['match'] = match
+                    newdata += data[last:match.start(0)]
                     last = match.start(0)
-                    new_match_data = data[:last]
-                    choffset = 0
-                    replace_ranges = []
 
                     groupdict = match.groupdict()
                     group_idx_to_name = {}
@@ -227,7 +228,7 @@ class Pycolor:
                                 break
 
                     for i in range(1, len(match.groups()) + 1):
-                        new_match_data += data[last:match.start(i)]
+                        newdata += data[last:match.start(i)]
                         replace_val = None
                         if isinstance(pat.replace_groups, dict):
                             replace_val = pat.replace_groups.get(str(i))
@@ -243,7 +244,7 @@ class Pycolor:
                                 context=context,
                                 return_color_positions=True
                             )
-                            new_match_data += format_data
+                            newdata += format_data
 
                             colorpos = Pycolor.offset_color_positions(colorpos, match.start(i))
                             choffset += len(format_data) - (match.end(i) - match.start(i))
@@ -257,11 +258,15 @@ class Pycolor:
                             ))
                             Pycolor.update_color_positions(color_positions, colorpos)
                         else:
-                            new_match_data += match.group(i)
+                            newdata += match.group(i)
                         last = match.end(i)
 
-                    new_match_data += data[match.end(0):]
-                    return True, new_match_data
+                    newdata += data[last:match.end(0)]
+                    last = match.end(0)
+                newdata += data[last:]
+
+                if 'match' in context:
+                    return True, newdata
                 return False, None
             return pat.regex.search(data), data
 
