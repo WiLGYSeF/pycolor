@@ -28,6 +28,15 @@ INSERT_COLOR_DATA = [
         },
         RESULT: 'this \x1b[31mis\x1b[0m a test'
     },
+    {
+        DATA: 'this is a test',
+        COLOR_POS: {
+            2: '\x1b[31m',
+            5: '\x1b[32m',
+            7: '\x1b[0m'
+        },
+        RESULT: 'th\x1b[31mis \x1b[32mis\x1b[0m a test'
+    }
 ]
 
 
