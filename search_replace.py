@@ -2,9 +2,11 @@ import re
 from typing import Pattern
 
 
-def search_replace(pattern, string, replace, ignore_ranges=None, start_occurrence=1, max_count=-1):
-    if ignore_ranges is None:
-        ignore_ranges = []
+def search_replace(pattern, string, replace, **kwargs):
+    ignore_ranges = kwargs.get('ignore_ranges', [])
+    start_occurrence = kwargs.get('start_occurrence', 1)
+    max_count = kwargs.get('max_count', -1)
+
     start_occurrence = max(1, start_occurrence)
 
     regex = pattern if isinstance(pattern, Pattern) else re.compile(pattern)
