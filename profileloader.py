@@ -1,5 +1,4 @@
 import json
-import re
 
 from profile_class import Profile
 from which import which
@@ -81,14 +80,13 @@ class ProfileLoader:
                 result = which(command)
                 if result is not None and result.decode('utf-8') != prof.which:
                     continue
-            if prof.name is not None and command != prof.name:
-                continue
-            if prof.name_regex is not None and not re.fullmatch(prof.name_regex, command):
-                continue
 
-            if prof.min_args is not None and prof.min_args > len(args):
-                continue
-            if prof.max_args is not None and prof.max_args < len(args):
+            if any([
+                prof.name is not None and command != prof.name,
+                prof.min_args is not None and prof.min_args > len(args),
+                prof.max_args is not None and prof.max_args < len(args),
+                prof.name_regex is not None and not prof.name_regex.fullmatch(command),
+            ]):
                 continue
 
             if not ProfileLoader.check_arg_patterns(
@@ -105,11 +103,11 @@ class ProfileLoader:
         return matches[-1]
 
     def is_default_profile(self, profile):
-        return all((
+        return all([
             profile == self.profile_default,
-            profile.timestamp == False, #pylint: disable=singleton-comparison
-            profile.less_output == False, #pylint: disable=singleton-comparison
-        ))
+            profile.timestamp is False,
+            profile.less_output is False,
+        ])
 
     @staticmethod
     def check_arg_patterns(args, arg_patterns, all_must_match=False):

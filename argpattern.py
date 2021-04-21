@@ -15,6 +15,8 @@ ARGPATTERN_SCHEMA = {
     'required': ['expression']
 }
 
+ARGRANGE_REGEX = re.compile(r'([<>+-])?(\*|[0-9]+)')
+
 
 class ArgPattern:
     def __init__(self, cfg):
@@ -38,7 +40,7 @@ class ArgPattern:
                 return range(0)
             return range(self.position - 1, self.position)
 
-        match = re.fullmatch(r'([<>+-])?(\*|[0-9]+)', self.position)
+        match = ARGRANGE_REGEX.fullmatch(self.position)
         if match is None:
             return range(arglen)
 

@@ -80,7 +80,7 @@ class Pattern:
             self.active = False
 
         self.regex = re.compile(self.expression)
-        self.super_regex = re.compile(self.super_expression) if self.super_expression is not None else None
+        self.super_regex = re.compile(self.super_expression) if self.super_expression else None
 
         self.replace = None
         self.replace_all = None
