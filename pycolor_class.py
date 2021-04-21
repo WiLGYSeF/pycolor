@@ -6,8 +6,10 @@ import tempfile
 
 from colorstate import ColorState
 import execute
-import pyformat
+from group_index import get_named_group_at_index
+from match_group_replace import match_group_replace
 from profileloader import ProfileLoader
+import pyformat
 from search_replace import search_replace, update_positions
 from split import re_split
 from which import which
@@ -207,67 +209,51 @@ class Pycolor:
                 Pycolor.update_color_positions(color_positions, colorpos)
                 return True, data
             if len(pat.replace_groups) != 0:
-                newdata = ''
-                last = 0
                 choffset = 0
                 replace_ranges = []
 
-                for match in pat.regex.finditer(data):
+                def replace_group(match, idx):
+                    nonlocal choffset
+
                     context['match'] = match
-                    newdata += data[last:match.start(0)]
-                    last = match.start(0)
+                    replace_val = None
 
-                    groupdict = match.groupdict()
-                    group_idx_to_name = {}
+                    if isinstance(pat.replace_groups, dict):
+                        replace_val = pat.replace_groups.get(str(idx))
+                        if replace_val is None:
+                            group = get_named_group_at_index(match, idx)
+                            if group is not None:
+                                replace_val = pat.replace_groups.get(group)
+                    elif isinstance(pat.replace_groups, list) and idx <= len(pat.replace_groups):
+                        replace_val = pat.replace_groups[idx - 1]
 
-                    for i in range(1, len(match.groups()) + 1):
-                        span = match.span(i)
-                        for group in groupdict:
-                            if match.span(group) == span:
-                                group_idx_to_name[i] = group
-                                break
+                    if replace_val is None:
+                        return match.group(idx)
 
-                    for i in range(1, len(match.groups()) + 1):
-                        newdata += data[last:match.start(i)]
-                        replace_val = None
-                        if isinstance(pat.replace_groups, dict):
-                            replace_val = pat.replace_groups.get(str(i))
-                            if replace_val is None and i in group_idx_to_name:
-                                replace_val = pat.replace_groups.get(group_idx_to_name[i])
-                        elif isinstance(pat.replace_groups, list) and i <= len(pat.replace_groups):
-                            replace_val = pat.replace_groups[i - 1]
+                    context['match_curr'] = match.group(idx)
+                    replace_val, colorpos = pyformat.format_string(
+                        replace_val,
+                        context=context,
+                        return_color_positions=True
+                    )
 
-                        if replace_val is not None:
-                            context['match_curr'] = match.group(i)
-                            format_data, colorpos = pyformat.format_string(
-                                replace_val,
-                                context=context,
-                                return_color_positions=True
-                            )
-                            newdata += format_data
+                    colorpos = Pycolor.offset_color_positions(colorpos, match.start(idx))
+                    choffset += len(replace_val) - (match.end(idx) - match.start(idx))
 
-                            colorpos = Pycolor.offset_color_positions(colorpos, match.start(i))
-                            choffset += len(format_data) - (match.end(i) - match.start(i))
-                            update_positions(colorpos, replace_ranges)
-                            replace_ranges.append((
-                                match.span(i),
-                                (
-                                    match.start(i) + choffset,
-                                    match.start(i) + choffset + len(format_data)
-                                )
-                            ))
-                            Pycolor.update_color_positions(color_positions, colorpos)
-                        else:
-                            newdata += match.group(i)
-                        last = match.end(i)
+                    update_positions(colorpos, replace_ranges)
+                    replace_ranges.append((
+                        match.span(idx),
+                        (
+                            match.start(idx) + choffset,
+                            match.start(idx) + choffset + len(replace_val)
+                        )
+                    ))
 
-                    newdata += data[last:match.end(0)]
-                    last = match.end(0)
-                newdata += data[last:]
+                    Pycolor.update_color_positions(color_positions, colorpos)
+                    return replace_val
 
-                if 'match' in context:
-                    return True, newdata
-                return False, None
+                newdata = match_group_replace(pat.regex, data, replace_group)
+                return 'match' in context, newdata
             return pat.regex.search(data), data
 
         if pat.replace_all is not None:
@@ -354,7 +340,6 @@ class Pycolor:
             pattern.regex,
             string,
             replacer,
-            ignore_ranges=[],
             start_occurrence=pattern.start_occurrence,
             max_count=pattern.max_count
         )
