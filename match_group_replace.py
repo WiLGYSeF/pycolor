@@ -13,6 +13,8 @@ def match_group_replace(pattern, string, replace_func):
         last = match.start(0)
 
         for i in range(1, len(match.groups()) + 1):
+            if match.start(i) == -1:
+                continue
             result += string[last:match.start(i)] + replace_func(match, i)
             last = match.end(i)
 
