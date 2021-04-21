@@ -206,7 +206,7 @@ class Pycolor:
                     return False, None
 
                 update_positions(color_positions, replace_ranges)
-                Pycolor.update_color_positions(color_positions, colorpos)
+                color_positions.update(colorpos)
                 return True, data
             if len(pat.replace_groups) != 0:
                 choffset = 0
@@ -249,7 +249,7 @@ class Pycolor:
                         )
                     ))
 
-                    Pycolor.update_color_positions(color_positions, colorpos)
+                    color_positions.update(colorpos)
                     return replace_val
 
                 newdata = match_group_replace(pat.regex, data, replace_group)
@@ -300,7 +300,7 @@ class Pycolor:
                         del colorpos[key]
 
                 update_positions(color_positions, replace_ranges)
-                Pycolor.update_color_positions(color_positions, colorpos)
+                color_positions.update(colorpos)
             if not matched:
                 return False, None
             return True, ''.join(fields)
@@ -368,46 +368,6 @@ class Pycolor:
             last = key
 
         return colored_data + data[last:]
-
-    @staticmethod
-    def update_color_positions(color_positions, pos):
-        if len(pos) == 0:
-            return
-
-        keys_pos = sorted(pos.keys())
-        keys_col = set(color_positions.keys())
-
-        for idx in range(0, len(keys_pos) - 1, 2):
-            first = keys_pos[idx]
-            second = keys_pos[idx + 1]
-
-            to_remove = []
-            for key in keys_col:
-                if key >= first and key <= second:
-                    to_remove.append(key)
-                    del color_positions[key]
-            for key in to_remove:
-                keys_col.remove(key)
-
-            color_positions[first] = pos[first]
-            color_positions[second] = pos[second]
-
-            if pyformat.color.is_ansi_reset(pos[second]):
-                last = -1
-                for key in keys_col:
-                    if key < first and key > last:
-                        last = key
-
-                if last != -1:
-                    color_positions[second] = pos[second] + color_positions[last]
-
-        if (len(pos) & 1) == 1:
-            last = keys_pos[-1]
-            color_positions[last] = pos[last]
-
-            for key in keys_col:
-                if key > last:
-                    del color_positions[key]
 
     @staticmethod
     def offset_color_positions(color_positions, offset):

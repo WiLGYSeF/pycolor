@@ -9,9 +9,9 @@ total [32m108[0m
 -rw-rw-r-- [32m1[0m wilgysef wilgysef  [32m8096[0m Apr  [32m7[0m [32m13[0m:[32m53[0m README.md
 [0m[90m    DEBUG1: received: b'drwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 14:00 __pycache__'[0m
 [0m[90m    DEBUG3: applying: b'\x1b[1;34mdrwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 14:00 __pycache__\x1b[0m'[0m
-[0m[90m    DEBUG3: applying: b'\x1b[1;34mdrwxr-xr-x \x1b[32m2\x1b[0m\x1b[1;34m wilgysef wilgysef  \x1b[32m4096\x1b[0m\x1b[1;34m Apr  \x1b[32m7\x1b[0m\x1b[1;34m \x1b[32m14\x1b[0m\x1b[1;34m:\x1b[32m00\x1b[0m\x1b[1;34m __pycache__\x1b[0m'[0m
-[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxr-xr-x \x1b[32m2\x1b[0m\x1b[1;34m wilgysef wilgysef  \x1b[32m4096\x1b[0m\x1b[1;34m Apr  \x1b[32m7\x1b[0m\x1b[1;34m \x1b[32m14\x1b[0m\x1b[1;34m:\x1b[32m00\x1b[0m\x1b[1;34m __pycache__\x1b[0m'[0m
-[1;34mdrwxr-xr-x [32m2[0m[1;34m wilgysef wilgysef  [32m4096[0m[1;34m Apr  [32m7[0m[1;34m [32m14[0m[1;34m:[32m00[0m[1;34m __pycache__[0m
+[0m[90m    DEBUG3: applying: b'\x1b[1;34mdrwxr-xr-x \x1b[32m2\x1b[0m wilgysef wilgysef  \x1b[32m4096\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m14\x1b[0m:\x1b[32m00\x1b[0m __pycache__\x1b[0m'[0m
+[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxr-xr-x \x1b[32m2\x1b[0m wilgysef wilgysef  \x1b[32m4096\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m14\x1b[0m:\x1b[32m00\x1b[0m __pycache__\x1b[0m'[0m
+[1;34mdrwxr-xr-x [32m2[0m wilgysef wilgysef  [32m4096[0m Apr  [32m7[0m [32m14[0m:[32m00[0m __pycache__[0m
 [0m[90m    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef  1664 Apr  7 13:53 argpattern.py'[0m
 [0m[90m    DEBUG3: applying: b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m1664\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m argpattern.py'[0m
 [0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m1664\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m argpattern.py'[0m
@@ -22,9 +22,9 @@ total [32m108[0m
 -rw-rw-r-- [32m1[0m wilgysef wilgysef  [32m5933[0m Apr  [32m7[0m [32m13[0m:[32m53[0m colorstate.py
 [0m[90m    DEBUG1: received: b'drwxr-xr-x 4 wilgysef wilgysef  4096 Feb  8 20:45 docs'[0m
 [0m[90m    DEBUG3: applying: b'\x1b[1;34mdrwxr-xr-x 4 wilgysef wilgysef  4096 Feb  8 20:45 docs\x1b[0m'[0m
-[0m[90m    DEBUG3: applying: b'\x1b[1;34mdrwxr-xr-x \x1b[32m4\x1b[0m\x1b[1;34m wilgysef wilgysef  \x1b[32m4096\x1b[0m\x1b[1;34m Feb  \x1b[32m8\x1b[0m\x1b[1;34m \x1b[32m20\x1b[0m\x1b[1;34m:\x1b[32m45\x1b[0m\x1b[1;34m docs\x1b[0m'[0m
-[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxr-xr-x \x1b[32m4\x1b[0m\x1b[1;34m wilgysef wilgysef  \x1b[32m4096\x1b[0m\x1b[1;34m Feb  \x1b[32m8\x1b[0m\x1b[1;34m \x1b[32m20\x1b[0m\x1b[1;34m:\x1b[32m45\x1b[0m\x1b[1;34m docs\x1b[0m'[0m
-[1;34mdrwxr-xr-x [32m4[0m[1;34m wilgysef wilgysef  [32m4096[0m[1;34m Feb  [32m8[0m[1;34m [32m20[0m[1;34m:[32m45[0m[1;34m docs[0m
+[0m[90m    DEBUG3: applying: b'\x1b[1;34mdrwxr-xr-x \x1b[32m4\x1b[0m wilgysef wilgysef  \x1b[32m4096\x1b[0m Feb  \x1b[32m8\x1b[0m \x1b[32m20\x1b[0m:\x1b[32m45\x1b[0m docs\x1b[0m'[0m
+[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxr-xr-x \x1b[32m4\x1b[0m wilgysef wilgysef  \x1b[32m4096\x1b[0m Feb  \x1b[32m8\x1b[0m \x1b[32m20\x1b[0m:\x1b[32m45\x1b[0m docs\x1b[0m'[0m
+[1;34mdrwxr-xr-x [32m4[0m wilgysef wilgysef  [32m4096[0m Feb  [32m8[0m [32m20[0m:[32m45[0m docs[0m
 [0m[90m    DEBUG1: received: b'-rw-r--r-- 1 wilgysef wilgysef  3199 Feb  9 20:36 execute.py'[0m
 [0m[90m    DEBUG3: applying: b'-rw-r--r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m3199\x1b[0m Feb  \x1b[32m9\x1b[0m \x1b[32m20\x1b[0m:\x1b[32m36\x1b[0m execute.py'[0m
 [0m[90m    DEBUG2: writing:  b'-rw-r--r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m3199\x1b[0m Feb  \x1b[32m9\x1b[0m \x1b[32m20\x1b[0m:\x1b[32m36\x1b[0m execute.py'[0m
@@ -35,9 +35,9 @@ total [32m108[0m
 -rw-r--r-- [32m1[0m wilgysef wilgysef   [32m588[0m Feb [32m11[0m [32m14[0m:[32m07[0m fromprofile.py
 [0m[90m    DEBUG1: received: b'drwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 12:04 htmlcov'[0m
 [0m[90m    DEBUG3: applying: b'\x1b[1;34mdrwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 12:04 htmlcov\x1b[0m'[0m
-[0m[90m    DEBUG3: applying: b'\x1b[1;34mdrwxr-xr-x \x1b[32m2\x1b[0m\x1b[1;34m wilgysef wilgysef  \x1b[32m4096\x1b[0m\x1b[1;34m Apr  \x1b[32m7\x1b[0m\x1b[1;34m \x1b[32m12\x1b[0m\x1b[1;34m:\x1b[32m04\x1b[0m\x1b[1;34m htmlcov\x1b[0m'[0m
-[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxr-xr-x \x1b[32m2\x1b[0m\x1b[1;34m wilgysef wilgysef  \x1b[32m4096\x1b[0m\x1b[1;34m Apr  \x1b[32m7\x1b[0m\x1b[1;34m \x1b[32m12\x1b[0m\x1b[1;34m:\x1b[32m04\x1b[0m\x1b[1;34m htmlcov\x1b[0m'[0m
-[1;34mdrwxr-xr-x [32m2[0m[1;34m wilgysef wilgysef  [32m4096[0m[1;34m Apr  [32m7[0m[1;34m [32m12[0m[1;34m:[32m04[0m[1;34m htmlcov[0m
+[0m[90m    DEBUG3: applying: b'\x1b[1;34mdrwxr-xr-x \x1b[32m2\x1b[0m wilgysef wilgysef  \x1b[32m4096\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m12\x1b[0m:\x1b[32m04\x1b[0m htmlcov\x1b[0m'[0m
+[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxr-xr-x \x1b[32m2\x1b[0m wilgysef wilgysef  \x1b[32m4096\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m12\x1b[0m:\x1b[32m04\x1b[0m htmlcov\x1b[0m'[0m
+[1;34mdrwxr-xr-x [32m2[0m wilgysef wilgysef  [32m4096[0m Apr  [32m7[0m [32m12[0m:[32m04[0m htmlcov[0m
 [0m[90m    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef  6613 Apr  7 13:53 pattern.py'[0m
 [0m[90m    DEBUG3: applying: b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m6613\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m pattern.py'[0m
 [0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m6613\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m pattern.py'[0m
@@ -56,9 +56,9 @@ total [32m108[0m
 -rw-rw-r-- [32m1[0m wilgysef wilgysef [32m13150[0m Apr  [32m7[0m [32m13[0m:[32m53[0m pycolor_class.py
 [0m[90m    DEBUG1: received: b'drwxrwxr-x 3 wilgysef wilgysef  4096 Apr  7 13:53 pyformat'[0m
 [0m[90m    DEBUG3: applying: b'\x1b[1;34mdrwxrwxr-x 3 wilgysef wilgysef  4096 Apr  7 13:53 pyformat\x1b[0m'[0m
-[0m[90m    DEBUG3: applying: b'\x1b[1;34mdrwxrwxr-x \x1b[32m3\x1b[0m\x1b[1;34m wilgysef wilgysef  \x1b[32m4096\x1b[0m\x1b[1;34m Apr  \x1b[32m7\x1b[0m\x1b[1;34m \x1b[32m13\x1b[0m\x1b[1;34m:\x1b[32m53\x1b[0m\x1b[1;34m pyformat\x1b[0m'[0m
-[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxrwxr-x \x1b[32m3\x1b[0m\x1b[1;34m wilgysef wilgysef  \x1b[32m4096\x1b[0m\x1b[1;34m Apr  \x1b[32m7\x1b[0m\x1b[1;34m \x1b[32m13\x1b[0m\x1b[1;34m:\x1b[32m53\x1b[0m\x1b[1;34m pyformat\x1b[0m'[0m
-[1;34mdrwxrwxr-x [32m3[0m[1;34m wilgysef wilgysef  [32m4096[0m[1;34m Apr  [32m7[0m[1;34m [32m13[0m[1;34m:[32m53[0m[1;34m pyformat[0m
+[0m[90m    DEBUG3: applying: b'\x1b[1;34mdrwxrwxr-x \x1b[32m3\x1b[0m wilgysef wilgysef  \x1b[32m4096\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m pyformat\x1b[0m'[0m
+[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxrwxr-x \x1b[32m3\x1b[0m wilgysef wilgysef  \x1b[32m4096\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m pyformat\x1b[0m'[0m
+[1;34mdrwxrwxr-x [32m3[0m wilgysef wilgysef  [32m4096[0m Apr  [32m7[0m [32m13[0m:[32m53[0m pyformat[0m
 [0m[90m    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef    30 Apr  7 13:53 requirements.txt'[0m
 [0m[90m    DEBUG3: applying: b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef    \x1b[32m30\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m requirements.txt'[0m
 [0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef    \x1b[32m30\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m requirements.txt'[0m
@@ -77,14 +77,14 @@ total [32m108[0m
 -rw-rw-r-- [32m1[0m wilgysef wilgysef   [32m193[0m Jan  [32m6[0m [32m16[0m:[32m26[0m static_vars.py
 [0m[90m    DEBUG1: received: b'drwxrwxr-x 2 wilgysef wilgysef  4096 Feb  9 19:45 test_scripts'[0m
 [0m[90m    DEBUG3: applying: b'\x1b[1;34mdrwxrwxr-x 2 wilgysef wilgysef  4096 Feb  9 19:45 test_scripts\x1b[0m'[0m
-[0m[90m    DEBUG3: applying: b'\x1b[1;34mdrwxrwxr-x \x1b[32m2\x1b[0m\x1b[1;34m wilgysef wilgysef  \x1b[32m4096\x1b[0m\x1b[1;34m Feb  \x1b[32m9\x1b[0m\x1b[1;34m \x1b[32m19\x1b[0m\x1b[1;34m:\x1b[32m45\x1b[0m\x1b[1;34m test_scripts\x1b[0m'[0m
-[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxrwxr-x \x1b[32m2\x1b[0m\x1b[1;34m wilgysef wilgysef  \x1b[32m4096\x1b[0m\x1b[1;34m Feb  \x1b[32m9\x1b[0m\x1b[1;34m \x1b[32m19\x1b[0m\x1b[1;34m:\x1b[32m45\x1b[0m\x1b[1;34m test_scripts\x1b[0m'[0m
-[1;34mdrwxrwxr-x [32m2[0m[1;34m wilgysef wilgysef  [32m4096[0m[1;34m Feb  [32m9[0m[1;34m [32m19[0m[1;34m:[32m45[0m[1;34m test_scripts[0m
+[0m[90m    DEBUG3: applying: b'\x1b[1;34mdrwxrwxr-x \x1b[32m2\x1b[0m wilgysef wilgysef  \x1b[32m4096\x1b[0m Feb  \x1b[32m9\x1b[0m \x1b[32m19\x1b[0m:\x1b[32m45\x1b[0m test_scripts\x1b[0m'[0m
+[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxrwxr-x \x1b[32m2\x1b[0m wilgysef wilgysef  \x1b[32m4096\x1b[0m Feb  \x1b[32m9\x1b[0m \x1b[32m19\x1b[0m:\x1b[32m45\x1b[0m test_scripts\x1b[0m'[0m
+[1;34mdrwxrwxr-x [32m2[0m wilgysef wilgysef  [32m4096[0m Feb  [32m9[0m [32m19[0m:[32m45[0m test_scripts[0m
 [0m[90m    DEBUG1: received: b'drwxrwxr-x 7 wilgysef wilgysef  4096 Apr  7 13:53 tests'[0m
 [0m[90m    DEBUG3: applying: b'\x1b[1;34mdrwxrwxr-x 7 wilgysef wilgysef  4096 Apr  7 13:53 tests\x1b[0m'[0m
-[0m[90m    DEBUG3: applying: b'\x1b[1;34mdrwxrwxr-x \x1b[32m7\x1b[0m\x1b[1;34m wilgysef wilgysef  \x1b[32m4096\x1b[0m\x1b[1;34m Apr  \x1b[32m7\x1b[0m\x1b[1;34m \x1b[32m13\x1b[0m\x1b[1;34m:\x1b[32m53\x1b[0m\x1b[1;34m tests\x1b[0m'[0m
-[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxrwxr-x \x1b[32m7\x1b[0m\x1b[1;34m wilgysef wilgysef  \x1b[32m4096\x1b[0m\x1b[1;34m Apr  \x1b[32m7\x1b[0m\x1b[1;34m \x1b[32m13\x1b[0m\x1b[1;34m:\x1b[32m53\x1b[0m\x1b[1;34m tests\x1b[0m'[0m
-[1;34mdrwxrwxr-x [32m7[0m[1;34m wilgysef wilgysef  [32m4096[0m[1;34m Apr  [32m7[0m[1;34m [32m13[0m[1;34m:[32m53[0m[1;34m tests[0m
+[0m[90m    DEBUG3: applying: b'\x1b[1;34mdrwxrwxr-x \x1b[32m7\x1b[0m wilgysef wilgysef  \x1b[32m4096\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m tests\x1b[0m'[0m
+[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxrwxr-x \x1b[32m7\x1b[0m wilgysef wilgysef  \x1b[32m4096\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m tests\x1b[0m'[0m
+[1;34mdrwxrwxr-x [32m7[0m wilgysef wilgysef  [32m4096[0m Apr  [32m7[0m [32m13[0m:[32m53[0m tests[0m
 [0m[90m    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef   285 Apr  7 13:31 todo.txt'[0m
 [0m[90m    DEBUG3: applying: b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef   \x1b[32m285\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m31\x1b[0m todo.txt'[0m
 [0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef   \x1b[32m285\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m31\x1b[0m todo.txt'[0m
