@@ -1,18 +1,17 @@
 import re
 
-import jsonschema
+import jsonobj
 
 
 ARGPATTERN_SCHEMA = {
     'type': 'object',
     'properties': {
-        'expression': {'type': ['array', 'string']},
-        'position': {'type': ['string', 'integer', 'null']},
+        'expression': {'type': ['array', 'string'], 'required': True},
+        'position': {'type': ['null', 'string', 'integer']},
 
         'match_not': {'type': 'boolean'},
         'optional': {'type': 'boolean'},
-    },
-    'required': ['expression']
+    }
 }
 
 ARGRANGE_REGEX = re.compile(r'([<>+-])?(\*|[0-9]+)')
@@ -20,16 +19,15 @@ ARGRANGE_REGEX = re.compile(r'([<>+-])?(\*|[0-9]+)')
 
 class ArgPattern:
     def __init__(self, cfg):
-        jsonschema.validate(instance=cfg, schema=ARGPATTERN_SCHEMA)
+        self.expression = None
+        self.position = None
 
-        self.expression = cfg['expression']
+        jsonobj.build(cfg, schema=ARGPATTERN_SCHEMA, dest=self)
+
         if isinstance(self.expression, list):
             self.expression = ''.join(self.expression)
-        self.regex = re.compile(self.expression)
 
-        self.position = cfg.get('position', '*')
-        self.match_not = cfg.get('match_not', False)
-        self.optional = cfg.get('optional', False)
+        self.regex = re.compile(self.expression)
 
     def get_arg_range(self, arglen):
         if self.position is None:
