@@ -1,14 +1,13 @@
-import jsonschema
+import jsonobj
 
 
 FROMPROFILE_SCHEMA = {
     'type': 'object',
     'properties': {
-        'enabled': {'type' : 'boolean'},
+        'enabled': {'type' : 'boolean', 'default': True},
         'name': {'type' : 'string'},
-        'order': {'enum': ['before', 'after']},
-    },
-    'required': ['name']
+        'order': {'enum': ['before', 'after'], 'default': 'before'},
+    }
 }
 
 
@@ -19,8 +18,4 @@ class FromProfile:
                 'name': cfg
             }
 
-        jsonschema.validate(instance=cfg, schema=FROMPROFILE_SCHEMA)
-
-        self.enabled = cfg.get('enabled', True)
-        self.name = cfg['name']
-        self.order = cfg.get('order', 'after')
+        jsonobj.build(cfg, schema=FROMPROFILE_SCHEMA, dest=self)
