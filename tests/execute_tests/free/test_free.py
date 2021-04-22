@@ -17,3 +17,9 @@ class FreeTest(unittest.TestCase):
 
     def test_color_count(self):
         check_pycolor_execute(self, ['free', '-c4'], MOCKED_DATA, 'color-count')
+
+    def test_color_replace_fields(self):
+        check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'color-replace-fields')
+
+    def test_color_replace_fields_list(self):
+        check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'color-replace-fields-list')

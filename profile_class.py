@@ -1,3 +1,5 @@
+import re
+
 import jsonschema
 
 import argpattern
@@ -9,7 +11,7 @@ PROFILE_SCHEMA = {
     'type': 'object',
     'properties': {
         'name': {'type' : 'string'},
-        'name_regex': {'type' : ['array', 'string']},
+        'name_expression': {'type' : ['array', 'string']},
         'profile_name': {'type': 'string'},
         'which': {'type': 'string'},
 
@@ -35,7 +37,7 @@ class Profile:
         jsonschema.validate(instance=cfg, schema=PROFILE_SCHEMA)
 
         self.name = cfg.get('name')
-        self.name_regex = cfg.get('name_regex')
+        self.name_expression = cfg.get('name_expression')
         self.profile_name = cfg.get('profile_name')
         self.which = cfg.get('which')
 
@@ -52,18 +54,22 @@ class Profile:
         self.arg_patterns = []
         self.patterns = []
 
-        if isinstance(self.name_regex, list):
-            self.name_regex = ''.join(self.name_regex)
+        if isinstance(self.name_expression, list):
+            self.name_expression = ''.join(self.name_expression)
+
+        self.name_regex = re.compile(self.name_expression) if self.name_expression else None
 
         if self.profile_name is not None and len(self.profile_name) == 0:
             self.profile_name = None
 
+        """
         if not any([
             self.name,
-            self.name_regex,
+            self.name_expression,
             self.profile_name
         ]):
             raise ValueError()
+        """
 
         for argpat in cfg.get('arg_patterns', []):
             self.arg_patterns.append(argpattern.ArgPattern(argpat))
@@ -84,7 +90,7 @@ class Profile:
             self.profile_name,
             self.which,
             self.name,
-            self.name_regex,
+            self.name_expression,
         ]:
             if name is not None and len(name) != 0:
                 return name

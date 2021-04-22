@@ -14,6 +14,12 @@
 					"replace": "%Cy%G1%Cz:"
 				},
 				{
+					"expression": "[^0-9a-f]([0-9a-f]{4})[^0-9a-f]",
+					"replace_groups": [
+						"%Cm%Gc%Cz"
+					]
+				},
+				{
 					"expression": "([A-Z_]+)=\"([^\"]+)\"",
 					"replace_groups": [
 						"%Ce%Gc%Cz",

@@ -162,6 +162,6 @@ class FieldsepTest(unittest.TestCase):
     def test_get_join_field(self):
         for entry in GET_JOIN_FIELD:
             self.assertEqual(
-                pyformat.fieldsep.get_join_field(entry[FIELD], entry[CONTEXT]),
+                pyformat.fieldsep.get_join_field(entry[FIELD], entry[CONTEXT]['fields']),
                 entry[RESULT]
             )

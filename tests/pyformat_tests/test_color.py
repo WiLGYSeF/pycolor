@@ -25,6 +25,8 @@ FORMAT_COLOR_STRING = {
     '%C(raw1;4;38;5;40)abc': '\x1b[1;4;38;5;40mabc',
     '%C(overline)abc': '\x1b[53mabc',
     '%C(^overline)abc': '\x1b[55mabc',
+    '%C(red': '%C(red',
+    '%CC(red)': '%CC(red)'
 }
 
 FORMAT_COLOR_STRING_LAST = {
@@ -95,8 +97,9 @@ class ColorTest(unittest.TestCase):
             self.assertEqual(pyformat.format_string(
                 entry[STRING],
                 context={
-                    'color_state_orig': entry[STATE],
-                    'color_state': entry[STATE],
+                    'color': {
+                        'state': entry[STATE],
+                    }
                 }
             ), entry[RESULT])
 
@@ -104,7 +107,9 @@ class ColorTest(unittest.TestCase):
         self.assertEqual(pyformat.format_string(
             '%C(red)test',
             context={
-                'color_enabled': False
+                'color': {
+                    'enabled': False
+                }
             }
         ), 'test')
 
@@ -113,7 +118,9 @@ class ColorTest(unittest.TestCase):
             self.assertEqual(pyformat.format_string(
                 entry[STRING],
                 context={
-                    'color_aliases': entry[ALIASES]
+                    'color': {
+                        'aliases': entry[ALIASES]
+                    }
                 }
             ), entry[RESULT])
 

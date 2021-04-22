@@ -14,10 +14,13 @@ def check_pycolor_execute(
     cmd,
     mocked_data_dir,
     test_name,
-    print_output=False,
-    write_output=False
+    **kwargs
 ):
-    pycobj = create_pycolor_object()
+    print_output = kwargs.get('print_output', False)
+    write_output = kwargs.get('write_output', False)
+    debug = kwargs.get('debug', 0)
+
+    pycobj = create_pycolor_object(debug=debug)
     filename_prefix = os.path.join(mocked_data_dir, test_name)
     pycobj.load_file(filename_prefix + '.json')
 
@@ -55,10 +58,13 @@ def check_pycolor_stdin(
     profile_name,
     mocked_data_dir,
     test_name,
-    print_output=False,
-    write_output=False
+    **kwargs
 ):
-    pycobj = create_pycolor_object()
+    print_output = kwargs.get('print_output', False)
+    write_output = kwargs.get('write_output', False)
+    debug = kwargs.get('debug', 0)
+
+    pycobj = create_pycolor_object(debug=debug)
     filename_prefix = os.path.join(mocked_data_dir, test_name)
     pycobj.load_file(filename_prefix + '.json')
 
@@ -90,8 +96,8 @@ def test_stream(self, stream, fname, testdata, print_output, write_output):
     else:
         self.assertEqual(data, b'')
 
-def create_pycolor_object():
-    pycobj = pycolor_class.Pycolor(color_mode='always')
+def create_pycolor_object(debug=0):
+    pycobj = pycolor_class.Pycolor(color_mode='always', debug=debug)
     pycobj.stdout = io.TextIOWrapper(io.BytesIO())
     pycobj.stderr = io.TextIOWrapper(io.BytesIO())
     return pycobj

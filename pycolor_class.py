@@ -4,12 +4,12 @@ import os
 import sys
 import tempfile
 
+from applypattern import apply_pattern
+from colorpositions import insert_color_data
 from colorstate import ColorState
 import execute
-import pyformat
 from profileloader import ProfileLoader
-from search_replace import search_replace, update_positions
-from split import re_split
+import pyformat
 from which import which
 
 
@@ -96,61 +96,69 @@ class Pycolor:
         return retcode
 
     def data_callback(self, stream, data):
-        newdata = data
         color_positions = {}
         removed_newline = False
         removed_carriagereturn = False
 
-        if len(newdata) != 0 and newdata[-1] == '\n':
+        if len(data) != 0 and data[-1] == '\n':
             self.linenum += 1
-            newdata = newdata[:-1]
+            data = data[:-1]
             removed_newline = True
-        if len(newdata) != 0 and newdata[-1] == '\r':
-            newdata = newdata[:-1]
+        if len(data) != 0 and data[-1] == '\r':
+            data = data[:-1]
             removed_carriagereturn = True
 
         self.debug_print(4, 'on line %d', self.linenum)
-        self.debug_print(1, 'received: %s', newdata.encode('utf-8'))
+        self.debug_print(1, 'received: %s', data.encode('utf-8'))
+
+        color_positions = {}
+        context = {
+            'color': {
+                'enabled': self.is_color_enabled(),
+                'aliases': self.profloader.color_aliases,
+                'positions': color_positions,
+            }
+        }
 
         for pat in self.current_profile.patterns:
-            if any((
+            if any([
                 not pat.enabled,
                 pat.stdout_only and stream != self.stdout,
                 pat.stderr_only and stream != self.stderr
-            )):
+            ]):
                 continue
 
-            matched, applied = self.apply_pattern(pat, newdata, color_positions)
+            matched, applied = apply_pattern(pat, self.linenum, data, context)
             if matched:
                 if pat.filter:
-                    self.debug_print(2, 'filtered: %s', newdata.encode('utf-8'))
-                    newdata = None
+                    self.debug_print(2, 'filtered: %s', data.encode('utf-8'))
+                    data = None
                     break
 
                 if self.debug >= 3:
                     self.debug_print(3, 'applying: %s',
-                        Pycolor.insert_color_data(applied, color_positions).encode('utf-8')
+                        insert_color_data(applied, color_positions).encode('utf-8')
                     )
 
-                newdata = applied
+                data = applied
                 if pat.skip_others:
                     break
 
-        if newdata is None:
+        if data is None:
             return
 
         if len(color_positions) != 0:
-            newdata = Pycolor.insert_color_data(newdata, color_positions)
+            data = insert_color_data(data, color_positions)
 
-        self.debug_print(2, 'writing:  %s', newdata.encode('utf-8'))
+        self.debug_print(2, 'writing:  %s', data.encode('utf-8'))
 
         if self.current_profile.timestamp:
             self.write_timestamp(stream)
 
         stream.flush()
-        stream.buffer.write(newdata.encode('utf-8'))
+        stream.buffer.write(data.encode('utf-8'))
 
-        self.color_state.set_state_by_string(newdata)
+        self.color_state.set_state_by_string(data)
 
         if self.current_profile.soft_reset_eol:
             stream.write(self.color_state_orig.get_string(
@@ -164,202 +172,6 @@ class Pycolor:
 
         stream.flush()
 
-    def apply_pattern(self, pat, data, color_positions):
-        if not pat.is_active(self.linenum, data):
-            return False, None
-        if pat.super_regex is not None and not pat.super_regex.search(data):
-            return False, None
-
-        context = {
-            'color_state_orig': self.color_state_orig,
-            'color_state': self.color_state,
-            'color_enabled': self.is_color_enabled(),
-            'color_aliases': self.profloader.color_aliases,
-        }
-
-        if pat.separator_regex is not None:
-            fields = re_split(pat.separator_regex, data)
-            field_idxs = pat.get_field_indexes(fields)
-            context['fields'] = fields
-
-        if pat.separator_regex is None or (pat.field is not None and pat.field < 0):
-            if pat.replace_all is not None:
-                match = pat.regex.search(data)
-                if match is None:
-                    return False, None
-
-                context['match'] = match
-
-                data, colorpos = pyformat.format_string(
-                    pat.replace_all,
-                    context=context,
-                    return_color_positions=True
-                )
-                color_positions.clear()
-                color_positions.update(colorpos)
-                return True, data
-            if pat.replace is not None:
-                data, replace_ranges, colorpos = self.pat_schrep(pat, data)
-                if len(replace_ranges) == 0:
-                    return False, None
-
-                update_positions(color_positions, replace_ranges)
-                Pycolor.update_color_positions(color_positions, colorpos)
-                return True, data
-            if len(pat.replace_groups) != 0:
-                newdata = ''
-                last = 0
-                choffset = 0
-                replace_ranges = []
-
-                for match in pat.regex.finditer(data):
-                    context['match'] = match
-                    newdata += data[last:match.start(0)]
-                    last = match.start(0)
-
-                    groupdict = match.groupdict()
-                    group_idx_to_name = {}
-
-                    for i in range(1, len(match.groups()) + 1):
-                        span = match.span(i)
-                        for group in groupdict:
-                            if match.span(group) == span:
-                                group_idx_to_name[i] = group
-                                break
-
-                    for i in range(1, len(match.groups()) + 1):
-                        newdata += data[last:match.start(i)]
-                        replace_val = None
-                        if isinstance(pat.replace_groups, dict):
-                            replace_val = pat.replace_groups.get(str(i))
-                            if replace_val is None and i in group_idx_to_name:
-                                replace_val = pat.replace_groups.get(group_idx_to_name[i])
-                        elif isinstance(pat.replace_groups, list) and i <= len(pat.replace_groups):
-                            replace_val = pat.replace_groups[i - 1]
-
-                        if replace_val is not None:
-                            context['match_curr'] = match.group(i)
-                            format_data, colorpos = pyformat.format_string(
-                                replace_val,
-                                context=context,
-                                return_color_positions=True
-                            )
-                            newdata += format_data
-
-                            colorpos = Pycolor.offset_color_positions(colorpos, match.start(i))
-                            choffset += len(format_data) - (match.end(i) - match.start(i))
-                            update_positions(colorpos, replace_ranges)
-                            replace_ranges.append((
-                                match.span(i),
-                                (
-                                    match.start(i) + choffset,
-                                    match.start(i) + choffset + len(format_data)
-                                )
-                            ))
-                            Pycolor.update_color_positions(color_positions, colorpos)
-                        else:
-                            newdata += match.group(i)
-                        last = match.end(i)
-
-                    newdata += data[last:match.end(0)]
-                    last = match.end(0)
-                newdata += data[last:]
-
-                if 'match' in context:
-                    return True, newdata
-                return False, None
-            return pat.regex.search(data), data
-
-        if pat.replace_all is not None:
-            for field_idx in field_idxs:
-                match = pat.regex.search(fields[field_idx])
-                if match is None:
-                    continue
-
-                context['match'] = match
-
-                data, colorpos = pyformat.format_string(
-                    pat.replace_all,
-                    context=context,
-                    return_color_positions=True
-                )
-
-                color_positions.clear()
-                color_positions.update(colorpos)
-                return True, data
-
-        if pat.replace is not None:
-            matched = False
-            for field_idx in field_idxs:
-                newfield, replace_ranges, colorpos = self.pat_schrep(pat, fields[field_idx])
-                if len(replace_ranges) == 0:
-                    continue
-                fields[field_idx] = newfield
-                matched = True
-
-                offset = 0
-                for i in range(field_idx):
-                    offset += len(fields[i])
-
-                for idx in range(len(replace_ranges)): #pylint: disable=consider-using-enumerate
-                    old_range, new_range = replace_ranges[idx]
-                    replace_ranges[idx] = (
-                        (old_range[0] + offset, old_range[1] + offset),
-                        (new_range[0] + offset, new_range[1] + offset),
-                    )
-
-                if offset > 0:
-                    for key in sorted(colorpos.keys(), reverse=True):
-                        colorpos[key + offset] = colorpos[key]
-                        del colorpos[key]
-
-                update_positions(color_positions, replace_ranges)
-                Pycolor.update_color_positions(color_positions, colorpos)
-            if not matched:
-                return False, None
-            return True, ''.join(fields)
-
-        for field_idx in field_idxs:
-            match = pat.regex.search(fields[field_idx])
-            if match is not None:
-                return True, data
-
-        return False, None
-
-    def pat_schrep(self, pattern, string):
-        color_positions = {}
-
-        def replacer(match):
-            newstring, colorpos = pyformat.format_string(
-                pattern.replace,
-                context={
-                    'color_state_orig': self.color_state_orig,
-                    'color_state': self.color_state,
-                    'color_enabled': self.is_color_enabled(),
-                    'color_aliases': self.profloader.color_aliases,
-                    'match': match
-                },
-                return_color_positions=True
-            )
-
-            if match.start() > 0:
-                for key in sorted(colorpos.keys(), reverse=True):
-                    colorpos[key + match.start()] = colorpos[key]
-                    del colorpos[key]
-
-            color_positions.update(colorpos)
-            return newstring
-
-        newstring, replace_ranges = search_replace(
-            pattern.regex,
-            string,
-            replacer,
-            ignore_ranges=[],
-            start_occurrence=pattern.start_occurrence,
-            max_count=pattern.max_count
-        )
-        return newstring, replace_ranges, color_positions
-
     def write_timestamp(self, stream):
         timestamp = '%Y-%m-%d %H:%M:%S: '
         if isinstance(self.current_profile.timestamp, str):
@@ -372,64 +184,6 @@ class Pycolor:
         stream.write(self.color_state.get_string(
             compare_state=self.color_state_orig
         ))
-
-    @staticmethod
-    def insert_color_data(data, color_positions):
-        colored_data = ''
-        last = 0
-
-        for key in sorted(color_positions.keys()):
-            colored_data += data[last:key] + color_positions[key]
-            last = key
-
-        return colored_data + data[last:]
-
-    @staticmethod
-    def update_color_positions(color_positions, pos):
-        if len(pos) == 0:
-            return
-
-        keys_pos = sorted(pos.keys())
-        keys_col = set(color_positions.keys())
-
-        for idx in range(0, len(keys_pos) - 1, 2):
-            first = keys_pos[idx]
-            second = keys_pos[idx + 1]
-
-            to_remove = []
-            for key in keys_col:
-                if key >= first and key <= second:
-                    to_remove.append(key)
-                    del color_positions[key]
-            for key in to_remove:
-                keys_col.remove(key)
-
-            color_positions[first] = pos[first]
-            color_positions[second] = pos[second]
-
-            if pyformat.color.is_ansi_reset(pos[second]):
-                last = -1
-                for key in keys_col:
-                    if key < first and key > last:
-                        last = key
-
-                if last != -1:
-                    color_positions[second] = pos[second] + color_positions[last]
-
-        if (len(pos) & 1) == 1:
-            last = keys_pos[-1]
-            color_positions[last] = pos[last]
-
-            for key in keys_col:
-                if key > last:
-                    del color_positions[key]
-
-    @staticmethod
-    def offset_color_positions(color_positions, offset):
-        newpos = {}
-        for key, val in color_positions.items():
-            newpos[key + offset] = val
-        return newpos
 
     def set_current_profile(self, profile):
         if profile is None:

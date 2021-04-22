@@ -19,6 +19,12 @@
 						"%Ce%Gc%Cz",
 						"%Cc%Gc%Cz"
 					]
+				},
+				{
+					"expression": "[^0-9a-f]([0-9a-f]{4})[^0-9a-f]",
+					"replace_groups": [
+						"%Cm%Gc%Cz"
+					]
 				}
 			]
 		}
