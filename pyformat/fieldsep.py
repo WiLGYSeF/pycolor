@@ -46,14 +46,14 @@ def get_fields(formatter, context):
     if start > end or start >= len(fields):
         return ''
 
-    newstring = fields[start]
+    string = fields[start]
     for i in range(start + 2, end + 1, 2):
         if sep is None:
-            newstring += fields[i - 1] + fields[i]
+            string += fields[i - 1] + fields[i]
         else:
-            newstring += sep + fields[i]
+            string += sep + fields[i]
 
-    return newstring
+    return string
 
 def get_join_field(num, context):
     fields = context['fields']

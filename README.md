@@ -184,7 +184,7 @@ Field formats support negative indexing, so `%F(-1)_%F(-2)` will format to `f_e`
 
 ### Field Ranges
 
-Giving a range of fields is possible using the `*` character.
+Giving a range of fields is possible using the `*` character, where `%F(<start range>*<end range>)`.
 A sample table is given below, using the same example as above:
 
 | Field Format | Value |
@@ -199,3 +199,7 @@ A sample table is given below, using the same example as above:
 
 If you want to format using field ranges, but want to override the separator used to be a constant-length string, use `%F(<start range>*<end range>,<separator>)`.
 Using the previous input as an example, `%F(*4,_)` formats to  `a_b_c_d`.
+
+## Padding
+
+...

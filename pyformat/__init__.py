@@ -127,8 +127,8 @@ def do_format(string, formatter, value, idx, newidx, context):
         return ''
 
     if formatter == FORMAT_GROUP and 'match' in context:
-        if value == 'c' and 'match_curr' in context:
-            return context['match_curr']
+        if value == 'c' and 'match_cur' in context:
+            return context['match_cur']
 
         try:
             group = int(value)
@@ -141,21 +141,22 @@ def do_format(string, formatter, value, idx, newidx, context):
         except IndexError:
             matchgroup = None
 
-        if matchgroup is None:
-            if group == 'n':
-                if 'match_incr' not in context:
-                    context['match_incr'] = 1
+        if matchgroup is None and group == 'n':
+            if 'match_incr' not in context:
+                context['match_incr'] = 1
 
-                try:
-                    matchgroup = context['match'][context['match_incr']]
-                    context['match_incr'] += 1
-                    return matchgroup
-                except IndexError:
-                    pass
-            return ''
-        return matchgroup
+            try:
+                matchgroup = context['match'][context['match_incr']]
+                context['match_incr'] += 1
+                return matchgroup
+            except IndexError:
+                pass
+        return matchgroup if matchgroup else ''
 
     if formatter == FORMAT_FIELD and 'fields' in context:
+        if value == 'c' and 'field_cur' in context:
+            return context['field_cur']
+
         return fieldsep.get_fields(value, context)
 
     return string[idx:newidx]

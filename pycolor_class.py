@@ -188,7 +188,11 @@ class Pycolor:
             field_idxs = pat.get_field_indexes(fields)
             context['fields'] = fields
 
-        if pat.separator_regex is None or (pat.field is not None and pat.field < 0):
+        if pat.separator_regex is None or all([
+            pat.field is not None,
+            pat.field == 0,
+            len(field_idxs) != 0
+        ]):
             if pat.replace_all is not None:
                 match = pat.regex.search(data)
                 if match is None:
@@ -213,6 +217,72 @@ class Pycolor:
                 update_positions(color_positions, replace_ranges)
                 update_color_positions(color_positions, colorpos)
                 return True, data
+            if 'fields' in context and all([
+                len(pat.replace_fields) != 0,
+                len(field_idxs) != 0
+            ]):
+                newdata = ''
+                changed = False
+                offset = 0
+                choffset = 0
+                replace_ranges = []
+                field_idx = 0
+
+                for idx in range(0, len(fields) + 1, 2):
+                    replace_val = None
+                    sep = fields[idx + 1] if idx != len(fields) - 1 else ''
+
+                    if isinstance(pat.replace_fields, dict):
+                        for key, val in pat.replace_fields.items():
+                            for num in key.split(','):
+                                ranges =  num.split('*')
+                                start = int(ranges[0]) - 1
+                                end = start + 1
+                                step = 1
+
+                                if len(ranges) >= 2:
+                                    try:
+                                        end = int(ranges[1])
+                                    except:
+                                        end = pyformat.fieldsep.idx_to_num(len(fields))
+                                if len(ranges) >= 3:
+                                    step = int(ranges[2])
+
+                                if field_idx in range(start, end, step):
+                                    replace_val = val
+                                    changed = True
+                    elif isinstance(pat.replace_fields, list) and field_idx < len(pat.replace_fields):
+                        replace_val = pat.replace_fields[field_idx]
+                        changed = True
+
+                    if replace_val is None:
+                        replace_val = fields[idx]
+
+                    context['field_cur'] = fields[idx]
+                    replace_val, colorpos = pyformat.format_string(
+                        replace_val,
+                        context=context,
+                        return_color_positions=True
+                    )
+
+                    colorpos = offset_color_positions(colorpos, offset)
+                    choffset += len(replace_val) - len(fields[idx])
+
+                    update_positions(colorpos, replace_ranges)
+                    replace_ranges.append((
+                        (offset, offset + len(fields[idx])),
+                        (
+                            offset + choffset,
+                            offset + choffset + len(replace_val)
+                        )
+                    ))
+                    update_color_positions(color_positions, colorpos)
+
+                    newdata += replace_val + sep
+                    offset += len(replace_val) + len(sep)
+                    field_idx += 1
+
+                return changed, newdata
             if len(pat.replace_groups) != 0:
                 choffset = 0
                 replace_ranges = []
@@ -236,7 +306,7 @@ class Pycolor:
                     if replace_val is None:
                         return match.group(idx)
 
-                    context['match_curr'] = match.group(idx)
+                    context['match_cur'] = match.group(idx)
                     replace_val, colorpos = pyformat.format_string(
                         replace_val,
                         context=context,
