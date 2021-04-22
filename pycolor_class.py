@@ -173,6 +173,7 @@ class Pycolor:
             return False, None
 
         context = {
+            'data': data,
             'color_state': self.color_state,
             'color_enabled': self.is_color_enabled(),
             'color_aliases': self.profloader.color_aliases,
@@ -191,6 +192,7 @@ class Pycolor:
                     return False, None
 
                 context['match'] = match
+                context['idx'] = match.start()
 
                 data, colorpos = pyformat.format_string(
                     pat.replace_all,
@@ -216,6 +218,7 @@ class Pycolor:
                     nonlocal choffset
 
                     context['match'] = match
+                    context['idx'] = match.start()
                     replace_val = None
 
                     if isinstance(pat.replace_groups, dict):
@@ -263,6 +266,7 @@ class Pycolor:
                     continue
 
                 context['match'] = match
+                context['idx'] = match.start()
 
                 data, colorpos = pyformat.format_string(
                     pat.replace_all,
@@ -319,11 +323,13 @@ class Pycolor:
             newstring, colorpos = pyformat.format_string(
                 pattern.replace,
                 context={
+                    'data': string,
                     'color_state': self.color_state,
                     'color_enabled': self.is_color_enabled(),
                     'color_aliases': self.profloader.color_aliases,
                     'color_positions': color_positions,
-                    'match': match
+                    'match': match,
+                    'idx': match.start(),
                 },
                 return_color_positions=True
             )
@@ -366,11 +372,13 @@ class Pycolor:
             color_positions[key] += val
 
     @staticmethod
-    def insert_color_data(data, color_positions):
+    def insert_color_data(data, color_positions, end=-1):
         colored_data = ''
         last = 0
 
         for key in sorted(color_positions.keys()):
+            if end != -1 and key > end + 1:
+                return colored_data + data[last:end + 1]
             colored_data += data[last:key] + color_positions[key]
             last = key
 

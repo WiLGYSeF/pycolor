@@ -20,6 +20,8 @@ def format_string(string, context=None, return_color_positions=False):
     if context.get('color_enabled', True):
         if 'color_state' not in context:
             context['color_state'] = ColorState()
+        context['color_state_tmp'] = context['color_state'].copy()
+        context['color_state_current'] = context['color_state'].copy()
         context['past_color_states'] = [ context['color_state'].copy() ]
 
     newstring = ''
@@ -36,7 +38,13 @@ def format_string(string, context=None, return_color_positions=False):
             formatter, value, newidx = get_formatter(string, idx)
             if formatter is not None:
                 if context.get('color_enabled', True):
-                    context['color_state_current'] = context['color_state'].copy()
+                    if 'color_positions' in context:
+                        context['color_state_tmp'].reset()
+                        context['color_state_tmp'].set_state_by_string(
+                            Pycolor.insert_color_data(context['data'], context['color_positions'], context['idx'])
+                        )
+
+                    context['color_state_current'].reset()
                     context['color_state_current'].set_state_by_string(
                         Pycolor.insert_color_data(newstring, color_positions)
                     )
@@ -77,7 +85,7 @@ def do_format(string, formatter, value, idx, newidx, context):
                 current=context['color_state_current']
             )
         if value in ('s', 'soft'):
-            return context['color_state'].get_string(
+            return context['color_state_tmp'].get_string(
                 compare_state=context['color_state_current']
             )
 
