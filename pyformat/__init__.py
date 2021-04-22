@@ -1,3 +1,4 @@
+from colorpositions import insert_color_data
 from colorstate import ColorState
 from pyformat import color
 from pyformat import fieldsep
@@ -12,8 +13,6 @@ FORMAT_PADDING = 'P'
 
 
 def format_string(string, context=None, return_color_positions=False):
-    from pycolor_class import Pycolor
-
     if context is None:
         context = {}
     if 'color' not in context:
@@ -44,12 +43,16 @@ def format_string(string, context=None, return_color_positions=False):
                     if 'positions' in ctx_color:
                         ctx_color['state_tmp'].reset()
                         ctx_color['state_tmp'].set_state_by_string(
-                            Pycolor.insert_color_data(context['string'], ctx_color['positions'], context['idx'])
+                            insert_color_data(
+                                context['string'],
+                                ctx_color['positions'],
+                                context['idx']
+                            )
                         )
 
                     ctx_color['state_current'].reset()
                     ctx_color['state_current'].set_state_by_string(
-                        Pycolor.insert_color_data(newstring, color_positions)
+                        insert_color_data(newstring, color_positions)
                     )
 
                 result = do_format(string, formatter, value, idx, newidx, context)
@@ -68,7 +71,7 @@ def format_string(string, context=None, return_color_positions=False):
 
     if return_color_positions:
         return newstring, color_positions
-    return Pycolor.insert_color_data(newstring, color_positions)
+    return insert_color_data(newstring, color_positions)
 
 def do_format(string, formatter, value, idx, newidx, context):
     if formatter == FORMAT_COLOR:

@@ -1,6 +1,6 @@
 import unittest
 
-from pycolor_class import Pycolor
+import colorpositions
 
 
 DATA = 'data'
@@ -40,10 +40,10 @@ INSERT_COLOR_DATA = [
 ]
 
 
-class InsertColorDataTest(unittest.TestCase):
+class ColorPositionsTest(unittest.TestCase):
     def test_insert_color_data(self):
         for entry in INSERT_COLOR_DATA:
             self.assertEqual(
-                Pycolor.insert_color_data(entry[DATA], entry[COLOR_POS]),
+                colorpositions.insert_color_data(entry[DATA], entry[COLOR_POS]),
                 entry[RESULT]
             )
