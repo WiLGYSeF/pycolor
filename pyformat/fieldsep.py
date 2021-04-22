@@ -6,7 +6,7 @@ def get_fields(formatter, context):
     last_field_num = idx_to_num(len(fields))
 
     if formatter[0] == CHAR_SEPARATOR:
-        return get_join_field(int(formatter[1:]), context)
+        return get_join_field(int(formatter[1:]), fields)
 
     comma_idx = formatter.find(',')
     if comma_idx != -1:
@@ -55,17 +55,14 @@ def get_fields(formatter, context):
 
     return string
 
-def get_join_field(num, context):
-    fields = context['fields']
+def get_join_field(num, fields):
     if num < 0:
         num += idx_to_num(len(fields)) + 1
     if num <= 1:
         return ''
 
     num = num_to_idx(num - 1) + 1
-    if num >= len(fields):
-        return ''
-    return fields[num]
+    return fields[num] if num < len(fields) else ''
 
 def idx_to_num(idx):
     return idx // 2 + 1
