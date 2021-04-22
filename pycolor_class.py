@@ -235,20 +235,11 @@ class Pycolor:
                     if isinstance(pat.replace_fields, dict):
                         for key, val in pat.replace_fields.items():
                             for num in key.split(','):
-                                ranges =  num.split('*')
-                                start = int(ranges[0]) - 1
-                                end = start + 1
-                                step = 1
+                                start, end, step = pyformat.fieldsep.get_field_range(num, fields)
+                                start = pyformat.fieldsep.idx_to_num(start)
+                                end = pyformat.fieldsep.idx_to_num(end)
 
-                                if len(ranges) >= 2:
-                                    try:
-                                        end = int(ranges[1])
-                                    except:
-                                        end = pyformat.fieldsep.idx_to_num(len(fields))
-                                if len(ranges) >= 3:
-                                    step = int(ranges[2])
-
-                                if field_idx in range(start, end, step):
+                                if field_idx in range(start - 1, end, step):
                                     replace_val = val
                                     changed = True
                     elif isinstance(pat.replace_fields, list) and field_idx < len(pat.replace_fields):
