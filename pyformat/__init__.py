@@ -12,6 +12,8 @@ FORMAT_PADDING = 'P'
 
 
 def format_string(string, context=None, return_color_positions=False):
+    from pycolor_class import Pycolor
+
     if context is None:
         context = {}
 
@@ -35,17 +37,16 @@ def format_string(string, context=None, return_color_positions=False):
             if formatter is not None:
                 if context.get('color_enabled', True):
                     context['color_state_current'] = context['color_state'].copy()
-                    context['color_state_current'].set_state_by_string(newstring)
+                    context['color_state_current'].set_state_by_string(
+                        Pycolor.insert_color_data(newstring, color_positions)
+                    )
 
                 result = do_format(string, formatter, value, idx, newidx, context)
-                apppend_result = True
-
                 if formatter == FORMAT_COLOR:
-                    if return_color_positions:
-                        color_positions[len(newstring)] = result
-                        apppend_result = False
-
-                if apppend_result:
+                    if len(newstring) not in color_positions:
+                        color_positions[len(newstring)] = ''
+                    color_positions[len(newstring)] += result
+                else:
                     newstring += result
 
                 idx = newidx
@@ -56,7 +57,7 @@ def format_string(string, context=None, return_color_positions=False):
 
     if return_color_positions:
         return newstring, color_positions
-    return newstring
+    return Pycolor.insert_color_data(newstring, color_positions)
 
 def do_format(string, formatter, value, idx, newidx, context):
     if formatter == FORMAT_COLOR:

@@ -206,7 +206,7 @@ class Pycolor:
                     return False, None
 
                 update_positions(color_positions, replace_ranges)
-                color_positions.update(colorpos)
+                Pycolor.update_color_positions(color_positions, colorpos)
                 return True, data
             if len(pat.replace_groups) != 0:
                 choffset = 0
@@ -249,7 +249,7 @@ class Pycolor:
                         )
                     ))
 
-                    color_positions.update(colorpos)
+                    Pycolor.update_color_positions(color_positions, colorpos)
                     return replace_val
 
                 newdata = match_group_replace(pat.regex, data, replace_group)
@@ -300,7 +300,7 @@ class Pycolor:
                         del colorpos[key]
 
                 update_positions(color_positions, replace_ranges)
-                color_positions.update(colorpos)
+                Pycolor.update_color_positions(color_positions, colorpos)
             if not matched:
                 return False, None
             return True, ''.join(fields)
@@ -333,7 +333,7 @@ class Pycolor:
                     colorpos[key + match.start()] = colorpos[key]
                     del colorpos[key]
 
-            color_positions.update(colorpos)
+            Pycolor.update_color_positions(color_positions, colorpos)
             return newstring
 
         newstring, replace_ranges = search_replace(
@@ -357,6 +357,13 @@ class Pycolor:
         stream.write(self.color_state.get_string(
             compare_state=self.color_state_orig
         ))
+
+    @staticmethod
+    def update_color_positions(color_positions, pos):
+        for key, val in pos.items():
+            if key not in color_positions:
+                color_positions[key] = ''
+            color_positions[key] += val
 
     @staticmethod
     def insert_color_data(data, color_positions):
