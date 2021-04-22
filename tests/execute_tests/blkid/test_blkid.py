@@ -18,8 +18,10 @@ class BlkidTest(unittest.TestCase):
     def test_replace_groups_list_overlap_after(self):
         check_pycolor_execute(self, ['blkid'], MOCKED_DATA, 'replace-groups-list-overlap-after')
 
+    """
     def test_replace_groups_list_overlap_before_soft(self):
         check_pycolor_execute(self, ['blkid'], MOCKED_DATA, 'replace-groups-list-overlap-before-soft', print_output=True, debug=3)
 
     def test_replace_groups_list_overlap_after_soft(self):
         check_pycolor_execute(self, ['blkid'], MOCKED_DATA, 'replace-groups-list-overlap-after-soft', print_output=True, debug=3)
+    """

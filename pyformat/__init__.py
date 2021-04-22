@@ -16,17 +16,13 @@ def format_string(string, context=None, return_color_positions=False):
         context = {}
 
     if context.get('color_enabled', True):
-        if 'color_state' in context:
-            context['color_state_current'] = context['color_state'].copy()
-        else:
-            context['color_state_current'] = ColorState()
-
-        context['past_color_states'] = [ context['color_state_current'].copy() ]
+        if 'color_state' not in context:
+            context['color_state'] = ColorState()
+        context['past_color_states'] = [ context['color_state'].copy() ]
 
     newstring = ''
     color_positions = {}
     idx = 0
-    last_format_idx = 0
 
     while idx < len(string):
         if string[idx] == '%':
@@ -38,7 +34,8 @@ def format_string(string, context=None, return_color_positions=False):
             formatter, value, newidx = get_formatter(string, idx)
             if formatter is not None:
                 if context.get('color_enabled', True):
-                    context['color_state_current'].set_state_by_string(newstring[last_format_idx:])
+                    context['color_state_current'] = context['color_state'].copy()
+                    context['color_state_current'].set_state_by_string(newstring)
 
                 result = do_format(string, formatter, value, idx, newidx, context)
                 apppend_result = True
@@ -46,11 +43,7 @@ def format_string(string, context=None, return_color_positions=False):
                 if formatter == FORMAT_COLOR:
                     if return_color_positions:
                         color_positions[len(newstring)] = result
-                        if context.get('color_enabled', True):
-                            context['color_state_current'].set_state_by_string(result)
                         apppend_result = False
-
-                last_format_idx = len(newstring)
 
                 if apppend_result:
                     newstring += result
@@ -83,7 +76,7 @@ def do_format(string, formatter, value, idx, newidx, context):
                 current=context['color_state_current']
             )
         if value in ('s', 'soft'):
-            return context['color_state_orig'].get_string(
+            return context['color_state'].get_string(
                 compare_state=context['color_state_current']
             )
 

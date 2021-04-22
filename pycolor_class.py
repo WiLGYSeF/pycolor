@@ -173,10 +173,10 @@ class Pycolor:
             return False, None
 
         context = {
-            'color_state_orig': self.color_state_orig,
             'color_state': self.color_state,
             'color_enabled': self.is_color_enabled(),
             'color_aliases': self.profloader.color_aliases,
+            'color_positions': color_positions
         }
 
         if pat.separator_regex is not None:
@@ -319,10 +319,10 @@ class Pycolor:
             newstring, colorpos = pyformat.format_string(
                 pattern.replace,
                 context={
-                    'color_state_orig': self.color_state_orig,
                     'color_state': self.color_state,
                     'color_enabled': self.is_color_enabled(),
                     'color_aliases': self.profloader.color_aliases,
+                    'color_positions': color_positions,
                     'match': match
                 },
                 return_color_positions=True
