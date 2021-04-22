@@ -42,6 +42,7 @@ def apply_pattern(pat, linenum, data, context):
             color_positions.clear()
             color_positions.update(colorpos)
             return True, data
+
         if pat.replace is not None:
             data, replace_ranges, colorpos = pat_schrep(pat, data, context)
             if len(replace_ranges) == 0:
@@ -50,6 +51,7 @@ def apply_pattern(pat, linenum, data, context):
             update_positions(color_positions, replace_ranges)
             update_color_positions(color_positions, colorpos)
             return True, data
+
         if 'fields' in context and all([
             len(pat.replace_fields) != 0,
             len(field_idxs) != 0
@@ -107,6 +109,7 @@ def apply_pattern(pat, linenum, data, context):
                 field_idx += 1
 
             return changed, newdata
+
         if len(pat.replace_groups) != 0:
             choffset = 0
             replace_ranges = []
@@ -215,9 +218,9 @@ def apply_pattern(pat, linenum, data, context):
 
 def pat_schrep(pattern, string, context):
     color_positions = {}
+    ctx = pyformat.dictcopy(context)
 
     def replacer(match):
-        ctx = pyformat.dictcopy(context)
         ctx['string'] = string
         ctx['idx'] = match.start()
         ctx['match'] = match
