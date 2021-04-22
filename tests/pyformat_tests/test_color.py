@@ -25,6 +25,8 @@ FORMAT_COLOR_STRING = {
     '%C(raw1;4;38;5;40)abc': '\x1b[1;4;38;5;40mabc',
     '%C(overline)abc': '\x1b[53mabc',
     '%C(^overline)abc': '\x1b[55mabc',
+    '%C(red': '%C(red',
+    '%CC(red)': '%CC(red)'
 }
 
 FORMAT_COLOR_STRING_LAST = {
