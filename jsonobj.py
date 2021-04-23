@@ -31,28 +31,24 @@ def _build(dest, obj, schema, **kwargs):
     for _ in range(2):
         for typ in stype:
             typ = typ.lower()
-            args = kwargs.copy()
 
             try:
-                if typ in ('obj', 'object'):
-                    for key, val in schema.get('properties', {}).items():
-                        args['name'] = key
-                        setattr(dest, key, _build(dest, obj.get(key), val, **args))
-                    return dest
                 if typ in ('arr', 'array', 'list'):
-                    return _build_array(obj, schema, **args)
+                    return _build_array(obj, schema, **kwargs)
                 if typ in ('bool', 'boolean'):
-                    return _build_boolean(obj, schema, **args)
+                    return _build_boolean(obj, schema, **kwargs)
                 if typ == 'enum':
-                    return _build_enum(obj, schema, **args)
+                    return _build_enum(obj, schema, **kwargs)
                 if typ in ('int', 'integer'):
-                    return _build_integer(obj, schema, **args)
+                    return _build_integer(obj, schema, **kwargs)
                 if typ in ('num', 'number'):
-                    return _build_number(obj, schema, **args)
+                    return _build_number(obj, schema, **kwargs)
+                if typ in ('obj', 'object'):
+                    return _build_object(obj, schema, dest_obj=dest, **kwargs)
                 if typ in ('str', 'string'):
-                    return _build_string(obj, schema, **args)
+                    return _build_string(obj, schema, **kwargs)
                 if typ in ('str_arr', 'string_array'):
-                    return _build_string_array(obj, schema, **args)
+                    return _build_string_array(obj, schema, **kwargs)
                 if typ in ('null', 'none'):
                     if obj is not None:
                         raise ValueError('"%s" is defined and not null: %s' % (name, obj))
@@ -77,14 +73,6 @@ def _build_array(obj, schema, **kwargs):
         return _invalid(obj, schema, **kwargs)
 
     return obj
-
-    arr = []
-    for val in obj:
-        print(val, schema)
-        raise ValueError()
-        # TODO
-        #arr.append(_build({}, val, schema))
-    return arr
 
 def _build_boolean(obj, schema, **kwargs):
     if obj == RETURN_DEFAULT:
@@ -134,6 +122,22 @@ def _build_number(obj, schema, **kwargs):
 
     return float(obj)
 
+def _build_object(obj, schema, **kwargs):
+    dest = kwargs['dest_obj']
+
+    if 'properties' in schema:
+        args = kwargs.copy()
+        del args['dest_obj']
+
+        for key, val in schema['properties'].items():
+            args['name'] = key
+            setattr(dest, key, _build({}, obj.get(key), val, **args))
+        return dest
+
+    if not isinstance(obj, dict):
+        return _invalid(obj, schema, **kwargs)
+    return obj
+
 def _build_string(obj, schema, **kwargs):
     minlen = schema.get('min_length')
     maxlen = schema.get('max_length')
@@ -155,7 +159,7 @@ def _build_string(obj, schema, **kwargs):
 
 def _build_string_array(obj, schema, **kwargs):
     if isinstance(obj, list):
-        return _build_string(''.join(obj), schema)
+        return _build_string(''.join(obj), schema, **kwargs)
     return _build_string(obj, schema, **kwargs)
 
 def _invalid(obj, schema, **kwargs):
