@@ -6,7 +6,7 @@ import jsonobj
 ARGPATTERN_SCHEMA = {
     'type': 'object',
     'properties': {
-        'expression': {'type': ['array', 'string'], 'required': True},
+        'expression': {'type': ['string_array'], 'required': True},
         'position': {'type': ['null', 'string', 'integer']},
 
         'match_not': {'type': 'boolean'},
@@ -23,9 +23,6 @@ class ArgPattern:
         self.position = None
 
         jsonobj.build(cfg, schema=ARGPATTERN_SCHEMA, dest=self)
-
-        if isinstance(self.expression, list):
-            self.expression = ''.join(self.expression)
 
         self.regex = re.compile(self.expression)
 

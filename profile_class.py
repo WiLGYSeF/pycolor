@@ -1,6 +1,6 @@
 import re
 
-import jsonschema
+import jsonobj
 
 import argpattern
 import fromprofile
@@ -10,52 +10,41 @@ import pattern
 PROFILE_SCHEMA = {
     'type': 'object',
     'properties': {
-        'name': {'type' : 'string'},
-        'name_expression': {'type' : ['array', 'string']},
-        'profile_name': {'type': 'string'},
-        'which': {'type': 'string'},
+        'name': {'type' : ['null', 'string']},
+        'name_expression': {'type' : ['null', 'string_array']},
+        'profile_name': {'type': ['null', 'string']},
+        'which': {'type': ['null', 'string']},
 
         'all_args_must_match': {'type': 'boolean'},
-        'min_args': {'type': 'integer'},
-        'max_args': {'type': 'integer'},
+        'min_args': {'type': ['null', 'integer']},
+        'max_args': {'type': ['null', 'integer']},
+
         'soft_reset_eol': {'type': 'boolean'},
         'timestamp': {'type': ['boolean', 'string']},
-        'less_output': {'type': 'boolean'},
+        'less_output': {'type': ['boolean', 'string']},
         'tty': {'type': 'boolean'},
 
-        'from_profiles': {'type': ['array', 'string']},
+        'from_profiles': {'type': ['array', 'object', 'string']},
 
         'arg_patterns': {'type': 'array'},
         'patterns': {'type': 'array'},
-    },
-    'required': []
+    }
 }
 
 
 class Profile:
     def __init__(self, cfg):
-        jsonschema.validate(instance=cfg, schema=PROFILE_SCHEMA)
+        self.name = None
+        self.name_expression = None
+        self.which = None
+        self.profile_name = None
 
-        self.name = cfg.get('name')
-        self.name_expression = cfg.get('name_expression')
-        self.profile_name = cfg.get('profile_name')
-        self.which = cfg.get('which')
-
-        self.all_args_must_match = cfg.get('all_args_must_match', False)
-        self.min_args = cfg.get('min_args')
-        self.max_args = cfg.get('max_args')
-        self.soft_reset_eol = cfg.get('soft_reset_eol', False)
-        self.timestamp = cfg.get('timestamp', False)
-        self.less_output = cfg.get('less_output', False)
-        self.tty = cfg.get('tty', False)
+        jsonobj.build(cfg, schema=PROFILE_SCHEMA, dest=self)
 
         self.from_profiles = []
 
         self.arg_patterns = []
         self.patterns = []
-
-        if isinstance(self.name_expression, list):
-            self.name_expression = ''.join(self.name_expression)
 
         self.name_regex = re.compile(self.name_expression) if self.name_expression else None
 

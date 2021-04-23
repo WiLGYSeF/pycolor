@@ -5,7 +5,7 @@ FROMPROFILE_SCHEMA = {
     'type': 'object',
     'properties': {
         'enabled': {'type' : 'boolean', 'default': True},
-        'name': {'type' : 'string'},
+        'name': {'type' : 'string', 'required': True},
         'order': {'enum': ['before', 'after'], 'default': 'before'},
     }
 }
