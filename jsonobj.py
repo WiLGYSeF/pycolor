@@ -28,33 +28,32 @@ def _build(dest, obj, schema, **kwargs):
 
     errors = []
 
-    for _ in range(2):
-        for typ in stype:
-            typ = typ.lower()
+    for typ in stype:
+        typ = typ.lower()
 
-            try:
-                if typ in ('arr', 'array', 'list'):
-                    return _build_array(obj, schema, **kwargs)
-                if typ in ('bool', 'boolean'):
-                    return _build_boolean(obj, schema, **kwargs)
-                if typ == 'enum':
-                    return _build_enum(obj, schema, **kwargs)
-                if typ in ('int', 'integer'):
-                    return _build_integer(obj, schema, **kwargs)
-                if typ in ('num', 'number'):
-                    return _build_number(obj, schema, **kwargs)
-                if typ in ('obj', 'object'):
-                    return _build_object(obj, schema, dest_obj=dest, **kwargs)
-                if typ in ('str', 'string'):
-                    return _build_string(obj, schema, **kwargs)
-                if typ in ('str_arr', 'string_array'):
-                    return _build_string_array(obj, schema, **kwargs)
-                if typ in ('null', 'none'):
-                    if obj is not None:
-                        raise ValueError('"%s" is defined and not null: %s' % (name, obj))
-                    return None
-            except ValueError as ver:
-                errors.append(ver)
+        try:
+            if typ in ('arr', 'array', 'list'):
+                return _build_array(obj, schema, **kwargs)
+            if typ in ('bool', 'boolean'):
+                return _build_boolean(obj, schema, **kwargs)
+            if typ == 'enum':
+                return _build_enum(obj, schema, **kwargs)
+            if typ in ('int', 'integer'):
+                return _build_integer(obj, schema, **kwargs)
+            if typ in ('num', 'number'):
+                return _build_number(obj, schema, **kwargs)
+            if typ in ('obj', 'object'):
+                return _build_object(obj, schema, dest_obj=dest, **kwargs)
+            if typ in ('str', 'string'):
+                return _build_string(obj, schema, **kwargs)
+            if typ in ('str_arr', 'string_array'):
+                return _build_string_array(obj, schema, **kwargs)
+            if typ in ('null', 'none'):
+                if obj is not None:
+                    raise ValueError('"%s" is defined and not null: %s' % (name, obj))
+                return None
+        except ValueError as ver:
+            errors.append(ver)
 
     raise ValueError(errors)
 
