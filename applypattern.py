@@ -64,22 +64,8 @@ def apply_pattern(pat, linenum, data, context):
             field_idx = 0
 
             for idx in range(0, len(fields) + 1, 2):
-                replace_val = None
+                replace_val = get_replace_field(fields, field_idx, pat.replace_fields)
                 sep = fields[idx + 1] if idx != len(fields) - 1 else ''
-
-                if isinstance(pat.replace_fields, dict):
-                    for key, val in pat.replace_fields.items():
-                        for num in key.split(','):
-                            start, end, step = pyformat.fieldsep.get_field_range(num, fields)
-                            start = pyformat.fieldsep.idx_to_num(start)
-                            end = pyformat.fieldsep.idx_to_num(end)
-
-                            if field_idx in range(start - 1, end, step):
-                                replace_val = val
-                                changed = True
-                elif isinstance(pat.replace_fields, list) and field_idx < len(pat.replace_fields):
-                    replace_val = pat.replace_fields[field_idx]
-                    changed = True
 
                 if replace_val is None:
                     replace_val = fields[idx]
@@ -117,23 +103,15 @@ def apply_pattern(pat, linenum, data, context):
             def replace_group(match, idx):
                 nonlocal choffset
 
-                context['match'] = match
-                context['idx'] = match.start()
-                replace_val = None
-
-                if isinstance(pat.replace_groups, dict):
-                    replace_val = pat.replace_groups.get(str(idx))
-                    if replace_val is None:
-                        group = get_named_group_at_index(match, idx)
-                        if group is not None:
-                            replace_val = pat.replace_groups.get(group)
-                elif isinstance(pat.replace_groups, list) and idx <= len(pat.replace_groups):
-                    replace_val = pat.replace_groups[idx - 1]
+                replace_val = get_replace_group(match, idx, pat.replace_groups)
 
                 if replace_val is None:
                     return match.group(idx)
 
+                context['match'] = match
+                context['idx'] = match.start()
                 context['match_cur'] = match.group(idx)
+
                 replace_val, colorpos = pyformat.format_string(
                     replace_val,
                     context=context,
@@ -247,3 +225,45 @@ def pat_schrep(pattern, string, context):
         max_count=pattern.max_count
     )
     return newstring, replace_ranges, color_positions
+
+def get_replace_field(fields, field_idx, replace_fields):
+    if isinstance(replace_fields, dict):
+        for key, val in replace_fields.items():
+            for num in key.split(','):
+                try:
+                    start, end, step = pyformat.fieldsep.get_field_range(num, fields)
+                    start = pyformat.fieldsep.idx_to_num(start)
+                    end = pyformat.fieldsep.idx_to_num(end)
+
+                    if field_idx in range(start - 1, end, step):
+                        return val
+                except ValueError:
+                    pass
+    elif isinstance(replace_fields, list) and field_idx < len(replace_fields):
+        return replace_fields[field_idx]
+    return None
+
+def get_replace_group(match, idx, replace_groups):
+    if isinstance(replace_groups, dict):
+        val = replace_groups.get(str(idx))
+        if val is not None:
+            return val
+
+        group = get_named_group_at_index(match, idx)
+        if group is not None:
+            return replace_groups.get(group)
+
+        for key, val in replace_groups.items():
+            for num in key.split(','):
+                try:
+                    start, end, step = pyformat.fieldsep.get_field_range(num, match.groups())
+                    start = pyformat.fieldsep.idx_to_num(start)
+                    end = pyformat.fieldsep.idx_to_num(end)
+
+                    if idx - 1 in range(start - 1, end, step):
+                        return val
+                except ValueError:
+                    pass
+    elif isinstance(replace_groups, list) and idx <= len(replace_groups):
+        return replace_groups[idx - 1]
+    return None
