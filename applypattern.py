@@ -228,18 +228,8 @@ def pat_schrep(pattern, string, context):
 
 def get_replace_field(fields, field_idx, replace_fields):
     if isinstance(replace_fields, dict):
-        for key, val in replace_fields.items():
-            for num in key.split(','):
-                try:
-                    start, end, step = pyformat.fieldsep.get_field_range(num, fields)
-                    start = pyformat.fieldsep.idx_to_num(start)
-                    end = pyformat.fieldsep.idx_to_num(end)
-
-                    if field_idx in range(start - 1, end, step):
-                        return val
-                except ValueError:
-                    pass
-    elif isinstance(replace_fields, list) and field_idx < len(replace_fields):
+        return _get_field_range(fields, replace_fields, field_idx)
+    if isinstance(replace_fields, list) and field_idx < len(replace_fields):
         return replace_fields[field_idx]
     return None
 
@@ -253,17 +243,21 @@ def get_replace_group(match, idx, replace_groups):
         if group is not None:
             return replace_groups.get(group)
 
-        for key, val in replace_groups.items():
-            for num in key.split(','):
-                try:
-                    start, end, step = pyformat.fieldsep.get_field_range(num, match.groups())
-                    start = pyformat.fieldsep.idx_to_num(start)
-                    end = pyformat.fieldsep.idx_to_num(end)
-
-                    if idx - 1 in range(start - 1, end, step):
-                        return val
-                except ValueError:
-                    pass
-    elif isinstance(replace_groups, list) and idx <= len(replace_groups):
+        return _get_field_range(match.groups(), replace_groups, idx - 1)
+    if isinstance(replace_groups, list) and idx <= len(replace_groups):
         return replace_groups[idx - 1]
+    return None
+
+def _get_field_range(fields, obj, idx):
+    for key, val in obj.items():
+        for num in key.split(','):
+            try:
+                start, end, step = pyformat.fieldsep.get_field_range(num, fields)
+                start = pyformat.fieldsep.idx_to_num(start)
+                end = pyformat.fieldsep.idx_to_num(end)
+
+                if idx in range(start - 1, end, step):
+                    return val
+            except ValueError:
+                pass
     return None
