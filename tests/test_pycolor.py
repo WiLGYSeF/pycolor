@@ -98,6 +98,9 @@ class PycolorTest(unittest.TestCase):
     def test_main_ls_profile(self):
         self.check_pycolor_main(['--profile', 'none', '--', 'ls', '-l'], MOCKED_DATA, 'ls_profile')
 
+    def test_main_debug_color(self):
+        self.check_pycolor_main(['--debug-color'], MOCKED_DATA, 'debug_color', patch_stdout=True)
+
     def test_main_ls_profile_fail(self):
         with self.assertRaises(SystemExit), patch(pycolor, 'printerr', lambda x: None):
             self.check_pycolor_main(

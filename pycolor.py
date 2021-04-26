@@ -4,6 +4,7 @@ import argparse
 import os
 import sys
 
+import debug_colors
 from execute import read_stream
 from pycolor_class import Pycolor
 
@@ -61,7 +62,16 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         help='do not run the command in a pseudo-terminal (default)'
     )
 
+    parser.add_argument('--debug-color',
+        action='store_true', default=False,
+        help='displays all available color styles and exits'
+    )
+
     argspace, cmd_args = parse_known_args(parser, args)
+
+    if argspace.debug_color:
+        debug_colors.debug_colors()
+        sys.exit(0)
 
     read_stdin = len(cmd_args) == 0
 
