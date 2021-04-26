@@ -58,6 +58,10 @@ def get_args(args):
         action='store', metavar='FORMAT',
         help='displays the formatted string and exits'
     )
+    parser.add_argument('--debug-from-stdin',
+        action='store_true', default=False,
+        help='reads stdin instead of running the given command'
+    )
 
     return parse_known_args(parser, args)
 
