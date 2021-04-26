@@ -7,6 +7,7 @@ import sys
 import debug_colors
 from execute import read_stream
 from pycolor_class import Pycolor
+import pyformat
 
 
 CONFIG_DEFAULT_NAME = '.pycolor.json'
@@ -66,11 +67,19 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         action='store_true', default=False,
         help='displays all available color styles and exits'
     )
+    parser.add_argument('--debug-format',
+        action='store', metavar='FORMAT',
+        help='displays the formatted string and exits'
+    )
 
     argspace, cmd_args = parse_known_args(parser, args)
 
     if argspace.debug_color:
         debug_colors.debug_colors()
+        sys.exit(0)
+
+    if argspace.debug_format:
+        print(pyformat.format_string(argspace.debug_format + '%Cz'))
         sys.exit(0)
 
     read_stdin = len(cmd_args) == 0

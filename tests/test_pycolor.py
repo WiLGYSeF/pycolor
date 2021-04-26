@@ -101,6 +101,11 @@ class PycolorTest(unittest.TestCase):
     def test_main_debug_color(self):
         self.check_pycolor_main(['--debug-color'], MOCKED_DATA, 'debug_color', patch_stdout=True)
 
+    def test_main_debug_format(self):
+        self.check_pycolor_main([
+            '--debug-format', 'this %C(lr)is %C(und;ly)a %C(^und;bol;bli;g)test'
+        ], MOCKED_DATA, 'debug_format', patch_stdout=True)
+
     def test_main_ls_profile_fail(self):
         with self.assertRaises(SystemExit), patch(pycolor, 'printerr', lambda x: None):
             self.check_pycolor_main(
