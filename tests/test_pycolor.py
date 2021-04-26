@@ -22,63 +22,62 @@ CONSECUTIVE_END_ARGS = [
     {
         ARGS: [],
         SUBSET: [],
-        RESULT: True
+        RESULT: (True, 0)
     },
     {
         ARGS: ['--color', 'on', 'abc'],
         SUBSET: [],
-        RESULT: True
+        RESULT: (True, 3)
     },
     {
         ARGS: ['abc'],
         SUBSET: ['abc'],
-        RESULT: True
+        RESULT: (True, 0)
     },
     {
         ARGS: ['--color', 'on', 'abc'],
         SUBSET: ['abc'],
-        RESULT: True
+        RESULT: (True, 2)
     },
     {
         ARGS: ['--', 'asdf', '--color', 'on', 'abc'],
         SUBSET: ['asdf', '--color', 'on', 'abc'],
-        RESULT: True
+        RESULT: (True, 1)
     },
     {
         ARGS: ['asdf', '--color', 'on', 'abc'],
         SUBSET: ['asdf', 'abc'],
-        RESULT: False
+        RESULT: (False, 0)
     },
     {
         ARGS: ['asdf', 'abc', '--color', 'on'],
         SUBSET: ['asdf', 'abc'],
-        RESULT: False
+        RESULT: (False, 0)
     },
     {
         ARGS: ['asdf', 'abc', '--color', 'on'],
         SUBSET: ['nowhere'],
-        RESULT: False
+        RESULT: (False, 4)
     },
     {
         ARGS: ['asdf', 'abc', '--color', 'on'],
         SUBSET: ['abc'],
-        RESULT: False
+        RESULT: (False, 1)
     },
     {
         ARGS: ['ee', 'asdf', 'abc'],
         SUBSET: ['asdf', 'abc', '123', '4'],
-        RESULT: False
+        RESULT: (False, -1)
     },
 ]
 
 
 class PycolorTest(unittest.TestCase):
     def test_main_ls_numbers(self):
-        self.check_pycolor_main(['--', 'ls', '-l'], MOCKED_DATA, 'ls_numbers')
+        self.check_pycolor_main(['ls', '-l'], MOCKED_DATA, 'ls_numbers')
 
-    def test_main_invalid_consecutive_args(self):
-        with self.assertRaises(SystemExit):
-            self.check_pycolor_main(['ls', '-l', '--color', 'on'], MOCKED_DATA, 'ls_numbers')
+    def test_main_ls_numbers_known_arg_parse(self):
+        self.check_pycolor_main(['ls', '-l', '--color', 'off'], MOCKED_DATA, 'ls_numbers')
 
     def test_main_no_profile_stdin(self):
         with self.assertRaises(SystemExit), patch(pycolor, 'printerr', lambda x: None):
@@ -141,7 +140,7 @@ class PycolorTest(unittest.TestCase):
 
     def test_consecutive_end_args(self):
         for entry in CONSECUTIVE_END_ARGS:
-            self.assertEqual(
+            self.assertTupleEqual(
                 pycolor.consecutive_end_args(entry[ARGS], entry[SUBSET]),
                 entry[RESULT]
             )

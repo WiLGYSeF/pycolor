@@ -61,13 +61,7 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         help='do not run the command in a pseudo-terminal (default)'
     )
 
-    argspace, cmd_args = parser.parse_known_args(args)
-    if len(cmd_args) != 0 and cmd_args[0] == '--':
-        cmd_args = cmd_args[1:]
-
-    if not consecutive_end_args(args, cmd_args):
-        parser.print_help(stdout_stream)
-        sys.exit(1)
+    argspace, cmd_args = parse_known_args(parser, args)
 
     read_stdin = len(cmd_args) == 0
 
@@ -119,27 +113,40 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
     returncode = pycobj.execute(cmd_args, profile=profile)
     sys.exit(returncode)
 
+def parse_known_args(parser, args):
+    argspace, cmd_args = parser.parse_known_args(args)
+    if len(cmd_args) != 0 and cmd_args[0] == '--':
+        cmd_args = cmd_args[1:]
+
+    is_consecutive, argidx = consecutive_end_args(args, cmd_args)
+    if not is_consecutive:
+        argspace = parser.parse_args(args[:argidx])
+        cmd_args = args[argidx:]
+    return argspace, cmd_args
+
 def consecutive_end_args(args, subset):
-    lensub = len(subset)
-    if lensub == 0:
-        return True
     lenarg = len(args)
+    lensub = len(subset)
+
+    if lensub == 0:
+        return True, lenarg
     if lenarg < lensub:
-        return False
+        return False, -1
 
     for i in range(lenarg):
         if args[i] != subset[0]:
             continue
 
+        startidx = i
         off = 1
         i += 1
         while i < lenarg and off < lensub:
             if args[i] != subset[off]:
-                return False
+                return False, startidx
             off += 1
             i += 1
-        return i == lenarg and off == lensub
-    return False
+        return i == lenarg and off == lensub, startidx
+    return False, lenarg
 
 def read_input_stream(pycobj, stream):
     while True:
