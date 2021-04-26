@@ -122,6 +122,14 @@ def parse_known_args(parser, args):
     if not is_consecutive:
         argspace = parser.parse_args(args[:argidx])
         cmd_args = args[argidx:]
+
+    if argidx < len(args) and all([
+        argidx == 0 or args[argidx - 1] != '--',
+        args[argidx].startswith('-'),
+    ]):
+        parser.print_help()
+        sys.exit(1)
+
     return argspace, cmd_args
 
 def consecutive_end_args(args, subset):
