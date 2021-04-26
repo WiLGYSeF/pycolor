@@ -1,6 +1,6 @@
 import unittest
 
-from argpattern import ArgPattern
+from config.argpattern import ArgPattern
 
 
 ARGLEN = 'arglen'

@@ -1,7 +1,7 @@
 import unittest
 
-import pattern
-from pattern import Pattern
+import config.pattern
+from config.pattern import Pattern
 
 
 ACTIVATIONS = 'activations'
@@ -123,6 +123,6 @@ class PatternTest(unittest.TestCase):
     def test_bsearch_closest(self):
         for entry in BSEARCH_CLOSEST:
             self.assertEqual(
-                pattern.bsearch_closest(entry[ARRAY], entry[VALUE]),
+                config.pattern.bsearch_closest(entry[ARRAY], entry[VALUE]),
                 entry[RESULT]
             )

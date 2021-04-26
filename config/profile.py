@@ -2,9 +2,9 @@ import re
 
 import jsonobj
 
-import argpattern
-import fromprofile
-import pattern
+from config.argpattern import ArgPattern
+from config.fromprofile import FromProfile
+from config.pattern import Pattern
 
 
 PROFILE_SCHEMA = {
@@ -61,18 +61,18 @@ class Profile:
         """
 
         for argpat in cfg.get('arg_patterns', []):
-            self.arg_patterns.append(argpattern.ArgPattern(argpat))
+            self.arg_patterns.append(ArgPattern(argpat))
 
         if 'from_profiles' in cfg:
             from_profiles = cfg['from_profiles']
             if isinstance(from_profiles, list):
                 for fromprof in from_profiles:
-                    self.from_profiles.append(fromprofile.FromProfile(fromprof))
+                    self.from_profiles.append(FromProfile(fromprof))
             else:
-                self.from_profiles.append(fromprofile.FromProfile(from_profiles))
+                self.from_profiles.append(FromProfile(from_profiles))
 
         for pat in cfg.get('patterns', []):
-            self.patterns.append(pattern.Pattern(pat))
+            self.patterns.append(Pattern(pat))
 
     def get_name(self):
         for name in [
