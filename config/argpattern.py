@@ -6,12 +6,13 @@ import jsonobj
 ARGPATTERN_SCHEMA = {
     'type': 'object',
     'properties': {
-        'expression': {'type': ['string_array'], 'required': True},
+        'expression': {'type': ['string_array']},
         'position': {'type': ['null', 'string', 'integer']},
 
         'match_not': {'type': 'boolean'},
         'optional': {'type': 'boolean'},
-    }
+    },
+    'required': ['expression']
 }
 
 ARGRANGE_REGEX = re.compile(r'([<>+-])?(\*|[0-9]+)')

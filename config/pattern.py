@@ -9,10 +9,10 @@ PATTERN_SCHEMA = {
     'properties': {
         'enabled': {'type' : 'boolean', 'default': True},
         'super_expression': {'type': ['null', 'string_array']},
-        'expression': {'type': ['string_array'], 'required': True},
+        'expression': {'type': ['string_array']},
 
         'separator': {'type': ['null', 'string_array']},
-        'field': {'type': ['null', 'integer'], 'default': None},
+        'field': {'type': ['null', 'integer']},
         'min_fields': {'type': 'integer', 'default': -1},
         'max_fields': {'type': 'integer', 'default': -1},
 
@@ -35,6 +35,7 @@ PATTERN_SCHEMA = {
         'activation_expression': {'type': ['null', 'string_array']},
         'deactivation_expression': {'type': ['null', 'string_array']},
     },
+    'required': ['expression'],
     'dependencies': {
         'field': ['separator'],
         'min_fields': ['separator'],

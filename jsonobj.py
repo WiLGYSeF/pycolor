@@ -232,8 +232,6 @@ def _build_object(obj, schema, **kwargs):
     if obj == RETURN_DEFAULT:
         return {}
 
-    newobj = {}
-
     if not isinstance(obj, dict):
         return _invalid(obj, schema, **kwargs)
     if minlen is not None and len(obj) < minlen:
@@ -259,27 +257,30 @@ def _build_object(obj, schema, **kwargs):
         else:
             raise ValueError()
 
-    if properties is not None:
-        args = kwargs.copy()
+    newobj = {}
 
-        for key, val in obj.items():
-            if key in properties:
-                args['name'] = key
-                newobj[key] = _build(val, properties[key], **args)
-            else:
-                if isinstance(additional_properties, dict):
-                    newobj[key] = _build(val, additional_properties, **args)
-                else:
-                    if additional_properties is False:
-                        raise ValidationError(schema, 'additonal properties not allowed')
-                    newobj[key] = val
-
-        for key, val in properties.items():
-            if key not in newobj:
-                newobj[key] =  val.get('default', _build(None, val, **args))
-    else:
+    if properties is None:
         for key, val in obj.items():
             newobj[key] = val
+        return newobj
+
+    args = kwargs.copy()
+
+    for key, val in obj.items():
+        if key in properties:
+            args['name'] = key
+            newobj[key] = _build(val, properties[key], **args)
+        else:
+            if isinstance(additional_properties, dict):
+                newobj[key] = _build(val, additional_properties, **args)
+            else:
+                if additional_properties is False:
+                    raise ValidationError(schema, 'additonal properties not allowed')
+                newobj[key] = val
+
+    for key, val in properties.items():
+        if key not in newobj:
+            newobj[key] =  val.get('default', _build(None, val, **args))
 
     return newobj
 
