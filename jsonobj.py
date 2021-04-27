@@ -32,6 +32,8 @@ def _build(obj, schema, **kwargs):
     if stype is None:
         if 'enum' in schema:
             return _build_enum(obj, schema, **kwargs)
+        if 'const' in schema:
+            return _build_const(obj, schema, **kwargs)
 
         raise ValueError('"%s" schema type is not defined: %s' % (name, json.dumps(schema)))
 
@@ -48,6 +50,8 @@ def _build(obj, schema, **kwargs):
                 return _build_array(obj, schema, **kwargs)
             if typ in ('bool', 'boolean'):
                 return _build_boolean(obj, schema, **kwargs)
+            if typ == 'const':
+                return _build_const(obj, schema, **kwargs)
             if typ == 'enum':
                 return _build_enum(obj, schema, **kwargs)
             if typ in ('int', 'integer'):
@@ -145,6 +149,14 @@ def _build_boolean(obj, schema, **kwargs):
         return False
 
     if not isinstance(obj, bool):
+        return _invalid(obj, schema, **kwargs)
+    return obj
+
+def _build_const(obj, schema, **kwargs):
+    value = schema['const']
+    if obj == RETURN_DEFAULT:
+        return value
+    if obj != value:
         return _invalid(obj, schema, **kwargs)
     return obj
 
