@@ -82,15 +82,13 @@ def _build(obj, schema, **kwargs):
 def _build_array(obj, schema, **kwargs):
     items = getval(schema, 'items', (dict, list))
     contains = getval(schema, 'contains', dict)
-    additional_items = getval(schema, 'additionalItems', bool, True)
+    additional_items = getval(schema, 'additionalItems', (bool, dict), True)
     minlen = getval(schema, 'minItems', int)
     maxlen = getval(schema, 'maxItems', int)
     unique = getval(schema, 'uniqueItems', bool, False)
 
     if obj == RETURN_DEFAULT:
         return []
-
-    arr = []
 
     if not isinstance(obj, list):
         return _invalid(obj, schema, **kwargs)
@@ -104,7 +102,7 @@ def _build_array(obj, schema, **kwargs):
             for itm in obj:
                 args = kwargs.copy()
                 args['require_value'] = True
-                arr.append(_build(itm, items, **args))
+                _build(itm, items, **args)
         elif isinstance(items, list):
             if not additional_items and len(items) != len(obj):
                 raise ValidationError(schema, '')
@@ -114,40 +112,35 @@ def _build_array(obj, schema, **kwargs):
             for i in range(len(items)): #pylint: disable=consider-using-enumerate
                 args = kwargs.copy()
                 args['require_value'] = True
-                arr.append(_build(obj[i], items[i], **args))
+                _build(obj[i], items[i], **args)
 
-            for i in range(len(items), len(obj)):
-                if isinstance(additional_items, dict):
+            if isinstance(additional_items, dict):
+                for i in range(len(items), len(obj)):
                     args = kwargs.copy()
                     args['require_value'] = True
-                    arr.append(_build(obj[i], additional_items, **args))
-                else:
-                    arr.append(obj[i])
+                    _build(obj[i], additional_items, **args)
     elif contains is not None:
         matches = 0
-        for i in range(len(items)):
+        for itm in obj:
             try:
                 args = kwargs.copy()
                 args['require_value'] = True
-                arr.append(_build(obj[i], contains, **args))
+                _build(itm, contains, **args)
                 matches += 1
             except ValidationError:
-                arr.append(obj[i])
+                pass
 
         if matches == 0:
             raise ValidationError(schema, '')
-    else:
-        for itm in obj:
-            arr.append(itm)
 
     if unique:
         itemset = set()
-        for itm in arr:
+        for itm in obj:
             if itm in itemset:
                 raise ValidationError(schema, 'array contains duplicate items')
             itemset.add(itm)
 
-    return arr
+    return obj
 
 def _build_boolean(obj, schema, **kwargs):
     if obj == RETURN_DEFAULT:
@@ -180,7 +173,8 @@ def _build_integer(obj, schema, **kwargs):
     if not isinstance(obj, int):
         return _invalid(obj, schema, **kwargs)
 
-    return int(_build_number(obj, schema, **kwargs))
+    val = _build_number(obj, schema, **kwargs)
+    return val if isinstance(val, int) else int(val)
 
 def _build_null(obj, schema, **kwargs):
     if obj is not None:
@@ -210,8 +204,7 @@ def _build_number(obj, schema, **kwargs):
         return _invalid(obj, schema, **kwargs)
     if multiple_of is not None and obj % multiple_of != 0:
         return _invalid(obj, schema, **kwargs)
-
-    return float(obj)
+    return obj
 
 def _build_object(obj, schema, **kwargs):
     properties = getval(schema, 'properties', dict)
@@ -292,8 +285,7 @@ def _build_string(obj, schema, **kwargs):
         return _invalid(obj, schema, **kwargs)
     if regex is not None and not re.search(regex, obj):
         return _invalid(obj, schema, **kwargs)
-
-    return str(obj)
+    return obj
 
 def _build_string_array(obj, schema, **kwargs):
     if isinstance(obj, list):
