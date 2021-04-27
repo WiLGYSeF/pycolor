@@ -6,12 +6,12 @@ import re
 
 RETURN_DEFAULT = object()
 
+
 class ValidationError(Exception):
     def __init__(self, schema, message):
         self.schema = schema
         self.message = message
         super().__init__(self.message)
-
 
 def build(obj, **kwargs):
     schema = kwargs['schema']
@@ -19,12 +19,12 @@ def build(obj, **kwargs):
 
     result = _build(obj, schema)
     if schema.get('type') == 'object':
-        if isinstance(dest, object):
-            for key, val in result.items():
-                setattr(dest, key, val)
-        else:
+        if isinstance(dest, dict):
             for key, val in result.items():
                 dest[key] = val
+        else:
+            for key, val in result.items():
+                setattr(dest, key, val)
     return result
 
 def _build(obj, schema, **kwargs):
@@ -216,6 +216,9 @@ def _build_object(obj, schema, **kwargs):
     dependencies = getval(schema, 'dependencies', dict, {})
     pattern_properties = getval(schema, 'patternProperties', dict)
 
+    if obj == RETURN_DEFAULT:
+        return {}
+
     newobj = {}
 
     if not isinstance(obj, dict):
@@ -224,6 +227,24 @@ def _build_object(obj, schema, **kwargs):
         return _invalid(obj, schema, **kwargs)
     if maxlen is not None and len(obj) > maxlen:
         return _invalid(obj, schema, **kwargs)
+
+    for req in required:
+        if req not in obj:
+            raise ValidationError(schema,'missing required property: "%s"' % req)
+
+    for key, dep in dependencies.items():
+        if key not in obj:
+            continue
+        if isinstance(dep, list):
+            for val in dep:
+                if val not in obj:
+                    raise ValidationError(schema,
+                        'missing dependency for "%s": "%s"' % (key, val)
+                    )
+        elif isinstance(dep, dict):
+            _build(obj, dep, **kwargs)
+        else:
+            raise ValueError()
 
     if properties is not None:
         args = kwargs.copy()
@@ -246,22 +267,6 @@ def _build_object(obj, schema, **kwargs):
     else:
         for key, val in obj.items():
             newobj[key] = val
-
-    for req in required:
-        if req not in newobj:
-            raise ValidationError(schema,'missing required property: "%s"' % req)
-
-    for key, dep in dependencies.items():
-        if key not in newobj:
-            continue
-        if isinstance(dep, list):
-            for val in dep:
-                if val not in newobj:
-                    raise ValidationError(schema,
-                        'missing dependency for "%s": "%s"' % (key, val)
-                    )
-        elif isinstance(dep, dict):
-            _build(obj, dep, **kwargs)
 
     return newobj
 
