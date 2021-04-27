@@ -189,20 +189,21 @@ def _build_number(obj, schema, **kwargs):
     return float(obj)
 
 def _build_object(obj, schema, **kwargs):
+    properties = schema.get('properties')
     dest = kwargs['dest_obj']
 
-    if 'properties' in schema:
-        args = kwargs.copy()
-        del args['dest_obj']
+    if properties is None:
+        if not isinstance(obj, dict):
+            return _invalid(obj, schema, **kwargs)
+        return obj
 
-        for key, val in schema['properties'].items():
-            args['name'] = key
-            setattr(dest, key, _build({}, obj.get(key), val, **args))
-        return dest
+    args = kwargs.copy()
+    del args['dest_obj']
 
-    if not isinstance(obj, dict):
-        return _invalid(obj, schema, **kwargs)
-    return obj
+    for key, val in properties.items():
+        args['name'] = key
+        setattr(dest, key, _build({}, obj.get(key), val, **args))
+    return dest
 
 def _build_string(obj, schema, **kwargs):
     minlen = schema.get('minLength')
