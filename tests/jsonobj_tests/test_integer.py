@@ -110,8 +110,7 @@ BUILD_INTEGER_FAIL = [
         SCHEMA: {
             'type': 'integer',
             'multipleOf': 7
-        },
-        RESULT: ValueError
+        }
     },
 ]
 

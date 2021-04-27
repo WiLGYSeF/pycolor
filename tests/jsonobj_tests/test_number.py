@@ -104,8 +104,7 @@ BUILD_NUMBER_FAIL = [
         SCHEMA: {
             'type': 'number',
             'multipleOf': 7
-        },
-        RESULT: ValueError
+        }
     },
 ]
 
