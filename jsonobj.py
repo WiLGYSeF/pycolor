@@ -61,6 +61,9 @@ def _build(dest, obj, schema, **kwargs):
     raise ValueError(errors)
 
 def _build_array(obj, schema, **kwargs):
+    items = schema.get('items')
+    contains = schema.get('contains')
+    additional_items = schema.get('additionalItems', True)
     minlen = schema.get('minItems')
     maxlen = schema.get('maxItems')
     unique = schema.get('uniqueItems')
@@ -76,6 +79,46 @@ def _build_array(obj, schema, **kwargs):
         return _invalid(obj, schema, **kwargs)
     if maxlen is not None and len(obj) > maxlen:
         return _invalid(obj, schema, **kwargs)
+
+    if items is not None:
+        if isinstance(items, dict):
+            for itm in obj:
+                args = kwargs.copy()
+                args['require_value'] = True
+                arr.append(_build({}, itm, items, **args))
+        elif isinstance(items, list):
+            if not additional_items and len(items) != len(obj):
+                raise ValueError()
+            if len(obj) < len(items):
+                raise ValueError()
+
+            for i in range(len(items)): #pylint: disable=consider-using-enumerate
+                args = kwargs.copy()
+                args['require_value'] = True
+                arr.append(_build({}, obj[i], items[i], **args))
+
+            for i in range(len(items), len(obj)):
+                if isinstance(additional_items, dict):
+                    args = kwargs.copy()
+                    args['require_value'] = True
+                    arr.append(_build({}, obj[i], additional_items, **args))
+                else:
+                    arr.append(obj[i])
+        else:
+            raise ValueError()
+    elif contains is not None:
+        matches = 0
+        for i in range(len(items)):
+            try:
+                args = kwargs.copy()
+                args['require_value'] = True
+                arr.append(_build({}, obj[i], contains, **args))
+                matches += 1
+            except ValueError:
+                arr.append(obj[i])
+
+        if matches == 0:
+            raise ValueError()
 
     for itm in obj:
         arr.append(itm)
