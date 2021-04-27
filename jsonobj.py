@@ -27,6 +27,17 @@ def build(obj, **kwargs):
                 setattr(dest, key, val)
     return result
 
+def getval(obj, key, expected_type, default=None, has_default=True):
+    if key not in obj:
+        if not has_default:
+            raise ValueError()
+        return default
+
+    val = obj[key]
+    if not isinstance(val, expected_type):
+        raise ValueError()
+    return val
+
 def _build(obj, schema, **kwargs):
     name = kwargs.get('name')
 
@@ -65,7 +76,7 @@ def _build(obj, schema, **kwargs):
                 return _build_integer(obj, schema, **kwargs)
             if typ in ('null', 'none'):
                 return _build_null(obj, schema, **kwargs)
-            if typ in ('num', 'number'):
+            if typ in ('num', 'number', 'float'):
                 return _build_number(obj, schema, **kwargs)
             if typ in ('obj', 'object', 'dict'):
                 return _build_object(obj, schema, **kwargs)
@@ -210,10 +221,12 @@ def _build_object(obj, schema, **kwargs):
     properties = getval(schema, 'properties', dict)
     additional_properties = getval(schema, 'additionalProperties', (dict, bool), True)
     required = getval(schema, 'required', list, [])
+    # TODO
     property_names = getval(schema, 'propertyNames', dict)
     minlen = getval(schema, 'minProperties', int)
     maxlen = getval(schema, 'maxProperties', int)
     dependencies = getval(schema, 'dependencies', dict, {})
+    # TODO
     pattern_properties = getval(schema, 'patternProperties', dict)
 
     if obj == RETURN_DEFAULT:
@@ -318,14 +331,3 @@ def _get_type(schema):
     if 'enum' in schema:
         return 'enum'
     return None
-
-def getval(obj, key, expected_type, default=None, has_default=True):
-    if key not in obj:
-        if not has_default:
-            raise ValueError()
-        return default
-
-    val = obj[key]
-    if not isinstance(val, expected_type):
-        raise ValueError()
-    return val
