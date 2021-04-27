@@ -10,9 +10,17 @@ def build(obj, **kwargs):
     schema = kwargs['schema']
     dest = kwargs.get('dest', {})
 
-    return _build(dest, obj, schema)
+    result = _build(obj, schema)
+    if schema.get('type') == 'object':
+        if isinstance(dest, object):
+            for key, val in result.items():
+                setattr(dest, key, val)
+        else:
+            for key, val in result.items():
+                dest[key] = val
+    return dest
 
-def _build(dest, obj, schema, **kwargs):
+def _build(obj, schema, **kwargs):
     name = kwargs.get('name')
 
     if schema is True:
@@ -49,7 +57,7 @@ def _build(dest, obj, schema, **kwargs):
             if typ in ('num', 'number'):
                 return _build_number(obj, schema, **kwargs)
             if typ in ('obj', 'object', 'dict'):
-                return _build_object(obj, schema, dest_obj=dest, **kwargs)
+                return _build_object(obj, schema, **kwargs)
             if typ in ('str', 'string'):
                 return _build_string(obj, schema, **kwargs)
 
@@ -85,7 +93,7 @@ def _build_array(obj, schema, **kwargs):
             for itm in obj:
                 args = kwargs.copy()
                 args['require_value'] = True
-                arr.append(_build({}, itm, items, **args))
+                arr.append(_build(itm, items, **args))
         elif isinstance(items, list):
             if not additional_items and len(items) != len(obj):
                 raise ValueError()
@@ -95,13 +103,13 @@ def _build_array(obj, schema, **kwargs):
             for i in range(len(items)): #pylint: disable=consider-using-enumerate
                 args = kwargs.copy()
                 args['require_value'] = True
-                arr.append(_build({}, obj[i], items[i], **args))
+                arr.append(_build(obj[i], items[i], **args))
 
             for i in range(len(items), len(obj)):
                 if isinstance(additional_items, dict):
                     args = kwargs.copy()
                     args['require_value'] = True
-                    arr.append(_build({}, obj[i], additional_items, **args))
+                    arr.append(_build(obj[i], additional_items, **args))
                 else:
                     arr.append(obj[i])
         else:
@@ -112,7 +120,7 @@ def _build_array(obj, schema, **kwargs):
             try:
                 args = kwargs.copy()
                 args['require_value'] = True
-                arr.append(_build({}, obj[i], contains, **args))
+                arr.append(_build(obj[i], contains, **args))
                 matches += 1
             except ValueError:
                 arr.append(obj[i])
@@ -190,20 +198,61 @@ def _build_number(obj, schema, **kwargs):
 
 def _build_object(obj, schema, **kwargs):
     properties = schema.get('properties')
-    dest = kwargs['dest_obj']
+    additional_properties = schema.get('additionalProperties', True)
+    required = schema.get('required', [])
+    property_names = schema.get('propertyNames')
+    minlen = schema.get('minProperties')
+    maxlen = schema.get('maxProperties')
+    dependencies = schema.get('dependencies')
+    pattern_properties = schema.get('patternProperties')
 
-    if properties is None:
-        if not isinstance(obj, dict):
-            return _invalid(obj, schema, **kwargs)
-        return obj
+    newobj = {}
 
-    args = kwargs.copy()
-    del args['dest_obj']
+    if not isinstance(obj, dict):
+        return _invalid(obj, schema, **kwargs)
+    if minlen is not None and len(obj) < minlen:
+        return _invalid(obj, schema, **kwargs)
+    if maxlen is not None and len(obj) > maxlen:
+        return _invalid(obj, schema, **kwargs)
 
-    for key, val in properties.items():
-        args['name'] = key
-        setattr(dest, key, _build({}, obj.get(key), val, **args))
-    return dest
+    if properties is not None:
+        args = kwargs.copy()
+
+        for key, val in obj.items():
+            if key in properties:
+                args['name'] = key
+                newobj[key] = _build(val, properties[key], **args)
+            else:
+                if additional_properties is False:
+                    raise ValueError()
+                if isinstance(additional_properties, dict):
+                    newobj[key] = _build(val, additional_properties, **args)
+                else:
+                    newobj[key] = val
+
+        for key, val in properties.items():
+            if key not in newobj:
+                newobj[key] =  val.get('default', _build(None, val, **args))
+    else:
+        for key, val in obj.items():
+            newobj[key] = val
+
+    for req in required:
+        if req not in newobj:
+            raise ValueError()
+
+    if dependencies is not None:
+        for key, dep in dependencies.items():
+            if key not in newobj:
+                continue
+            if isinstance(dep, list):
+                for val in dep:
+                    if val not in newobj:
+                        raise ValueError()
+            elif isinstance(dep, dict):
+                _build(obj, dep, **kwargs)
+
+    return newobj
 
 def _build_string(obj, schema, **kwargs):
     minlen = schema.get('minLength')
@@ -244,7 +293,7 @@ def _invalid(obj, schema, **kwargs):
 
     args = kwargs.copy()
     args['require_value'] = True
-    return _build({}, schema.get('default', RETURN_DEFAULT), schema, **args)
+    return _build(schema.get('default', RETURN_DEFAULT), schema, **args)
 
 def _get_type(schema):
     if 'type' in schema:

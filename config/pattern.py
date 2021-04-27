@@ -104,8 +104,11 @@ class Pattern:
     @staticmethod
     def get_activation_ranges(activations, deactivations):
         ranges = []
-        ranges.extend(map(lambda x: (x, True), activations))
-        ranges.extend(map(lambda x: (x, False), deactivations))
+        if activations is not None and len(activations) != 0 and activations[0] is not None:
+            ranges.extend(map(lambda x: (x, True), activations))
+        if deactivations is not None and len(deactivations) != 0 and deactivations[0] is not None:
+            ranges.extend(map(lambda x: (x, False), deactivations))
+
         ranges.sort(key=lambda x: x[0])
 
         idx = 0
