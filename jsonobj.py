@@ -90,24 +90,26 @@ def _build_enum(obj, schema, **kwargs):
     return obj
 
 def _build_integer(obj, schema, **kwargs):
-    minval = schema.get('min_value')
-    maxval = schema.get('max_value')
-
     if obj == RETURN_DEFAULT:
         return 0
 
     if not isinstance(obj, int):
         return _invalid(obj, schema, **kwargs)
-    if minval is not None and obj < minval:
-        return _invalid(obj, schema, **kwargs)
-    if maxval is not None and obj > maxval:
-        return _invalid(obj, schema, **kwargs)
 
-    return int(obj)
+    return int(_build_number(obj, schema, **kwargs))
+
+def _build_null(obj, schema, **kwargs):
+    if obj is not None:
+        name = kwargs.get('name')
+        raise ValueError('"%s" is defined and not null: %s' % (name, obj))
+    return None
 
 def _build_number(obj, schema, **kwargs):
-    minval = schema.get('min_value')
-    maxval = schema.get('max_value')
+    minval = schema.get('minimum')
+    maxval = schema.get('maximum')
+    exclminval = schema.get('exclusiveMinimum')
+    exclmaxval = schema.get('exclusiveMaximum')
+    multiple_of = schema.get('multipleOf')
 
     if obj == RETURN_DEFAULT:
         return 0.0
@@ -117,6 +119,10 @@ def _build_number(obj, schema, **kwargs):
     if minval is not None and obj < minval:
         return _invalid(obj, schema, **kwargs)
     if maxval is not None and obj > maxval:
+        return _invalid(obj, schema, **kwargs)
+    if exclminval is not None and obj <= exclminval:
+        return _invalid(obj, schema, **kwargs)
+    if exclmaxval is not None and obj >= exclmaxval:
         return _invalid(obj, schema, **kwargs)
 
     return float(obj)
@@ -138,12 +144,16 @@ def _build_object(obj, schema, **kwargs):
     return obj
 
 def _build_string(obj, schema, **kwargs):
-    minlen = schema.get('min_length')
-    maxlen = schema.get('max_length')
-    regex = schema.get('regex')
+    minlen = schema.get('minLength')
+    maxlen = schema.get('maxLength')
+    regex = schema.get('pattern')
+    format = schema.get('format')
 
     if obj == RETURN_DEFAULT:
         return ''
+
+    if format is not None:
+        raise ValueError()
 
     if not isinstance(obj, str):
         return _invalid(obj, schema, **kwargs)
