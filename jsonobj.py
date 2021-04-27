@@ -1,6 +1,6 @@
 # based on: https://json-schema.org/
 
-import numbers
+from numbers import Number
 import re
 
 
@@ -35,7 +35,7 @@ def _build(obj, schema, **kwargs):
     if schema is False:
         raise ValidationError(schema, 'schema is false')
 
-    stype = schema.get('type')
+    stype = getval(schema, 'type', (str, list))
     if stype is None:
         if 'enum' in schema:
             return _build_enum(obj, schema, **kwargs)
@@ -80,12 +80,12 @@ def _build(obj, schema, **kwargs):
     raise ValidationError(schema, errors)
 
 def _build_array(obj, schema, **kwargs):
-    items = schema.get('items')
-    contains = schema.get('contains')
-    additional_items = schema.get('additionalItems', True)
-    minlen = schema.get('minItems')
-    maxlen = schema.get('maxItems')
-    unique = schema.get('uniqueItems')
+    items = getval(schema, 'items', (dict, list))
+    contains = getval(schema, 'contains', dict)
+    additional_items = getval(schema, 'additionalItems', bool, True)
+    minlen = getval(schema, 'minItems', int)
+    maxlen = getval(schema, 'maxItems', int)
+    unique = getval(schema, 'uniqueItems', bool, False)
 
     if obj == RETURN_DEFAULT:
         return []
@@ -123,8 +123,6 @@ def _build_array(obj, schema, **kwargs):
                     arr.append(_build(obj[i], additional_items, **args))
                 else:
                     arr.append(obj[i])
-        else:
-            raise ValidationError(schema, '')
     elif contains is not None:
         matches = 0
         for i in range(len(items)):
@@ -138,15 +136,15 @@ def _build_array(obj, schema, **kwargs):
 
         if matches == 0:
             raise ValidationError(schema, '')
-
-    for itm in obj:
-        arr.append(itm)
+    else:
+        for itm in obj:
+            arr.append(itm)
 
     if unique:
         itemset = set()
         for itm in arr:
             if itm in itemset:
-                raise ValidationError(schema, '')
+                raise ValidationError(schema, 'array contains duplicate items')
             itemset.add(itm)
 
     return arr
@@ -191,16 +189,16 @@ def _build_null(obj, schema, **kwargs):
     return None
 
 def _build_number(obj, schema, **kwargs):
-    minval = schema.get('minimum')
-    maxval = schema.get('maximum')
-    exclminval = schema.get('exclusiveMinimum')
-    exclmaxval = schema.get('exclusiveMaximum')
-    multiple_of = schema.get('multipleOf')
+    minval = getval(schema, 'minimum', Number)
+    maxval = getval(schema, 'maximum', Number)
+    exclminval = getval(schema, 'exclusiveMinimum', Number)
+    exclmaxval = getval(schema, 'exclusiveMaximum', Number)
+    multiple_of = getval(schema, 'multipleOf', Number)
 
     if obj == RETURN_DEFAULT:
         return 0.0
 
-    if not isinstance(obj, numbers.Number):
+    if not isinstance(obj, Number):
         return _invalid(obj, schema, **kwargs)
     if minval is not None and obj < minval:
         return _invalid(obj, schema, **kwargs)
@@ -216,14 +214,14 @@ def _build_number(obj, schema, **kwargs):
     return float(obj)
 
 def _build_object(obj, schema, **kwargs):
-    properties = schema.get('properties')
-    additional_properties = schema.get('additionalProperties', True)
-    required = schema.get('required', [])
-    property_names = schema.get('propertyNames')
-    minlen = schema.get('minProperties')
-    maxlen = schema.get('maxProperties')
-    dependencies = schema.get('dependencies')
-    pattern_properties = schema.get('patternProperties')
+    properties = getval(schema, 'properties', dict)
+    additional_properties = getval(schema, 'additionalProperties', (dict, bool), True)
+    required = getval(schema, 'required', list, [])
+    property_names = getval(schema, 'propertyNames', dict)
+    minlen = getval(schema, 'minProperties', int)
+    maxlen = getval(schema, 'maxProperties', int)
+    dependencies = getval(schema, 'dependencies', dict, {})
+    pattern_properties = getval(schema, 'patternProperties', dict)
 
     newobj = {}
 
@@ -242,11 +240,11 @@ def _build_object(obj, schema, **kwargs):
                 args['name'] = key
                 newobj[key] = _build(val, properties[key], **args)
             else:
-                if additional_properties is False:
-                    raise ValidationError(schema, 'additonal properties not allowed')
                 if isinstance(additional_properties, dict):
                     newobj[key] = _build(val, additional_properties, **args)
                 else:
+                    if additional_properties is False:
+                        raise ValidationError(schema, 'additonal properties not allowed')
                     newobj[key] = val
 
         for key, val in properties.items():
@@ -260,26 +258,25 @@ def _build_object(obj, schema, **kwargs):
         if req not in newobj:
             raise ValidationError(schema,'missing required property: "%s"' % req)
 
-    if dependencies is not None:
-        for key, dep in dependencies.items():
-            if key not in newobj:
-                continue
-            if isinstance(dep, list):
-                for val in dep:
-                    if val not in newobj:
-                        raise ValidationError(schema,
-                            'missing dependency for "%s": "%s"' % (key, val)
-                        )
-            elif isinstance(dep, dict):
-                _build(obj, dep, **kwargs)
+    for key, dep in dependencies.items():
+        if key not in newobj:
+            continue
+        if isinstance(dep, list):
+            for val in dep:
+                if val not in newobj:
+                    raise ValidationError(schema,
+                        'missing dependency for "%s": "%s"' % (key, val)
+                    )
+        elif isinstance(dep, dict):
+            _build(obj, dep, **kwargs)
 
     return newobj
 
 def _build_string(obj, schema, **kwargs):
-    minlen = schema.get('minLength')
-    maxlen = schema.get('maxLength')
-    regex = schema.get('pattern')
-    format_type = schema.get('format')
+    minlen = getval(schema, 'minLength', int)
+    maxlen = getval(schema, 'maxLength', int)
+    regex = getval(schema, 'pattern', str)
+    format_type = getval(schema, 'format', str)
 
     if obj == RETURN_DEFAULT:
         return ''
@@ -307,6 +304,7 @@ def _invalid(obj, schema, **kwargs):
     name = kwargs.get('name')
     require_value = kwargs.get('require_value', False)
 
+    # TODO
     if require_value or obj is not None or schema.get('required', False):
         if obj is not None:
             raise ValidationError(schema, '"%s" not valid %s: %s' % (name, _get_type(schema), obj))
@@ -323,3 +321,14 @@ def _get_type(schema):
     if 'enum' in schema:
         return 'enum'
     return None
+
+def getval(obj, key, expected_type, default=None, has_default=True):
+    if key not in obj:
+        if not has_default:
+            raise ValueError()
+        return default
+
+    val = obj[key]
+    if not isinstance(val, expected_type):
+        raise ValueError()
+    return val
