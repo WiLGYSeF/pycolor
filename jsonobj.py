@@ -140,6 +140,8 @@ def _build_number(obj, schema, **kwargs):
         return _invalid(obj, schema, **kwargs)
     if exclmaxval is not None and obj >= exclmaxval:
         return _invalid(obj, schema, **kwargs)
+    if multiple_of is not None and obj % multiple_of != 0:
+        return _invalid(obj, schema, **kwargs)
 
     return float(obj)
 
@@ -163,12 +165,12 @@ def _build_string(obj, schema, **kwargs):
     minlen = schema.get('minLength')
     maxlen = schema.get('maxLength')
     regex = schema.get('pattern')
-    format = schema.get('format')
+    format_type = schema.get('format')
 
     if obj == RETURN_DEFAULT:
         return ''
 
-    if format is not None:
+    if format_type is not None:
         raise ValueError()
 
     if not isinstance(obj, str):
