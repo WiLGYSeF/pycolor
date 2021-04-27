@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
-import argparse
 import os
 import sys
 
+import arguments
+import debug_colors
 from execute import read_stream
 from pycolor_class import Pycolor
+import pyformat
 
 
 CONFIG_DEFAULT_NAME = '.pycolor.json'
@@ -14,62 +16,17 @@ CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), CONFIG_DEFAULT_NAME)
 
 
 def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=sys.stdin):
-    parser = argparse.ArgumentParser(
-        description='do real-time output coloring and formatting of programs',
-        usage='%(prog)s [options] COMMAND ARG ...'
-    )
-    parser.add_argument('--color',
-        action='store', default='auto', nargs='?',
-        choices=['auto', 'always', 'never', 'on', 'off'],
-        help='enable/disable coloring output. if auto is selected, color will be enabled for'
-        + ' terminal output but disabled on output redirection. on=always, off=never (default auto)'
-    )
-    parser.add_argument('--load-file',
-        action='append', metavar='FILE', default=[],
-        help='use this config file containing profiles'
-    )
-    parser.add_argument('--profile',
-        action='store', metavar='NAME',
-        help='specifically use this profile even if it does not match the current arguments'
-    )
-    parser.add_argument('-t', '--timestamp',
-        action='store', metavar='FORMAT', default=False, nargs='?',
-        help='force enable "timestamp" for all profiles with an optional FORMAT'
-    )
-    parser.add_argument('--less',
-        action='store', metavar='PATH', default=False, nargs='?',
-        help='force enable "less_output" for all profiles with an optional PATH to the less binary'
-    )
-    parser.add_argument('-v', '--verbose',
-        action='count', default=0,
-        help='enable debug mode to assist in configuring profiles'
-    )
-    parser.add_argument('--execv',
-        action='store_true', default=True,
-        help='use execv() if no profile matches the given command (default)'
-    )
-    parser.add_argument('--no-execv',
-        dest='execv', action='store_false',
-        help='do not use execv() if no profile matches the given command'
-    )
-    parser.add_argument('--tty',
-        action='store_true', default=False,
-        help='run the command in a pseudo-terminal'
-    )
-    parser.add_argument('--no-tty',
-        dest='tty', action='store_false',
-        help='do not run the command in a pseudo-terminal (default)'
-    )
+    argspace, cmd_args = arguments.get_args(args)
 
-    argspace, cmd_args = parser.parse_known_args(args)
-    if len(cmd_args) != 0 and cmd_args[0] == '--':
-        cmd_args = cmd_args[1:]
+    if argspace.debug_color:
+        debug_colors.debug_colors()
+        sys.exit(0)
 
-    if not consecutive_end_args(args, cmd_args):
-        parser.print_help(stdout_stream)
-        sys.exit(1)
+    if argspace.debug_format:
+        print(pyformat.format_string(argspace.debug_format + '%Cz'))
+        sys.exit(0)
 
-    read_stdin = len(cmd_args) == 0
+    read_stdin = len(cmd_args) == 0 or argspace.debug_from_stdin
 
     pycobj = Pycolor(color_mode=argspace.color, debug=argspace.verbose, execv=argspace.execv)
     pycobj.stdout = stdout_stream
@@ -105,6 +62,8 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
             sys.exit(1)
 
     if read_stdin:
+        if profile is None and len(cmd_args) != 0:
+            profile = pycobj.get_profile_by_command(cmd_args[0], cmd_args[1:])
         if profile is None:
             printerr('ERROR: no profile selected with --profile')
             sys.exit(1)
@@ -118,28 +77,6 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
 
     returncode = pycobj.execute(cmd_args, profile=profile)
     sys.exit(returncode)
-
-def consecutive_end_args(args, subset):
-    lensub = len(subset)
-    if lensub == 0:
-        return True
-    lenarg = len(args)
-    if lenarg < lensub:
-        return False
-
-    for i in range(lenarg):
-        if args[i] != subset[0]:
-            continue
-
-        off = 1
-        i += 1
-        while i < lenarg and off < lensub:
-            if args[i] != subset[off]:
-                return False
-            off += 1
-            i += 1
-        return i == lenarg and off == lensub
-    return False
 
 def read_input_stream(pycobj, stream):
     while True:

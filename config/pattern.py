@@ -1,41 +1,40 @@
 import re
 
-import jsonschema
-
+import jsonobj
 import pyformat
 
 
 PATTERN_SCHEMA = {
     'type': 'object',
     'properties': {
-        'enabled': {'type' : 'boolean'},
-        'super_expression': {'type': ['array', 'string']},
-        'expression': {'type': ['array', 'string']},
+        'enabled': {'type' : 'boolean', 'default': True},
+        'super_expression': {'type': ['null', 'string_array']},
+        'expression': {'type': ['string_array'], 'required': True},
 
-        'replace': {'type': ['array', 'string']},
-        'replace_all': {'type': ['array', 'string']},
-        'replace_groups': {'type': ['array', 'object']},
-        'replace_fields': {'type': ['array', 'object']},
+        'separator': {'type': ['null', 'string_array']},
+        'field': {'type': ['null', 'integer'], 'default': None},
+        'min_fields': {'type': 'integer', 'default': -1},
+        'max_fields': {'type': 'integer', 'default': -1},
+
+        'replace': {'type': ['null', 'string_array']},
+        'replace_all': {'type': ['null', 'string_array']},
+        'replace_groups': {'type': ['array', 'object'], 'default': {}},
+        'replace_fields': {'type': ['array', 'object'], 'default': {}},
         'filter': {'type': 'boolean'},
-        'skip_others': {'type': 'boolean'},
-
-        'start_occurrence': {'type': 'integer'},
-        'max_count': {'type': 'integer'},
-
-        'activation_line': {'type': ['array', 'integer']},
-        'deactivation_line': {'type': ['array', 'integer']},
-        'activation_expression': {'type': ['array', 'string']},
-        'deactivation_expression': {'type': ['array', 'string']},
-
-        'separator': {'type': ['array', 'string']},
-        'field': {'type': 'integer'},
-        'min_fields': {'type': 'integer'},
-        'max_fields': {'type': 'integer'},
 
         'stdout_only': {'type' : 'boolean'},
         'stderr_only': {'type' : 'boolean'},
+        'skip_others': {'type': 'boolean'},
+
+        'start_occurrence': {'type': 'integer', 'default': 1},
+        'max_count': {'type': 'integer', 'default': -1},
+
+        'activation_line': {'type': ['array', 'integer'], 'default': -1},
+        'deactivation_line': {'type': ['array', 'integer'], 'default': -1},
+
+        'activation_expression': {'type': ['null', 'string_array']},
+        'deactivation_expression': {'type': ['null', 'string_array']},
     },
-    'required': ['expression'],
     'dependencies': {
         'field': ['separator'],
         'min_fields': ['separator'],
@@ -46,36 +45,24 @@ PATTERN_SCHEMA = {
 
 class Pattern:
     def __init__(self, cfg):
-        jsonschema.validate(instance=cfg, schema=PATTERN_SCHEMA)
-
-        self.enabled = cfg.get('enabled', True)
         self.active = True
 
-        self.stdout_only = cfg.get('stdout_only', False)
-        self.stderr_only = cfg.get('stderr_only', False)
+        self.activation_line = None
+        self.deactivation_line = None
+        self.expression = None
+        self.super_expression = None
+        self.activation_expression = None
+        self.deactivation_expression = None
+        self.separator = None
 
-        self.super_expression = cfg.get('super_expression')
-        self.expression = cfg['expression']
-        self.filter = cfg.get('filter', False)
-        self.skip_others = cfg.get('skip_others', False)
-
-        self.start_occurrence = cfg.get('start_occurrence', 1)
-        self.max_count = cfg.get('max_count', -1)
-
-        activation_line = cfg.get('activation_line', -1)
-        deactivation_line = cfg.get('deactivation_line', -1)
-
-        if isinstance(self.super_expression, list):
-            self.super_expression = ''.join(self.super_expression)
-        if isinstance(self.expression, list):
-            self.expression = ''.join(self.expression)
+        jsonobj.build(cfg, schema=PATTERN_SCHEMA, dest=self)
 
         def as_list(var):
             return var if isinstance(var, list) else [ var ]
 
         self.activation_ranges = Pattern.get_activation_ranges(
-            as_list(activation_line),
-            as_list(deactivation_line),
+            as_list(self.activation_line),
+            as_list(self.deactivation_line),
         )
         if len(self.activation_ranges) != 0:
             self.active = False
@@ -83,50 +70,22 @@ class Pattern:
         self.regex = re.compile(self.expression)
         self.super_regex = re.compile(self.super_expression) if self.super_expression else None
 
-        self.replace = None
-        self.replace_all = None
-        self.replace_groups = cfg.get('replace_groups', {})
-        self.replace_fields = cfg.get('replace_fields', {})
-
-        self.activation_expression = cfg.get('activation_expression')
         self.activation_regex = None
-        self.deactivation_expression = cfg.get('deactivation_expression')
         self.deactivation_regex = None
 
-        if cfg.get('activation_expression') is not None:
-            if isinstance(self.activation_expression, list):
-                self.activation_expression = ''.join(self.activation_expression)
-
+        if self.activation_expression is not None:
             self.activation_regex = re.compile(self.activation_expression)
             self.active = False
-        if cfg.get('deactivation_expression') is not None:
-            if isinstance(self.deactivation_expression, list):
-                self.deactivation_expression = ''.join(self.deactivation_expression)
-
+        if self.deactivation_expression is not None:
             self.deactivation_regex = re.compile(self.deactivation_expression)
-
-        self.separator = cfg.get('separator')
-        if isinstance(self.separator, list):
-            self.separator = ''.join(self.separator)
-        self.separator_regex = None
-
-        self.field = cfg.get('field')
-        self.min_fields = cfg.get('min_fields', -1)
-        self.max_fields = cfg.get('max_fields', -1)
 
         if self.separator is not None and len(self.separator) != 0:
             self.separator_regex = re.compile(self.separator)
         else:
+            self.separator_regex = None
             self.field = None
             self.min_fields = -1
             self.max_fields = -1
-
-        self.replace = cfg.get('replace')
-        if isinstance(self.replace, list):
-            self.replace = ''.join(self.replace)
-        self.replace_all = cfg.get('replace_all')
-        if isinstance(self.replace_all, list):
-            self.replace_all = ''.join(self.replace_all)
 
     def get_field_indexes(self, fields):
         fieldcount = pyformat.fieldsep.idx_to_num(len(fields))

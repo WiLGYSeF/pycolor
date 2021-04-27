@@ -51,6 +51,9 @@ class Pycolor:
     def get_profile_by_name(self, name):
         return self.profloader.get_profile_by_name(name)
 
+    def get_profile_by_command(self, command, args):
+        return self.profloader.get_profile_by_command(command, args)
+
     def execute(self, cmd, profile=None):
         if profile is None:
             profile = self.profloader.get_profile_by_command(cmd[0], cmd[1:])
@@ -120,6 +123,7 @@ class Pycolor:
             }
         }
 
+        patcount = 0
         for pat in self.current_profile.patterns:
             if any([
                 not pat.enabled,
@@ -136,13 +140,14 @@ class Pycolor:
                     break
 
                 if self.debug >= 3:
-                    self.debug_print(3, 'applying: %s',
-                        insert_color_data(applied, color_positions).encode('utf-8')
+                    self.debug_print(3, 'apply%3d: %s',
+                        patcount, insert_color_data(applied, color_positions).encode('utf-8')
                     )
 
                 data = applied
                 if pat.skip_others:
                     break
+            patcount += 1
 
         if data is None:
             return

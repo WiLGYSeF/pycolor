@@ -1,6 +1,6 @@
 import json
 
-from profile_class import Profile
+from config.profile import Profile
 from which import which
 
 
