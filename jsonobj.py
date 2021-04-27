@@ -1,9 +1,16 @@
-import json
+# based on: https://json-schema.org/
+
 import numbers
 import re
 
 
 RETURN_DEFAULT = object()
+
+class ValidationError(Exception):
+    def __init__(self, schema, message):
+        self.schema = schema
+        self.message = message
+        super().__init__(self.message)
 
 
 def build(obj, **kwargs):
@@ -18,7 +25,7 @@ def build(obj, **kwargs):
         else:
             for key, val in result.items():
                 dest[key] = val
-    return dest
+    return result
 
 def _build(obj, schema, **kwargs):
     name = kwargs.get('name')
@@ -26,7 +33,7 @@ def _build(obj, schema, **kwargs):
     if schema is True:
         return obj
     if schema is False:
-        raise ValueError('schema is false')
+        raise ValidationError(schema, 'schema is false')
 
     stype = schema.get('type')
     if stype is None:
@@ -35,7 +42,7 @@ def _build(obj, schema, **kwargs):
         if 'const' in schema:
             return _build_const(obj, schema, **kwargs)
 
-        raise ValueError('"%s" schema type is not defined: %s' % (name, json.dumps(schema)))
+        raise ValidationError(schema, '"%s" schema type is not defined' % name)
 
     if not isinstance(stype, list):
         stype = [stype]
@@ -67,10 +74,10 @@ def _build(obj, schema, **kwargs):
 
             if typ in ('str_arr', 'string_array'):
                 return _build_string_array(obj, schema, **kwargs)
-        except ValueError as ver:
+        except ValidationError as ver:
             errors.append(ver)
 
-    raise ValueError(errors)
+    raise ValidationError(schema, errors)
 
 def _build_array(obj, schema, **kwargs):
     items = schema.get('items')
@@ -100,9 +107,9 @@ def _build_array(obj, schema, **kwargs):
                 arr.append(_build(itm, items, **args))
         elif isinstance(items, list):
             if not additional_items and len(items) != len(obj):
-                raise ValueError()
+                raise ValidationError(schema, '')
             if len(obj) < len(items):
-                raise ValueError()
+                raise ValidationError(schema, '')
 
             for i in range(len(items)): #pylint: disable=consider-using-enumerate
                 args = kwargs.copy()
@@ -117,7 +124,7 @@ def _build_array(obj, schema, **kwargs):
                 else:
                     arr.append(obj[i])
         else:
-            raise ValueError()
+            raise ValidationError(schema, '')
     elif contains is not None:
         matches = 0
         for i in range(len(items)):
@@ -126,11 +133,11 @@ def _build_array(obj, schema, **kwargs):
                 args['require_value'] = True
                 arr.append(_build(obj[i], contains, **args))
                 matches += 1
-            except ValueError:
+            except ValidationError:
                 arr.append(obj[i])
 
         if matches == 0:
-            raise ValueError()
+            raise ValidationError(schema, '')
 
     for itm in obj:
         arr.append(itm)
@@ -139,7 +146,7 @@ def _build_array(obj, schema, **kwargs):
         itemset = set()
         for itm in arr:
             if itm in itemset:
-                raise ValueError()
+                raise ValidationError(schema, '')
             itemset.add(itm)
 
     return arr
@@ -180,7 +187,7 @@ def _build_integer(obj, schema, **kwargs):
 def _build_null(obj, schema, **kwargs):
     if obj is not None:
         name = kwargs.get('name')
-        raise ValueError('"%s" is defined and not null: %s' % (name, obj))
+        raise ValidationError(schema, '"%s" is defined and not null: %s' % (name, obj))
     return None
 
 def _build_number(obj, schema, **kwargs):
@@ -236,7 +243,7 @@ def _build_object(obj, schema, **kwargs):
                 newobj[key] = _build(val, properties[key], **args)
             else:
                 if additional_properties is False:
-                    raise ValueError()
+                    raise ValidationError(schema, 'additonal properties not allowed')
                 if isinstance(additional_properties, dict):
                     newobj[key] = _build(val, additional_properties, **args)
                 else:
@@ -251,7 +258,7 @@ def _build_object(obj, schema, **kwargs):
 
     for req in required:
         if req not in newobj:
-            raise ValueError()
+            raise ValidationError(schema,'missing required property: "%s"' % req)
 
     if dependencies is not None:
         for key, dep in dependencies.items():
@@ -260,7 +267,9 @@ def _build_object(obj, schema, **kwargs):
             if isinstance(dep, list):
                 for val in dep:
                     if val not in newobj:
-                        raise ValueError()
+                        raise ValidationError(schema,
+                            'missing dependency for "%s": "%s"' % (key, val)
+                        )
             elif isinstance(dep, dict):
                 _build(obj, dep, **kwargs)
 
@@ -276,7 +285,7 @@ def _build_string(obj, schema, **kwargs):
         return ''
 
     if format_type is not None:
-        raise ValueError()
+        raise ValidationError(schema, 'not yet implemented')
 
     if not isinstance(obj, str):
         return _invalid(obj, schema, **kwargs)
@@ -300,8 +309,8 @@ def _invalid(obj, schema, **kwargs):
 
     if require_value or obj is not None or schema.get('required', False):
         if obj is not None:
-            raise ValueError('"%s" not valid %s: %s' % (name, _get_type(schema), obj))
-        raise ValueError('"%s" requires %s value' % (name, _get_type(schema)))
+            raise ValidationError(schema, '"%s" not valid %s: %s' % (name, _get_type(schema), obj))
+        raise ValidationError(schema, '"%s" requires %s value' % (name, _get_type(schema)))
 
     args = kwargs.copy()
     args['require_value'] = True
