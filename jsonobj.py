@@ -12,7 +12,6 @@ def build(obj, **kwargs):
 
     return _build(dest, obj, schema)
 
-
 def _build(dest, obj, schema, **kwargs):
     name = kwargs.get('name')
 
@@ -49,7 +48,7 @@ def _build(dest, obj, schema, **kwargs):
                 return _build_null(obj, schema, **kwargs)
             if typ in ('num', 'number'):
                 return _build_number(obj, schema, **kwargs)
-            if typ in ('obj', 'object'):
+            if typ in ('obj', 'object', 'dict'):
                 return _build_object(obj, schema, dest_obj=dest, **kwargs)
             if typ in ('str', 'string'):
                 return _build_string(obj, schema, **kwargs)
@@ -62,11 +61,14 @@ def _build(dest, obj, schema, **kwargs):
     raise ValueError(errors)
 
 def _build_array(obj, schema, **kwargs):
-    minlen = schema.get('min_length')
-    maxlen = schema.get('max_length')
+    minlen = schema.get('minItems')
+    maxlen = schema.get('maxItems')
+    unique = schema.get('uniqueItems')
 
     if obj == RETURN_DEFAULT:
         return []
+
+    arr = []
 
     if not isinstance(obj, list):
         return _invalid(obj, schema, **kwargs)
@@ -75,7 +77,17 @@ def _build_array(obj, schema, **kwargs):
     if maxlen is not None and len(obj) > maxlen:
         return _invalid(obj, schema, **kwargs)
 
-    return obj
+    for itm in obj:
+        arr.append(itm)
+
+    if unique:
+        itemset = set()
+        for itm in arr:
+            if itm in itemset:
+                raise ValueError()
+            itemset.add(itm)
+
+    return arr
 
 def _build_boolean(obj, schema, **kwargs):
     if obj == RETURN_DEFAULT:
