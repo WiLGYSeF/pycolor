@@ -14,71 +14,13 @@ import pycolor_class
 
 MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_data')
 
-ARGS = 'args'
-SUBSET = 'subset'
-RESULT = 'result'
-
-CONSECUTIVE_END_ARGS = [
-    {
-        ARGS: [],
-        SUBSET: [],
-        RESULT: True
-    },
-    {
-        ARGS: ['--color', 'on', 'abc'],
-        SUBSET: [],
-        RESULT: True
-    },
-    {
-        ARGS: ['abc'],
-        SUBSET: ['abc'],
-        RESULT: True
-    },
-    {
-        ARGS: ['--color', 'on', 'abc'],
-        SUBSET: ['abc'],
-        RESULT: True
-    },
-    {
-        ARGS: ['--', 'asdf', '--color', 'on', 'abc'],
-        SUBSET: ['asdf', '--color', 'on', 'abc'],
-        RESULT: True
-    },
-    {
-        ARGS: ['asdf', '--color', 'on', 'abc'],
-        SUBSET: ['asdf', 'abc'],
-        RESULT: False
-    },
-    {
-        ARGS: ['asdf', 'abc', '--color', 'on'],
-        SUBSET: ['asdf', 'abc'],
-        RESULT: False
-    },
-    {
-        ARGS: ['asdf', 'abc', '--color', 'on'],
-        SUBSET: ['nowhere'],
-        RESULT: False
-    },
-    {
-        ARGS: ['asdf', 'abc', '--color', 'on'],
-        SUBSET: ['abc'],
-        RESULT: False
-    },
-    {
-        ARGS: ['ee', 'asdf', 'abc'],
-        SUBSET: ['asdf', 'abc', '123', '4'],
-        RESULT: False
-    },
-]
-
 
 class PycolorTest(unittest.TestCase):
     def test_main_ls_numbers(self):
-        self.check_pycolor_main(['--', 'ls', '-l'], MOCKED_DATA, 'ls_numbers')
+        self.check_pycolor_main(['ls', '-l'], MOCKED_DATA, 'ls_numbers')
 
-    def test_main_invalid_consecutive_args(self):
-        with self.assertRaises(SystemExit):
-            self.check_pycolor_main(['ls', '-l', '--color', 'on'], MOCKED_DATA, 'ls_numbers')
+    def test_main_ls_numbers_known_arg_parse(self):
+        self.check_pycolor_main(['ls', '-l', '--color', 'off'], MOCKED_DATA, 'ls_numbers')
 
     def test_main_no_profile_stdin(self):
         with self.assertRaises(SystemExit), patch(pycolor, 'printerr', lambda x: None):
@@ -98,6 +40,14 @@ class PycolorTest(unittest.TestCase):
 
     def test_main_ls_profile(self):
         self.check_pycolor_main(['--profile', 'none', '--', 'ls', '-l'], MOCKED_DATA, 'ls_profile')
+
+    def test_main_debug_color(self):
+        self.check_pycolor_main(['--debug-color'], MOCKED_DATA, 'debug_color', patch_stdout=True)
+
+    def test_main_debug_format(self):
+        self.check_pycolor_main([
+            '--debug-format', 'this %C(lr)is %C(und;ly)a %C(^und;bol;bli;g)test'
+        ], MOCKED_DATA, 'debug_format', patch_stdout=True)
 
     def test_main_ls_profile_fail(self):
         with self.assertRaises(SystemExit), patch(pycolor, 'printerr', lambda x: None):
@@ -138,13 +88,6 @@ class PycolorTest(unittest.TestCase):
             'ls_debug_v3',
             patch_stdout=True
         )
-
-    def test_consecutive_end_args(self):
-        for entry in CONSECUTIVE_END_ARGS:
-            self.assertEqual(
-                pycolor.consecutive_end_args(entry[ARGS], entry[SUBSET]),
-                entry[RESULT]
-            )
 
     def check_pycolor_main(self,
         args,

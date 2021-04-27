@@ -73,8 +73,6 @@ def _colorval(color, aliases=None):
         'cyan': 36,
         'gray': 37,
         'grey': 37,
-        'lightgray': 37,
-        'lightgrey': 37,
         'default': 39,
 
         'k': 30, #black
@@ -100,6 +98,8 @@ def _colorval(color, aliases=None):
         'lightblue': 94,
         'lightmagenta': 95,
         'lightcyan': 96,
+        'lightgray': 97,
+        'lightgrey': 97,
         'white': 97,
 
         'de': 90, #darkgrey
@@ -110,6 +110,7 @@ def _colorval(color, aliases=None):
         'lb': 94, #lightblue
         'lm': 95, #lightmagenta
         'lc': 96, #lightcyan
+        'le': 97, #lightgrey (white)
         'w': 97,  #white
     }
 

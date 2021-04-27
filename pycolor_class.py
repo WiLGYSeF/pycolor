@@ -51,6 +51,9 @@ class Pycolor:
     def get_profile_by_name(self, name):
         return self.profloader.get_profile_by_name(name)
 
+    def get_profile_by_command(self, command, args):
+        return self.profloader.get_profile_by_command(command, args)
+
     def execute(self, cmd, profile=None):
         if profile is None:
             profile = self.profloader.get_profile_by_command(cmd[0], cmd[1:])
