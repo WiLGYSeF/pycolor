@@ -70,17 +70,6 @@
             "type": "boolean"
         },
 
-        "start_occurrence": {
-            "description": "",
-            "type": "integer",
-            "default": 1
-        },
-        "max_count": {
-            "description": "",
-            "type": "integer",
-            "default": -1
-        },
-
         "activation_line": {
             "description": "do not apply this pattern until linecount is at least this",
             "type": ["array", "integer"],
