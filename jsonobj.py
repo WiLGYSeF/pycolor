@@ -15,7 +15,13 @@ class ValidationError(Exception):
         self.schema = schema
         self.name = name
         self.message = message
-        super().__init__(self.message)
+
+        if self.name is not None:
+            err = '"%s": %s' % (self.name, self.message)
+        else:
+            err = self.message
+
+        super().__init__(err)
 
 def build(obj, **kwargs):
     schema = kwargs['schema']
@@ -372,17 +378,6 @@ def _build_string_array(obj, schema, **kwargs):
     if isinstance(obj, list):
         return _build_string(''.join(obj), schema, **kwargs)
     return _build_string(obj, schema, **kwargs)
-
-def _get_type(schema):
-    if 'type' in schema:
-        return schema['type']
-    if 'enum' in schema:
-        return 'enum'
-    if 'const' in schema:
-        return 'const'
-    if 'properties' in schema:
-        return 'object'
-    return None
 
 _buildtbl = {
     'arr': _build_array,
