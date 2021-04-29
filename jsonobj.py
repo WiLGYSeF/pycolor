@@ -66,7 +66,7 @@ def _build(obj, schema, **kwargs):
     errors = []
 
     for typ in stype:
-        val = _build_from_type(obj, schema, typ.lower(), **kwargs)
+        val = _build_from_type(obj, schema, typ, **kwargs)
         if not isinstance(val, Exception):
             return val
         errors.append(val)
@@ -76,32 +76,15 @@ def _build(obj, schema, **kwargs):
     return _build_from_type(
         schema.get('default', RETURN_DEFAULT),
         schema,
-        stype[0].lower(),
+        stype[0],
         **kwargs
     )
 
 def _build_from_type(obj, schema, type_name, **kwargs):
-    if type_name in ('arr', 'array', 'list'):
-        return _build_array(obj, schema, **kwargs)
-    if type_name in ('bool', 'boolean'):
-        return _build_boolean(obj, schema, **kwargs)
-    if type_name == 'const':
-        return _build_const(obj, schema, **kwargs)
-    if type_name == 'enum':
-        return _build_enum(obj, schema, **kwargs)
-    if type_name in ('int', 'integer'):
-        return _build_integer(obj, schema, **kwargs)
-    if type_name in ('null', 'none'):
-        return _build_null(obj, schema, **kwargs)
-    if type_name in ('num', 'number', 'float'):
-        return _build_number(obj, schema, **kwargs)
-    if type_name in ('obj', 'object', 'dict'):
-        return _build_object(obj, schema, **kwargs)
-    if type_name in ('str', 'string'):
-        return _build_string(obj, schema, **kwargs)
-    if type_name in ('str_arr', 'string_array'):
-        return _build_string_array(obj, schema, **kwargs)
-    return ValueError('invalid schema type: %s' % type_name)
+    func = _functbl.get(type_name.lower())
+    if func is None:
+        return ValueError('invalid schema type: %s' % type_name)
+    return func(obj, schema, **kwargs)
 
 def _build_array(obj, schema, **kwargs):
     name = kwargs.get('name')
@@ -354,3 +337,27 @@ def _get_type(schema):
     if 'enum' in schema:
         return 'enum'
     return None
+
+_functbl = {
+    'arr': _build_array,
+    'array': _build_array,
+    'list': _build_array,
+    'bool': _build_boolean,
+    'boolean': _build_boolean,
+    'const': _build_const,
+    'enum': _build_enum,
+    'int': _build_integer,
+    'integer': _build_integer,
+    'null': _build_null,
+    'none': _build_null,
+    'num': _build_number,
+    'number': _build_number,
+    'float': _build_number,
+    'obj': _build_object,
+    'object': _build_object,
+    'dict': _build_object,
+    'str': _build_string,
+    'string': _build_string,
+    'str_arr': _build_string_array,
+    'string_array': _build_string_array,
+}
