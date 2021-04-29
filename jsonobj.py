@@ -66,12 +66,12 @@ def _build(obj, schema, **kwargs):
 
     stype = getval(schema, 'type', (str, list))
     if stype is None:
-        if 'enum' in schema:
-            stype = 'enum'
         if 'const' in schema:
             stype = 'const'
         if 'properties' in schema:
             stype = 'object'
+    if 'enum' in schema:
+        stype = 'enum'
 
     if stype is None:
         return ValidationError(schema, name, 'type is not defined')
@@ -204,13 +204,14 @@ def _build_const(obj, schema, **kwargs):
 def _build_enum(obj, schema, **kwargs):
     name = kwargs.get('name')
 
-    # TODO: https://json-schema.org/understanding-json-schema/reference/generic.html#enumerated-values
-
     values = schema['enum']
     if obj == RETURN_DEFAULT:
-        return values[0]
-    if obj not in values:
+        obj = values[0]
+    elif obj not in values:
         return ValidationError(schema, name, 'not an enum value')
+
+    if 'type' in schema and schema['type'] != 'enum':
+        return _build(obj, {'type': schema['type']}, **kwargs)
     return obj
 
 def _build_integer(obj, schema, **kwargs):

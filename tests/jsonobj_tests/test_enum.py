@@ -46,6 +46,14 @@ BUILD_ENUM = [
         },
         RESULT: 'third'
     },
+    {
+        VALUE: 'third',
+        SCHEMA: {
+            'type': 'string',
+            'enum': ['first', 'second', 'third']
+        },
+        RESULT: 'third'
+    },
 ]
 
 BUILD_ENUM_FAIL = [
@@ -68,7 +76,14 @@ BUILD_ENUM_FAIL = [
             'enum': ['first', 'second', 'third'],
             'default': 'invalid'
         }
-    }
+    },
+    {
+        VALUE: 32,
+        SCHEMA: {
+            'type': 'string',
+            'enum': ['first', 'second', 32]
+        }
+    },
 ]
 
 
