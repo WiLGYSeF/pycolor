@@ -1,5 +1,8 @@
 # based on: https://json-schema.org/
 
+# TODO: https://json-schema.org/understanding-json-schema/structuring.html
+# TODO: https://json-schema.org/understanding-json-schema/reference/combining.html
+
 from numbers import Number
 import re
 
