@@ -196,6 +196,9 @@ def _build_integer(obj, schema, **kwargs):
     return int(val) if isinstance(val, Number) else val
 
 def _build_null(obj, schema, **kwargs):
+    if obj == RETURN_DEFAULT:
+        return None
+
     if obj is not None:
         name = kwargs.get('name')
         return ValidationError(schema, name, 'is not null')
@@ -297,7 +300,8 @@ def _build_object(obj, schema, **kwargs):
 
     for key, val in properties.items():
         if key not in obj:
-            obj[key] =  val.get('default', _build(None, val, **args))
+            args['name'] = key
+            obj[key] = _build(val.get('default', RETURN_DEFAULT), val, **args)
 
     return obj
 
