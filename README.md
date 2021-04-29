@@ -51,24 +51,13 @@ __After:__ (note Pycolor omitted lines with trailing slashes in addition to colo
 # Configuration
 Pycolor will first try to load configuration from `~/.pycolor.json` before loading files found in `~/.pycolor.d/` in filename order.
 
-When looking for a profile to use, pycolor will select the last matching profile based on the `name` or `which` property.
+When looking for a profile to use, pycolor will select the last matching profile based on the `name`, `name_expression`, or `which` property.
 
 Patterns are applied first-to-last for each profile.
 
-TODO: describe configuration.
+JSON schema files that describe the config format can be found in `config/schema/`.
 
-Configuration file template:
-```json
-{
-    "profiles": [
-        {
-            "name": "ls",
-            "profile_name": "ls",
-            "which": "/bin/ls"
-        }
-    ]
-}
-```
+Sample config files can also be found in `docs/sample-config/`.
 
 # Formatting Strings
 
