@@ -22,10 +22,6 @@
             "description": "a list of patterns that must match command arguments",
             "type": "array"
         },
-        "all_args_must_match": {
-            "description": "",
-            "type": "boolean"
-        },
         "min_args": {
             "description": "minimum number of arguments the command must have",
             "type": ["null", "integer"]
@@ -37,7 +33,11 @@
 
         "timestamp": {
             "description": "prepend a timestamp to output lines, can be true or an strftime format",
-            "type": ["boolean", "string"]
+            "type": ["boolean", "string"],
+            "examples": [
+                true,
+                "%H%M%S: "
+            ]
         },
         "less_output": {
             "description": "send the output through the less command when finished",
@@ -54,7 +54,17 @@
 
         "from_profiles": {
             "description": "include the patterns from these named profiles",
-            "type": ["array", "object", "string"]
+            "type": ["array", "object", "string"],
+            "examples": [
+                "other_profile",
+                ["profile1", "profile2"],
+                [
+                    {
+                        "name": "other_profile",
+                        "order": "before"
+                    }
+                ]
+            ]
         },
 
         "patterns": {

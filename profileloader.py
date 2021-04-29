@@ -91,8 +91,7 @@ class ProfileLoader:
 
             if not ProfileLoader.check_arg_patterns(
                 args,
-                prof.arg_patterns,
-                prof.all_args_must_match
+                prof.arg_patterns
             ):
                 continue
 
@@ -110,16 +109,13 @@ class ProfileLoader:
         ])
 
     @staticmethod
-    def check_arg_patterns(args, arg_patterns, all_must_match=False):
-        idx_matches = set()
-
+    def check_arg_patterns(args, arg_patterns):
         for argpat in arg_patterns:
             matches = False
             for idx in argpat.get_arg_range(len(args)):
                 if argpat.regex.fullmatch(args[idx]):
                     if argpat.match_not:
                         return False
-                    idx_matches.add(idx)
                     matches = True
 
             if not any([
@@ -128,7 +124,4 @@ class ProfileLoader:
                 argpat.optional
             ]):
                 return False
-
-        if all_must_match and len(idx_matches) != len(args):
-            return False
         return True
