@@ -2,49 +2,63 @@
     "type": "object",
     "properties": {
         "name": {
+            "description": "the name of the command this profile matches",
             "type": ["null", "string"]
         },
         "name_expression": {
+            "description": "a regex pattern that must match the command name",
             "type": ["null", "string_array"]
         },
         "profile_name": {
+            "description": "the name of this profile",
             "type": ["null", "string"]
         },
         "which": {
+            "description": "a full path to the command that this profile belongs to",
             "type": ["null", "string"]
         },
 
+        "arg_patterns": {
+            "description": "a list of patterns that must match command arguments",
+            "type": "array"
+        },
         "all_args_must_match": {
+            "description": "",
             "type": "boolean"
         },
         "min_args": {
+            "description": "minimum number of arguments the command must have",
             "type": ["null", "integer"]
         },
         "max_args": {
+            "description": "maximum number of arguments the command must have",
             "type": ["null", "integer"]
         },
 
-        "soft_reset_eol": {
-            "type": "boolean"
-        },
         "timestamp": {
+            "description": "prepend a timestamp to output lines, can be true or an strftime format",
             "type": ["boolean", "string"]
         },
         "less_output": {
-            "type": ["boolean", "string"]
+            "description": "send the output through the less command when finished",
+            "type": ["boolean"]
         },
         "tty": {
+            "description": "run the command in a pseudo-terminal environment",
+            "type": "boolean"
+        },
+        "soft_reset_eol": {
+            "description": "append a soft reset, %Cs, at the end of each line",
             "type": "boolean"
         },
 
         "from_profiles": {
+            "description": "include the patterns from these named profiles",
             "type": ["array", "object", "string"]
         },
 
-        "arg_patterns": {
-            "type": "array"
-        },
         "patterns": {
+            "description": "a list of patterns",
             "type": "array"
         }
     }

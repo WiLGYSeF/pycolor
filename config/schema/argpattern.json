@@ -2,16 +2,20 @@
     "type": "object",
     "properties": {
         "expression": {
+            "description": "the regex pattern to compare the arguments",
             "type": ["string_array"]
         },
         "position": {
+            "description": "",
             "type": ["null", "string", "integer"]
         },
 
         "match_not": {
+            "description": "none of the arguments can match this pattern",
             "type": "boolean"
         },
         "optional": {
+            "description": "",
             "type": "boolean"
         }
     },

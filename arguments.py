@@ -26,8 +26,8 @@ def get_args(args):
         help='force enable "timestamp" for all profiles with an optional FORMAT'
     )
     parser.add_argument('--less',
-        action='store', metavar='PATH', default=False, nargs='?',
-        help='force enable "less_output" for all profiles with an optional PATH to the less binary'
+        action='store_true', default=False,
+        help='force enable "less_output" for all profiles'
     )
     parser.add_argument('-v', '--verbose',
         action='count', default=0,

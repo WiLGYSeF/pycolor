@@ -87,11 +87,7 @@ class Pycolor:
 
             pid = os.fork()
             if pid == 0:
-                if isinstance(profile.less_output, str):
-                    less_path = profile.less_output
-                else:
-                    less_path = which('less')
-
+                less_path = which('less')
                 os.execv(less_path, [less_path, '-FKRSX', tmpfile.name])
                 sys.exit(0)
             os.wait()

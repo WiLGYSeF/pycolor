@@ -2,81 +2,102 @@
     "type": "object",
     "properties": {
         "enabled": {
+            "description": "if this pattern should be used",
             "type" : "boolean",
             "default": true
         },
         "super_expression": {
+            "description": "this regex pattern must match for this pattern to be used",
             "type": ["null", "string_array"]
         },
         "expression": {
+            "description": "the regex pattern that must match, used for the replace properties",
             "type": ["string_array"]
         },
 
         "separator": {
+            "description": "the regex pattern used as a field separator",
             "type": ["null", "string_array"]
         },
         "field": {
+            "description": "the field that expression should compare against. if it is null, all fields are matched with expression and all matching fields are replaced. if it is zero, the entire line is matched with expression and the match is replaced. if it is a positive number, only that field is matched with expression",
             "type": ["null", "integer"]
         },
         "min_fields": {
+            "description": "minimum fields the line must have",
             "type": "integer",
             "default": -1
         },
         "max_fields": {
+            "description": "maximum fields the line must have",
             "type": "integer",
             "default": -1
         },
 
         "replace": {
+            "description": "replace the span matched with expression with the given formatted string",
             "type": ["null", "string_array"]
         },
         "replace_all": {
+            "description": "replace the entire line with the given formatted string",
             "type": ["null", "string_array"]
         },
         "replace_groups": {
+            "description": "a list or object of strings that the match groups are replaced with",
             "type": ["array", "object"],
             "default": {}
         },
         "replace_fields": {
+            "description": "a list or object of strings that the fields are replaced with",
             "type": ["array", "object"],
             "default": {}
         },
         "filter": {
+            "description": "if true, do not output this line",
             "type": "boolean"
         },
 
         "stdout_only": {
+            "description": "only apply this pattern to stdout",
             "type" : "boolean"
         },
         "stderr_only": {
+            "description": "only apply this pattern to stderr",
             "type" : "boolean"
         },
         "skip_others": {
+            "description": "if this pattern is matched, do not match any others below it",
             "type": "boolean"
         },
 
         "start_occurrence": {
+            "description": "",
             "type": "integer",
             "default": 1
         },
         "max_count": {
+            "description": "",
             "type": "integer",
             "default": -1
         },
 
         "activation_line": {
+            "description": "do not apply this pattern until linecount is at least this",
             "type": ["array", "integer"],
             "default": -1
         },
         "deactivation_line": {
+            "description": "apply this pattern until linecount is at least this",
             "type": ["array", "integer"],
             "default": -1
         },
 
         "activation_expression": {
+            "description": "do not apply this pattern until a line matching this regex pattern is found",
             "type": ["null", "string_array"]
         },
         "deactivation_expression": {
+            "description": "apply this pattern until a line matching this regex pattern is found",
             "type": ["null", "string_array"]
         }
     },
