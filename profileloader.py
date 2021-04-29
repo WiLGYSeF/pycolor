@@ -75,6 +75,8 @@ class ProfileLoader:
                 prof.name_regex
             ]):
                 continue
+            if not prof.enabled:
+                continue
 
             if prof.which is not None:
                 result = which(command)
@@ -111,6 +113,9 @@ class ProfileLoader:
     @staticmethod
     def check_arg_patterns(args, arg_patterns):
         for argpat in arg_patterns:
+            if not argpat.enabled:
+                continue
+
             matches = False
             for idx in argpat.get_arg_range(len(args)):
                 if argpat.regex.fullmatch(args[idx]):

@@ -1,6 +1,11 @@
 {
     "type": "object",
     "properties": {
+        "enabled": {
+            "description": "if this pattern should be used",
+            "type" : "boolean",
+            "default": true
+        },
         "expression": {
             "description": "the regex pattern to compare the arguments",
             "type": ["string_array"]

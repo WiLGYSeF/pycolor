@@ -1,6 +1,11 @@
 {
     "type": "object",
     "properties": {
+        "enabled": {
+            "description": "if this profile should be used",
+            "type" : "boolean",
+            "default": true
+        },
         "name": {
             "description": "the name of the command this profile matches",
             "type": ["null", "string"]
