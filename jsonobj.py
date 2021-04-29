@@ -178,8 +178,6 @@ def _build_enum(obj, schema, **kwargs):
 
     values = schema['enum']
     if obj == RETURN_DEFAULT:
-        if schema.get('default') in values:
-            return schema['default']
         return values[0]
     if obj not in values:
         return ValidationError(schema, name, 'not an enum value')
@@ -238,13 +236,11 @@ def _build_object(obj, schema, **kwargs):
     properties = getval(schema, 'properties', dict)
     additional_properties = getval(schema, 'additionalProperties', (dict, bool), True)
     required = getval(schema, 'required', list, [])
-    # TODO
-    property_names = getval(schema, 'propertyNames', dict)
+    property_names = getval(schema, 'propertyNames', dict, {})
     minlen = getval(schema, 'minProperties', int)
     maxlen = getval(schema, 'maxProperties', int)
     dependencies = getval(schema, 'dependencies', dict, {})
-    # TODO
-    pattern_properties = getval(schema, 'patternProperties', dict)
+    pattern_properties = getval(schema, 'patternProperties', dict, {})
 
     if obj == RETURN_DEFAULT:
         return {}
@@ -276,34 +272,51 @@ def _build_object(obj, schema, **kwargs):
         else:
             return ValueError()
 
-    if properties is None:
-        return obj
-
     args = kwargs.copy()
 
     for key, val in obj.items():
         args['name'] = key
 
-        if key in properties:
+        if properties is not None and key in properties:
             result = _build(val, properties[key], **args)
             if isinstance(result, Exception):
                 return result
             obj[key] = result
-        else:
-            if isinstance(additional_properties, dict):
-                result = _build(val, additional_properties, **args)
-                if isinstance(result, Exception):
-                    return result
-                obj[key] = result
-            else:
-                if additional_properties is False:
-                    return ValidationError(schema, name, 'cannot have additional properties')
-                obj[key] = val
+            continue
 
-    for key, val in properties.items():
-        if key not in obj:
-            args['name'] = key
-            obj[key] = _build(val.get('default', RETURN_DEFAULT), val, **args)
+        if len(pattern_properties) != 0:
+            match = False
+            for pat, sch in pattern_properties.items():
+                if re.search(pat, key):
+                    result = _build(val, sch, **args)
+                    if isinstance(result, Exception):
+                        return result
+                    obj[key] = result
+                    match = True
+                    break
+            if match:
+                continue
+
+        if isinstance(additional_properties, dict):
+            result = _build(val, additional_properties, **args)
+            if isinstance(result, Exception):
+                return result
+            obj[key] = result
+        else:
+            if additional_properties is False:
+                return ValidationError(schema, name, 'cannot have additional properties')
+            obj[key] = val
+
+    if properties is not None:
+        for key, val in properties.items():
+            if key not in obj:
+                args['name'] = key
+                obj[key] = _build(val.get('default', RETURN_DEFAULT), val, **args)
+
+    if 'pattern' in property_names:
+        for key in obj:
+            if not re.search(property_names['pattern'], key):
+                return ValidationError(schema, name, 'does not match propertyNames pattern')
 
     return obj
 

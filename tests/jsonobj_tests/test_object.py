@@ -185,6 +185,34 @@ BUILD_OBJECT = [
             'extra2': 'def'
         }
     },
+    {
+        VALUE: {
+            'i_yeet': 42
+        },
+        SCHEMA: {
+            'type': 'object',
+            'patternProperties': {
+                '^i_': {'type': 'integer'}
+            }
+        },
+        RESULT: {
+            'i_yeet': 42
+        }
+    },
+    {
+        VALUE: {
+            'abc': 123
+        },
+        SCHEMA: {
+            'type': 'object',
+            'propertyNames': {
+                'pattern': '^[a-z]+$'
+            }
+        },
+        RESULT: {
+            'abc': 123
+        }
+    },
 ]
 
 BUILD_OBJECT_FAIL = [
@@ -322,6 +350,40 @@ BUILD_OBJECT_FAIL = [
                     },
                     'required': ['extra2']
                 }
+            }
+        }
+    },
+    {
+        VALUE: {
+            'i_yeet': 42
+        },
+        SCHEMA: {
+            'type': 'object',
+            'patternProperties': {
+                '^i_': {'type': 'string'}
+            }
+        }
+    },
+    {
+        VALUE: {
+            'b_bool': True
+        },
+        SCHEMA: {
+            'type': 'object',
+            'patternProperties': {
+                '^i_': {'type': 'string'}
+            },
+            'additionalProperties': False
+        }
+    },
+    {
+        VALUE: {
+            'a_b_c': 123
+        },
+        SCHEMA: {
+            'type': 'object',
+            'propertyNames': {
+                'pattern': '^[a-z]+$'
             }
         }
     },
