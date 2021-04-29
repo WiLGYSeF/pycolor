@@ -18,7 +18,7 @@ def build(obj, **kwargs):
     schema = kwargs['schema']
     dest = kwargs.get('dest', {})
 
-    result = _build(obj, schema)
+    result = _build(obj, schema, root_schema=schema)
     if isinstance(result, Exception):
         raise result
 
@@ -45,10 +45,15 @@ def getval(obj, key, expected_type, default=None, has_default=True):
 def _build(obj, schema, **kwargs):
     name = kwargs.get('name')
 
+    if isinstance(schema, dict) and '$ref' in schema:
+        schema = _get_ref(kwargs['root_schema'], schema['$ref'])
+
     if schema is True:
         return obj
     if schema is False:
         return ValidationError(schema, name, 'schema is false')
+    if not isinstance(schema, dict):
+        raise ValueError('schema must be an object')
 
     stype = getval(schema, 'type', (str, list))
     if stype is None:
@@ -81,6 +86,20 @@ def _build(obj, schema, **kwargs):
         stype[0],
         **kwargs
     )
+
+def _get_ref(root, path):
+    idx = path.find('#/')
+    if idx == -1:
+        raise ValueError('invalid $ref path: %s' % path)
+    if idx > 0:
+        raise ValueError('not yet implemented')
+
+    parts = path[idx + 2:].split('/')
+    schema = root
+
+    for part in parts:
+        schema = schema[part]
+    return schema
 
 def _build_from_type(obj, schema, type_name, **kwargs):
     func = _buildtbl.get(type_name.lower())
@@ -175,6 +194,8 @@ def _build_const(obj, schema, **kwargs):
 
 def _build_enum(obj, schema, **kwargs):
     name = kwargs.get('name')
+
+    # TODO: https://json-schema.org/understanding-json-schema/reference/generic.html#enumerated-values
 
     values = schema['enum']
     if obj == RETURN_DEFAULT:
@@ -352,9 +373,12 @@ def _build_string_array(obj, schema, **kwargs):
 def _get_type(schema):
     if 'type' in schema:
         return schema['type']
-
     if 'enum' in schema:
         return 'enum'
+    if 'const' in schema:
+        return 'const'
+    if 'properties' in schema:
+        return 'object'
     return None
 
 _buildtbl = {

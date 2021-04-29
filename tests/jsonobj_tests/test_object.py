@@ -67,7 +67,6 @@ BUILD_OBJECT = [
             'custom': 3574
         },
         SCHEMA: {
-            'type': 'object',
             'properties': {
                 'test': {'type': 'string'}
             },
