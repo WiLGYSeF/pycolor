@@ -125,10 +125,12 @@ def _build_array(obj, schema, **kwargs):
 
     if items is not None:
         if isinstance(items, dict):
-            for itm in obj:
-                result = _build(itm, items, **kwargs)
+            for i in range(len(obj)): #pylint: disable=consider-using-enumerate
+                result = _build(obj[i], items, **kwargs)
                 if isinstance(result, Exception):
                     return result
+                obj[i] = result
+
         elif isinstance(items, list):
             if additional_items is False and len(items) != len(obj):
                 return ValidationError(schema, name, 'cannot have additional items')
@@ -139,17 +141,20 @@ def _build_array(obj, schema, **kwargs):
                 result = _build(obj[i], items[i], **kwargs)
                 if isinstance(result, Exception):
                     return result
+                obj[i] = result
 
             if isinstance(additional_items, dict):
                 for i in range(len(items), len(obj)):
                     result = _build(obj[i], additional_items, **kwargs)
                     if isinstance(result, Exception):
                         return result
+                    obj[i] = result
     elif contains is not None:
         matches = 0
-        for itm in obj:
-            result = _build(itm, contains, **kwargs)
+        for i in range(len(obj)): #pylint: disable=consider-using-enumerate
+            result = _build(obj[i], contains, **kwargs)
             if not isinstance(result, Exception):
+                obj[i] = result
                 matches += 1
 
         if matches == 0:
