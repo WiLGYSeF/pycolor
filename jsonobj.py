@@ -8,8 +8,9 @@ RETURN_DEFAULT = object()
 
 
 class ValidationError(Exception):
-    def __init__(self, schema, message):
+    def __init__(self, schema, name, message):
         self.schema = schema
+        self.name = name
         self.message = message
         super().__init__(self.message)
 
@@ -18,6 +19,9 @@ def build(obj, **kwargs):
     dest = kwargs.get('dest', {})
 
     result = _build(obj, schema)
+    if isinstance(result, Exception):
+        raise result
+
     if schema.get('type') == 'object':
         if isinstance(dest, dict):
             for key, val in result.items():
@@ -44,16 +48,17 @@ def _build(obj, schema, **kwargs):
     if schema is True:
         return obj
     if schema is False:
-        raise ValidationError(schema, 'schema is false')
+        return ValidationError(schema, name, 'schema is false')
 
     stype = getval(schema, 'type', (str, list))
     if stype is None:
         if 'enum' in schema:
-            return _build_enum(obj, schema, **kwargs)
+            stype = 'enum'
         if 'const' in schema:
-            return _build_const(obj, schema, **kwargs)
+            stype = 'const'
 
-        raise ValidationError(schema, '"%s" schema type is not defined' % name)
+    if stype is None:
+        return ValidationError(schema, name, 'type is not defined')
 
     if not isinstance(stype, list):
         stype = [stype]
@@ -61,36 +66,46 @@ def _build(obj, schema, **kwargs):
     errors = []
 
     for typ in stype:
-        typ = typ.lower()
+        val = _build_from_type(obj, schema, typ.lower(), **kwargs)
+        if not isinstance(val, Exception):
+            return val
+        errors.append(val)
 
-        try:
-            if typ in ('arr', 'array', 'list'):
-                return _build_array(obj, schema, **kwargs)
-            if typ in ('bool', 'boolean'):
-                return _build_boolean(obj, schema, **kwargs)
-            if typ == 'const':
-                return _build_const(obj, schema, **kwargs)
-            if typ == 'enum':
-                return _build_enum(obj, schema, **kwargs)
-            if typ in ('int', 'integer'):
-                return _build_integer(obj, schema, **kwargs)
-            if typ in ('null', 'none'):
-                return _build_null(obj, schema, **kwargs)
-            if typ in ('num', 'number', 'float'):
-                return _build_number(obj, schema, **kwargs)
-            if typ in ('obj', 'object', 'dict'):
-                return _build_object(obj, schema, **kwargs)
-            if typ in ('str', 'string'):
-                return _build_string(obj, schema, **kwargs)
+    if obj is not None and len(errors) != 0:
+        return errors[0]
+    return _build_from_type(
+        schema.get('default', RETURN_DEFAULT),
+        schema,
+        stype[0].lower(),
+        **kwargs
+    )
 
-            if typ in ('str_arr', 'string_array'):
-                return _build_string_array(obj, schema, **kwargs)
-        except ValidationError as ver:
-            errors.append(ver)
-
-    raise ValidationError(schema, errors)
+def _build_from_type(obj, schema, type_name, **kwargs):
+    if type_name in ('arr', 'array', 'list'):
+        return _build_array(obj, schema, **kwargs)
+    if type_name in ('bool', 'boolean'):
+        return _build_boolean(obj, schema, **kwargs)
+    if type_name == 'const':
+        return _build_const(obj, schema, **kwargs)
+    if type_name == 'enum':
+        return _build_enum(obj, schema, **kwargs)
+    if type_name in ('int', 'integer'):
+        return _build_integer(obj, schema, **kwargs)
+    if type_name in ('null', 'none'):
+        return _build_null(obj, schema, **kwargs)
+    if type_name in ('num', 'number', 'float'):
+        return _build_number(obj, schema, **kwargs)
+    if type_name in ('obj', 'object', 'dict'):
+        return _build_object(obj, schema, **kwargs)
+    if type_name in ('str', 'string'):
+        return _build_string(obj, schema, **kwargs)
+    if type_name in ('str_arr', 'string_array'):
+        return _build_string_array(obj, schema, **kwargs)
+    return ValueError('invalid schema type: %s' % type_name)
 
 def _build_array(obj, schema, **kwargs):
+    name = kwargs.get('name')
+
     items = getval(schema, 'items', (dict, list))
     contains = getval(schema, 'contains', dict)
     additional_items = getval(schema, 'additionalItems', (bool, dict), True)
@@ -102,63 +117,61 @@ def _build_array(obj, schema, **kwargs):
         return []
 
     if not isinstance(obj, list):
-        return _invalid(obj, schema, **kwargs)
+        return ValidationError(schema, name, 'not a list')
     if minlen is not None and len(obj) < minlen:
-        return _invalid(obj, schema, **kwargs)
+        return ValidationError(schema, name, 'less than minItems')
     if maxlen is not None and len(obj) > maxlen:
-        return _invalid(obj, schema, **kwargs)
+        return ValidationError(schema, name, 'greater than maxItems')
 
     if items is not None:
         if isinstance(items, dict):
             for itm in obj:
-                args = kwargs.copy()
-                args['require_value'] = True
-                _build(itm, items, **args)
+                result = _build(itm, items, **kwargs)
+                if isinstance(result, Exception):
+                    return result
         elif isinstance(items, list):
-            if not additional_items and len(items) != len(obj):
-                raise ValidationError(schema, '')
+            if additional_items is False and len(items) != len(obj):
+                return ValidationError(schema, name, 'cannot have additional items')
             if len(obj) < len(items):
-                raise ValidationError(schema, '')
+                return ValidationError(schema, name, 'list is too short')
 
             for i in range(len(items)): #pylint: disable=consider-using-enumerate
-                args = kwargs.copy()
-                args['require_value'] = True
-                _build(obj[i], items[i], **args)
+                result = _build(obj[i], items[i], **kwargs)
+                if isinstance(result, Exception):
+                    return result
 
             if isinstance(additional_items, dict):
                 for i in range(len(items), len(obj)):
-                    args = kwargs.copy()
-                    args['require_value'] = True
-                    _build(obj[i], additional_items, **args)
+                    result = _build(obj[i], additional_items, **kwargs)
+                    if isinstance(result, Exception):
+                        return result
     elif contains is not None:
         matches = 0
         for itm in obj:
-            try:
-                args = kwargs.copy()
-                args['require_value'] = True
-                _build(itm, contains, **args)
+            result = _build(itm, contains, **kwargs)
+            if not isinstance(result, Exception):
                 matches += 1
-            except ValidationError:
-                pass
 
         if matches == 0:
-            raise ValidationError(schema, '')
+            return ValidationError(schema, name, 'contains does not match any item')
 
     if unique:
         itemset = set()
         for itm in obj:
             if itm in itemset:
-                raise ValidationError(schema, 'array contains duplicate items')
+                return ValidationError(schema, name, 'contains duplicate items')
             itemset.add(itm)
 
     return obj
 
 def _build_boolean(obj, schema, **kwargs):
+    name = kwargs.get('name')
+
     if obj == RETURN_DEFAULT:
         return False
 
     if not isinstance(obj, bool):
-        return _invalid(obj, schema, **kwargs)
+        return ValidationError(schema, name, 'not a boolean')
     return obj
 
 def _build_const(obj, schema, **kwargs):
@@ -166,34 +179,43 @@ def _build_const(obj, schema, **kwargs):
     if obj == RETURN_DEFAULT:
         return value
     if obj != value:
-        return _invalid(obj, schema, **kwargs)
+        name = kwargs.get('name')
+        return ValidationError(schema, name, 'not const value')
     return obj
 
 def _build_enum(obj, schema, **kwargs):
+    name = kwargs.get('name')
+
     values = schema['enum']
     if obj == RETURN_DEFAULT:
-        return schema['default'] if 'default' in schema else values[0]
+        if schema.get('default') in values:
+            return schema['default']
+        return values[0]
     if obj not in values:
-        return _invalid(obj, schema, **kwargs)
+        return ValidationError(schema, name, 'not an enum value')
     return obj
 
 def _build_integer(obj, schema, **kwargs):
+    name = kwargs.get('name')
+
     if obj == RETURN_DEFAULT:
         return 0
 
     if not isinstance(obj, int):
-        return _invalid(obj, schema, **kwargs)
+        return ValidationError(schema, name, 'not an integer')
 
     val = _build_number(obj, schema, **kwargs)
-    return val if isinstance(val, int) else int(val)
+    return int(val) if isinstance(val, Number) else val
 
 def _build_null(obj, schema, **kwargs):
     if obj is not None:
         name = kwargs.get('name')
-        raise ValidationError(schema, '"%s" is defined and not null: %s' % (name, obj))
+        return ValidationError(schema, name, 'is not null')
     return None
 
 def _build_number(obj, schema, **kwargs):
+    name = kwargs.get('name')
+
     minval = getval(schema, 'minimum', Number)
     maxval = getval(schema, 'maximum', Number)
     exclminval = getval(schema, 'exclusiveMinimum', Number)
@@ -204,20 +226,22 @@ def _build_number(obj, schema, **kwargs):
         return 0.0
 
     if not isinstance(obj, Number):
-        return _invalid(obj, schema, **kwargs)
+        return ValidationError(schema, name, 'not a number')
     if minval is not None and obj < minval:
-        return _invalid(obj, schema, **kwargs)
+        return ValidationError(schema, name, 'less than minimum')
     if maxval is not None and obj > maxval:
-        return _invalid(obj, schema, **kwargs)
+        return ValidationError(schema, name, 'greater than maximum')
     if exclminval is not None and obj <= exclminval:
-        return _invalid(obj, schema, **kwargs)
+        return ValidationError(schema, name, 'less than or equal to exclusive minimum')
     if exclmaxval is not None and obj >= exclmaxval:
-        return _invalid(obj, schema, **kwargs)
+        return ValidationError(schema, name, 'greater than or requal to exclusive maximum')
     if multiple_of is not None and obj % multiple_of != 0:
-        return _invalid(obj, schema, **kwargs)
+        return ValidationError(schema, name, 'not a multiple of %d' % multiple_of)
     return obj
 
 def _build_object(obj, schema, **kwargs):
+    name = kwargs.get('name')
+
     properties = getval(schema, 'properties', dict)
     additional_properties = getval(schema, 'additionalProperties', (dict, bool), True)
     required = getval(schema, 'required', list, [])
@@ -233,15 +257,15 @@ def _build_object(obj, schema, **kwargs):
         return {}
 
     if not isinstance(obj, dict):
-        return _invalid(obj, schema, **kwargs)
+        return ValidationError(schema, name, 'not an object')
     if minlen is not None and len(obj) < minlen:
-        return _invalid(obj, schema, **kwargs)
+        return ValidationError(schema, name, 'less than minProperties')
     if maxlen is not None and len(obj) > maxlen:
-        return _invalid(obj, schema, **kwargs)
+        return ValidationError(schema, name, 'greater than maxProperties')
 
     for req in required:
         if req not in obj:
-            raise ValidationError(schema,'missing required property: "%s"' % req)
+            return ValidationError(schema, name, 'missing required property: "%s"' % req)
 
     for key, dep in dependencies.items():
         if key not in obj:
@@ -249,13 +273,15 @@ def _build_object(obj, schema, **kwargs):
         if isinstance(dep, list):
             for val in dep:
                 if val not in obj:
-                    raise ValidationError(schema,
+                    return ValidationError(schema, name,
                         'missing dependency for "%s": "%s"' % (key, val)
                     )
         elif isinstance(dep, dict):
-            _build(obj, dep, **kwargs)
+            result = _build(obj, dep, **kwargs)
+            if isinstance(result, Exception):
+                return result
         else:
-            raise ValueError()
+            return ValueError()
 
     newobj = {}
 
@@ -267,15 +293,22 @@ def _build_object(obj, schema, **kwargs):
     args = kwargs.copy()
 
     for key, val in obj.items():
+        args['name'] = key
+
         if key in properties:
-            args['name'] = key
-            newobj[key] = _build(val, properties[key], **args)
+            result = _build(val, properties[key], **args)
+            if isinstance(result, Exception):
+                return result
+            newobj[key] = result
         else:
             if isinstance(additional_properties, dict):
-                newobj[key] = _build(val, additional_properties, **args)
+                result = _build(val, additional_properties, **args)
+                if isinstance(result, Exception):
+                    return result
+                newobj[key] = result
             else:
                 if additional_properties is False:
-                    raise ValidationError(schema, 'additonal properties not allowed')
+                    return ValidationError(schema, name, 'cannot have additional properties')
                 newobj[key] = val
 
     for key, val in properties.items():
@@ -285,6 +318,8 @@ def _build_object(obj, schema, **kwargs):
     return newobj
 
 def _build_string(obj, schema, **kwargs):
+    name = kwargs.get('name')
+
     minlen = getval(schema, 'minLength', int)
     maxlen = getval(schema, 'maxLength', int)
     regex = getval(schema, 'pattern', str)
@@ -294,36 +329,22 @@ def _build_string(obj, schema, **kwargs):
         return ''
 
     if format_type is not None:
-        raise ValidationError(schema, 'not yet implemented')
+        raise ValueError('not yet implemented')
 
     if not isinstance(obj, str):
-        return _invalid(obj, schema, **kwargs)
+        return ValidationError(schema, name, 'not a string')
     if minlen is not None and len(obj) < minlen:
-        return _invalid(obj, schema, **kwargs)
+        return ValidationError(schema, name, 'shorter than minLength')
     if maxlen is not None and len(obj) > maxlen:
-        return _invalid(obj, schema, **kwargs)
+        return ValidationError(schema, name, 'longer than maxLength')
     if regex is not None and not re.search(regex, obj):
-        return _invalid(obj, schema, **kwargs)
+        return ValidationError(schema, name, 'does not match pattern')
     return obj
 
 def _build_string_array(obj, schema, **kwargs):
     if isinstance(obj, list):
         return _build_string(''.join(obj), schema, **kwargs)
     return _build_string(obj, schema, **kwargs)
-
-def _invalid(obj, schema, **kwargs):
-    name = kwargs.get('name')
-    require_value = kwargs.get('require_value', False)
-
-    # TODO
-    if require_value or obj is not None or schema.get('required', False):
-        if obj is not None:
-            raise ValidationError(schema, '"%s" not valid %s: %s' % (name, _get_type(schema), obj))
-        raise ValidationError(schema, '"%s" requires %s value' % (name, _get_type(schema)))
-
-    args = kwargs.copy()
-    args['require_value'] = True
-    return _build(schema.get('default', RETURN_DEFAULT), schema, **args)
 
 def _get_type(schema):
     if 'type' in schema:

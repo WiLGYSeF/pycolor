@@ -237,14 +237,14 @@ BUILD_ARRAY_FAIL = [
 
 
 class ArrayTest(unittest.TestCase):
-    def test_build_number(self):
+    def test_build_array(self):
         for entry in BUILD_ARRAY:
             self.assertListEqual(
                 jsonobj.build(entry[VALUE], schema=entry[SCHEMA]),
                 entry[RESULT]
             )
 
-    def test_build_number_fail(self):
+    def test_build_array_fail(self):
         for entry in BUILD_ARRAY_FAIL:
             with self.assertRaises(jsonobj.ValidationError):
                 jsonobj.build(entry[VALUE], schema=entry[SCHEMA])
