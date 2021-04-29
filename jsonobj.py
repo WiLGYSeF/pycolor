@@ -81,7 +81,7 @@ def _build(obj, schema, **kwargs):
     )
 
 def _build_from_type(obj, schema, type_name, **kwargs):
-    func = _functbl.get(type_name.lower())
+    func = _buildtbl.get(type_name.lower())
     if func is None:
         return ValueError('invalid schema type: %s' % type_name)
     return func(obj, schema, **kwargs)
@@ -342,7 +342,7 @@ def _get_type(schema):
         return 'enum'
     return None
 
-_functbl = {
+_buildtbl = {
     'arr': _build_array,
     'array': _build_array,
     'list': _build_array,
