@@ -56,6 +56,8 @@ def _build(obj, schema, **kwargs):
             stype = 'enum'
         if 'const' in schema:
             stype = 'const'
+        if 'properties' in schema:
+            stype = 'object'
 
     if stype is None:
         return ValidationError(schema, name, 'type is not defined')

@@ -135,6 +135,56 @@ BUILD_OBJECT = [
             'extra': 0
         }
     },
+    {
+        VALUE: {
+            'extra': 42.1,
+            'extra2': 'abc'
+        },
+        SCHEMA: {
+            'type': 'object',
+            'properties': {
+                'test': {'type': 'string'},
+                'extra': {'type': 'number'}
+            },
+            'dependencies': {
+                'extra': {
+                    'properties': {
+                        'extra2': {'type': 'string'}
+                    },
+                    'required': ['extra2']
+                }
+            }
+        },
+        RESULT: {
+            'test': '',
+            'extra': 42.1,
+            'extra2': 'abc'
+        }
+    },
+    {
+        VALUE: {
+            'extra': 42.1
+        },
+        SCHEMA: {
+            'type': 'object',
+            'properties': {
+                'test': {'type': 'string'},
+                'extra': {'type': 'number'}
+            },
+            'dependencies': {
+                'extra': {
+                    'properties': {
+                        'extra2': {'type': 'string', 'default': 'def'}
+                    }
+                }
+            }
+        },
+        RESULT: {
+            'test': '',
+            'extra': 42.1,
+            'extra2': 'def'
+        }
+    },
 ]
 
 BUILD_OBJECT_FAIL = [
@@ -231,6 +281,47 @@ BUILD_OBJECT_FAIL = [
             },
             'dependencies': {
                 'extra': ['test']
+            }
+        }
+    },
+    {
+        VALUE: {
+            'extra': 42.1
+        },
+        SCHEMA: {
+            'type': 'object',
+            'properties': {
+                'test': {'type': 'string'},
+                'extra': {'type': 'number'}
+            },
+            'dependencies': {
+                'extra': {
+                    'properties': {
+                        'extra2': {'type': 'string'}
+                    },
+                    'required': ['extra2']
+                }
+            }
+        }
+    },
+    {
+        VALUE: {
+            'extra': 42.1,
+            'extra2': False
+        },
+        SCHEMA: {
+            'type': 'object',
+            'properties': {
+                'test': {'type': 'string'},
+                'extra': {'type': 'number'}
+            },
+            'dependencies': {
+                'extra': {
+                    'properties': {
+                        'extra2': {'type': 'string'}
+                    },
+                    'required': ['extra2']
+                }
             }
         }
     },
