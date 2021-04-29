@@ -283,12 +283,8 @@ def _build_object(obj, schema, **kwargs):
         else:
             return ValueError()
 
-    newobj = {}
-
     if properties is None:
-        for key, val in obj.items():
-            newobj[key] = val
-        return newobj
+        return obj
 
     args = kwargs.copy()
 
@@ -299,23 +295,23 @@ def _build_object(obj, schema, **kwargs):
             result = _build(val, properties[key], **args)
             if isinstance(result, Exception):
                 return result
-            newobj[key] = result
+            obj[key] = result
         else:
             if isinstance(additional_properties, dict):
                 result = _build(val, additional_properties, **args)
                 if isinstance(result, Exception):
                     return result
-                newobj[key] = result
+                obj[key] = result
             else:
                 if additional_properties is False:
                     return ValidationError(schema, name, 'cannot have additional properties')
-                newobj[key] = val
+                obj[key] = val
 
     for key, val in properties.items():
-        if key not in newobj:
-            newobj[key] =  val.get('default', _build(None, val, **args))
+        if key not in obj:
+            obj[key] =  val.get('default', _build(None, val, **args))
 
-    return newobj
+    return obj
 
 def _build_string(obj, schema, **kwargs):
     name = kwargs.get('name')
