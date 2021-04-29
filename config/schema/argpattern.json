@@ -1,0 +1,19 @@
+{
+    "type": "object",
+    "properties": {
+        "expression": {
+            "type": ["string_array"]
+        },
+        "position": {
+            "type": ["null", "string", "integer"]
+        },
+
+        "match_not": {
+            "type": "boolean"
+        },
+        "optional": {
+            "type": "boolean"
+        }
+    },
+    "required": ["expression"]
+}

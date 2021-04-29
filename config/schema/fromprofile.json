@@ -1,0 +1,17 @@
+{
+    "type": "object",
+    "properties": {
+        "enabled": {
+            "type" : "boolean",
+            "default": true
+        },
+        "name": {
+            "type" : "string"
+        },
+        "order": {
+            "enum": ["before", "after"],
+            "default": "before"
+        }
+    },
+    "required": ["name"]
+}

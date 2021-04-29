@@ -1,35 +1,9 @@
 import re
 
-import jsonobj
-
+from config import load_schema
 from config.argpattern import ArgPattern
 from config.fromprofile import FromProfile
 from config.pattern import Pattern
-
-
-PROFILE_SCHEMA = {
-    'type': 'object',
-    'properties': {
-        'name': {'type' : ['null', 'string']},
-        'name_expression': {'type' : ['null', 'string_array']},
-        'profile_name': {'type': ['null', 'string']},
-        'which': {'type': ['null', 'string']},
-
-        'all_args_must_match': {'type': 'boolean'},
-        'min_args': {'type': ['null', 'integer']},
-        'max_args': {'type': ['null', 'integer']},
-
-        'soft_reset_eol': {'type': 'boolean'},
-        'timestamp': {'type': ['boolean', 'string']},
-        'less_output': {'type': ['boolean', 'string']},
-        'tty': {'type': 'boolean'},
-
-        'from_profiles': {'type': ['array', 'object', 'string']},
-
-        'arg_patterns': {'type': 'array'},
-        'patterns': {'type': 'array'},
-    }
-}
 
 
 class Profile:
@@ -43,7 +17,7 @@ class Profile:
         self.from_profiles = []
         self.patterns = []
 
-        jsonobj.build(cfg, schema=PROFILE_SCHEMA, dest=self)
+        load_schema('profile', cfg, self)
 
         self.name_regex = re.compile(self.name_expression) if self.name_expression else None
 

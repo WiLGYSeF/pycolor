@@ -1,5 +1,7 @@
 # based on: https://json-schema.org/
 
+# TODO: string_array is not json-schema
+
 # TODO: https://json-schema.org/understanding-json-schema/structuring.html
 # TODO: https://json-schema.org/understanding-json-schema/reference/combining.html
 
