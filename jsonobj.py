@@ -66,13 +66,13 @@ def _build(obj, schema, **kwargs):
     errors = []
 
     for typ in stype:
-        val = _build_from_type(obj, schema, typ, **kwargs)
-        if not isinstance(val, Exception):
-            return val
-        errors.append(val)
+        result = _build_from_type(obj, schema, typ, **kwargs)
+        if not isinstance(result, Exception):
+            return result
+        errors.append(result)
 
     if obj is not None and len(errors) != 0:
-        return errors[0]
+        return ValidationError(schema, name, str(errors))
     return _build_from_type(
         schema.get('default', RETURN_DEFAULT),
         schema,
