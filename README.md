@@ -35,7 +35,7 @@ __After:__
 
 Pycolor can also be aliased in `~/.bashrc` like so:
 ```bash
-alias rsync='pycolor -- rsync'
+alias rsync='pycolor rsync'
 ```
 
 __Before:__
@@ -111,7 +111,7 @@ To colorize output through a replace pattern use `%C<color argument>`.
 | lightblue | lb | `\e[94m` | Light blue color |
 | lightmagenta | lm | `\e[95m` | Light magenta color |
 | lightcyan | lc | `\e[96m` | Light cyan color |
-| white | w | `\e[97m` | White color |
+| white | lightgrey,  le, w | `\e[97m` | White color |
 
 ### Modifier Characters
 
@@ -191,4 +191,9 @@ Using the previous input as an example, `%F(*4,_)` formats to  `a_b_c_d`.
 
 ## Padding
 
-...
+Formatting a string with padding can be done with `%P(<pad count>;<value>)` or `%P(<pad count>,<pad char>;<value>)`.
+
+For example, left-padding group 1 to 12 characters can be done with the format string `%P(12;%G1)%G1`.
+The pad formatter will take the length of `value`, which can contain string formats or a normal string, and will format to the necessary number of pad characters if `value` is not long enough.
+
+Right-padding is simply done by moving the pad formatter to the right of the group: `%G1%P(12;%G1)`.
