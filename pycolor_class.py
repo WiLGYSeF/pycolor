@@ -63,7 +63,11 @@ class Pycolor:
 
         if self.profloader.is_default_profile(profile) and self.debug == 0 and self.execv:
             cmd_path = which(cmd[0])
-            os.execv(cmd_path.decode('utf-8'), cmd)
+            if cmd_path is not None:
+                cmd_path = cmd_path.decode('utf-8')
+            else:
+                cmd_path = cmd[0]
+            os.execv(cmd_path, cmd)
             sys.exit(0)
 
         self.debug_print(1, 'using profile "%s"', profile.get_name())
