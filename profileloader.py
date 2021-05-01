@@ -1,7 +1,6 @@
 import json
-import re
 
-from profile_class import Profile
+from config.profile import Profile
 from which import which
 
 
@@ -76,25 +75,25 @@ class ProfileLoader:
                 prof.name_regex
             ]):
                 continue
+            if not prof.enabled:
+                continue
 
             if prof.which is not None:
                 result = which(command)
                 if result is not None and result.decode('utf-8') != prof.which:
                     continue
-            if prof.name is not None and command != prof.name:
-                continue
-            if prof.name_regex is not None and not re.fullmatch(prof.name_regex, command):
-                continue
 
-            if prof.min_args is not None and prof.min_args > len(args):
-                continue
-            if prof.max_args is not None and prof.max_args < len(args):
+            if any([
+                prof.name is not None and command != prof.name,
+                prof.min_args is not None and prof.min_args > len(args),
+                prof.max_args is not None and prof.max_args < len(args),
+                prof.name_regex is not None and not prof.name_regex.fullmatch(command),
+            ]):
                 continue
 
             if not ProfileLoader.check_arg_patterns(
                 args,
-                prof.arg_patterns,
-                prof.all_args_must_match
+                prof.arg_patterns
             ):
                 continue
 
@@ -105,23 +104,23 @@ class ProfileLoader:
         return matches[-1]
 
     def is_default_profile(self, profile):
-        return all((
+        return all([
             profile == self.profile_default,
-            profile.timestamp == False, #pylint: disable=singleton-comparison
-            profile.less_output == False, #pylint: disable=singleton-comparison
-        ))
+            profile.timestamp is False,
+            profile.less_output is False,
+        ])
 
     @staticmethod
-    def check_arg_patterns(args, arg_patterns, all_must_match=False):
-        idx_matches = set()
-
+    def check_arg_patterns(args, arg_patterns):
         for argpat in arg_patterns:
+            if not argpat.enabled:
+                continue
+
             matches = False
             for idx in argpat.get_arg_range(len(args)):
                 if argpat.regex.fullmatch(args[idx]):
                     if argpat.match_not:
                         return False
-                    idx_matches.add(idx)
                     matches = True
 
             if not any([
@@ -130,7 +129,4 @@ class ProfileLoader:
                 argpat.optional
             ]):
                 return False
-
-        if all_must_match and len(idx_matches) != len(args):
-            return False
         return True

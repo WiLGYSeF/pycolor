@@ -1,33 +1,19 @@
 import re
 
-import jsonschema
+from config import load_schema
 
 
-ARGPATTERN_SCHEMA = {
-    'type': 'object',
-    'properties': {
-        'expression': {'type': ['array', 'string']},
-        'position': {'type': ['string', 'integer', 'null']},
-
-        'match_not': {'type': 'boolean'},
-        'optional': {'type': 'boolean'},
-    },
-    'required': ['expression']
-}
+ARGRANGE_REGEX = re.compile(r'([<>+-])?(\*|[0-9]+)')
 
 
 class ArgPattern:
     def __init__(self, cfg):
-        jsonschema.validate(instance=cfg, schema=ARGPATTERN_SCHEMA)
+        self.expression = None
+        self.position = None
 
-        self.expression = cfg['expression']
-        if isinstance(self.expression, list):
-            self.expression = ''.join(self.expression)
+        load_schema('argpattern', cfg, self)
+
         self.regex = re.compile(self.expression)
-
-        self.position = cfg.get('position', '*')
-        self.match_not = cfg.get('match_not', False)
-        self.optional = cfg.get('optional', False)
 
     def get_arg_range(self, arglen):
         if self.position is None:
@@ -38,7 +24,7 @@ class ArgPattern:
                 return range(0)
             return range(self.position - 1, self.position)
 
-        match = re.fullmatch(r'([<>+-])?(\*|[0-9]+)', self.position)
+        match = ARGRANGE_REGEX.fullmatch(self.position)
         if match is None:
             return range(arglen)
 

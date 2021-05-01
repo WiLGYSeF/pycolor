@@ -1,14 +1,12 @@
 import re
+from typing import Pattern
 
 
 def re_split(sep, string):
     if sep is None:
         return [ string ]
 
-    if isinstance(sep, re._pattern_type):
-        regex = sep
-    else:
-        regex = re.compile(sep)
+    regex = sep if isinstance(sep, Pattern) else re.compile(sep)
 
     result = []
     last = 0

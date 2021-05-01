@@ -1,19 +1,22 @@
 import re
+from typing import Pattern
 
 
-def search_replace(pattern, string, replace, ignore_ranges=None, start_occurrence=1, max_count=-1):
-    if ignore_ranges is None:
-        ignore_ranges = []
+def search_replace(pattern, string, replace, **kwargs):
+    ignore_ranges = kwargs.get('ignore_ranges', [])
+    start_occurrence = kwargs.get('start_occurrence', 1)
+    max_count = kwargs.get('max_count', -1)
+
     start_occurrence = max(1, start_occurrence)
+
+    regex = pattern if isinstance(pattern, Pattern) else re.compile(pattern)
+    replf = replace if callable(replace) else lambda x: replace
 
     newstring = string[:0] #str or bytes
     count = 0
     replace_count = 0
     last = 0
     replace_ranges = []
-
-    regex = pattern if isinstance(pattern, re._pattern_type) else re.compile(pattern)
-    replf = replace if callable(replace) else lambda x: replace
 
     igidx = 0
     replace_diff = 0
@@ -48,22 +51,22 @@ def search_replace(pattern, string, replace, ignore_ranges=None, start_occurrenc
             newstring += string[last:match.end()]
         last = match.end()
 
-    return newstring + string[last:], replace_ranges
+    newstring += string[last:]
+    return newstring, replace_ranges
 
 def update_ranges(ranges, replace_ranges):
-    for ridx in range(len(ranges)): #pylint: disable=consider-using-enumerate
-        cur = ranges[ridx]
-        start, end = cur
+    for i in range(len(ranges)): #pylint: disable=consider-using-enumerate
+        start, end = ranges[i]
 
         for old_range, new_range in replace_ranges:
-            if old_range[1] > cur[0]:
+            if old_range[1] > start:
                 break
 
             diff = new_range[1] - old_range[1] - (new_range[0] - old_range[0])
             start += diff
             end += diff
 
-        ranges[ridx] = (start, end)
+        ranges[i] = (start, end)
 
     ranges.extend(map(lambda x: x[1], replace_ranges))
     ranges.sort(key=lambda x: x[0])

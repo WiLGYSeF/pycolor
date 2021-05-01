@@ -1,3 +1,4 @@
+from colorpositions import insert_color_data
 from colorstate import ColorState
 from pyformat import color
 from pyformat import fieldsep
@@ -14,19 +15,19 @@ FORMAT_PADDING = 'P'
 def format_string(string, context=None, return_color_positions=False):
     if context is None:
         context = {}
+    if 'color' not in context:
+        context['color'] = {}
+    ctx_color = context['color']
 
-    if context.get('color_enabled', True):
-        if 'color_state' in context:
-            context['color_state_current'] = context['color_state'].copy()
-        else:
-            context['color_state_current'] = ColorState()
-
-        context['past_color_states'] = [ context['color_state_current'].copy() ]
+    if ctx_color.get('enabled', True):
+        if 'state' not in ctx_color:
+            ctx_color['state'] = ColorState()
+        ctx_color['state_current'] = ctx_color['state'].copy()
+        ctx_color['past_states'] = [ ctx_color['state'].copy() ]
 
     newstring = ''
     color_positions = {}
     idx = 0
-    last_format_idx = 0
 
     while idx < len(string):
         if string[idx] == '%':
@@ -37,22 +38,18 @@ def format_string(string, context=None, return_color_positions=False):
 
             formatter, value, newidx = get_formatter(string, idx)
             if formatter is not None:
-                if context.get('color_enabled', True):
-                    context['color_state_current'].set_state_by_string(newstring[last_format_idx:])
+                if ctx_color.get('enabled', True):
+                    ctx_color['state_current'].reset()
+                    ctx_color['state_current'].set_state_by_string(
+                        insert_color_data(newstring, color_positions)
+                    )
 
                 result = do_format(string, formatter, value, idx, newidx, context)
-                apppend_result = True
-
                 if formatter == FORMAT_COLOR:
-                    if return_color_positions:
-                        color_positions[len(newstring)] = result
-                        if context.get('color_enabled', True):
-                            context['color_state_current'].set_state_by_string(result)
-                        apppend_result = False
-
-                last_format_idx = len(newstring)
-
-                if apppend_result:
+                    if len(newstring) not in color_positions:
+                        color_positions[len(newstring)] = ''
+                    color_positions[len(newstring)] += result
+                else:
                     newstring += result
 
                 idx = newidx
@@ -63,40 +60,51 @@ def format_string(string, context=None, return_color_positions=False):
 
     if return_color_positions:
         return newstring, color_positions
-    return newstring
+    return insert_color_data(newstring, color_positions)
 
 def do_format(string, formatter, value, idx, newidx, context):
     if formatter == FORMAT_COLOR:
-        if not context.get('color_enabled', True):
+        ctx = context.get('color', {})
+        if not ctx.get('enabled', True):
             return ''
 
         if value == 'prev':
             return get_lastcolor(
-                context['past_color_states'],
+                ctx['past_states'],
                 '2',
-                current=context['color_state_current']
+                current=ctx['state_current']
             )
         if value.startswith('last'):
             return get_lastcolor(
-                context['past_color_states'],
+                ctx['past_states'],
                 value[4:],
-                current=context['color_state_current']
+                current=ctx['state_current']
             )
         if value in ('s', 'soft'):
-            return context['color_state_orig'].get_string(
-                compare_state=context['color_state_current']
+            state = ctx['state'].copy()
+            if 'positions' in ctx:
+                state.set_state_by_string(
+                    insert_color_data(
+                        context['string'],
+                        ctx['positions'],
+                        context['idx']
+                    )
+                )
+
+            return state.get_string(
+                compare_state=ctx['state_current']
             )
 
         colorstr = color.get_color(
             value,
-            aliases=context.get('color_aliases', {})
+            aliases=ctx.get('aliases', {})
         )
         if colorstr is None:
             colorstr = ''
 
-        newstate = context['past_color_states'][-1].copy()
+        newstate = ctx['past_states'][-1].copy()
         newstate.set_state_by_string(colorstr)
-        context['past_color_states'].append(newstate)
+        ctx['past_states'].append(newstate)
 
         return colorstr
 
@@ -105,21 +113,22 @@ def do_format(string, formatter, value, idx, newidx, context):
         if value_sep != -1:
             try:
                 spl = value[0:value_sep].split(',')
-                padval = int(spl[0])
-                sep = ' ' if len(spl) == 1 else spl[1][0]
+                padcount = int(spl[0])
+                padchar = ' ' if len(spl) == 1 else spl[1][0]
 
                 value = value[value_sep + 1:]
 
-                newcontext = context.copy()
-                newcontext['color_enabled'] = False
-                return sep * (padval - len(format_string(value, context=newcontext)))
+                newctx = dictcopy(context)
+                newctx['color']['enabled'] = False
+
+                return padchar * (padcount - len(format_string(value, context=newctx)))
             except ValueError:
                 pass
         return ''
 
     if formatter == FORMAT_GROUP and 'match' in context:
-        if value == 'c' and 'match_curr' in context:
-            return context['match_curr']
+        if value == 'c' and 'match_cur' in context:
+            return context['match_cur']
 
         try:
             group = int(value)
@@ -132,21 +141,22 @@ def do_format(string, formatter, value, idx, newidx, context):
         except IndexError:
             matchgroup = None
 
-        if matchgroup is None:
-            if group == 'n':
-                if 'match_incr' not in context:
-                    context['match_incr'] = 1
+        if matchgroup is None and group == 'n':
+            if 'match_incr' not in context:
+                context['match_incr'] = 1
 
-                try:
-                    matchgroup = context['match'][context['match_incr']]
-                    context['match_incr'] += 1
-                    return matchgroup
-                except IndexError:
-                    pass
-            return ''
-        return matchgroup
+            try:
+                matchgroup = context['match'][context['match_incr']]
+                context['match_incr'] += 1
+                return matchgroup
+            except IndexError:
+                pass
+        return matchgroup if matchgroup else ''
 
     if formatter == FORMAT_FIELD and 'fields' in context:
+        if value == 'c' and 'field_cur' in context:
+            return context['field_cur']
+
         return fieldsep.get_fields(value, context)
 
     return string[idx:newidx]
@@ -229,3 +239,12 @@ def get_lastcolor(colors, string, current=None):
         last_idx = 0
 
     return colors[last_idx].get_string(compare_state=current)
+
+def dictcopy(dct):
+    copy = {}
+    for key, val in dct.items():
+        if isinstance(val, dict):
+            copy[key] = dictcopy(val)
+        else:
+            copy[key] = val
+    return copy

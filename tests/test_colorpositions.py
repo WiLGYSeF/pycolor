@@ -1,6 +1,6 @@
 import unittest
 
-from pycolor_class import Pycolor
+import colorpositions
 
 
 DATA = 'data'
@@ -28,13 +28,22 @@ INSERT_COLOR_DATA = [
         },
         RESULT: 'this \x1b[31mis\x1b[0m a test'
     },
+    {
+        DATA: 'this is a test',
+        COLOR_POS: {
+            2: '\x1b[31m',
+            5: '\x1b[32m',
+            7: '\x1b[0m'
+        },
+        RESULT: 'th\x1b[31mis \x1b[32mis\x1b[0m a test'
+    }
 ]
 
 
-class InsertColorDataTest(unittest.TestCase):
+class ColorPositionsTest(unittest.TestCase):
     def test_insert_color_data(self):
         for entry in INSERT_COLOR_DATA:
             self.assertEqual(
-                Pycolor.insert_color_data(entry[DATA], entry[COLOR_POS]),
+                colorpositions.insert_color_data(entry[DATA], entry[COLOR_POS]),
                 entry[RESULT]
             )

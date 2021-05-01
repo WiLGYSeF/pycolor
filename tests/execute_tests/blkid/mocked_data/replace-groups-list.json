@@ -16,7 +16,7 @@
 				{
 					"expression": "([A-Z_]+)=\"([^\"]+)\"",
 					"replace_groups": [
-						"%Cw%Gc%Cz",
+						"%Ce%Gc%Cz",
 						"%Cc%Gc%Cz"
 					]
 				}

@@ -35,7 +35,7 @@ __After:__
 
 Pycolor can also be aliased in `~/.bashrc` like so:
 ```bash
-alias rsync='pycolor -- rsync'
+alias rsync='pycolor rsync'
 ```
 
 __Before:__
@@ -51,24 +51,13 @@ __After:__ (note Pycolor omitted lines with trailing slashes in addition to colo
 # Configuration
 Pycolor will first try to load configuration from `~/.pycolor.json` before loading files found in `~/.pycolor.d/` in filename order.
 
-When looking for a profile to use, pycolor will select the last matching profile based on the `name` or `which` property.
+When looking for a profile to use, pycolor will select the last matching profile based on the `name`, `name_expression`, or `which` property.
 
 Patterns are applied first-to-last for each profile.
 
-TODO: describe configuration.
+JSON schema files that describe the config format can be found in `config/schema/`.
 
-Configuration file template:
-```json
-{
-    "profiles": [
-        {
-            "name": "ls",
-            "profile_name": "ls",
-            "which": "/bin/ls"
-        }
-    ]
-}
-```
+Sample config files can also be found in `docs/sample-config/`.
 
 # Formatting Strings
 
@@ -122,7 +111,7 @@ To colorize output through a replace pattern use `%C<color argument>`.
 | lightblue | lb | `\e[94m` | Light blue color |
 | lightmagenta | lm | `\e[95m` | Light magenta color |
 | lightcyan | lc | `\e[96m` | Light cyan color |
-| white | w | `\e[97m` | White color |
+| white | lightgrey,  le, w | `\e[97m` | White color |
 
 ### Modifier Characters
 
@@ -184,7 +173,7 @@ Field formats support negative indexing, so `%F(-1)_%F(-2)` will format to `f_e`
 
 ### Field Ranges
 
-Giving a range of fields is possible using the `*` character.
+Giving a range of fields is possible using the `*` character, where `%F(<start range>*<end range>)`.
 A sample table is given below, using the same example as above:
 
 | Field Format | Value |
@@ -199,3 +188,12 @@ A sample table is given below, using the same example as above:
 
 If you want to format using field ranges, but want to override the separator used to be a constant-length string, use `%F(<start range>*<end range>,<separator>)`.
 Using the previous input as an example, `%F(*4,_)` formats to  `a_b_c_d`.
+
+## Padding
+
+Formatting a string with padding can be done with `%P(<pad count>;<value>)` or `%P(<pad count>,<pad char>;<value>)`.
+
+For example, left-padding group 1 to 12 characters can be done with the format string `%P(12;%G1)%G1`.
+The pad formatter will take the length of `value`, which can contain string formats or a normal string, and will format to the necessary number of pad characters if `value` is not long enough.
+
+Right-padding is simply done by moving the pad formatter to the right of the group: `%G1%P(12;%G1)`.
