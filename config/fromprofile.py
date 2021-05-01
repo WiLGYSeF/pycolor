@@ -1,14 +1,6 @@
 import jsonobj
 
-
-FROMPROFILE_SCHEMA = {
-    'type': 'object',
-    'properties': {
-        'enabled': {'type' : 'boolean', 'default': True},
-        'name': {'type' : 'string', 'required': True},
-        'order': {'enum': ['before', 'after'], 'default': 'before'},
-    }
-}
+from config import load_schema
 
 
 class FromProfile:
@@ -18,4 +10,4 @@ class FromProfile:
                 'name': cfg
             }
 
-        jsonobj.build(cfg, schema=FROMPROFILE_SCHEMA, dest=self)
+        load_schema('fromprofile', cfg, self)

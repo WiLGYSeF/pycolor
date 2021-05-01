@@ -1,35 +1,9 @@
 import re
 
-import jsonobj
-
+from config import load_schema
 from config.argpattern import ArgPattern
 from config.fromprofile import FromProfile
 from config.pattern import Pattern
-
-
-PROFILE_SCHEMA = {
-    'type': 'object',
-    'properties': {
-        'name': {'type' : ['null', 'string']},
-        'name_expression': {'type' : ['null', 'string_array']},
-        'profile_name': {'type': ['null', 'string']},
-        'which': {'type': ['null', 'string']},
-
-        'all_args_must_match': {'type': 'boolean'},
-        'min_args': {'type': ['null', 'integer']},
-        'max_args': {'type': ['null', 'integer']},
-
-        'soft_reset_eol': {'type': 'boolean'},
-        'timestamp': {'type': ['boolean', 'string']},
-        'less_output': {'type': ['boolean', 'string']},
-        'tty': {'type': 'boolean'},
-
-        'from_profiles': {'type': ['array', 'object', 'string']},
-
-        'arg_patterns': {'type': 'array'},
-        'patterns': {'type': 'array'},
-    }
-}
 
 
 class Profile:
@@ -39,40 +13,27 @@ class Profile:
         self.which = None
         self.profile_name = None
 
-        jsonobj.build(cfg, schema=PROFILE_SCHEMA, dest=self)
-
-        self.from_profiles = []
-
         self.arg_patterns = []
+        self.from_profiles = []
         self.patterns = []
+
+        load_schema('profile', cfg, self)
 
         self.name_regex = re.compile(self.name_expression) if self.name_expression else None
 
         if self.profile_name is not None and len(self.profile_name) == 0:
             self.profile_name = None
 
-        """
-        if not any([
-            self.name,
-            self.name_expression,
-            self.profile_name
-        ]):
-            raise ValueError()
-        """
+        for i in range(len(self.arg_patterns)):
+            self.arg_patterns[i] = ArgPattern(self.arg_patterns[i])
 
-        for argpat in cfg.get('arg_patterns', []):
-            self.arg_patterns.append(ArgPattern(argpat))
+        if not isinstance(self.from_profiles, list):
+            self.from_profiles = [self.from_profiles]
+        for i in range(len(self.from_profiles)):
+            self.from_profiles[i] = FromProfile(self.from_profiles[i])
 
-        if 'from_profiles' in cfg:
-            from_profiles = cfg['from_profiles']
-            if isinstance(from_profiles, list):
-                for fromprof in from_profiles:
-                    self.from_profiles.append(FromProfile(fromprof))
-            else:
-                self.from_profiles.append(FromProfile(from_profiles))
-
-        for pat in cfg.get('patterns', []):
-            self.patterns.append(Pattern(pat))
+        for i in range(len(self.patterns)):
+            self.patterns[i] = Pattern(self.patterns[i])
 
     def get_name(self):
         for name in [

@@ -1,46 +1,7 @@
 import re
 
-import jsonobj
+from config import load_schema
 import pyformat
-
-
-PATTERN_SCHEMA = {
-    'type': 'object',
-    'properties': {
-        'enabled': {'type' : 'boolean', 'default': True},
-        'super_expression': {'type': ['null', 'string_array']},
-        'expression': {'type': ['string_array'], 'required': True},
-
-        'separator': {'type': ['null', 'string_array']},
-        'field': {'type': ['null', 'integer'], 'default': None},
-        'min_fields': {'type': 'integer', 'default': -1},
-        'max_fields': {'type': 'integer', 'default': -1},
-
-        'replace': {'type': ['null', 'string_array']},
-        'replace_all': {'type': ['null', 'string_array']},
-        'replace_groups': {'type': ['array', 'object'], 'default': {}},
-        'replace_fields': {'type': ['array', 'object'], 'default': {}},
-        'filter': {'type': 'boolean'},
-
-        'stdout_only': {'type' : 'boolean'},
-        'stderr_only': {'type' : 'boolean'},
-        'skip_others': {'type': 'boolean'},
-
-        'start_occurrence': {'type': 'integer', 'default': 1},
-        'max_count': {'type': 'integer', 'default': -1},
-
-        'activation_line': {'type': ['array', 'integer'], 'default': -1},
-        'deactivation_line': {'type': ['array', 'integer'], 'default': -1},
-
-        'activation_expression': {'type': ['null', 'string_array']},
-        'deactivation_expression': {'type': ['null', 'string_array']},
-    },
-    'dependencies': {
-        'field': ['separator'],
-        'min_fields': ['separator'],
-        'max_fields': ['separator'],
-    }
-}
 
 
 class Pattern:
@@ -55,7 +16,7 @@ class Pattern:
         self.deactivation_expression = None
         self.separator = None
 
-        jsonobj.build(cfg, schema=PATTERN_SCHEMA, dest=self)
+        load_schema('pattern', cfg, self)
 
         def as_list(var):
             return var if isinstance(var, list) else [ var ]
@@ -104,8 +65,11 @@ class Pattern:
     @staticmethod
     def get_activation_ranges(activations, deactivations):
         ranges = []
-        ranges.extend(map(lambda x: (x, True), activations))
-        ranges.extend(map(lambda x: (x, False), deactivations))
+        if activations is not None and len(activations) != 0 and activations[0] is not None:
+            ranges.extend(map(lambda x: (x, True), activations))
+        if deactivations is not None and len(deactivations) != 0 and deactivations[0] is not None:
+            ranges.extend(map(lambda x: (x, False), deactivations))
+
         ranges.sort(key=lambda x: x[0])
 
         idx = 0

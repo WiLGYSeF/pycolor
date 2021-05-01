@@ -113,15 +113,15 @@ def do_format(string, formatter, value, idx, newidx, context):
         if value_sep != -1:
             try:
                 spl = value[0:value_sep].split(',')
-                padval = int(spl[0])
-                sep = ' ' if len(spl) == 1 else spl[1][0]
+                padcount = int(spl[0])
+                padchar = ' ' if len(spl) == 1 else spl[1][0]
 
                 value = value[value_sep + 1:]
 
                 newctx = dictcopy(context)
                 newctx['color']['enabled'] = False
 
-                return sep * (padval - len(format_string(value, context=newctx)))
+                return padchar * (padcount - len(format_string(value, context=newctx)))
             except ValueError:
                 pass
         return ''

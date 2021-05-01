@@ -1,0 +1,33 @@
+{
+    "type": "object",
+    "properties": {
+        "enabled": {
+            "description": "if this pattern should be used",
+            "type" : "boolean",
+            "default": true
+        },
+        "expression": {
+            "description": "the regex pattern to compare the arguments",
+            "type": ["string_array"]
+        },
+        "position": {
+            "description": "the position the argument must be in. if position is a string (e.g. \"+4\"), then it will match arguments in position 4 and above",
+            "type": ["null", "string", "integer"],
+            "examples": [
+                1,
+                "+4",
+                "-3"
+            ]
+        },
+
+        "match_not": {
+            "description": "none of the arguments can match this pattern",
+            "type": "boolean"
+        },
+        "optional": {
+            "description": "",
+            "type": "boolean"
+        }
+    },
+    "required": ["expression"]
+}

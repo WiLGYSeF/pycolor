@@ -1,18 +1,7 @@
 import re
 
-import jsonobj
+from config import load_schema
 
-
-ARGPATTERN_SCHEMA = {
-    'type': 'object',
-    'properties': {
-        'expression': {'type': ['string_array'], 'required': True},
-        'position': {'type': ['null', 'string', 'integer']},
-
-        'match_not': {'type': 'boolean'},
-        'optional': {'type': 'boolean'},
-    }
-}
 
 ARGRANGE_REGEX = re.compile(r'([<>+-])?(\*|[0-9]+)')
 
@@ -22,7 +11,7 @@ class ArgPattern:
         self.expression = None
         self.position = None
 
-        jsonobj.build(cfg, schema=ARGPATTERN_SCHEMA, dest=self)
+        load_schema('argpattern', cfg, self)
 
         self.regex = re.compile(self.expression)
 

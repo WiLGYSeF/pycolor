@@ -220,9 +220,7 @@ def pat_schrep(pattern, string, context):
     newstring, replace_ranges = search_replace(
         pattern.regex,
         string,
-        replacer,
-        start_occurrence=pattern.start_occurrence,
-        max_count=pattern.max_count
+        replacer
     )
     return newstring, replace_ranges, color_positions
 

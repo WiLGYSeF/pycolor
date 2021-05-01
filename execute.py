@@ -146,7 +146,7 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
                         _read(fde, readable[fde], data=data)
                     else:
                         del readable[fde]
-            time.sleep(0.001)
+            time.sleep(0.0001)
 
         if tty:
             for fde in masters:
