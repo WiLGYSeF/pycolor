@@ -5,7 +5,12 @@ import sys
 def get_args(args):
     parser = argparse.ArgumentParser(
         description='do real-time output coloring and formatting of programs',
-        usage='%(prog)s [options] COMMAND ARG ...'
+        usage='%(prog)s [options] COMMAND ARG ...',
+        add_help=False,
+    )
+    parser.add_argument('-h', '--help',
+        action='store_true', default=False,
+        help='show this help menu and exit'
     )
     parser.add_argument('--color',
         action='store', default='auto', nargs='?',
@@ -74,6 +79,10 @@ def parse_known_args(parser, args):
     if not is_consecutive:
         argspace = parser.parse_args(args[:argidx])
         cmd_args = args[argidx:]
+
+    if argspace.help:
+        parser.print_help()
+        sys.exit(0)
 
     if argidx < len(args) and all([
         argidx == 0 or args[argidx - 1] != '--',

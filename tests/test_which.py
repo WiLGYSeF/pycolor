@@ -4,8 +4,8 @@ from which import which
 
 
 WHICH_PATH_SUCCESS = {
-    'ls': b'/bin/ls',
-    '/bin/ls': b'/bin/ls',
+    'ls': [ b'/bin/ls', b'/usr/bin/ls' ],
+    '/bin/ls': [ b'/bin/ls', b'/usr/bin/ls' ],
     'which': b'/usr/bin/which',
     'useradd': b'/usr/sbin/useradd'
 }
@@ -18,7 +18,10 @@ WHICH_PATH_FAIL = [
 class WhichTest(unittest.TestCase):
     def test_which_success(self):
         for key, val in WHICH_PATH_SUCCESS.items():
-            self.assertEqual(which(key), val)
+            if isinstance(val, list):
+                self.assertTrue(which(key) in val)
+            else:
+                self.assertEqual(which(key), val)
 
     def test_which_fail(self):
         for name in WHICH_PATH_FAIL:

@@ -17,6 +17,7 @@ CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), CONFIG_DEFAULT_NAME)
 
 def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=sys.stdin):
     argspace, cmd_args = arguments.get_args(args)
+    read_stdin = len(cmd_args) == 0 or argspace.debug_from_stdin
 
     if argspace.debug_color:
         debug_colors.debug_colors()
@@ -25,8 +26,6 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
     if argspace.debug_format:
         print(pyformat.format_string(argspace.debug_format + '%Cz'))
         sys.exit(0)
-
-    read_stdin = len(cmd_args) == 0 or argspace.debug_from_stdin
 
     pycobj = Pycolor(color_mode=argspace.color, debug=argspace.verbose, execv=argspace.execv)
     pycobj.stdout = stdout_stream
