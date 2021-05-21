@@ -90,7 +90,7 @@ def _build(obj, schema, **kwargs):
         errors.append(result)
 
     if obj is not None and len(errors) != 0:
-        return ValidationError(schema, name, str(errors))
+        return ValidationError(schema, name, '\n'.join(map(lambda x: x.message, errors)))
     return _build_from_type(
         schema.get('default', RETURN_DEFAULT),
         schema,

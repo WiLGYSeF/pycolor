@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
+import json
 import os
 import sys
 
 import arguments
 import debug_colors
 from execute import read_stream
+import jsonobj
 from pycolor_class import Pycolor
 import pyformat
 
@@ -33,12 +35,12 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
 
     if len(argspace.load_file) == 0:
         if os.path.isfile(CONFIG_DEFAULT):
-            pycobj.load_file(CONFIG_DEFAULT)
+            try_load_file(pycobj, CONFIG_DEFAULT)
         if os.path.exists(CONFIG_DIR):
             load_config_files(pycobj, CONFIG_DIR)
     else:
         for fname in argspace.load_file:
-            pycobj.load_file(fname)
+            try_load_file(pycobj, fname)
 
     if argspace.timestamp is not False:
         if argspace.timestamp is None:
@@ -93,7 +95,17 @@ def load_config_files(pycobj, path):
     for fname in sorted(filenames):
         filepath = os.path.join(path, fname)
         if os.path.isfile(filepath):
-            pycobj.load_file(filepath)
+            try_load_file(pycobj, filepath)
+
+def try_load_file(pycobj, fname):
+    try:
+        pycobj.load_file(fname)
+        return True
+    except json.decoder.JSONDecodeError as jde:
+        printerr('ERROR: json: %s: %s' % (fname, jde))
+    except jsonobj.ValidationError as jve:
+        printerr('ERROR: json: %s: %s' % (fname, jve.message))
+    return False
 
 def printerr(*args):
     print(*args, file=sys.stderr)
