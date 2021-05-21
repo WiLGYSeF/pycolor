@@ -9,6 +9,7 @@
 	- [Color Formatting](#colors).
 	- [Group Formatting](#groups).
 	- [Field Formatting](#fields).
+	- [Padding](#padding).
 
 A Python wrapper program that executes commands to perform real-time terminal output coloring using ANSI color codes.
 Color formatting can be added to program output using JSON configuration files and regular expressions to improve readability of the output.
