@@ -56,7 +56,7 @@ class Pycolor:
 
     def execute(self, cmd, profile=None):
         if profile is None:
-            profile = self.profloader.get_profile_by_command(cmd[0], cmd[1:])
+            profile = self.get_profile_by_command(cmd[0], cmd[1:])
 
         self.set_current_profile(profile)
         profile = self.current_profile
