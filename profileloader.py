@@ -112,21 +112,47 @@ class ProfileLoader:
 
     @staticmethod
     def check_arg_patterns(args, arg_patterns):
+        default_match = True
+        found_match = False
+
         for argpat in arg_patterns:
             if not argpat.enabled:
                 continue
 
             matches = False
-            for idx in argpat.get_arg_range(len(args)):
-                if argpat.regex.fullmatch(args[idx]):
-                    if argpat.match_not:
-                        return False
-                    matches = True
+            if argpat.regex is not None:
+                for idx in argpat.get_arg_range(len(args)):
+                    if argpat.regex.fullmatch(args[idx]):
+                        matches = True
+                        break
+            elif len(argpat.subcommand) != 0:
+                subcommands = argpat.subcommand
+                subcmds = ProfileLoader.get_subcommands(args)
+                matches = len(subcmds) >= len(subcommands)
+                if matches:
+                    for idx in range(len(subcommands)): # pylint: disable=consider-using-enumerate
+                        if subcommands[idx] is not None and subcommands[idx] != subcmds[idx]:
+                            matches = False
+                            break
+            else:
+                continue
 
-            if not any([
-                matches,
-                argpat.match_not,
-                argpat.optional
-            ]):
-                return False
-        return True
+            if matches:
+                if argpat.match_not:
+                    return False
+                found_match = True
+            else:
+                if not argpat.match_not:
+                    if not argpat.optional:
+                        return False
+                    default_match = False
+        return default_match or found_match
+
+    @staticmethod
+    def get_subcommands(args):
+        subcmds = []
+        for arg in args:
+            if arg[0] == '-':
+                break
+            subcmds.append(arg)
+        return subcmds

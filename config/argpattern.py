@@ -13,7 +13,7 @@ class ArgPattern:
 
         load_schema('argpattern', cfg, self)
 
-        self.regex = re.compile(self.expression)
+        self.regex = re.compile(self.expression) if self.expression is not None else None
 
     def get_arg_range(self, arglen):
         if self.position is None:

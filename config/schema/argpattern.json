@@ -10,6 +10,10 @@
             "description": "the regex pattern to compare the arguments",
             "type": ["string_array"]
         },
+        "subcommand": {
+            "description": "the subcommands that must be used with the command in order to match. if subcommand is an array, then the subcommands must match in the given order. using null will allow any subcommand in that position",
+            "type": ["array", "string"]
+        },
         "position": {
             "description": "the position the argument must be in. if position is a string (e.g. \"+4\"), then it will match arguments in position 4 and above",
             "type": ["null", "string", "integer"],
@@ -21,13 +25,13 @@
         },
 
         "match_not": {
-            "description": "none of the arguments can match this pattern",
+            "description": "the pattern cannot match for this profile to be used",
             "type": "boolean"
         },
         "optional": {
-            "description": "",
-            "type": "boolean"
+            "description": "at least one optional pattern must match, all non-optional patterns must match",
+            "type": "boolean",
+            "default": false
         }
-    },
-    "required": ["expression"]
+    }
 }
