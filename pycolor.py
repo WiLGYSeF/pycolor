@@ -55,7 +55,10 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
 
     profile = None
     if argspace.profile is not None:
-        profile = pycobj.get_profile_by_name(argspace.profile)
+        if len(argspace.profile) != 0:
+            profile = pycobj.get_profile_by_name(argspace.profile)
+        else:
+            profile = pycobj.profloader.profile_default
         if profile is None:
             printerr('ERROR: profile with name "%s" not found' % argspace.profile)
             sys.exit(1)
