@@ -63,6 +63,10 @@ def apply_pattern(pat, linenum, data, context):
             replace_ranges = []
             field_idx = 0
 
+            match = pat.regex.search(data)
+            if match is not None:
+                context['match'] = match
+
             for idx in range(0, len(fields) + 1, 2):
                 replace_val = get_replace_field(fields, field_idx, pat.replace_fields)
                 sep = fields[idx + 1] if idx != len(fields) - 1 else ''
