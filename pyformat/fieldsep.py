@@ -32,8 +32,6 @@ def get_field_range(number, fields):
 
 def get_fields(formatter, context):
     fields = context['fields']
-    last_field_num = idx_to_num(len(fields))
-
     if formatter[0] == CHAR_SEPARATOR:
         return get_join_field(int(formatter[1:]), fields)
 

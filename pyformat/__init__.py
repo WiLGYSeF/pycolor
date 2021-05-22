@@ -163,12 +163,9 @@ def do_format(string, formatter, value, idx, newidx, context):
 
 def get_formatter(string, idx):
     begin_idx = idx
-    if idx >= len(string) or string[idx] != '%':
+    if idx >= len(string) - 1 or string[idx] != '%':
         return None, None, begin_idx
-
     idx += 1
-    if idx >= len(string):
-        return None, None, begin_idx
 
     formatter = None
     startidx = idx
@@ -190,9 +187,7 @@ def get_formatter(string, idx):
     startidx = idx
     while idx < len(string):
         char = string[idx]
-        if paren == 0:
-            break
-        if paren == -1 and char not in FORMAT_CHAR_VALID:
+        if paren == 0 or (paren == -1 and char not in FORMAT_CHAR_VALID):
             break
         if char == '\\':
             idx += 2
