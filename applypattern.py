@@ -245,8 +245,13 @@ def get_replace_group(match, idx, replace_groups):
 
         group = get_named_group_at_index(match, idx)
         if group is not None:
-            return replace_groups.get(group)
+            if group in replace_groups:
+                return replace_groups[group]
+            for key in replace_groups:
+                if group in key.split(','):
+                    return replace_groups[key]
 
+        # FIXME
         return _get_field_range(match.groups(), replace_groups, idx - 1)
     if isinstance(replace_groups, list) and idx <= len(replace_groups):
         return replace_groups[idx - 1]
