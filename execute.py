@@ -1,11 +1,14 @@
-from contextlib import contextmanager
+from contextlib import contextmanager, ExitStack
 import errno
 import fcntl
 import os
 import pty
 import select
+import shutil
 import signal
+import struct
 import subprocess
+import termios
 import time
 
 from static_vars import static_vars
@@ -104,8 +107,11 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
         # https://stackoverflow.com/a/31953436
         masters, slaves = zip(pty.openpty(), pty.openpty())
 
-    with ignore_sigint():
+    with ExitStack() as stack:
+        stack.enter_context(ignore_sigint())
+
         if tty:
+            stack.enter_context(sync_sigwinch(masters[0]))
             process = subprocess.Popen(cmd, stdin=slaves[0], stdout=slaves[0], stderr=slaves[1])
             stdout = masters[0]
             stderr = masters[1]
@@ -162,11 +168,24 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
 
 @contextmanager
 def ignore_sigint():
-    def signal_handler(sig, frame):
-        pass
-
     try:
-        signal.signal(signal.SIGINT, signal_handler)
+        signal.signal(signal.SIGINT, lambda x,y: None)
         yield
     finally:
         signal.signal(signal.SIGINT, signal.default_int_handler)
+
+@contextmanager
+def sync_sigwinch(tty_fd):
+    # TODO: not compatible with windows
+    def set_window_size(sig, frame):
+        col, row = shutil.get_terminal_size()
+        # https://stackoverflow.com/a/6420070
+        winsize = struct.pack('HHHH', row, col, 0, 0)
+        fcntl.ioctl(tty_fd, termios.TIOCSWINSZ, winsize)
+
+    try:
+        set_window_size(None, None)
+        signal.signal(signal.SIGWINCH, set_window_size)
+        yield
+    finally:
+        signal.signal(signal.SIGWINCH, lambda x,y: None)
