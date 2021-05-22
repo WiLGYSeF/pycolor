@@ -14,6 +14,11 @@
 A Python wrapper program that executes commands to perform real-time terminal output coloring using ANSI color codes.
 Color formatting can be added to program output using JSON configuration files and regular expressions to improve readability of the output.
 
+# Limitations
+
+- Does not currently support standard input for the commands run.
+- May not be compatible with interactive programs that rewrite parts of the screen.
+
 # Installation
 
 Save this project into somewhere like `~/.local/bin/pycolor-py/` and create a symlink at `~/.local/bin/pycolor` pointed to `~/.local/bin/pycolor-py/pycolor.py`.
