@@ -14,9 +14,6 @@ CHECK_ARG_PATTERNS = [
         ARGPATTERNS: [
             {
                 'expression': '-l',
-                'position': '*',
-                'match_not': False,
-                'optional': False
             }
         ],
         RESULT: True
@@ -26,9 +23,6 @@ CHECK_ARG_PATTERNS = [
         ARGPATTERNS: [
             {
                 'expression': '-a',
-                'position': '*',
-                'match_not': False,
-                'optional': False
             }
         ],
         RESULT: False
@@ -38,9 +32,6 @@ CHECK_ARG_PATTERNS = [
         ARGPATTERNS: [
             {
                 'expression': '-[A-Za-z]*l[A-Za-z]*',
-                'position': '*',
-                'match_not': False,
-                'optional': False
             }
         ],
         RESULT: True
@@ -51,8 +42,6 @@ CHECK_ARG_PATTERNS = [
             {
                 'expression': '-l',
                 'position': 1,
-                'match_not': False,
-                'optional': False
             }
         ],
         RESULT: True
@@ -63,8 +52,6 @@ CHECK_ARG_PATTERNS = [
             {
                 'expression': '-l',
                 'position': 2,
-                'match_not': False,
-                'optional': False
             }
         ],
         RESULT: False
@@ -74,9 +61,22 @@ CHECK_ARG_PATTERNS = [
         ARGPATTERNS: [
             {
                 'expression': '-l',
-                'position': '*',
+            },
+            {
+                'expression': '-a',
+            }
+        ],
+        RESULT: False
+    },
+]
+
+CHECK_ARG_PATTERNS_MATCH_NOT = [
+    {
+        ARGS: ['-l'],
+        ARGPATTERNS: [
+            {
+                'expression': '-l',
                 'match_not': True,
-                'optional': False
             }
         ],
         RESULT: False
@@ -85,34 +85,110 @@ CHECK_ARG_PATTERNS = [
         ARGS: ['-l'],
         ARGPATTERNS: [
             {
-                'expression': '-l',
-                'position': '*',
-                'match_not': False,
-                'optional': False
-            },
-            {
                 'expression': '-a',
-                'position': '*',
-                'match_not': False,
-                'optional': False
+                'match_not': True,
             }
         ],
-        RESULT: False
+        RESULT: True
     },
+]
+
+CHECK_ARG_PATTERNS_OPTIONAL = [
     {
         ARGS: ['-l'],
         ARGPATTERNS: [
             {
                 'expression': '-l',
-                'position': '*',
-                'match_not': False,
-                'optional': False
             },
             {
                 'expression': '-a',
                 'position': '*',
-                'match_not': False,
                 'optional': True
+            }
+        ],
+        RESULT: True
+    },
+    {
+        ARGS: [],
+        ARGPATTERNS: [
+            {
+                'expression': '-l',
+                'optional': True
+            },
+            {
+                'expression': '-a',
+                'optional': True
+            }
+        ],
+        RESULT: False
+    },
+    {
+        ARGS: ['-a'],
+        ARGPATTERNS: [
+            {
+                'expression': '-l',
+                'optional': True
+            },
+            {
+                'expression': '-a',
+                'optional': True
+            }
+        ],
+        RESULT: True
+    },
+]
+
+CHECK_ARG_PATTERNS_SUBCOMMAND = [
+    {
+        ARGS: ['add', 'entry', '-v'],
+        ARGPATTERNS: [
+            {
+                'subcommand': ['add'],
+            }
+        ],
+        RESULT: True
+    },
+    {
+        ARGS: ['add', 'entry', '-v', 'last'],
+        ARGPATTERNS: [
+            {
+                'subcommand': ['add', 'entry', 'last'],
+            }
+        ],
+        RESULT: True
+    },
+    {
+        ARGS: ['add', 'entry', '-v'],
+        ARGPATTERNS: [
+            {
+                'subcommand': ['add', 'entry', 'last'],
+            }
+        ],
+        RESULT: False
+    },
+    {
+        ARGS: ['add', 'entry', '-v', 'last'],
+        ARGPATTERNS: [
+            {
+                'subcommand': ['add', 'entry', 'first'],
+            }
+        ],
+        RESULT: False
+    },
+    {
+        ARGS: ['add', 'entry', '-v', '--', 'last'],
+        ARGPATTERNS: [
+            {
+                'subcommand': ['add', 'entry', 'last'],
+            }
+        ],
+        RESULT: False
+    },
+    {
+        ARGS: ['remove', 'entry', '-v'],
+        ARGPATTERNS: [
+            {
+                'subcommand': [None, 'entry'],
             }
         ],
         RESULT: True
@@ -123,7 +199,31 @@ CHECK_ARG_PATTERNS = [
 class ProfileLoaderTest(unittest.TestCase):
     def test_check_arg_patterns(self):
         for entry in CHECK_ARG_PATTERNS:
-            argpats = map(lambda x: ArgPattern(x), entry[ARGPATTERNS])
+            argpats = list(map(lambda x: ArgPattern(x), entry[ARGPATTERNS]))
+            self.assertEqual(
+                ProfileLoader.check_arg_patterns(entry[ARGS], argpats),
+                entry[RESULT]
+            )
+
+    def test_check_arg_patterns_match_not(self):
+        for entry in CHECK_ARG_PATTERNS_MATCH_NOT:
+            argpats = list(map(lambda x: ArgPattern(x), entry[ARGPATTERNS]))
+            self.assertEqual(
+                ProfileLoader.check_arg_patterns(entry[ARGS], argpats),
+                entry[RESULT]
+            )
+
+    def test_check_arg_patterns_optional(self):
+        for entry in CHECK_ARG_PATTERNS_OPTIONAL:
+            argpats = list(map(lambda x: ArgPattern(x), entry[ARGPATTERNS]))
+            self.assertEqual(
+                ProfileLoader.check_arg_patterns(entry[ARGS], argpats),
+                entry[RESULT]
+            )
+
+    def test_check_arg_patterns_subcommand(self):
+        for entry in CHECK_ARG_PATTERNS_SUBCOMMAND:
+            argpats = list(map(lambda x: ArgPattern(x), entry[ARGPATTERNS]))
             self.assertEqual(
                 ProfileLoader.check_arg_patterns(entry[ARGS], argpats),
                 entry[RESULT]

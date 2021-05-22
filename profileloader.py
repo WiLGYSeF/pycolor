@@ -152,7 +152,8 @@ class ProfileLoader:
     def get_subcommands(args):
         subcmds = []
         for arg in args:
-            if arg[0] == '-':
+            if arg == '--':
                 break
-            subcmds.append(arg)
+            if arg[0] != '-':
+                subcmds.append(arg)
         return subcmds
