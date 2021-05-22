@@ -57,9 +57,7 @@ class Pycolor:
     def execute(self, cmd, profile=None):
         if profile is None:
             profile = self.get_profile_by_command(cmd[0], cmd[1:])
-
-        self.set_current_profile(profile)
-        profile = self.current_profile
+        profile = self.set_current_profile(profile)
 
         if self.profloader.is_default_profile(profile) and self.debug == 0 and self.execv:
             cmd_path = which(cmd[0])
@@ -67,8 +65,11 @@ class Pycolor:
                 cmd_path = cmd_path.decode('utf-8')
             else:
                 cmd_path = cmd[0]
-            os.execv(cmd_path, cmd)
-            sys.exit(0)
+            try:
+                os.execv(cmd_path, cmd)
+            except FileNotFoundError:
+                printerr("command '%s' not found" % cmd_path)
+            sys.exit(1)
 
         self.debug_print(1, 'using profile "%s"', profile.get_name())
 
@@ -92,8 +93,11 @@ class Pycolor:
             pid = os.fork()
             if pid == 0:
                 less_path = which('less')
-                os.execv(less_path, [less_path, '-FKRSX', tmpfile.name])
-                sys.exit(0)
+                try:
+                    os.execv(less_path, [less_path, '-FKRSX', tmpfile.name])
+                except FileNotFoundError:
+                    printerr("command 'less' not found")
+                sys.exit(1)
             os.wait()
 
         return retcode
@@ -195,6 +199,7 @@ class Pycolor:
             self.current_profile = self.profloader.profile_default
         else:
             self.current_profile = profile
+        return self.current_profile
 
     def is_color_enabled(self):
         if self.color_mode in ('always', 'on', '1'):
@@ -226,3 +231,6 @@ class Pycolor:
 
     def is_being_redirected(self):
         return not self.stdout.isatty()
+
+def printerr(*args):
+    print(*args, file=sys.stderr)
