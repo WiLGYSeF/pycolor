@@ -69,6 +69,8 @@ def apply_pattern(pat, linenum, data, context):
 
                 if replace_val is None:
                     replace_val = fields[idx]
+                else:
+                    changed = True
 
                 context['field_cur'] = fields[idx]
                 replace_val, colorpos = pyformat.format_string(
