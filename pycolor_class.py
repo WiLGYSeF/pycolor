@@ -236,7 +236,7 @@ class Pycolor:
         msg = val % args
 
         if self.debug_file is not None:
-            self.debug_file.write('DEBUG%d: %s\n' % (lvl, msg))
+            self.debug_file.write('%s\n' % (msg))
             self.debug_file.flush()
 
         if self.debug_file is None or self.debug_log_out:
