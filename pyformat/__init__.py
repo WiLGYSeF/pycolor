@@ -23,7 +23,8 @@ def format_string(string, context=None, return_color_positions=False):
         if 'state' not in ctx_color:
             ctx_color['state'] = ColorState()
         ctx_color['state_current'] = ctx_color['state'].copy()
-        ctx_color['past_states'] = [ ctx_color['state'].copy() ]
+        if 'past_states' not in ctx_color or len(ctx_color['past_states']) == 0:
+            ctx_color['past_states'] = [ ctx_color['state'].copy() ]
 
     newstring = ''
     color_positions = {}

@@ -12,6 +12,9 @@ def apply_pattern(pat, linenum, data, context):
     if pat.super_regex is not None and not pat.super_regex.search(data):
         return False, None
 
+    ctx_color = context['color']
+    ctx_color['past_states'] = []
+
     color_positions = context['color']['positions']
     context = pyformat.dictcopy(context)
     context['string'] = data
