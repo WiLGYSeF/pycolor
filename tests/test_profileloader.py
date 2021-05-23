@@ -193,6 +193,24 @@ CHECK_ARG_PATTERNS_SUBCOMMAND = [
         ],
         RESULT: True
     },
+    {
+        ARGS: ['-v', 'add', 'entry'],
+        ARGPATTERNS: [
+            {
+                'subcommand': ['add', 'entry'],
+            }
+        ],
+        RESULT: True
+    },
+    {
+        ARGS: ['-v', 'add', 'entry'],
+        ARGPATTERNS: [
+            {
+                'subcommand': 'add',
+            }
+        ],
+        RESULT: True
+    },
 ]
 
 

@@ -10,6 +10,7 @@ class ArgPattern:
     def __init__(self, cfg):
         self.expression = None
         self.position = None
+        self.subcommand = []
 
         load_schema('argpattern', cfg, self)
 
@@ -17,6 +18,9 @@ class ArgPattern:
             self.regex = re.compile(self.expression)
         else:
             self.regex = None
+
+        if not isinstance(self.subcommand, list):
+            self.subcommand = [ self.subcommand ]
 
     def get_arg_range(self, arglen):
         if self.position is None:
