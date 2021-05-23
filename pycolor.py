@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 import sys
 
 import arguments
@@ -123,6 +124,8 @@ def try_load_file(pycobj, fname):
         printerr('ERROR: json: %s: %s' % (fname, jde))
     except jsonobj.ValidationError as jve:
         printerr('ERROR: json: %s: %s' % (fname, jve.message))
+    except re.error as rer:
+        printerr('ERROR: json: %s: invalid regular expression' % fname)
     return False
 
 def printerr(*args):
