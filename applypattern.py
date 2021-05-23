@@ -2,7 +2,7 @@ from colorpositions import update_color_positions, offset_color_positions
 from group_index import get_named_group_at_index
 from match_group_replace import match_group_replace
 import pyformat
-from search_replace import search_replace, update_positions
+from search_replace import search_replace
 from split import re_split
 
 
@@ -56,11 +56,11 @@ def apply_pattern(pat, linenum, data, context):
             len(pat.replace_fields) != 0,
             len(field_idxs) != 0
         ]):
+            colorpos_arr = []
             newdata = ''
             changed = False
             offset = 0
             choffset = 0
-            replace_ranges = []
             field_idx = 0
 
             match = pat.regex.search(data)
@@ -83,31 +83,19 @@ def apply_pattern(pat, linenum, data, context):
                     return_color_positions=True
                 )
 
-                colorpos = offset_color_positions(colorpos, offset)
+                colorpos_arr.append(offset_color_positions(colorpos, offset))
                 choffset += len(replace_val) - len(fields[idx])
-
-                update_positions(colorpos, replace_ranges)
-                replace_ranges.append((
-                    (offset, offset + len(fields[idx])),
-                    (
-                        offset + choffset,
-                        offset + choffset + len(replace_val)
-                    )
-                ))
-                update_color_positions(color_positions, colorpos)
 
                 newdata += replace_val + sep
                 offset += len(replace_val) + len(sep)
                 field_idx += 1
 
+            for colorpos in colorpos_arr:
+                update_color_positions(color_positions, colorpos)
             return changed, newdata
 
         if len(pat.replace_groups) != 0:
-            choffset = 0
-            replace_ranges = []
-
-            def replace_group(match, idx):
-                nonlocal choffset
+            colorpos_arr = []
 
             def replace_group(match, idx, offset):
                 replace_val = get_replace_group(match, idx, pat.replace_groups)
@@ -124,22 +112,14 @@ def apply_pattern(pat, linenum, data, context):
                     return_color_positions=True
                 )
 
-                colorpos = offset_color_positions(colorpos, match.start(idx))
-                choffset += len(replace_val) - (match.end(idx) - match.start(idx))
-
-                update_positions(colorpos, replace_ranges)
-                replace_ranges.append((
-                    match.span(idx),
-                    (
-                        match.start(idx) + choffset,
-                        match.start(idx) + choffset + len(replace_val)
-                    )
-                ))
-
-                update_color_positions(color_positions, colorpos)
+                colorpos_arr.append(
+                    offset_color_positions(colorpos, match.start(idx) - offset)
+                )
                 return replace_val
 
             newdata = match_group_replace(pat.regex, data, replace_group)
+            for colorpos in colorpos_arr:
+                update_color_positions(color_positions, colorpos)
             return 'match' in context, newdata
         return pat.regex.search(data), data
 
@@ -229,6 +209,28 @@ def pat_schrep(pattern, string, context):
         replacer
     )
     return newstring, replace_ranges, color_positions
+
+def update_positions(positions, replace_ranges):
+    for key in sorted(positions.keys(), reverse=True):
+        newkey = key
+
+        for old_range, new_range in replace_ranges:
+            if old_range[1] > key:
+                continue
+
+            if old_range[0] >= key and old_range[1] < key:
+                if new_range[1] < key:
+                    newkey = None
+                    break
+
+            newkey += new_range[1] - old_range[1] - (new_range[0] - old_range[0])
+
+        if newkey is not None:
+            if newkey != key:
+                positions[newkey] = positions[key]
+                del positions[key]
+        else:
+            del positions[key]
 
 def get_replace_field(fields, field_idx, replace_fields):
     if isinstance(replace_fields, dict):
