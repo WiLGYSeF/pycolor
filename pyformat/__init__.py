@@ -22,9 +22,15 @@ def format_string(string, context=None, return_color_positions=False):
     if ctx_color.get('enabled', True):
         if 'state' not in ctx_color:
             ctx_color['state'] = ColorState()
+        if 'string' in context:
+            ctx_color['state'].set_state_by_string(
+                insert_color_data(
+                    context['string'],
+                    ctx_color['positions'],
+                    context['idx']
+                )
+            )
         ctx_color['state_current'] = ctx_color['state'].copy()
-        if 'past_states' not in ctx_color or len(ctx_color['past_states']) == 0:
-            ctx_color['past_states'] = [ ctx_color['state'].copy() ]
 
     newstring = ''
     color_positions = {}
@@ -40,7 +46,6 @@ def format_string(string, context=None, return_color_positions=False):
             formatter, value, newidx = get_formatter(string, idx)
             if formatter is not None:
                 if ctx_color.get('enabled', True):
-                    ctx_color['state_current'].reset()
                     ctx_color['state_current'].set_state_by_string(
                         insert_color_data(newstring, color_positions)
                     )
@@ -70,29 +75,10 @@ def do_format(string, formatter, value, idx, newidx, context):
             return ''
 
         if value == 'prev':
-            return get_lastcolor(
-                ctx['past_states'],
-                '2',
-                current=ctx['state_current']
-            )
-        if value.startswith('last'):
-            return get_lastcolor(
-                ctx['past_states'],
-                value[4:],
-                current=ctx['state_current']
-            )
+            prev = str(ctx['state'])
+            return prev if len(prev) != 0 else '\x1b[0m'
         if value in ('s', 'soft'):
-            state = ctx['state'].copy()
-            if 'positions' in ctx:
-                state.set_state_by_string(
-                    insert_color_data(
-                        context['string'],
-                        ctx['positions'],
-                        context['idx']
-                    )
-                )
-
-            return state.get_string(
+            return ColorState().get_string(
                 compare_state=ctx['state_current']
             )
 
@@ -102,11 +88,6 @@ def do_format(string, formatter, value, idx, newidx, context):
         )
         if colorstr is None:
             colorstr = ''
-
-        newstate = ctx['past_states'][-1].copy()
-        newstate.set_state_by_string(colorstr)
-        ctx['past_states'].append(newstate)
-
         return colorstr
 
     if formatter == FORMAT_PADDING:
@@ -214,27 +195,6 @@ def get_formatter(string, idx):
         value = string[startidx:idx - 1]
 
     return formatter, value, idx
-
-def get_lastcolor(colors, string, current=None):
-    if len(colors) == 0:
-        return ''
-
-    if current is None:
-        current = ColorState()
-
-    try:
-        last_idx = -int(string)
-    except ValueError:
-        last_idx = -1
-
-    if last_idx >= 0:
-        last_idx -= 1
-        if last_idx >= len(colors):
-            last_idx = -1
-    elif -last_idx > len(colors):
-        last_idx = 0
-
-    return colors[last_idx].get_string(compare_state=current)
 
 def dictcopy(dct):
     copy = {}

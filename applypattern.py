@@ -13,9 +13,8 @@ def apply_pattern(pat, linenum, data, context):
         return False, None
 
     ctx_color = context['color']
-    ctx_color['past_states'] = []
-
-    color_positions = context['color']['positions']
+    ctx_color['state_prev'] = []
+    color_positions = ctx_color['positions']
     context = pyformat.dictcopy(context)
     context['string'] = data
 
@@ -80,6 +79,8 @@ def apply_pattern(pat, linenum, data, context):
                     changed = True
 
                 context['field_cur'] = fields[idx]
+                context['idx'] = len(newdata)
+
                 replace_val, colorpos = pyformat.format_string(
                     replace_val,
                     context=context,

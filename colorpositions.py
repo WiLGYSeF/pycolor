@@ -9,8 +9,8 @@ def insert_color_data(data, color_positions, end=-1):
     last = 0
 
     for key in sorted(color_positions.keys()):
-        if end != -1 and key > end + 1:
-            return colored_data + data[last:end + 1]
+        if end > 0 and key >= end:
+            return colored_data + data[last:end]
         colored_data += data[last:key] + color_positions[key]
         last = key
 
