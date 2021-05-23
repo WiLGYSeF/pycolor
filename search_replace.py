@@ -54,23 +54,6 @@ def search_replace(pattern, string, replace, **kwargs):
     newstring += string[last:]
     return newstring, replace_ranges
 
-def update_ranges(ranges, replace_ranges):
-    for i in range(len(ranges)): #pylint: disable=consider-using-enumerate
-        start, end = ranges[i]
-
-        for old_range, new_range in replace_ranges:
-            if old_range[1] > start:
-                break
-
-            diff = new_range[1] - old_range[1] - (new_range[0] - old_range[0])
-            start += diff
-            end += diff
-
-        ranges[i] = (start, end)
-
-    ranges.extend(map(lambda x: x[1], replace_ranges))
-    ranges.sort(key=lambda x: x[0])
-
 def update_positions(positions, replace_ranges):
     for key in sorted(positions.keys(), reverse=True):
         newkey = key
