@@ -109,8 +109,8 @@ def apply_pattern(pat, linenum, data, context):
             def replace_group(match, idx):
                 nonlocal choffset
 
+            def replace_group(match, idx, offset):
                 replace_val = get_replace_group(match, idx, pat.replace_groups)
-
                 if replace_val is None:
                     return match.group(idx)
 
