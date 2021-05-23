@@ -188,7 +188,7 @@ def get_formatter(string, idx):
     startidx = idx
     while idx < len(string):
         char = string[idx]
-        if paren == 0 or (paren == -1 and char not in FORMAT_CHAR_VALID):
+        if paren <= 0:
             break
         if char == '\\':
             idx += 2
