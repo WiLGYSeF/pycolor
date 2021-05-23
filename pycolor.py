@@ -29,7 +29,22 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         print(pyformat.format_string(argspace.debug_format + '%Cz'))
         sys.exit(0)
 
-    pycobj = Pycolor(color_mode=argspace.color, debug=argspace.verbose, execv=argspace.execv)
+    debug_log = None
+    debug_log_out = False
+
+    if argspace.debug_log:
+        debug_log = argspace.debug_log
+    if argspace.debug_log_out:
+        debug_log = argspace.debug_log_out
+        debug_log_out = True
+
+    pycobj = Pycolor(
+        color_mode=argspace.color,
+        debug=argspace.verbose,
+        debug_log=debug_log,
+        debug_log_out=debug_log_out,
+        execv=argspace.execv
+    )
     pycobj.stdout = stdout_stream
     pycobj.stderr = stderr_stream
 

@@ -68,6 +68,16 @@ def get_args(args):
         help='reads stdin instead of running the given command'
     )
 
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--debug-log',
+        action='store', metavar='FILE',
+        help='write debug messages to a file instead of stdout'
+    )
+    group.add_argument('--debug-log-out',
+        action='store', metavar='FILE',
+        help='write debug messages to a file in addition to stdout'
+    )
+
     return parse_known_args(parser, args)
 
 def parse_known_args(parser, args):

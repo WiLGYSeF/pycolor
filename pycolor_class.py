@@ -24,7 +24,13 @@ class Pycolor:
         4 - print line numbers before received data
         """
         self.debug = kwargs.get('debug', 0)
+        self.debug_log = kwargs.get('debug_log', None)
+        self.debug_log_out = kwargs.get('debug_log_out', False)
         self.execv = kwargs.get('execv', False)
+
+        self.debug_file = None
+        if self.debug_log is not None:
+            self.debug_file = open(self.debug_log, 'a')
 
         self.profloader = ProfileLoader()
         self.current_profile = None
@@ -227,7 +233,14 @@ class Pycolor:
             reset = ''
             oldstate = ''
 
-        print('%s    DEBUG%d: %s%s' % (reset, lvl, val % args, oldstate))
+        msg = val % args
+
+        if self.debug_file is not None:
+            self.debug_file.write('DEBUG%d: %s\n' % (lvl, msg))
+            self.debug_file.flush()
+
+        if self.debug_file is None or self.debug_log_out:
+            print('%s    DEBUG%d: %s%s' % (reset, lvl, msg, oldstate))
 
     def is_being_redirected(self):
         return not self.stdout.isatty()
