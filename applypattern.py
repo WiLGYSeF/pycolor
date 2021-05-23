@@ -12,9 +12,7 @@ def apply_pattern(pat, linenum, data, context):
     if pat.super_regex is not None and not pat.super_regex.search(data):
         return False, None
 
-    ctx_color = context['color']
-    ctx_color['state_prev'] = []
-    color_positions = ctx_color['positions']
+    color_positions = context['color']['positions']
     context = pyformat.dictcopy(context)
     context['string'] = data
 
@@ -78,6 +76,7 @@ def apply_pattern(pat, linenum, data, context):
                 else:
                     changed = True
 
+                context['color']['positions'] = color_positions
                 context['field_cur'] = fields[idx]
                 context['idx'] = len(newdata)
 
@@ -99,15 +98,14 @@ def apply_pattern(pat, linenum, data, context):
             return changed, newdata
 
         if len(pat.replace_groups) != 0:
-            colorpos_arr = []
-
             def replace_group(match, idx, offset):
                 replace_val = get_replace_group(match, idx, pat.replace_groups)
                 if replace_val is None:
                     return match.group(idx)
 
+                context['color']['positions'] = color_positions
                 context['match'] = match
-                context['idx'] = match.start()
+                context['idx'] = match.start(idx)
                 context['match_cur'] = match.group(idx)
 
                 replace_val, colorpos = pyformat.format_string(
@@ -116,14 +114,13 @@ def apply_pattern(pat, linenum, data, context):
                     return_color_positions=True
                 )
 
-                colorpos_arr.append(
+                update_color_positions(
+                    color_positions,
                     offset_color_positions(colorpos, match.start(idx) - offset)
                 )
                 return replace_val
 
             newdata = match_group_replace(pat.regex, data, replace_group)
-            for colorpos in colorpos_arr:
-                update_color_positions(color_positions, colorpos)
             return 'match' in context, newdata
         return pat.regex.search(data), data
 
@@ -149,6 +146,7 @@ def apply_pattern(pat, linenum, data, context):
     if pat.replace is not None:
         matched = False
         for field_idx in field_idxs:
+            context['color']['positions'] = color_positions
             newfield, replace_ranges, colorpos = pat_schrep(pat, fields[field_idx], context)
             if len(replace_ranges) == 0:
                 continue
