@@ -14,6 +14,7 @@ def apply_pattern(pat, linenum, data, context):
 
     color_positions = context['color']['positions']
     context = pyformat.dictcopy(context)
+    context['color']['positions'] = color_positions
     context['string'] = data
 
     if pat.separator_regex is not None:
@@ -57,10 +58,11 @@ def apply_pattern(pat, linenum, data, context):
             len(field_idxs) != 0
         ]):
             colorpos_arr = []
+            replace_ranges = []
             newdata = ''
             changed = False
             offset = 0
-            choffset = 0
+            origin_offset = 0
             field_idx = 0
 
             match = pat.regex.search(data)
@@ -76,7 +78,6 @@ def apply_pattern(pat, linenum, data, context):
                 else:
                     changed = True
 
-                context['color']['positions'] = color_positions
                 context['field_cur'] = fields[idx]
                 context['idx'] = len(newdata)
 
@@ -87,23 +88,38 @@ def apply_pattern(pat, linenum, data, context):
                 )
 
                 colorpos_arr.append(offset_color_positions(colorpos, offset))
-                choffset += len(replace_val) - len(fields[idx])
+
+                replace_ranges.append((
+                    (
+                        origin_offset,
+                        origin_offset + len(fields[idx])
+                    ),
+                    (
+                        offset,
+                        offset + len(replace_val)
+                    )
+                ))
 
                 newdata += replace_val + sep
                 offset += len(replace_val) + len(sep)
+                origin_offset += len(fields[idx]) + len(sep)
                 field_idx += 1
 
+            update_positions(color_positions, replace_ranges)
             for colorpos in colorpos_arr:
                 update_color_positions(color_positions, colorpos)
+
             return changed, newdata
 
         if len(pat.replace_groups) != 0:
+            colorpos_arr = []
+            replace_ranges = []
+
             def replace_group(match, idx, offset):
                 replace_val = get_replace_group(match, idx, pat.replace_groups)
                 if replace_val is None:
                     return match.group(idx)
 
-                context['color']['positions'] = color_positions
                 context['match'] = match
                 context['idx'] = match.start(idx)
                 context['match_cur'] = match.group(idx)
@@ -114,13 +130,29 @@ def apply_pattern(pat, linenum, data, context):
                     return_color_positions=True
                 )
 
-                update_color_positions(
-                    color_positions,
-                    offset_color_positions(colorpos, match.start(idx) - offset)
-                )
+                colorpos_arr.append(offset_color_positions(colorpos, match.start(idx) - offset))
+
+                replace_ranges.append((
+                    match.span(idx),
+                    (
+                        match.start(idx) - offset,
+                        match.start(idx) - offset + len(replace_val)
+                    )
+                ))
                 return replace_val
 
             newdata = match_group_replace(pat.regex, data, replace_group)
+
+            if len(colorpos_arr) != 0:
+                # print(','.join(map(lambda x: str(x), colorpos_arr)))
+                # print(replace_ranges)
+
+                update_positions(color_positions, replace_ranges)
+                for colorpos in colorpos_arr:
+                    update_color_positions(color_positions, colorpos)
+
+                # print(color_positions)
+
             return 'match' in context, newdata
         return pat.regex.search(data), data
 
@@ -146,7 +178,6 @@ def apply_pattern(pat, linenum, data, context):
     if pat.replace is not None:
         matched = False
         for field_idx in field_idxs:
-            context['color']['positions'] = color_positions
             newfield, replace_ranges, colorpos = pat_schrep(pat, fields[field_idx], context)
             if len(replace_ranges) == 0:
                 continue
@@ -213,19 +244,17 @@ def pat_schrep(pattern, string, context):
     return newstring, replace_ranges, color_positions
 
 def update_positions(positions, replace_ranges):
+    replace_ranges.sort(key=lambda x: x[0][0], reverse=True)
+
     for key in sorted(positions.keys(), reverse=True):
         newkey = key
-
         for old_range, new_range in replace_ranges:
-            if old_range[1] > key:
-                continue
-
-            if old_range[0] >= key and old_range[1] < key:
-                if new_range[1] < key:
+            if old_range[0] <= key and key < old_range[1] and old_range[0] != new_range[0]:
+                if key - old_range[0] > new_range[1] - new_range[0]:
                     newkey = None
-                    break
-
-            newkey += new_range[1] - old_range[1] - (new_range[0] - old_range[0])
+                else:
+                    newkey += new_range[0] - old_range[0]
+                break
 
         if newkey is not None:
             if newkey != key:
