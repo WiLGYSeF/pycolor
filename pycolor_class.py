@@ -30,7 +30,7 @@ class Pycolor:
 
         self.debug_file = None
         if self.debug_log is not None:
-            self.debug_file = open(self.debug_log, 'a')
+            self.debug_file = self.open_debug_file(self.debug_log)
 
         self.profloader = ProfileLoader()
         self.current_profile = None
@@ -65,12 +65,19 @@ class Pycolor:
             profile = self.get_profile_by_command(cmd[0], cmd[1:])
         profile = self.set_current_profile(profile)
 
+        if self.debug_file:
+            self.debug_write_line('running %s' % cmd)
+
         if self.profloader.is_default_profile(profile) and self.debug == 0 and self.execv:
             cmd_path = which(cmd[0])
             if cmd_path is not None:
                 cmd_path = cmd_path.decode('utf-8')
             else:
                 cmd_path = cmd[0]
+
+            if self.debug_file:
+                self.debug_write_line('calling os.execv(%s, %s)' % (cmd_path, cmd))
+
             try:
                 os.execv(cmd_path, cmd)
             except FileNotFoundError:
@@ -236,11 +243,25 @@ class Pycolor:
         msg = val % args
 
         if self.debug_file is not None:
-            self.debug_file.write('%s\n' % (msg))
-            self.debug_file.flush()
+            self.debug_write_line(msg)
 
         if self.debug_file is None or self.debug_log_out:
             print('%s    DEBUG%d: %s%s' % (reset, lvl, msg, oldstate))
+
+    def open_debug_file(self, fname):
+        if self.debug == 0:
+            self.debug = 1
+        file_exists = os.path.isfile(fname)
+
+        file = open(fname, 'a')
+        if file_exists:
+            file.write('\n')
+        return file
+
+    def debug_write_line(self, line):
+        curdate = datetime.datetime.now()
+        self.debug_file.write('%s: %s\n' % (curdate.strftime('%Y-%m-%d %H:%M:%S'), line))
+        self.debug_file.flush()
 
     def is_being_redirected(self):
         return not self.stdout.isatty()

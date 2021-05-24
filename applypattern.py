@@ -284,10 +284,45 @@ def get_replace_group(match, idx, replace_groups):
                 if group in key.split(','):
                     return replace_groups[key]
 
-        # FIXME
-        return _get_field_range(match.groups(), replace_groups, idx - 1)
+        return _get_group_range(match.groups(), replace_groups, idx - 1)
     if isinstance(replace_groups, list) and idx <= len(replace_groups):
         return replace_groups[idx - 1]
+    return None
+
+def get_range(arr, number):
+    if '*' not in number:
+        start = int(number)
+        if start < 0:
+            start += len(arr) + 1
+        return start, start + 1, 1
+
+    rangespl = number.split('*')
+    start = rangespl[0]
+    end = rangespl[1]
+    step = int(rangespl[2]) if len(rangespl) >= 3 else 1
+
+    start = int(start) if len(start) != 0 else 0
+
+    if len(end) == 0:
+        end = len(arr)
+    else:
+        end = int(end)
+        if end < 0:
+            end += len(arr) + 1
+        elif end >= len(arr):
+            end = len(arr) - 1
+
+    return start, end, step
+
+def _get_group_range(groups, obj, idx):
+    for key, val in obj.items():
+        for num in key.split(','):
+            try:
+                start, end, step = get_range(groups, num)
+                if idx in range(start, end, step):
+                    return val
+            except ValueError:
+                pass
     return None
 
 def _get_field_range(fields, obj, idx):
@@ -297,7 +332,6 @@ def _get_field_range(fields, obj, idx):
                 start, end, step = pyformat.fieldsep.get_field_range(num, fields)
                 start = pyformat.fieldsep.idx_to_num(start)
                 end = pyformat.fieldsep.idx_to_num(end)
-
                 if idx in range(start - 1, end, step):
                     return val
             except ValueError:
