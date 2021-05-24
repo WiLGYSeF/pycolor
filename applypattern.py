@@ -2,7 +2,7 @@ from colorpositions import update_color_positions, offset_color_positions
 from group_index import get_named_group_at_index
 from match_group_replace import match_group_replace
 import pyformat
-from search_replace import search_replace, update_positions
+from search_replace import search_replace
 from split import re_split
 
 
@@ -14,6 +14,7 @@ def apply_pattern(pat, linenum, data, context):
 
     color_positions = context['color']['positions']
     context = pyformat.dictcopy(context)
+    context['color']['positions'] = color_positions
     context['string'] = data
 
     if pat.separator_regex is not None:
@@ -56,11 +57,13 @@ def apply_pattern(pat, linenum, data, context):
             len(pat.replace_fields) != 0,
             len(field_idxs) != 0
         ]):
+            replace_ranges = []
+            colorpos_arr = []
+            original_color_positions = color_positions.copy()
             newdata = ''
             changed = False
             offset = 0
-            choffset = 0
-            replace_ranges = []
+            origin_offset = 0
             field_idx = 0
 
             match = pat.regex.search(data)
@@ -77,6 +80,8 @@ def apply_pattern(pat, linenum, data, context):
                     changed = True
 
                 context['field_cur'] = fields[idx]
+                context['idx'] = len(newdata)
+
                 replace_val, colorpos = pyformat.format_string(
                     replace_val,
                     context=context,
@@ -84,30 +89,38 @@ def apply_pattern(pat, linenum, data, context):
                 )
 
                 colorpos = offset_color_positions(colorpos, offset)
-                choffset += len(replace_val) - len(fields[idx])
+                colorpos_arr.append(colorpos)
+                update_color_positions(color_positions, colorpos)
 
-                update_positions(colorpos, replace_ranges)
                 replace_ranges.append((
-                    (offset, offset + len(fields[idx])),
                     (
-                        offset + choffset,
-                        offset + choffset + len(replace_val)
+                        origin_offset,
+                        origin_offset + len(fields[idx])
+                    ),
+                    (
+                        offset,
+                        offset + len(replace_val)
                     )
                 ))
-                update_color_positions(color_positions, colorpos)
 
                 newdata += replace_val + sep
                 offset += len(replace_val) + len(sep)
+                origin_offset += len(fields[idx]) + len(sep)
                 field_idx += 1
+
+            color_positions.clear()
+            color_positions.update(original_color_positions)
+
+            update_positions(color_positions, replace_ranges)
+            for colorpos in colorpos_arr:
+                update_color_positions(color_positions, colorpos)
 
             return changed, newdata
 
         if len(pat.replace_groups) != 0:
-            choffset = 0
             replace_ranges = []
-
-            def replace_group(match, idx):
-                nonlocal choffset
+            colorpos_arr = []
+            original_color_positions = color_positions.copy()
 
             def replace_group(match, idx, offset):
                 replace_val = get_replace_group(match, idx, pat.replace_groups)
@@ -115,7 +128,7 @@ def apply_pattern(pat, linenum, data, context):
                     return match.group(idx)
 
                 context['match'] = match
-                context['idx'] = match.start()
+                context['idx'] = match.start(idx)
                 context['match_cur'] = match.group(idx)
 
                 replace_val, colorpos = pyformat.format_string(
@@ -124,22 +137,27 @@ def apply_pattern(pat, linenum, data, context):
                     return_color_positions=True
                 )
 
-                colorpos = offset_color_positions(colorpos, match.start(idx))
-                choffset += len(replace_val) - (match.end(idx) - match.start(idx))
+                colorpos = offset_color_positions(colorpos, match.start(idx) - offset)
+                colorpos_arr.append(colorpos)
+                update_color_positions(color_positions, colorpos)
 
-                update_positions(colorpos, replace_ranges)
                 replace_ranges.append((
                     match.span(idx),
                     (
-                        match.start(idx) + choffset,
-                        match.start(idx) + choffset + len(replace_val)
+                        match.start(idx) - offset,
+                        match.start(idx) - offset + len(replace_val)
                     )
                 ))
-
-                update_color_positions(color_positions, colorpos)
                 return replace_val
 
             newdata = match_group_replace(pat.regex, data, replace_group)
+            color_positions.clear()
+            color_positions.update(original_color_positions)
+
+            update_positions(color_positions, replace_ranges)
+            for colorpos in colorpos_arr:
+                update_color_positions(color_positions, colorpos)
+
             return 'match' in context, newdata
         return pat.regex.search(data), data
 
@@ -230,6 +248,31 @@ def pat_schrep(pattern, string, context):
     )
     return newstring, replace_ranges, color_positions
 
+def update_positions(positions, replace_ranges):
+    replace_ranges.sort(key=lambda x: x[0][0], reverse=True)
+
+    for key in sorted(positions.keys(), reverse=True):
+        newkey = key
+        for old_range, new_range in replace_ranges:
+            if old_range[1] < key:
+                newkey += new_range[1] - old_range[1]
+                break
+            if old_range[0] < key and key < old_range[1]:
+                if key - old_range[0] > new_range[1] - new_range[0]:
+                    newkey = None
+                else:
+                    # FIXME not sure how to handle this
+                    # newkey += new_range[1] - old_range[1] - (new_range[0] - old_range[0])
+                    newkey = None
+                break
+
+        if newkey is not None:
+            if newkey != key:
+                positions[newkey] = positions[key]
+                del positions[key]
+        else:
+            del positions[key]
+
 def get_replace_field(fields, field_idx, replace_fields):
     if isinstance(replace_fields, dict):
         return _get_field_range(fields, replace_fields, field_idx)
@@ -251,10 +294,45 @@ def get_replace_group(match, idx, replace_groups):
                 if group in key.split(','):
                     return replace_groups[key]
 
-        # FIXME
-        return _get_field_range(match.groups(), replace_groups, idx - 1)
+        return _get_group_range(match.groups(), replace_groups, idx - 1)
     if isinstance(replace_groups, list) and idx <= len(replace_groups):
         return replace_groups[idx - 1]
+    return None
+
+def get_range(arr, number):
+    if '*' not in number:
+        start = int(number)
+        if start < 0:
+            start += len(arr) + 1
+        return start, start + 1, 1
+
+    rangespl = number.split('*')
+    start = rangespl[0]
+    end = rangespl[1]
+    step = int(rangespl[2]) if len(rangespl) >= 3 else 1
+
+    start = int(start) if len(start) != 0 else 0
+
+    if len(end) == 0:
+        end = len(arr)
+    else:
+        end = int(end)
+        if end < 0:
+            end += len(arr) + 1
+        elif end >= len(arr):
+            end = len(arr) - 1
+
+    return start, end, step
+
+def _get_group_range(groups, obj, idx):
+    for key, val in obj.items():
+        for num in key.split(','):
+            try:
+                start, end, step = get_range(groups, num)
+                if idx in range(start, end, step):
+                    return val
+            except ValueError:
+                pass
     return None
 
 def _get_field_range(fields, obj, idx):
@@ -264,7 +342,6 @@ def _get_field_range(fields, obj, idx):
                 start, end, step = pyformat.fieldsep.get_field_range(num, fields)
                 start = pyformat.fieldsep.idx_to_num(start)
                 end = pyformat.fieldsep.idx_to_num(end)
-
                 if idx in range(start - 1, end, step):
                     return val
             except ValueError:

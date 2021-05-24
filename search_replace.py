@@ -53,17 +53,3 @@ def search_replace(pattern, string, replace, **kwargs):
 
     newstring += string[last:]
     return newstring, replace_ranges
-
-def update_positions(positions, replace_ranges):
-    for key in sorted(positions.keys(), reverse=True):
-        newkey = key
-
-        for old_range, new_range in replace_ranges:
-            if old_range[1] > key:
-                break
-
-            newkey += new_range[1] - old_range[1] - (new_range[0] - old_range[0])
-
-        if newkey != key:
-            positions[newkey] = positions[key]
-            del positions[key]

@@ -23,3 +23,9 @@ class FreeTest(unittest.TestCase):
 
     def test_color_replace_fields_list(self):
         check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'color-replace-fields-list')
+
+    def test_replace_fields_all(self):
+        check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'replace-fields-all')
+
+    def test_replace_groups_all(self):
+        check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'replace-groups-all')

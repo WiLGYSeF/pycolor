@@ -29,23 +29,38 @@ FORMAT_COLOR_STRING = {
     '%CC(red)': '%CC(red)'
 }
 
-FORMAT_COLOR_STRING_LAST = {
-    '%C(red)a%C(green)b%C(last)c': '\x1b[31ma\x1b[32mbc',
-    '%C(red)a%C(green)b%C(prev)c': '\x1b[31ma\x1b[32mb\x1b[31mc',
-    '%C(bold)a%C(yellow)b%C(magenta)c%C(last3)d': '\x1b[1ma\x1b[33mb\x1b[35mc\x1b[39md',
-    '%C(italic)a%C(y)b%C(m)\x1b[23mc%C(last3)d': '\x1b[3ma\x1b[33mb\x1b[35m\x1b[23mc\x1b[3;39md',
-    '%C(bold)a%C(yellow)b\x1b[3;31mc%C(last)d': '\x1b[1ma\x1b[33mb\x1b[3;31mc\x1b[23;33md',
-}
-
-STATE = 'state'
-FORMAT_COLOR_STRING_SOFT_RESET = [
+CONTEXT = 'context'
+FORMAT_COLOR_STRING_PREV = [
     {
-        STATE: ColorState('\x1b[31m'),
-        STRING: 'a%C(underline;yellow)b\x1b[3;32mc%C(cyan)d%C(soft)e',
-        RESULT: 'a\x1b[4;33mb\x1b[3;32mc\x1b[36md\x1b[23;24;31me',
+        CONTEXT: {
+            'string': 'a',
+            'idx': 1,
+            'color': {
+                'positions': {
+                    0: '\x1b[31m'
+                }
+            }
+        },
+        STRING: '%C(green)b%C(prev)c',
+        RESULT: '\x1b[32mb\x1b[31mc',
     },
     {
-        STATE: ColorState(),
+        CONTEXT: {
+            'string': '',
+            'idx': 0,
+            'color': {
+                'positions': {
+                    0: '\x1b[31m'
+                }
+            }
+        },
+        STRING: '%C(green)b%C(prev)c',
+        RESULT: '\x1b[32mb\x1b[31mc',
+    },
+]
+
+FORMAT_COLOR_STRING_SOFT_RESET = [
+    {
         STRING: 'a%C(b)s%C(str;bol)d%C(soft)f',
         RESULT: 'a\x1b[34ms\x1b[9;1md\x1b[21;29;39mf',
     },
@@ -88,19 +103,17 @@ class ColorTest(unittest.TestCase):
         for key, val in FORMAT_COLOR_STRING.items():
             self.assertEqual(pyformat.format_string(key), val)
 
-    def test_format_color_string_last(self):
-        for key, val in FORMAT_COLOR_STRING_LAST.items():
-            self.assertEqual(pyformat.format_string(key), val)
+    def test_format_color_string_prev(self):
+        for entry in FORMAT_COLOR_STRING_PREV:
+            self.assertEqual(pyformat.format_string(
+                entry[STRING],
+                context=entry[CONTEXT]
+            ), entry[RESULT])
 
     def test_format_color_string_soft_reset(self):
         for entry in FORMAT_COLOR_STRING_SOFT_RESET:
             self.assertEqual(pyformat.format_string(
                 entry[STRING],
-                context={
-                    'color': {
-                        'state': entry[STATE],
-                    }
-                }
             ), entry[RESULT])
 
     def test_format_color_string_color_disabled(self):

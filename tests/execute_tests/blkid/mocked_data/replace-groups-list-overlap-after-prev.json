@@ -23,7 +23,7 @@
 				{
 					"expression": "[^0-9a-f]([0-9a-f]{4})[^0-9a-f]",
 					"replace_groups": [
-						"%Cm%Gc%Cs"
+						"%Cm%Gc%Cprev"
 					]
 				}
 			]
