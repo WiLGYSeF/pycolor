@@ -28,4 +28,4 @@ class FreeTest(unittest.TestCase):
         check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'replace-fields-all')
 
     def test_replace_groups_all(self):
-        check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'replace-groups-all', print_output=True)
+        check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'replace-groups-all')

@@ -57,8 +57,9 @@ def apply_pattern(pat, linenum, data, context):
             len(pat.replace_fields) != 0,
             len(field_idxs) != 0
         ]):
-            colorpos_arr = []
             replace_ranges = []
+            colorpos_arr = []
+            original_color_positions = color_positions.copy()
             newdata = ''
             changed = False
             offset = 0
@@ -87,7 +88,9 @@ def apply_pattern(pat, linenum, data, context):
                     return_color_positions=True
                 )
 
-                colorpos_arr.append(offset_color_positions(colorpos, offset))
+                colorpos = offset_color_positions(colorpos, offset)
+                colorpos_arr.append(colorpos)
+                update_color_positions(color_positions, colorpos)
 
                 replace_ranges.append((
                     (
@@ -105,6 +108,9 @@ def apply_pattern(pat, linenum, data, context):
                 origin_offset += len(fields[idx]) + len(sep)
                 field_idx += 1
 
+            color_positions.clear()
+            color_positions.update(original_color_positions)
+
             update_positions(color_positions, replace_ranges)
             for colorpos in colorpos_arr:
                 update_color_positions(color_positions, colorpos)
@@ -112,8 +118,9 @@ def apply_pattern(pat, linenum, data, context):
             return changed, newdata
 
         if len(pat.replace_groups) != 0:
-            colorpos_arr = []
             replace_ranges = []
+            colorpos_arr = []
+            original_color_positions = color_positions.copy()
 
             def replace_group(match, idx, offset):
                 replace_val = get_replace_group(match, idx, pat.replace_groups)
@@ -130,7 +137,9 @@ def apply_pattern(pat, linenum, data, context):
                     return_color_positions=True
                 )
 
-                colorpos_arr.append(offset_color_positions(colorpos, match.start(idx) - offset))
+                colorpos = offset_color_positions(colorpos, match.start(idx) - offset)
+                colorpos_arr.append(colorpos)
+                update_color_positions(color_positions, colorpos)
 
                 replace_ranges.append((
                     match.span(idx),
@@ -142,16 +151,12 @@ def apply_pattern(pat, linenum, data, context):
                 return replace_val
 
             newdata = match_group_replace(pat.regex, data, replace_group)
+            color_positions.clear()
+            color_positions.update(original_color_positions)
 
-            if len(colorpos_arr) != 0:
-                # print(','.join(map(lambda x: str(x), colorpos_arr)))
-                # print(replace_ranges)
-
-                update_positions(color_positions, replace_ranges)
-                for colorpos in colorpos_arr:
-                    update_color_positions(color_positions, colorpos)
-
-                # print(color_positions)
+            update_positions(color_positions, replace_ranges)
+            for colorpos in colorpos_arr:
+                update_color_positions(color_positions, colorpos)
 
             return 'match' in context, newdata
         return pat.regex.search(data), data
@@ -249,11 +254,16 @@ def update_positions(positions, replace_ranges):
     for key in sorted(positions.keys(), reverse=True):
         newkey = key
         for old_range, new_range in replace_ranges:
-            if old_range[0] <= key and key < old_range[1] and old_range[0] != new_range[0]:
+            if old_range[1] < key:
+                newkey += new_range[1] - old_range[1]
+                break
+            if old_range[0] < key and key < old_range[1]:
                 if key - old_range[0] > new_range[1] - new_range[0]:
                     newkey = None
                 else:
-                    newkey += new_range[0] - old_range[0]
+                    # FIXME not sure how to handle this
+                    # newkey += new_range[1] - old_range[1] - (new_range[0] - old_range[0])
+                    newkey = None
                 break
 
         if newkey is not None:

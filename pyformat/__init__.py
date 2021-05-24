@@ -138,7 +138,6 @@ def do_format(string, formatter, value, idx, newidx, context):
     if formatter == FORMAT_FIELD and 'fields' in context:
         if value == 'c' and 'field_cur' in context:
             return context['field_cur']
-
         return fieldsep.get_fields(value, context)
 
     return string[idx:newidx]
