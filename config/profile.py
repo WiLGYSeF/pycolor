@@ -1,6 +1,6 @@
 import re
 
-from config import load_schema
+from config import load_schema, join_str_list
 from config.argpattern import ArgPattern
 from config.fromprofile import FromProfile
 from config.pattern import Pattern
@@ -18,6 +18,12 @@ class Profile:
         self.patterns = []
 
         load_schema('profile', cfg, self)
+
+        for attr in [
+            'name_expression',
+        ]:
+            if hasattr(self, attr):
+                setattr(self, attr, join_str_list(getattr(self, attr)))
 
         self.name_regex = re.compile(self.name_expression) if self.name_expression else None
 

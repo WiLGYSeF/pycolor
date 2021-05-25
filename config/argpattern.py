@@ -1,6 +1,6 @@
 import re
 
-from config import load_schema
+from config import load_schema, join_str_list
 
 
 ARGRANGE_REGEX = re.compile(r'([<>+-])?(\*|[0-9]+)')
@@ -13,6 +13,12 @@ class ArgPattern:
         self.subcommand = []
 
         load_schema('argpattern', cfg, self)
+
+        for attr in [
+            'expression',
+        ]:
+            if hasattr(self, attr):
+                setattr(self, attr, join_str_list(getattr(self, attr)))
 
         if self.expression is not None and len(self.expression) != 0:
             self.regex = re.compile(self.expression)

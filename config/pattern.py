@@ -1,6 +1,6 @@
 import re
 
-from config import load_schema
+from config import load_schema, join_str_list
 import pyformat
 
 
@@ -17,6 +17,17 @@ class Pattern:
         self.separator = None
 
         load_schema('pattern', cfg, self)
+
+        for attr in [
+            'expression',
+            'separator',
+            'replace',
+            'replace_all',
+            'activation_expression',
+            'deactivation_expression'
+        ]:
+            if hasattr(self, attr):
+                setattr(self, attr, join_str_list(getattr(self, attr)))
 
         def as_list(var):
             return var if isinstance(var, list) else [ var ]

@@ -1,5 +1,3 @@
-import jsonobj
-
 from config import load_schema
 
 
