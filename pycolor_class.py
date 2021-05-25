@@ -118,6 +118,9 @@ class Pycolor:
         removed_newline = False
         removed_carriagereturn = False
 
+        if self.current_profile.remove_input_color:
+            data = pyformat.color.remove_ansi_color(data)
+
         if len(data) != 0 and data[-1] == '\n':
             self.linenum += 1
             data = data[:-1]

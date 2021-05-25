@@ -56,6 +56,10 @@
             "description": "append a soft reset, %Cs, at the end of each line",
             "type": "boolean"
         },
+        "remove_input_color": {
+            "description": "remove ANSI colors from the command input before processing",
+            "type": "boolean"
+        },
 
         "from_profiles": {
             "description": "include the patterns from these named profiles",

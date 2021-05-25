@@ -77,6 +77,12 @@ FORMAT_COLOR_STRING_ALIASES = [
     }
 ]
 
+REMOVE_ANSI_COLOR = {
+    'abcdef': 'abcdef',
+    'a\x1b[31mbc': 'abc',
+    '\x1b[1;32mh\x1b[2;35me\x1b[31mll\x1b[0mo': 'hello',
+}
+
 IS_ANSI_RESET = {
     '': False,
     'abcdef': False,
@@ -136,6 +142,10 @@ class ColorTest(unittest.TestCase):
                     }
                 }
             ), entry[RESULT])
+
+    def test_remove_ansi_color(self):
+        for key, val in REMOVE_ANSI_COLOR.items():
+            self.assertEqual(pyformat.color.remove_ansi_color(key), val)
 
     def test_is_ansi_reset(self):
         for key, val in IS_ANSI_RESET.items():

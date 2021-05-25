@@ -155,6 +155,9 @@ def _colorval(color, aliases=None):
 
     return None
 
+def remove_ansi_color(string):
+    return ANSI_REGEX.sub('', string)
+
 def is_ansi_reset(string):
     match = ANSI_REGEX.fullmatch(string)
     if match is None:

@@ -1,0 +1,55 @@
+{
+	"profiles": [
+		{
+			"name": "pylint",
+			"patterns": [
+				{
+					"expression": "^(\\*+ Module) (.*)$",
+					"replace_all": "%C(inv;y)%G1 %G2%Cz"
+				},
+				{
+					"expression": [
+						"^",
+						"(?P<fn>.*):",
+						"(?P<ln>[0-9]+)",
+						"(?P<cn>:[0-9]+):",
+						" (?:(?P<te>[CE][0-9]+)|(?P<tr>R[0-9]+)|(?P<tw>W[0-9]+)):",
+						" .* (?P<rule_c>\\((?P<rule>[^)]+)\\))",
+						"(?P<end>)$"
+					],
+					"replace_groups": {
+						"ln": "%Cg%Gc%Cz",
+						"cn": "%Cde%Gc%Cz",
+						"te": "%C(bol;r)%Gc",
+						"tr": "%C(bol;y)%Gc",
+						"rule_c": "%C(w)(%Cprev%Grule%Cw)%Cprev",
+						"rule": "",
+						"end": "%Cz"
+					}
+				},
+				{
+					"expression": "Unused argument '([^']+)'",
+					"replace_groups": ["%Cw%Gc%Cprev"]
+				},
+				{
+					"expression": "\\(fixme\\)",
+					"replace": "(%C(y)fix-me%Cw)%Cz"
+				},
+				{
+					"expression": [
+						"^",
+						"Your code has been rated at ",
+						"(?P<score>[0-9.]+/[0-9.]+)",
+						"(?: \\(previous run: [0-9.]+/[0-9.]+, (?:(?P<pos>\\+[0-9.]+)|(?P<neg>-[0-9.]+))\\))?",
+						"$"
+					],
+					"replace_groups": {
+						"score": "%C(bol;c)%Gc%Cz",
+						"pos": "%C(bol;g)%Gc%Cz",
+						"neg": "%C(bol;r)%Gc%Cz"
+					}
+				}
+			]
+		}
+	]
+}
