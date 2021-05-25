@@ -1,2 +1,3 @@
 coverage
+fastjsonschema
 freezegun

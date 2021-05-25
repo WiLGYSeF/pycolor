@@ -8,32 +8,39 @@
         },
         "name": {
             "description": "the name of the command this profile matches",
-            "type": ["null", "string"]
+            "type": ["null", "string"],
+            "default": null
         },
         "name_expression": {
             "description": "a regex pattern that must match the command name",
-            "type": ["null", "string_array"]
+            "type": ["null", "array", "string"],
+            "default": null
         },
         "profile_name": {
             "description": "the name of this profile",
-            "type": ["null", "string"]
+            "type": ["null", "string"],
+            "default": null
         },
         "which": {
             "description": "a full path to the command that this profile belongs to",
-            "type": ["null", "string"]
+            "type": ["null", "string"],
+            "default": null
         },
 
         "arg_patterns": {
             "description": "a list of patterns that must match command arguments",
-            "type": "array"
+            "type": "array",
+            "default": []
         },
         "min_args": {
             "description": "minimum number of arguments the command must have",
-            "type": ["null", "integer"]
+            "type": ["null", "integer"],
+            "default": null
         },
         "max_args": {
             "description": "maximum number of arguments the command must have",
-            "type": ["null", "integer"]
+            "type": ["null", "integer"],
+            "default": null
         },
 
         "timestamp": {
@@ -42,23 +49,28 @@
             "examples": [
                 true,
                 "%H%M%S: "
-            ]
+            ],
+            "default": false
         },
         "less_output": {
             "description": "send the output through the less command when finished",
-            "type": ["boolean"]
+            "type": ["boolean"],
+            "default": false
         },
         "tty": {
             "description": "run the command in a pseudo-terminal environment",
-            "type": "boolean"
+            "type": "boolean",
+            "default": false
         },
         "soft_reset_eol": {
             "description": "append a soft reset, %Cs, at the end of each line",
-            "type": "boolean"
+            "type": "boolean",
+            "default": false
         },
         "remove_input_color": {
             "description": "remove ANSI colors from the command input before processing",
-            "type": "boolean"
+            "type": "boolean",
+            "default": false
         },
 
         "from_profiles": {
@@ -73,12 +85,14 @@
                         "order": "before"
                     }
                 ]
-            ]
+            ],
+            "default": []
         },
 
         "patterns": {
             "description": "a list of patterns",
-            "type": "array"
+            "type": "array",
+            "default": []
         }
     }
 }

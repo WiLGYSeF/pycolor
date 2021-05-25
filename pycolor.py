@@ -5,10 +5,11 @@ import os
 import re
 import sys
 
+import fastjsonschema
+
 import arguments
 import debug_colors
 from execute import read_stream
-import jsonobj
 from pycolor_class import Pycolor
 import pyformat
 
@@ -122,8 +123,8 @@ def try_load_file(pycobj, fname):
         return True
     except json.decoder.JSONDecodeError as jde:
         printerr('ERROR: json: %s: %s' % (fname, jde))
-    except jsonobj.ValidationError as jve:
-        printerr('ERROR: json: %s: %s' % (fname, jve.message))
+    except fastjsonschema.JsonSchemaException as jse:
+        printerr('ERROR: json: %s: %s' % (fname, jse))
     except re.error as rer:
         printerr('ERROR: json: %s: invalid regular expression' % fname)
     return False

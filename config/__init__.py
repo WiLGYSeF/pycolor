@@ -1,21 +1,25 @@
 import json
 import os
 
-import jsonobj
+import fastjsonschema
 
 
 DIRNAME = os.path.dirname(os.path.realpath(__file__))
 
-schema_defs = {}
-
+validators = {}
 
 def load_schema(schema_name, cfg, dest):
     schema_dir = os.path.join(DIRNAME, 'schema')
 
-    schema = schema_defs.get(schema_name)
-    if schema is None:
+    validator = validators.get(schema_name)
+    if validator is None:
         with open(os.path.join(schema_dir, schema_name + '.json'), 'r') as file:
-            schema = json.loads(file.read())
-        schema_defs[schema_name] = schema
+            validator = fastjsonschema.compile(json.loads(file.read()))
+        validators[schema_name] = validator
 
-    jsonobj.build(cfg, schema=schema, dest=dest)
+    validator(cfg)
+    for key, val in cfg.items():
+        setattr(dest, key, val)
+
+def join_str_list(val):
+    return ''.join(val) if isinstance(val, list) else val

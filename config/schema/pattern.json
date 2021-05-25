@@ -8,20 +8,23 @@
         },
         "super_expression": {
             "description": "this regex pattern must match for this pattern to be used",
-            "type": ["null", "string_array"]
+            "type": ["null", "array", "string"],
+            "default": null
         },
         "expression": {
             "description": "the regex pattern that must match, used for the replace properties",
-            "type": ["string_array"]
+            "type": ["array", "string"]
         },
 
         "separator": {
             "description": "the regex pattern used as a field separator",
-            "type": ["null", "string_array"]
+            "type": ["null", "array", "string"],
+            "default": null
         },
         "field": {
             "description": "the field that expression should compare against. if it is null, all fields are matched with expression and all matching fields are replaced. if it is zero, the entire line is matched with expression and the match is replaced. if it is a positive number, only that field is matched with expression",
-            "type": ["null", "integer"]
+            "type": ["null", "integer"],
+            "default": null
         },
         "min_fields": {
             "description": "minimum fields the line must have",
@@ -36,11 +39,13 @@
 
         "replace": {
             "description": "replace the span matched with expression with the given formatted string",
-            "type": ["null", "string_array"]
+            "type": ["null", "array", "string"],
+            "default": null
         },
         "replace_all": {
             "description": "replace the entire line with the given formatted string",
-            "type": ["null", "string_array"]
+            "type": ["null", "array", "string"],
+            "default": null
         },
         "replace_groups": {
             "description": "a list or object of strings that the match groups are replaced with",
@@ -54,20 +59,24 @@
         },
         "filter": {
             "description": "if true, do not output this line",
-            "type": "boolean"
+            "type": "boolean",
+            "default": false
         },
 
         "stdout_only": {
             "description": "only apply this pattern to stdout",
-            "type" : "boolean"
+            "type" : "boolean",
+            "default": false
         },
         "stderr_only": {
             "description": "only apply this pattern to stderr",
-            "type" : "boolean"
+            "type" : "boolean",
+            "default": false
         },
         "skip_others": {
             "description": "if this pattern is matched, do not match any others below it",
-            "type": "boolean"
+            "type": "boolean",
+            "default": false
         },
 
         "activation_line": {
@@ -83,11 +92,13 @@
 
         "activation_expression": {
             "description": "do not apply this pattern until a line matching this regex pattern is found",
-            "type": ["null", "string_array"]
+            "type": ["null", "array", "string"],
+            "default": null
         },
         "deactivation_expression": {
             "description": "apply this pattern until a line matching this regex pattern is found",
-            "type": ["null", "string_array"]
+            "type": ["null", "array", "string"],
+            "default": null
         }
     },
     "required": ["expression"],
