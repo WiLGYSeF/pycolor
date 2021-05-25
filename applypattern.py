@@ -294,7 +294,7 @@ def get_replace_group(match, idx, replace_groups):
                 if group in key.split(','):
                     return replace_groups[key]
 
-        return _get_group_range(match.groups(), replace_groups, idx - 1)
+        return _get_group_range(match.groups(), replace_groups, idx)
     if isinstance(replace_groups, list) and idx <= len(replace_groups):
         return replace_groups[idx - 1]
     return None
@@ -302,8 +302,8 @@ def get_replace_group(match, idx, replace_groups):
 def get_range(arr, number):
     if '*' not in number:
         start = int(number)
-        if start < 0:
-            start += len(arr) + 1
+        if start <= 0:
+            start += len(arr)
         return start, start + 1, 1
 
     rangespl = number.split('*')
@@ -311,16 +311,16 @@ def get_range(arr, number):
     end = rangespl[1]
     step = int(rangespl[2]) if len(rangespl) >= 3 else 1
 
-    start = int(start) if len(start) != 0 else 0
+    start = int(start) if len(start) != 0 else 1
 
     if len(end) == 0:
-        end = len(arr)
+        end = len(arr) + 1
     else:
-        end = int(end)
-        if end < 0:
-            end += len(arr) + 1
-        elif end >= len(arr):
-            end = len(arr) - 1
+        end = int(end) + 1
+        if end <= 0:
+            end += len(arr)
+        elif end > len(arr) + 1:
+            end = len(arr) + 1
 
     return start, end, step
 
