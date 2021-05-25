@@ -124,7 +124,7 @@ def try_load_file(pycobj, fname):
     except json.decoder.JSONDecodeError as jde:
         printerr('ERROR: json: %s: %s' % (fname, jde))
     except fastjsonschema.JsonSchemaException as jse:
-        printerr('ERROR: json: %s: %s' % (fname, jse.message))
+        printerr('ERROR: json: %s: %s' % (fname, jse))
     except re.error as rer:
         printerr('ERROR: json: %s: invalid regular expression' % fname)
     return False
