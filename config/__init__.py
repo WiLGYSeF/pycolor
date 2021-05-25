@@ -12,6 +12,4 @@ def load_schema(schema_name, cfg, dest):
             setattr(dest, key, val)
 
 def join_str_list(val):
-    if isinstance(val, list):
-        return ''.join(val)
-    return val
+    return ''.join(val) if isinstance(val, list) else val
