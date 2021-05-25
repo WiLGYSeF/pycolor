@@ -1,0 +1,6 @@
+sending incremental file list
+video.mp4
+        62.56M 100%  5.51MB/s    0:00:13 (xfr#1, to-chk=1/4)
+
+sent 62.56M bytes  received 28.5K bytes  4.57M bytes/sec
+total size is 283M  speedup is 2.01
