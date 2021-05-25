@@ -2,7 +2,6 @@
 	"profiles": [
 		{
 			"name": "rsync",
-			"tty": true,
 			"patterns": [
 				{
 					"expression": "^()deleting .*()$",

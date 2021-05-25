@@ -2,7 +2,6 @@
 	"profiles": [
 		{
 			"name": "rsync",
-			"tty": true,
 			"patterns": [
 				{
 					"expression": "^()deleting .*()$",
@@ -17,8 +16,18 @@
 					"replace_groups": ["%Cr", "%Cz"]
 				},
 				{
-					"expression": " +([0-9,.]+[A-Z]) +([0-9]+%) +([0-9,.]+[A-Za-z]+/s) +([0-9]+:[0-9]+:[0-9]+)(?: \\(xfr#([0-9]+), to-chk=[0-9]+/[0-9]+\\))?",
-					"replace_groups": ["%Cg%Gc%Cz", "%Clc%Gc%Cz", "%Clb%Gc%Cz", "%Cb%Gc%Cz"]
+					"expression": [
+						" +(?P<sz>[0-9,.]+[A-Z])",
+						" +(?P<pc>[0-9]+%)",
+						" +(?P<rate>[0-9,.]+[A-Za-z]+/s)",
+						" +(?P<time>[0-9]+:[0-9]+:[0-9]+)",
+						"(?: \\(xfr#([0-9]+), to-chk=[0-9]+/[0-9]+\\))?"
+					],
+					"replace_groups": {
+						"sz": "%Cg%Gc%Cz",
+						"pc,rate": "%Clc%Gc%Cz",
+						"time": "%Cb%Gc%Cz"
+					}
 				},
 				{
 					"expression": "^sent ([0-9,.]+[A-Z]?) bytes  received ([0-9,.]+[A-Z]?) bytes  ([0-9,.]+[A-Z]?) bytes/sec$",
