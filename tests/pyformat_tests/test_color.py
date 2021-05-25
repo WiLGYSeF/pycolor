@@ -1,6 +1,5 @@
 import unittest
 
-from colorstate import ColorState
 import pyformat
 import pyformat.color
 
