@@ -80,7 +80,7 @@ class ProfileLoader:
 
             if prof.which is not None:
                 result = which(command)
-                if result is not None and result.decode('utf-8') != prof.which:
+                if result is not None and result != prof.which:
                     continue
 
             if any([

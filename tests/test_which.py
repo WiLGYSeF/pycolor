@@ -4,10 +4,10 @@ from which import which
 
 
 WHICH_PATH_SUCCESS = {
-    'ls': [ b'/bin/ls', b'/usr/bin/ls' ],
-    '/bin/ls': [ b'/bin/ls', b'/usr/bin/ls' ],
-    'which': b'/usr/bin/which',
-    'useradd': b'/usr/sbin/useradd'
+    'ls': [ '/bin/ls', '/usr/bin/ls' ],
+    '/bin/ls': [ '/bin/ls', '/usr/bin/ls' ],
+    'which': '/usr/bin/which',
+    'useradd': '/usr/sbin/useradd'
 }
 
 WHICH_PATH_FAIL = [
