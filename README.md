@@ -16,8 +16,8 @@ Color formatting can be added to program output using JSON configuration files a
 
 # Limitations
 
-- Does not currently support standard input for the commands run.
-- May not be compatible with interactive programs that rewrite parts of the screen.
+- Programs that expect interactive standard input may not work properly.
+- Interactive programs that rewrite parts of the screen may cause unexpected behavior.
 
 # Installation
 
