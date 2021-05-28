@@ -125,6 +125,8 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
 
         if tty:
             stack.enter_context(sync_sigwinch(masters[0]))
+            stack.enter_context(sync_sigwinch(masters[1]))
+
             process = subprocess.Popen(
                 cmd,
                 stdin=subprocess.PIPE,
@@ -218,15 +220,15 @@ def ignore_sigint():
 @contextmanager
 def sync_sigwinch(tty_fd):
     # TODO: not compatible with windows
-    def set_window_size(sig, frame):
+    def set_window_size():
         col, row = shutil.get_terminal_size()
         # https://stackoverflow.com/a/6420070
         winsize = struct.pack('HHHH', row, col, 0, 0)
         fcntl.ioctl(tty_fd, termios.TIOCSWINSZ, winsize)
 
     try:
-        set_window_size(None, None)
-        signal.signal(signal.SIGWINCH, set_window_size)
+        set_window_size()
+        signal.signal(signal.SIGWINCH, lambda x,y: set_window_size())
         yield
     finally:
         signal.signal(signal.SIGWINCH, lambda x,y: None)
