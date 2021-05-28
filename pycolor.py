@@ -69,6 +69,8 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
 
     if argspace.tty:
         override_profile_conf(pycobj, 'tty', argspace.tty)
+    if argspace.interactive:
+        override_profile_conf(pycobj, 'interactive', argspace.interactive)
 
     profile = None
     if argspace.profile is not None:

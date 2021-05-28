@@ -1,6 +1,7 @@
 from contextlib import contextmanager, ExitStack
 import errno
 import fcntl
+import io
 import os
 import pty
 import select
@@ -8,6 +9,7 @@ import shutil
 import signal
 import struct
 import subprocess
+import sys
 import termios
 import time
 
@@ -22,7 +24,12 @@ def nonblock(file):
 
 def readlines(stream, data=None):
     if data is None:
-        data = stream.read()
+        if isinstance(stream, int):
+            file = io.FileIO(stream, closefd=False)
+            data = file.read()
+            file.close()
+        else:
+            data = stream.read()
     if data is None or len(data) == 0:
         return None
 
@@ -81,6 +88,11 @@ def read_stream(stream, callback, data=None, encoding='utf-8', last=False):
 
     return did_callback
 
+def is_buffer_empty(stream):
+    if stream not in read_stream.buffers:
+        return True
+    return len(read_stream.buffers[stream]) == 0
+
 def is_eol(char):
     # '\n' and '\r'
     return char == 10 or char == 13 #pylint: disable=consider-using-in
@@ -93,6 +105,7 @@ def is_eol_idx(string, idx):
 def execute(cmd, stdout_callback, stderr_callback, **kwargs):
     tty = kwargs.get('tty', False)
     encoding = kwargs.get('encoding', 'utf-8')
+    interactive = kwargs.get('interactive', False)
 
     def _read(stream, callback, data=None, last=False):
         return read_stream(
@@ -112,29 +125,39 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
 
         if tty:
             stack.enter_context(sync_sigwinch(masters[0]))
-            process = subprocess.Popen(cmd, stdin=slaves[0], stdout=slaves[0], stderr=slaves[1])
+            process = subprocess.Popen(
+                cmd,
+                stdin=subprocess.PIPE,
+                stdout=slaves[0],
+                stderr=slaves[1]
+            )
             stdout = masters[0]
             stderr = masters[1]
         else:
-            process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            process = subprocess.Popen(
+                cmd,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
             stdout = process.stdout
             stderr = process.stderr
 
             nonblock(stdout)
             nonblock(stderr)
 
-        if tty:
-            for fde in slaves:
-                os.close(fde) # no input
+        stdin = sys.stdin
+        nonblock(stdin)
 
         readable = {
             stdout: stdout_callback,
-            stderr: stderr_callback
+            stderr: stderr_callback,
+            stdin: None
         }
 
         while readable and process.poll() is None:
             # TODO: not compatible with windows
-            for fde in select.select(readable, [], [])[0]:
+            for fde in select.select(readable, [], [], 0.1)[0]:
                 do_read = False
                 try:
                     if isinstance(fde, int):
@@ -149,12 +172,25 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
                     del readable[fde]
                 else:
                     if do_read:
-                        _read(fde, readable[fde], data=data)
+                        if fde is stdin:
+                            try:
+                                recv = stdin.read().encode()
+                                process.stdin.write(recv)
+                                process.stdin.flush()
+                            except BrokenPipeError:
+                                break
+                        else:
+                            _read(fde, readable[fde], data=data)
                     else:
                         del readable[fde]
+
+            if interactive and not is_buffer_empty(stdout):
+                _read(stdout, stdout_callback, data=b'', last=True)
             time.sleep(0.0001)
 
         if tty:
+            for fde in slaves:
+                os.close(fde)
             for fde in masters:
                 os.close(fde)
 
@@ -163,6 +199,8 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
         else:
             _read(stdout, stdout_callback, last=True)
             _read(stderr, stderr_callback, last=True)
+
+        process.stdin.close()
 
         return process.poll()
 
