@@ -1,0 +1,17 @@
+[1;36mlo[0m: flags=[32m73[0m<[35mUP,LOOPBACK,RUNNING[0m>  mtu [32m65536[0m
+        inet [93m127.0.0.1[0m  netmask [2;33m255.0.0.0[0m
+        inet6 [93m::1[0m  prefixlen [32m128[0m  scopeid [32m0x10[0m<[34mhost[0m>
+        loop  txqueuelen [32m1000[0m  ([34mLocal Loopback[0m)
+        RX packets [36m45683[0m  bytes [36m103785291[0m ([36m[36m98.9 MB[0m)
+        RX errors [36m0[0m  dropped [36m0[0m  overruns [36m0[0m  frame [36m0[0m
+        TX packets [32m45683[0m  bytes [32m103785291[0m ([32m[32m98.9 MB[0m)
+        TX errors [32m0[0m  dropped [32m0[0m overruns [32m0[0m  carrier [32m0[0m  collisions [32m0[0m
+
+[1;36mwlo1[0m: flags=[32m4163[0m<[35mUP,BROADCAST,RUNNING,MULTICAST[0m>  mtu [32m1500[0m
+        inet [33m[93m192.168.123.34[0m[0m  netmask [2;33m[2;33m255.255.255.0[0m[0m  broadcast [2;33m192.168.123.255[0m
+        inet6 [93mff30::a3e0:b5d1:7ad3:a348[0m  prefixlen [32m64[0m  scopeid [32m0x20[0m<[34mlink[0m>
+        ether [33m41:3e:0b:5d:17:ad[0m  txqueuelen [32m1000[0m  ([34mEthernet[0m)
+        RX packets [36m4756856[0m  bytes [36m5264758475[0m ([36m[36m4.9 GB[0m)
+        RX errors [36m0[0m  dropped [36m3[0m  overruns [36m0[0m  frame [36m0[0m
+        TX packets [32m1684735[0m  bytes [32m163871654[0m ([32m[32m156.3 MB[0m)
+        TX errors [32m0[0m  dropped [32m0[0m overruns [32m0[0m  carrier [32m0[0m  collisions [32m0[0m
