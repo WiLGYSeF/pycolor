@@ -57,6 +57,13 @@ class PycolorTest(unittest.TestCase):
                 'ls_profile'
             )
 
+    def test_free_tty(self):
+        self.check_pycolor_main(
+            ['free', '-h'],
+            MOCKED_DATA,
+            'free_tty'
+        )
+
     def test_main_ls_debug_v1(self):
         self.check_pycolor_main(
             ['-v', '--', 'ls', '-l'],

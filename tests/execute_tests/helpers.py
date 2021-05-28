@@ -1,11 +1,11 @@
 from contextlib import contextmanager
 import io
 import os
+import select
 import sys
 
 from tests.testutils import patch
 
-from execute import read_stream
 import pycolor
 import pycolor_class
 
@@ -109,9 +109,27 @@ def execute_patch(obj, stdout_stream, stderr_stream):
         class MockProcess:
             def __init__(self, args, **kwargs):
                 self.args = args
-                self.stdin, self.has_stdin = MockProcess._get_stream(kwargs.get('stdin'))
-                self.stdout, self.has_stdout = MockProcess._get_stream(kwargs.get('stdout'))
-                self.stderr, self.has_stderr = MockProcess._get_stream(kwargs.get('stderr'))
+
+                self.stdin = kwargs.get('stdin')
+                if isinstance(self.stdin, int) and self.stdin != -1:
+                    #os.write(self.stdin, )
+                    pass
+                else:
+                    self.stdin = io.TextIOWrapper(io.BytesIO())
+
+                self.stdout = kwargs.get('stdout')
+                if isinstance(self.stdout, int) and self.stdout != -1:
+                    if stdout_stream is not None:
+                        os.write(self.stdout, stdout_stream.read())
+                else:
+                    self.stdout = stdout_stream if stdout_stream else io.TextIOWrapper(io.BytesIO())
+
+                self.stderr = kwargs.get('stderr')
+                if isinstance(self.stderr, int) and self.stderr != -1:
+                    if stderr_stream is not None:
+                        os.write(self.stderr, stderr_stream.read())
+                else:
+                    self.stderr = stderr_stream if stderr_stream else io.TextIOWrapper(io.BytesIO())
 
                 self.returncode = None
                 self.polled = 0
@@ -129,28 +147,29 @@ def execute_patch(obj, stdout_stream, stderr_stream):
                     return io.TextIOWrapper(io.BytesIO()), False
                 return stream, True
 
-        del kwargs['stdin']
-        del kwargs['stdout']
-        del kwargs['stderr']
-
         return MockProcess(
             args,
-            stdout=stdout_stream,
-            stderr=stderr_stream,
             **kwargs
         )
 
-    def select(rlist, wlist, xlist, *args):
+    select_unpatched = select.select
+
+    def _select(rlist, wlist, xlist, *args):
         timeout = args[0] if len(args) >= 1 else -1
 
         rkeys = []
         for key in rlist:
             if key is not sys.stdin:
-                rkeys.append(key)
+                if isinstance(key, int) and key != -1:
+                    fdlist = select_unpatched([key], [], [], 0.001)[0]
+                    if len(fdlist) != 0:
+                        rkeys.extend(fdlist)
+                else:
+                    rkeys.append(key)
         return (rkeys,)
 
     with patch(getattr(obj, 'subprocess'), 'Popen', popen):
-        with patch(getattr(obj, 'select'), 'select', select):
+        with patch(getattr(obj, 'select'), 'select', _select):
             yield
 
 def open_fstream(fname):
