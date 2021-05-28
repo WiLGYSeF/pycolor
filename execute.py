@@ -191,6 +191,8 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
             _read(stdout, stdout_callback, last=True)
             _read(stderr, stderr_callback, last=True)
 
+        process.stdin.close()
+
         return process.poll()
 
 @contextmanager
