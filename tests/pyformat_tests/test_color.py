@@ -25,7 +25,8 @@ FORMAT_COLOR_STRING = {
     '%C(overline)abc': '\x1b[53mabc',
     '%C(^overline)abc': '\x1b[55mabc',
     '%C(red': '%C(red',
-    '%CC(red)': '%CC(red)'
+    '%CC(red)': '%CC(red)',
+    '%Cr)w': '\x1b[31m)w'
 }
 
 CONTEXT = 'context'

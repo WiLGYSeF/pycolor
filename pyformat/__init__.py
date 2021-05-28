@@ -161,37 +161,34 @@ def get_formatter(string, idx):
     if len(formatter) == 0:
         return None, None, begin_idx
 
-    if idx < len(string) and string[idx] == '(':
+    if idx != len(string) and string[idx] == '(':
         paren = 1
         idx += 1
 
-    startidx = idx
-    while idx < len(string):
-        char = string[idx]
-        if paren <= 0:
-            break
-        if char == '\\':
-            idx += 2
-            continue
+        startidx = idx
+        while idx < len(string):
+            char = string[idx]
+            if paren == 0:
+                break
+            if char == '\\':
+                idx += 2
+                continue
 
-        if char == '(':
-            paren += 1
-        elif char == ')':
-            paren -= 1
+            if char == '(':
+                paren += 1
+            elif char == ')':
+                paren -= 1
 
-        idx += 1
+            idx += 1
 
-    if paren > 0:
-        return None, None, begin_idx
+        if paren > 0:
+            return None, None, begin_idx
 
-    if paren == -1:
-        if startidx == idx:
-            value = formatter[1:]
-            formatter = formatter[0]
-        else:
-            value = string[startidx:idx]
-    else:
         value = string[startidx:idx - 1]
+        formatter = formatter[:startidx]
+    else:
+        value = formatter[1:idx - 1]
+        formatter = formatter[:1]
 
     return formatter, value, idx
 
