@@ -1,6 +1,6 @@
 import re
 
-from config import load_schema, join_str_list
+from config import load_schema, compile_re, join_str_list
 import pyformat
 
 
@@ -39,20 +39,23 @@ class Pattern:
         if len(self.activation_ranges) != 0:
             self.active = False
 
-        self.regex = re.compile(self.expression)
-        self.super_regex = re.compile(self.super_expression) if self.super_expression else None
+        self.regex = compile_re(self.expression, 'expression')
+        self.super_regex = compile_re(self.super_expression, 'super_expression')
 
         self.activation_regex = None
         self.deactivation_regex = None
 
         if self.activation_expression is not None:
-            self.activation_regex = re.compile(self.activation_expression)
+            self.activation_regex = compile_re(self.activation_expression, 'activation_expression')
             self.active = False
         if self.deactivation_expression is not None:
-            self.deactivation_regex = re.compile(self.deactivation_expression)
+            self.deactivation_regex = compile_re(
+                self.deactivation_expression,
+                'deactivation_expression'
+            )
 
         if self.separator is not None and len(self.separator) != 0:
-            self.separator_regex = re.compile(self.separator)
+            self.separator_regex = compile_re(self.separator, 'separator')
         else:
             self.separator_regex = None
             self.field = None

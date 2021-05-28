@@ -1,6 +1,6 @@
 import re
 
-from config import load_schema, join_str_list
+from config import load_schema, compile_re, join_str_list
 
 
 ARGRANGE_REGEX = re.compile(r'([<>+-])?(\*|[0-9]+)')
@@ -21,7 +21,7 @@ class ArgPattern:
                 setattr(self, attr, join_str_list(getattr(self, attr)))
 
         if self.expression is not None and len(self.expression) != 0:
-            self.regex = re.compile(self.expression)
+            self.regex = compile_re(self.expression, 'expression')
         else:
             self.regex = None
 

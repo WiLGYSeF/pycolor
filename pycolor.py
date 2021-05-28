@@ -8,6 +8,7 @@ import sys
 import fastjsonschema
 
 import arguments
+import config
 import debug_colors
 from execute import read_stream
 from pycolor_class import Pycolor
@@ -79,14 +80,14 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         else:
             profile = pycobj.profloader.profile_default
         if profile is None:
-            printerr('ERROR: profile with name "%s" not found' % argspace.profile)
+            printerr('error: profile with name "%s" not found' % argspace.profile)
             sys.exit(1)
 
     if read_stdin:
         if profile is None and len(cmd_args) != 0:
             profile = pycobj.get_profile_by_command(cmd_args[0], cmd_args[1:])
         if profile is None:
-            printerr('ERROR: no profile selected with --profile')
+            printerr('error: no profile selected with --profile')
             sys.exit(1)
 
         pycobj.set_current_profile(profile)
@@ -124,11 +125,9 @@ def try_load_file(pycobj, fname):
         pycobj.load_file(fname)
         return True
     except json.decoder.JSONDecodeError as jde:
-        printerr('ERROR: json: %s: %s' % (fname, jde))
-    except fastjsonschema.JsonSchemaException as jse:
-        printerr('ERROR: json: %s: %s' % (fname, jse))
-    except re.error as rer:
-        printerr('ERROR: json: %s: invalid regular expression' % fname)
+        printerr('error: %s: %s' % (fname, jde))
+    except config.ConfigException as cex:
+        printerr('error: %s: %s' % (fname, cex))
     return False
 
 def printerr(*args):
