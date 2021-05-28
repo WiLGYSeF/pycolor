@@ -185,7 +185,10 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
                         del readable[fde]
 
             if interactive and not is_buffer_empty(stdout):
-                _read(stdout, stdout_callback, data=b'', last=True)
+                if tty:
+                    _read(stdout, stdout_callback, data=b'', last=True)
+                else:
+                    _read(stdout, stdout_callback, last=True)
             time.sleep(0.0001)
 
         if tty:
