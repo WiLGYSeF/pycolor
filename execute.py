@@ -145,8 +145,13 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
             stdout = process.stdout
             stderr = process.stderr
 
-            nonblock(stdout)
-            nonblock(stderr)
+            try:
+                nonblock(stdout)
+                nonblock(stderr)
+            except AttributeError:
+                pass
+            except io.UnsupportedOperation:
+                pass
 
         stdin = sys.stdin
         nonblock(stdin)

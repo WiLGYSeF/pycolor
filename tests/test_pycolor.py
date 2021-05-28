@@ -1,12 +1,13 @@
 from contextlib import ExitStack
-import io
 import os
 import sys
 import unittest
 
 from freezegun import freeze_time
 
-from tests.execute_tests.helpers import execute_patch, open_fstream, read_file, test_stream
+from tests.execute_tests.helpers import (
+    execute_patch, open_fstream, read_file, test_stream, textstream
+)
 from tests.testutils import patch
 import pycolor
 import pycolor_class
@@ -38,8 +39,19 @@ class PycolorTest(unittest.TestCase):
             'ls_timestamp_arg_default_profile'
         )
 
-    def test_main_ls_profile(self):
-        self.check_pycolor_main(['--profile', 'none', '--', 'ls', '-l'], MOCKED_DATA, 'ls_profile')
+    def test_main_ls_profile_named(self):
+        self.check_pycolor_main(
+            ['--profile', 'num', '--', 'ls', '-l'],
+            MOCKED_DATA,
+            'ls_profile_named'
+        )
+
+    def test_main_ls_profile_none(self):
+        self.check_pycolor_main(
+            ['--no-execv', '--profile=', '--', 'ls', '-l'],
+            MOCKED_DATA,
+            'ls_profile_none'
+        )
 
     def test_main_debug_color(self):
         self.check_pycolor_main(['--debug-color'], MOCKED_DATA, 'debug_color', patch_stdout=True)
@@ -54,8 +66,15 @@ class PycolorTest(unittest.TestCase):
             self.check_pycolor_main(
                 ['--profile', 'invalid', '--', 'ls', '-l'],
                 MOCKED_DATA,
-                'ls_profile'
+                'ls_profile_named'
             )
+
+    def test_free_tty(self):
+        self.check_pycolor_main(
+            ['free', '-h'],
+            MOCKED_DATA,
+            'free_tty'
+        )
 
     def test_main_ls_debug_v1(self):
         self.check_pycolor_main(
@@ -100,8 +119,8 @@ class PycolorTest(unittest.TestCase):
         write_output = kwargs.get('write_output', False)
 
         filename_prefix = os.path.join(mocked_data_dir, test_name)
-        stdout = io.TextIOWrapper(io.BytesIO())
-        stderr = io.TextIOWrapper(io.BytesIO())
+        stdout = textstream()
+        stderr = textstream()
 
         args = ['--load-file', filename_prefix + '.json', '--color', 'always'] + args
 

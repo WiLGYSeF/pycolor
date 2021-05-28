@@ -1,10 +1,11 @@
 from contextlib import contextmanager
 import io
 import os
+import select
+import sys
 
 from tests.testutils import patch
 
-from execute import read_stream
 import pycolor
 import pycolor_class
 
@@ -98,43 +99,67 @@ def test_stream(self, stream, fname, testdata, print_output, write_output):
 
 def create_pycolor_object(debug=0):
     pycobj = pycolor_class.Pycolor(color_mode='always', debug=debug)
-    pycobj.stdout = io.TextIOWrapper(io.BytesIO())
-    pycobj.stderr = io.TextIOWrapper(io.BytesIO())
+    pycobj.stdout = textstream()
+    pycobj.stderr = textstream()
     return pycobj
 
 @contextmanager
 def execute_patch(obj, stdout_stream, stderr_stream):
-    def execute(cmd, stdout_callback, stderr_callback, **kwargs):
-        encoding = kwargs.get('encoding', 'utf-8')
+    def popen(args, **kwargs):
+        class MockProcess:
+            def __init__(self, args, **kwargs):
+                self.args = args
 
-        def _read(stream, callback, last=False):
-            return read_stream(
-                stream,
-                callback,
-                encoding=encoding,
-                last=last
-            )
+                def set_stream(name, stream):
+                    res = kwargs.get(name)
+                    if isinstance(res, int) and res != -1:
+                        if stream is not None:
+                            os.write(res, stream.read())
+                    else:
+                        res = stream if stream else textstream()
+                    return res
 
-        while True:
-            result_stdout = None
-            result_stderr = None
+                self.stdin = set_stream('stdin', None)
+                self.stdout = set_stream('stdout', stdout_stream)
+                self.stderr = set_stream('stderr', stderr_stream)
 
-            if stdout_stream is not None:
-                result_stdout = _read(stdout_stream, stdout_callback)
-            if stderr_stream is not None:
-                result_stderr = _read(stderr_stream, stderr_callback)
+                self.returncode = None
+                self.polled = 0
 
-            if result_stdout is None and result_stderr is None:
-                break
+            def poll(self):
+                if self.polled > 1:
+                    self.returncode = 0
+                self.polled += 1
 
-        if stdout_stream is not None:
-            _read(stdout_stream, stdout_callback, last=True)
-        if stderr_stream is not None:
-            _read(stderr_stream, stderr_callback, last=True)
-        return 0
+                return self.returncode
 
-    with patch(obj, 'execute', execute):
+        return MockProcess(
+            args,
+            **kwargs
+        )
+
+    select_unpatched = select.select
+
+    def _select(rlist, wlist, xlist, *args):
+        timeout = args[0] if len(args) >= 1 else -1
+
+        rkeys = []
+        for key in rlist:
+            if key is not sys.stdin:
+                if isinstance(key, int) and key != -1:
+                    fdlist = select_unpatched([key], [], [], 0.001)[0]
+                    if len(fdlist) != 0:
+                        rkeys.extend(fdlist)
+                else:
+                    rkeys.append(key)
+        return (rkeys,)
+
+    with patch(getattr(obj, 'subprocess'), 'Popen', popen),\
+        patch(getattr(obj, 'select'), 'select', _select):
         yield
+
+def textstream():
+    return io.TextIOWrapper(io.BytesIO())
 
 def open_fstream(fname):
     try:
