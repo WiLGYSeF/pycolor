@@ -7,9 +7,6 @@ HEX_REGEX = re.compile(r'(?:0x)?(?:(?P<six>[0-9a-f]{6})|(?P<three>[0-9a-f]{3}))'
 
 
 def get_color(colorstr, aliases=None):
-    if aliases is None:
-        aliases = {}
-
     match = RAW_REGEX.fullmatch(colorstr)
     if match:
         return '\x1b[%sm' % match[1]
@@ -24,9 +21,7 @@ def get_color(colorstr, aliases=None):
     return '\x1b[%sm' % val
 
 def _colorval(color, aliases=None):
-    if aliases is None:
-        aliases = {}
-    if color in aliases:
+    if aliases is not None and color in aliases:
         color = aliases[color]
 
     colors = {
