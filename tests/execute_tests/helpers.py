@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 import io
 import os
+import sys
 
 from tests.testutils import patch
 
@@ -104,37 +105,53 @@ def create_pycolor_object(debug=0):
 
 @contextmanager
 def execute_patch(obj, stdout_stream, stderr_stream):
-    def execute(cmd, stdout_callback, stderr_callback, **kwargs):
-        encoding = kwargs.get('encoding', 'utf-8')
+    def popen(args, **kwargs):
+        class MockProcess:
+            def __init__(self, args, **kwargs):
+                self.args = args
+                self.stdin, self.has_stdin = MockProcess._get_stream(kwargs.get('stdin'))
+                self.stdout, self.has_stdout = MockProcess._get_stream(kwargs.get('stdout'))
+                self.stderr, self.has_stderr = MockProcess._get_stream(kwargs.get('stderr'))
 
-        def _read(stream, callback, last=False):
-            return read_stream(
-                stream,
-                callback,
-                encoding=encoding,
-                last=last
-            )
+                self.returncode = None
+                self.polled = 0
 
-        while True:
-            result_stdout = None
-            result_stderr = None
+            def poll(self):
+                if self.polled > 1:
+                    return 0
+                self.polled += 1
 
-            if stdout_stream is not None:
-                result_stdout = _read(stdout_stream, stdout_callback)
-            if stderr_stream is not None:
-                result_stderr = _read(stderr_stream, stderr_callback)
+                return self.returncode
 
-            if result_stdout is None and result_stderr is None:
-                break
+            @staticmethod
+            def _get_stream(stream):
+                if stream is None:
+                    return io.TextIOWrapper(io.BytesIO()), False
+                return stream, True
 
-        if stdout_stream is not None:
-            _read(stdout_stream, stdout_callback, last=True)
-        if stderr_stream is not None:
-            _read(stderr_stream, stderr_callback, last=True)
-        return 0
+        del kwargs['stdin']
+        del kwargs['stdout']
+        del kwargs['stderr']
 
-    with patch(obj, 'execute', execute):
-        yield
+        return MockProcess(
+            args,
+            stdout=stdout_stream,
+            stderr=stderr_stream,
+            **kwargs
+        )
+
+    def select(rlist, wlist, xlist, *args):
+        timeout = args[0] if len(args) >= 1 else -1
+
+        rkeys = []
+        for key in rlist:
+            if key is not sys.stdin:
+                rkeys.append(key)
+        return (rkeys,)
+
+    with patch(getattr(obj, 'subprocess'), 'Popen', popen):
+        with patch(getattr(obj, 'select'), 'select', select):
+            yield
 
 def open_fstream(fname):
     try:
