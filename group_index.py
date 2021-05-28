@@ -22,15 +22,17 @@ def get_named_group_index_list(match):
     return group_names
 
 def get_named_group_index(match, name):
-    span = match.span(name)
-    for i in range(1, len(match.groups()) + 1):
-        if span == match.span(i):
-            return i
+    if name in match.groupdict():
+        span = match.span(name)
+        for i in range(1, len(match.groups()) + 1):
+            if span == match.span(i):
+                return i
     return None
 
 def get_named_group_at_index(match, idx):
-    span = match.span(idx)
-    for group in match.groupdict():
-        if match.span(group) == span:
-            return group
+    if len(match.groups()) >= idx:
+        span = match.span(idx)
+        for group in match.groupdict():
+            if match.span(group) == span:
+                return group
     return None
