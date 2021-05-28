@@ -9,16 +9,16 @@ MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_
 
 
 class RsyncTest(unittest.TestCase):
-    def test_rsync_groups_star(self):
+    def test_groups_star(self):
         check_pycolor_execute(self,
             ['rsync', '-auvzPh', 'video.mp4'],
             MOCKED_DATA,
-            'rsync-groups-star'
+            'groups-star'
         )
 
-    def test_rsync_groups_nums(self):
+    def test_groups_nums(self):
         check_pycolor_execute(self,
             ['rsync', '-auvzPh', 'video.mp4'],
             MOCKED_DATA,
-            'rsync-groups-nums'
+            'groups-nums'
         )
