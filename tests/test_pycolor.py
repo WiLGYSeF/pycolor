@@ -46,6 +46,13 @@ class PycolorTest(unittest.TestCase):
             'ls_profile_named'
         )
 
+    def test_main_ls_profile_none(self):
+        self.check_pycolor_main(
+            ['--no-execv', '--profile=', '--', 'ls', '-l'],
+            MOCKED_DATA,
+            'ls_profile_none'
+        )
+
     def test_main_debug_color(self):
         self.check_pycolor_main(['--debug-color'], MOCKED_DATA, 'debug_color', patch_stdout=True)
 
