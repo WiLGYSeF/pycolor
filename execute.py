@@ -88,6 +88,11 @@ def read_stream(stream, callback, data=None, encoding='utf-8', last=False):
 
     return did_callback
 
+def is_buffer_empty(stream):
+    if stream not in read_stream.buffers:
+        return True
+    return len(read_stream.buffers[stream]) == 0
+
 def is_eol(char):
     # '\n' and '\r'
     return char == 10 or char == 13 #pylint: disable=consider-using-in
@@ -100,6 +105,7 @@ def is_eol_idx(string, idx):
 def execute(cmd, stdout_callback, stderr_callback, **kwargs):
     tty = kwargs.get('tty', False)
     encoding = kwargs.get('encoding', 'utf-8')
+    interactive = kwargs.get('interactive', False)
 
     def _read(stream, callback, data=None, last=False):
         return read_stream(
@@ -177,6 +183,9 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
                             _read(fde, readable[fde], data=data)
                     else:
                         del readable[fde]
+
+            if interactive and not is_buffer_empty(stdout):
+                _read(stdout, stdout_callback, data=b'', last=True)
             time.sleep(0.0001)
 
         if tty:

@@ -54,6 +54,10 @@ def get_args(args):
         dest='tty', action='store_false',
         help='do not run the command in a pseudo-terminal (default)'
     )
+    parser.add_argument('--interactive',
+        action='store_true', default=False,
+        help='force enable "interactive" for all profiles'
+    )
 
     parser.add_argument('--debug-color',
         action='store_true', default=False,

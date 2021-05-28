@@ -94,7 +94,8 @@ class Pycolor:
             cmd,
             self.stdout_cb,
             self.stderr_cb,
-            tty=profile.tty
+            tty=profile.tty,
+            interactive=profile.interactive,
         )
 
         if profile.less_output:
