@@ -6,7 +6,7 @@ import unittest
 
 from freezegun import freeze_time
 
-from tests.execute_tests.helpers import execute_patch, open_fstream, read_file, test_stream
+from tests.execute_tests.helpers import execute_patch, open_fstream, read_file, test_stream, textstream
 from tests.testutils import patch
 import pycolor
 import pycolor_class
@@ -107,8 +107,8 @@ class PycolorTest(unittest.TestCase):
         write_output = kwargs.get('write_output', False)
 
         filename_prefix = os.path.join(mocked_data_dir, test_name)
-        stdout = io.TextIOWrapper(io.BytesIO())
-        stderr = io.TextIOWrapper(io.BytesIO())
+        stdout = textstream()
+        stderr = textstream()
 
         args = ['--load-file', filename_prefix + '.json', '--color', 'always'] + args
 

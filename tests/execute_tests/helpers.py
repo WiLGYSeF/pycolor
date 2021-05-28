@@ -99,8 +99,8 @@ def test_stream(self, stream, fname, testdata, print_output, write_output):
 
 def create_pycolor_object(debug=0):
     pycobj = pycolor_class.Pycolor(color_mode='always', debug=debug)
-    pycobj.stdout = io.TextIOWrapper(io.BytesIO())
-    pycobj.stderr = io.TextIOWrapper(io.BytesIO())
+    pycobj.stdout = textstream()
+    pycobj.stderr = textstream()
     return pycobj
 
 @contextmanager
@@ -115,21 +115,21 @@ def execute_patch(obj, stdout_stream, stderr_stream):
                     #os.write(self.stdin, )
                     pass
                 else:
-                    self.stdin = io.TextIOWrapper(io.BytesIO())
+                    self.stdin = textstream()
 
                 self.stdout = kwargs.get('stdout')
                 if isinstance(self.stdout, int) and self.stdout != -1:
                     if stdout_stream is not None:
                         os.write(self.stdout, stdout_stream.read())
                 else:
-                    self.stdout = stdout_stream if stdout_stream else io.TextIOWrapper(io.BytesIO())
+                    self.stdout = stdout_stream if stdout_stream else textstream()
 
                 self.stderr = kwargs.get('stderr')
                 if isinstance(self.stderr, int) and self.stderr != -1:
                     if stderr_stream is not None:
                         os.write(self.stderr, stderr_stream.read())
                 else:
-                    self.stderr = stderr_stream if stderr_stream else io.TextIOWrapper(io.BytesIO())
+                    self.stderr = stderr_stream if stderr_stream else textstream()
 
                 self.returncode = None
                 self.polled = 0
@@ -140,12 +140,6 @@ def execute_patch(obj, stdout_stream, stderr_stream):
                 self.polled += 1
 
                 return self.returncode
-
-            @staticmethod
-            def _get_stream(stream):
-                if stream is None:
-                    return io.TextIOWrapper(io.BytesIO()), False
-                return stream, True
 
         return MockProcess(
             args,
@@ -168,9 +162,12 @@ def execute_patch(obj, stdout_stream, stderr_stream):
                     rkeys.append(key)
         return (rkeys,)
 
-    with patch(getattr(obj, 'subprocess'), 'Popen', popen):
-        with patch(getattr(obj, 'select'), 'select', _select):
-            yield
+    with patch(getattr(obj, 'subprocess'), 'Popen', popen),\
+        patch(getattr(obj, 'select'), 'select', _select):
+        yield
+
+def textstream():
+    return io.TextIOWrapper(io.BytesIO())
 
 def open_fstream(fname):
     try:
