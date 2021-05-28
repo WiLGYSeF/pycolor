@@ -110,33 +110,25 @@ def execute_patch(obj, stdout_stream, stderr_stream):
             def __init__(self, args, **kwargs):
                 self.args = args
 
-                self.stdin = kwargs.get('stdin')
-                if isinstance(self.stdin, int) and self.stdin != -1:
-                    #os.write(self.stdin, )
-                    pass
-                else:
-                    self.stdin = textstream()
+                def set_stream(name, stream):
+                    res = kwargs.get(name)
+                    if isinstance(res, int) and res != -1:
+                        if stream is not None:
+                            os.write(res, stream.read())
+                    else:
+                        res = stream if stream else textstream()
+                    return res
 
-                self.stdout = kwargs.get('stdout')
-                if isinstance(self.stdout, int) and self.stdout != -1:
-                    if stdout_stream is not None:
-                        os.write(self.stdout, stdout_stream.read())
-                else:
-                    self.stdout = stdout_stream if stdout_stream else textstream()
-
-                self.stderr = kwargs.get('stderr')
-                if isinstance(self.stderr, int) and self.stderr != -1:
-                    if stderr_stream is not None:
-                        os.write(self.stderr, stderr_stream.read())
-                else:
-                    self.stderr = stderr_stream if stderr_stream else textstream()
+                self.stdin = set_stream('stdin', None)
+                self.stdout = set_stream('stdout', stdout_stream)
+                self.stderr = set_stream('stderr', stderr_stream)
 
                 self.returncode = None
                 self.polled = 0
 
             def poll(self):
                 if self.polled > 1:
-                    return 0
+                    self.returncode = 0
                 self.polled += 1
 
                 return self.returncode

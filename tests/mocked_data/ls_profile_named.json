@@ -1,7 +1,7 @@
 {
 	"profiles": [
 		{
-			"profile_name": "none",
+			"profile_name": "num",
 			"patterns": [
 				{
 					"expression": "[0-9]+",

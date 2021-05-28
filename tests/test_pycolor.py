@@ -1,12 +1,13 @@
 from contextlib import ExitStack
-import io
 import os
 import sys
 import unittest
 
 from freezegun import freeze_time
 
-from tests.execute_tests.helpers import execute_patch, open_fstream, read_file, test_stream, textstream
+from tests.execute_tests.helpers import (
+    execute_patch, open_fstream, read_file, test_stream, textstream
+)
 from tests.testutils import patch
 import pycolor
 import pycolor_class
@@ -38,8 +39,12 @@ class PycolorTest(unittest.TestCase):
             'ls_timestamp_arg_default_profile'
         )
 
-    def test_main_ls_profile(self):
-        self.check_pycolor_main(['--profile', 'none', '--', 'ls', '-l'], MOCKED_DATA, 'ls_profile')
+    def test_main_ls_profile_named(self):
+        self.check_pycolor_main(
+            ['--profile', 'num', '--', 'ls', '-l'],
+            MOCKED_DATA,
+            'ls_profile_named'
+        )
 
     def test_main_debug_color(self):
         self.check_pycolor_main(['--debug-color'], MOCKED_DATA, 'debug_color', patch_stdout=True)
@@ -54,7 +59,7 @@ class PycolorTest(unittest.TestCase):
             self.check_pycolor_main(
                 ['--profile', 'invalid', '--', 'ls', '-l'],
                 MOCKED_DATA,
-                'ls_profile'
+                'ls_profile_named'
             )
 
     def test_free_tty(self):
