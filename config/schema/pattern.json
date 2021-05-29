@@ -103,6 +103,18 @@
             "description": "apply this pattern until a line matching this regex pattern is found",
             "type": ["null", "array", "string"],
             "default": null
+        },
+        "activation_expression_line_offset": {
+            "description": "when the activation regex is matched, wait this many lines before activating the pattern",
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
+        },
+        "deactivation_expression_line_offset": {
+            "description": "when the deactivation regex is matched, wait this many lines before deactivating the pattern",
+            "type": "integer",
+            "default": 0,
+            "minimum": 0
         }
     },
     "dependencies": {
@@ -112,6 +124,8 @@
         "replace": ["expression"],
         "replace_all": ["expression"],
         "replace_groups": ["expression"],
-        "replace_fields": ["separator"]
+        "replace_fields": ["separator"],
+        "activation_expression_line_offset": ["activation_expression"],
+        "deactivation_expression_line_offset": ["deactivation_expression"]
     }
 }

@@ -8,13 +8,18 @@ class Pattern:
     def __init__(self, cfg):
         self.active = True
 
+        self.super_expression = None
+        self.expression = None
+        self.separator = None
         self.activation_line = None
         self.deactivation_line = None
-        self.expression = None
-        self.super_expression = None
         self.activation_expression = None
         self.deactivation_expression = None
-        self.separator = None
+        self.activation_expression_line_offset = 0
+        self.deactivation_expression_line_offset = 0
+
+        self.activation_exp_line_off = 0
+        self.deactivation_exp_line_off = 0
 
         load_schema('pattern', cfg, self)
 
@@ -114,6 +119,15 @@ class Pattern:
             self.active = False
             return False
 
+        if self.deactivation_exp_line_off > 0:
+            self.deactivation_exp_line_off -= 1
+            if self.deactivation_exp_line_off == 0:
+                return inactive()
+        if self.activation_exp_line_off > 0:
+            self.activation_exp_line_off -= 1
+            if self.activation_exp_line_off == 0:
+                return active()
+
         if len(self.activation_ranges) != 0:
             idx, result = bsearch_closest(
                 self.activation_ranges,
@@ -130,10 +144,16 @@ class Pattern:
 
         if self.active:
             if self.deactivation_regex is not None and re.search(self.deactivation_regex, data):
-                return inactive()
+                if self.deactivation_expression_line_offset > 0:
+                    self.deactivation_exp_line_off = self.deactivation_expression_line_offset
+                else:
+                    return inactive()
         else:
             if self.activation_regex is not None and re.search(self.activation_regex, data):
-                return active()
+                if self.activation_expression_line_offset > 0:
+                    self.activation_exp_line_off = self.activation_expression_line_offset
+                else:
+                    return active()
 
         return self.active
 
