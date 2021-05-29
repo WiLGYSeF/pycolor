@@ -1,5 +1,6 @@
 import json
 
+from config import ConfigPropertyException
 from config.profile import Profile
 from which import which
 
@@ -47,6 +48,12 @@ class ProfileLoader:
                 continue
 
             fromprof = self.get_profile_by_name(fprof.name)
+            if fromprof is None:
+                raise ConfigPropertyException(
+                    'from_profiles',
+                    'profile "%s" was not found' % fprof.name
+                )
+
             if fprof.order == 'before':
                 orig_patterns = patterns.copy()
                 patterns.clear()
