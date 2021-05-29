@@ -14,3 +14,10 @@ class GitTest(unittest.TestCase):
             MOCKED_DATA,
             'status'
         )
+
+    def test_status_deactivation_line_offset(self):
+        check_pycolor_execute(self,
+            ['git', 'status'],
+            MOCKED_DATA,
+            'status-deactivation-line-offset'
+        )

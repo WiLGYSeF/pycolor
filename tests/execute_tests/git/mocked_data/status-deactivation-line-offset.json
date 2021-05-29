@@ -1,0 +1,37 @@
+{
+	"profiles": [
+		{
+			"name": "git",
+			"arg_patterns": [
+				{
+					"subcommand": "status"
+				}
+			],
+			"from_profiles": [ "git_status" ]
+		},
+		{
+			"profile_name": "git_status",
+			"patterns": [
+				{
+					"expression": "^On branch (.*)$",
+					"replace_groups": ["%C(bol;c)%Gc%Cz"]
+				},
+				{
+					"activation_expression": "^Changes to be committed:$",
+					"deactivation_expression": "^\\s*$",
+					"deactivation_expression_line_offset": 2,
+					"expression": "^(.*)$",
+					"replace_groups": ["%C(und;m)%Gc%Cz"]
+				},
+				{
+					"activation_expression": "^Changes not staged for commit:$",
+					"deactivation_expression": "^Changes not staged for commit:$",
+					"activation_expression_line_offset": 1,
+					"deactivation_expression_line_offset": 3,
+					"expression": "^(.*)$",
+					"replace_groups": ["%C(ita;de)%Gc%Cz"]
+				}
+			]
+		}
+	]
+}

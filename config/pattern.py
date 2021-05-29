@@ -142,18 +142,16 @@ class Pattern:
                 return inactive() if self.activation_ranges[0][1] else active()
             return active() if self.activation_ranges[idx][1] else inactive()
 
-        if self.active:
+        if self.active or self.deactivation_expression_line_offset > 0:
             if self.deactivation_regex is not None and re.search(self.deactivation_regex, data):
-                if self.deactivation_expression_line_offset > 0:
-                    self.deactivation_exp_line_off = self.deactivation_expression_line_offset
-                else:
+                if self.deactivation_expression_line_offset == 0:
                     return inactive()
-        else:
+                self.deactivation_exp_line_off = self.deactivation_expression_line_offset
+        if not self.active or self.activation_expression_line_offset > 0:
             if self.activation_regex is not None and re.search(self.activation_regex, data):
-                if self.activation_expression_line_offset > 0:
-                    self.activation_exp_line_off = self.activation_expression_line_offset
-                else:
+                if self.activation_expression_line_offset == 0:
                     return active()
+                self.activation_exp_line_off = self.activation_expression_line_offset
 
         return self.active
 
