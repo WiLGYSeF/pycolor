@@ -35,12 +35,14 @@
         "min_args": {
             "description": "minimum number of arguments the command must have",
             "type": ["null", "integer"],
-            "default": null
+            "default": null,
+            "minimum": 0
         },
         "max_args": {
             "description": "maximum number of arguments the command must have",
             "type": ["null", "integer"],
-            "default": null
+            "default": null,
+            "minimum": 0
         },
 
         "timestamp": {
