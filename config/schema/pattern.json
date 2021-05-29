@@ -107,6 +107,10 @@
     "dependencies": {
         "field": ["separator"],
         "min_fields": ["separator"],
-        "max_fields": ["separator"]
+        "max_fields": ["separator"],
+        "replace": ["expression"],
+        "replace_all": ["expression"],
+        "replace_groups": ["expression"],
+        "replace_fields": ["separator"]
     }
 }
