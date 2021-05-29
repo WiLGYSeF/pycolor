@@ -13,7 +13,8 @@
         },
         "expression": {
             "description": "the regex pattern that must match, used for the replace properties",
-            "type": ["array", "string"]
+            "type": ["null", "array", "string"],
+            "default": null
         },
 
         "separator": {
@@ -24,17 +25,20 @@
         "field": {
             "description": "the field that expression should compare against. if it is null, all fields are matched with expression and all matching fields are replaced. if it is zero, the entire line is matched with expression and the match is replaced. if it is a positive number, only that field is matched with expression",
             "type": ["null", "integer"],
-            "default": null
+            "default": null,
+            "minimum": 0
         },
         "min_fields": {
             "description": "minimum fields the line must have",
             "type": "integer",
-            "default": -1
+            "default": -1,
+            "minimum": -1
         },
         "max_fields": {
             "description": "maximum fields the line must have",
             "type": "integer",
-            "default": -1
+            "default": -1,
+            "minimum": -1
         },
 
         "replace": {
@@ -101,10 +105,13 @@
             "default": null
         }
     },
-    "required": ["expression"],
     "dependencies": {
         "field": ["separator"],
         "min_fields": ["separator"],
-        "max_fields": ["separator"]
+        "max_fields": ["separator"],
+        "replace": ["expression"],
+        "replace_all": ["expression"],
+        "replace_groups": ["expression"],
+        "replace_fields": ["separator"]
     }
 }
