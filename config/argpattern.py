@@ -20,10 +20,7 @@ class ArgPattern:
             if hasattr(self, attr):
                 setattr(self, attr, join_str_list(getattr(self, attr)))
 
-        if self.expression is not None and len(self.expression) != 0:
-            self.regex = compile_re(self.expression, 'expression')
-        else:
-            self.regex = None
+        self.regex = compile_re(self.expression, 'expression')
 
         if not isinstance(self.subcommand, list):
             self.subcommand = [ self.subcommand ]

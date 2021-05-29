@@ -48,4 +48,6 @@ def compile_re(expression, prop):
         raise ConfigRegexException(prop, rer) from rer
 
 def join_str_list(val):
+    if val is None:
+        return None
     return ''.join(val) if isinstance(val, list) else val
