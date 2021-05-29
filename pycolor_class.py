@@ -103,6 +103,9 @@ class Pycolor:
             printerr("command '%s' not found" % cmd[0])
             sys.exit(1)
 
+        if self.debug_file is not None:
+            self.debug_file.close()
+
         if profile.less_output:
             self.stdout.flush()
             self.stderr.flush()
