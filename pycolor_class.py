@@ -91,13 +91,17 @@ class Pycolor:
             if self.color_mode == 'auto':
                 self.color_mode = 'always'
 
-        retcode = execute.execute(
-            cmd,
-            self.stdout_cb,
-            self.stderr_cb,
-            tty=profile.tty,
-            interactive=profile.interactive,
-        )
+        try:
+            retcode = execute.execute(
+                cmd,
+                self.stdout_cb,
+                self.stderr_cb,
+                tty=profile.tty,
+                interactive=profile.interactive,
+            )
+        except FileNotFoundError:
+            printerr("command '%s' not found" % cmd[0])
+            sys.exit(1)
 
         if profile.less_output:
             self.stdout.flush()
