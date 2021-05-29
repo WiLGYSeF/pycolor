@@ -11,7 +11,7 @@
 	- [Field Formatting](#fields).
 	- [Padding](#padding).
 
-A Python wrapper program that executes commands to perform real-time terminal output coloring using ANSI color codes.
+A Python program that executes commands to perform real-time terminal output coloring using ANSI color codes.
 Color formatting can be added to program output using JSON configuration files and regular expressions to improve readability of the output.
 
 # Limitations
@@ -21,7 +21,10 @@ Color formatting can be added to program output using JSON configuration files a
 
 # Installation
 
-Save this project into somewhere like `~/.local/bin/pycolor-py/` and create a symlink at `~/.local/bin/pycolor` pointed to `~/.local/bin/pycolor-py/pycolor.py`.
+1. Clone this project to somewhere like `~/.local/bin/pycolor-py/`
+2. Create a symlink from `~/.local/bin/pycolor-py/pycolor.py` to `~/.local/bin/pycolor`
+3. Create color configuration profiles for commands in `~/.pycolor.d/`
+4. (Optional) Create aliases to commands in your `.bashrc`
 
 # Example Usage
 

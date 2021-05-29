@@ -2,30 +2,39 @@
 	"profiles": [
 		{
 			"name": "rsync",
+			"tty": true,
 			"patterns": [
 				{
-					"expression": "^deleting (.*)$",
-					"replace": "%C(bold;red)deleting %G1%Cz"
+					"expression": "^()deleting .*()$",
+					"replace_groups": ["%C(bol;r)", "%Cz"]
 				},
 				{
-					"expression": "^rsync: (.*)$",
-					"replace": "%C(yellow)rsync: %G1%Cz"
+					"expression": "^()rsync: .*()$",
+					"replace_groups": ["%Cy", "%Cz"]
 				},
 				{
-					"expression": "^rsync error: (.*)$",
-					"replace": "%C(red)rsync error: %G1%Cz"
+					"expression": "^()rsync error: .*()$",
+					"replace_groups": ["%Cr", "%Cz"]
 				},
 				{
-					"expression": "^sent ([0-9,.]+[KMGT]?) bytes  received ([0-9,.]+[KMGT]?) bytes  ([0-9,.]+[KMGT]?) bytes/sec$",
-					"replace": "sent %Cg%G1%Cz bytes  received %Cg%G2%Cz bytes  %Cg%G3%Cz bytes/sec"
+					"expression": " +([0-9,.]+[A-Z]) +([0-9]+%) +([0-9,.]+[A-Za-z]+/s) +([0-9]+:[0-9]+:[0-9]+)(?: \\(xfr#([0-9]+), to-chk=[0-9]+/[0-9]+\\))?",
+					"replace_groups": ["%Cg%Gc%Cz", "%Clc%Gc%Cz", "%Clb%Gc%Cz", "%Cb%Gc%Cz"]
 				},
 				{
-					"expression": "^total size is ([0-9,.]+[KMGT]?)  speedup is ([0-9,.]+)",
-					"replace": "total size is %Cg%G1%Cz  speedup is %Cg%G2%Cz"
+					"expression": "^sent ([0-9,.]+[A-Z]?) bytes  received ([0-9,.]+[A-Z]?) bytes  ([0-9,.]+[A-Z]?) bytes/sec$",
+					"replace_groups": {
+						"*": "%Cg%Gc%Cz"
+					}
+				},
+				{
+					"expression": "^total size is ([0-9,.]+[A-Z]?)  speedup is ([0-9,.]+)",
+					"replace_groups": {
+						"*": "%Cg%Gc%Cz"
+					}
 				},
 				{
 					"expression": "\\(DRY RUN\\)$",
-					"replace": "%C(bold;green)(DRY RUN)%Cz"
+					"replace": "%C(bol;g)(DRY RUN)%Cz"
 				},
 				{
 					"expression": "/$",

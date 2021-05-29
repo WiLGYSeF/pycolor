@@ -1,0 +1,32 @@
+{
+	"profiles": [
+		{
+			"name": "zip",
+			"patterns": [
+				{
+					"expression": [
+						"^",
+						"(?P<vol>[0-9]+>[0-9]+: )?",
+						"(?P<fc> *[0-9]+/ *[0-9]+ )?",
+						"(?P<fz>\\[[0-9. ]+[A-Z]?/[0-9. ]+[A-Z]?\\] )?",
+						"(?:  adding: (?P<addname>.*?)|copying: (?P<copname>.*?)|deleting: (?P<delname>.*?)|freshening: (?P<frename>.*?)|updating: (?P<updname>.*?))",
+						"(?P<uz> \\([0-9. ]+[A-Z]\\))?",
+						"(?P<dots> \\.+)?",
+						"(?: \\((?:deflated|stored) (?P<pc>[0-9]+%)\\))?",
+						"$"
+					],
+					"replace_groups": {
+						"vol": "%Gc",
+						"fc": "%Cg%Gc%Cz",
+						"fz": "%Cc%Gc%Cz",
+						"addname,copname,frename,updname": "%C(bol;g)%Gc%Cz",
+						"delname": "%C(bol;r)%Gc%Cz",
+						"uz": "%Ce%Gc%Cz",
+						"dots": "%Ce%Gc%Cz",
+						"pc": "%Clc%Gc%Cz"
+					}
+				}
+			]
+		}
+	]
+}

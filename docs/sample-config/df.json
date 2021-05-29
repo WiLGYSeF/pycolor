@@ -27,7 +27,11 @@
 					"separator": " +",
 					"field": 0,
 					"expression": ".*",
-					"replace_all": "%F1%Fs2%Cb%F2%Cz%Fs3%Cr%F3%Cz%Fs4%Cg%F4%Cz%Fs5%Cb%F5%Cz%Fs6%F(6*)",
+					"replace_fields": {
+						"2,5": "%Cb%Fc%Cz",
+						"3": "%Cr%Fc%Cz",
+						"4": "%Cg%Fc%Cz"
+					},
 					"activation_line": 2
 				}
 			]
@@ -58,7 +62,12 @@
 					"separator": " +",
 					"field": 0,
 					"expression": ".*",
-					"replace_all": "%F(1*2)%Fs3%Cb%F3%Cz%Fs4%Cr%F4%Cz%Fs5%Cg%F5%Cz%Fs6%Cb%F6%Cz%Fs7%F(7*)",
+					"replace_fields": {
+						"2": "%Ce%Fc%Cz",
+						"3,6": "%Cb%Fc%Cz",
+						"4": "%Cr%Fc%Cz",
+						"5": "%Cg%Fc%Cz"
+					},
 					"activation_line": 2
 				}
 			]
@@ -70,7 +79,7 @@
 					"separator": " +",
 					"field": 1,
 					"expression": "^[^/]+$",
-					"replace": "%C(darkgrey)%G0%Creset",
+					"replace": "%Ce%G0%Cz",
 					"activation_line": 2
 				}
 			]

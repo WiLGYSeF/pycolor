@@ -19,7 +19,12 @@
 					"min_fields": 7,
 					"max_fields": 7,
 					"expression": ".*",
-					"replace_all": "%F1%Fs2%Cb%F2%Cz%Fs3%Cr%F3%Cz%Fs4%Cg%F4%Cz%Fs5%Cb%F5%Cz%Fs6%Cy%F6%Cz%Fs7%Cg%F7%Cz",
+					"replace_fields": {
+						"2,5": "%Cb%Fc%Cz",
+						"3": "%Cr%Fc%Cz",
+						"4,7": "%Cg%Fc%Cz",
+						"6": "%Cy%Fc%Cz"
+					},
 					"activation_line": 2
 				},
 				{
@@ -28,7 +33,12 @@
 					"min_fields": 8,
 					"max_fields": 8,
 					"expression": ".*",
-					"replace_all": "%F1%Fs2%Cb%F2%Cz%Fs3%Cr%F3%Cz%Fs4%Cg%F4%Cz%Fs5%Cb%F5%Cz%Fs6%Cy%F6%Cz%Fs7%Cy%F7%Cz%Fs8%Cg%F8%Cz",
+					"replace_fields": {
+						"2,5": "%Cb%Fc%Cz",
+						"3": "%Cr%Fc%Cz",
+						"4,8": "%Cg%Fc%Cz",
+						"6,7": "%Cy%Fc%Cz"
+					},
 					"activation_line": 2
 				},
 				{
@@ -37,7 +47,11 @@
 					"min_fields": 4,
 					"max_fields": 4,
 					"expression": ".*",
-					"replace_all": "%F1%Fs2%Cb%F2%Cz%Fs3%Cr%F3%Cz%Fs4%Cg%F4%Cz",
+					"replace_fields": {
+						"2": "%Cb%Fc%Cz",
+						"3": "%Cr%Fc%Cz",
+						"4": "%Cg%Fc%Cz"
+					},
 					"activation_line": 2
 				}
 			]

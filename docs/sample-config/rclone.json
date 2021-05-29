@@ -1,0 +1,71 @@
+{
+	"profiles": [
+		{
+			"name": "rclone",
+			"patterns": [
+				{
+					"expression": "^.* INFO  : (.*): Copied \\((?:new|replaced existing|server side copy)\\)$",
+					"replace_groups": ["%C(bol;g)%Gc%Cz"]
+				},
+				{
+					"expression": "^.* INFO  : (.*): Updated modification time in destination$",
+					"replace_groups": ["%C(bol;de)%Gc%Cz"]
+				},
+				{
+					"expression": "^.* INFO  : (.*): Deleted$",
+					"replace_groups": ["%C(bol;r)%Gc%Cz"]
+				},
+				{
+					"expression": "^.* NOTICE: (.*): Not (?:copying|moving) as --dry-run$",
+					"replace_groups": ["%Cg%Gc%Cz"]
+				},
+				{
+					"expression": "^.* NOTICE: (.*): Not updating modification time as --dry-run$",
+					"replace_groups": ["%Cde%Gc%Cz"]
+				},
+				{
+					"expression": "^.* NOTICE: (.*): Not deleting as --dry-run$",
+					"replace_groups": ["%Cr%Gc%Cz"]
+				},
+				{
+					"expression": "^Transferred:\\s+(?P<rz>[0-9.]+[A-Za-z]?) / (?P<tz>[0-9.]+ [A-Za-z]+), (?P<pc>-|\\d+%), (?P<rate>[0-9.]+ [A-Za-z]+/s), ETA (?P<eta>.+)$",
+					"replace_groups": {
+						"rz": "%Cg%Gc%Cz",
+						"tz": "%Cc%Gc%Cz",
+						"pc": "%Clc%Gc%Cz",
+						"rate": "%Clb%Gc%Cz",
+						"eta": "%Cb%Gc%Cz"
+					}
+				},
+				{
+					"expression": "^(?:Checks|Transferred):\\s+(\\d+) / (\\d+), (-|\\d+%)$",
+					"replace_groups": ["%Cg%Gc%Cz", "%Cc%Gc%Cz", "%Clc%Gc%Cz"]
+				},
+				{
+					"expression": "^Deleted:\\s+(\\d+)$",
+					"replace_groups": ["%Cr%Gc%Cz"]
+				},
+				{
+					"expression": "^Renamed:\\s+(\\d+)$",
+					"replace_groups": ["%Cg%Gc%Cz"]
+				},
+				{
+					"expression": "^Elapsed time:\\s+(.+)$",
+					"replace_groups": ["%Cb%Gc%Cz"]
+				},
+				{
+					"expression": "^ \\* +(.+): +(\\d+%) / *([0-9.]+[A-Za-z]), ([0-9.]+[A-Za-z]+/s), (.+)$",
+					"replace_groups": ["%Cy%Gc%CZ", "%Clc%Gc%Cz", "%Cc%Gc%Cz", "%Clb%Gc%Cz", "%Cb%Gc%Cz"]
+				},
+				{
+					"expression": "^Errors:\\s+0",
+					"skip_others": true
+				},
+				{
+					"expression": "^Errors:\\s+(\\d+)",
+					"replace_groups": ["%Cr%Gc%Cz"]
+				}
+			]
+		}
+	]
+}
