@@ -1,8 +1,7 @@
-from contextlib import ExitStack
+from contextlib import ExitStack, contextmanager
 import os
 import random
 import sys
-import tempfile
 import unittest
 
 from freezegun import freeze_time
@@ -113,28 +112,18 @@ class PycolorTest(unittest.TestCase):
     @freeze_time('2000-01-02 03:45:56')
     def test_debug_file(self):
         test_name = 'debug_file'
-        fname = random_tmp_filename()
-        self.check_pycolor_main(['--debug-log', fname, 'free', '-h'], MOCKED_DATA, test_name)
-
-        with open(fname, 'r') as file:
-            with open(os.path.join(MOCKED_DATA, test_name) + '.out.debug.txt', 'r') as debugfile:
-                self.assertEqual(file.read(), debugfile.read())
-        os.remove(fname)
+        with self.check_debug_log(MOCKED_DATA, test_name) as fname:
+            self.check_pycolor_main(['--debug-log', fname, 'free', '-h'], MOCKED_DATA, test_name)
 
     @freeze_time('2000-01-02 03:45:56')
     def test_debug_file_v3(self):
         test_name = 'debug_file_v3'
-        fname = random_tmp_filename()
-        self.check_pycolor_main(
-            ['-vvv', '--debug-log', fname, 'free', '-h'],
-            MOCKED_DATA,
-            test_name
-        )
-
-        with open(fname, 'r') as file:
-            with open(os.path.join(MOCKED_DATA, test_name) + '.out.debug.txt', 'r') as debugfile:
-                self.assertEqual(file.read(), debugfile.read())
-        os.remove(fname)
+        with self.check_debug_log(MOCKED_DATA, test_name) as fname:
+            self.check_pycolor_main(
+                ['-vvv', '--debug-log', fname, 'free', '-h'],
+                MOCKED_DATA,
+                test_name
+            )
 
     def check_pycolor_main(self,
         args,
@@ -189,11 +178,27 @@ class PycolorTest(unittest.TestCase):
             write_output
         )
 
+    @contextmanager
+    def check_debug_log(self, mocked_data_dir, test_name):
+        try:
+            fname = random_tmp_filename()
+            yield fname
+        finally:
+            try:
+                with open(fname, 'r') as file:
+                    with open(
+                        os.path.join(mocked_data_dir, test_name) + '.out.debug.txt',
+                        'r'
+                    ) as debugfile:
+                        self.assertEqual(file.read(), debugfile.read())
+            finally:
+                os.remove(fname)
+
 def random_tmp_filename():
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     length = 8
 
     fname = 'tmp'
-    for i in range(length):
+    for _ in range(length):
         fname += chars[random.randint(0, len(chars) - 1)]
     return fname
