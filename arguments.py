@@ -4,25 +4,20 @@ import sys
 
 def get_args(args):
     parser = argparse.ArgumentParser(
-        description='do real-time output coloring and formatting of programs',
-        usage='%(prog)s [options] COMMAND ARG ...',
-        add_help=False,
-    )
-    parser.add_argument('-h', '--help',
-        action='store_true', default=False,
-        help='show this help menu and exit'
+        description='do real-time output coloring and formatting for commands',
+        usage='%(prog)s [options] COMMAND ARG ...'
     )
     parser.add_argument('--color',
         action='store', default='auto', nargs='?',
         choices=['auto', 'always', 'never', 'on', 'off'],
-        help='enable/disable coloring output. if auto is selected, color will be enabled for'
-        + ' terminal output but disabled on output redirection. on=always, off=never (default auto)'
+        help='enable/disable coloring output. if set to auto, color will be enabled for'
+        + ' terminal output but disabled on output redirection (default auto)'
     )
     parser.add_argument('--load-file',
         action='append', metavar='FILE', default=[],
         help='use this config file containing profiles'
     )
-    parser.add_argument('--profile',
+    parser.add_argument('-p', '--profile',
         action='store', metavar='NAME',
         help='specifically use this profile even if it does not match the current arguments'
     )
@@ -54,7 +49,7 @@ def get_args(args):
         dest='tty', action='store_false',
         help='do not run the command in a pseudo-terminal (default)'
     )
-    parser.add_argument('--interactive',
+    parser.add_argument('-i', '--interactive',
         action='store_true', default=False,
         help='force enable "interactive" for all profiles'
     )
@@ -85,48 +80,53 @@ def get_args(args):
     return parse_known_args(parser, args)
 
 def parse_known_args(parser, args):
-    argspace, cmd_args = parser.parse_known_args(args)
-    if len(cmd_args) != 0 and cmd_args[0] == '--':
-        cmd_args = cmd_args[1:]
-
-    is_consecutive, argidx = consecutive_end_args(args, cmd_args)
-    if not is_consecutive:
-        argspace = parser.parse_args(args[:argidx])
-        cmd_args = args[argidx:]
-
-    if argspace.help:
-        parser.print_help()
-        sys.exit(0)
-
-    if argidx < len(args) and all([
-        argidx == 0 or args[argidx - 1] != '--',
-        args[argidx].startswith('-'),
-    ]):
-        parser.print_help()
-        sys.exit(1)
-
+    # TODO: using parser._actions is somewhat of a hack
+    args, cmd_args = split_args(args, parser._actions)
+    argspace = parser.parse_args(args)
     return argspace, cmd_args
 
-def consecutive_end_args(args, subset):
-    lenarg = len(args)
-    lensub = len(subset)
+def split_args(args, actions):
+    action_nargs = {}
 
-    if lensub == 0:
-        return True, lenarg
-    if lenarg < lensub:
-        return False, -1
+    for action in actions:
+        for opt in action.option_strings:
+            action_nargs[opt] = action.nargs
 
-    for i in range(lenarg):
-        if args[i] != subset[0]:
+    last_arg = None
+    idx = 0
+
+    while idx < len(args):
+        arg = args[idx]
+        if arg == '--':
+            break
+        if arg[0] == '-':
+            last_arg = arg
+            idx += 1
             continue
 
-        startidx = i
-        off = 1
-        i += 1
-        while i < lenarg and off < lensub:
-            if args[i] != subset[off]:
-                return False, startidx
-            off += 1
-            i += 1
-        return i == lenarg and off == lensub, startidx
-    return False, lenarg
+        if last_arg not in action_nargs:
+            break
+
+        nargs = action_nargs[last_arg]
+        if nargs is None:
+            # TODO: this depends on the action
+            idx += 1
+        elif isinstance(nargs, int):
+            while nargs > 0 and idx < len(args) and args[idx][0] != '-':
+                nargs -= 1
+                idx += 1
+            if nargs != 0:
+                break
+        elif nargs == '?':
+            if idx < len(args) and args[idx][0] != '-':
+                idx += 1
+        elif nargs in ('*', '+'):
+            while idx < len(args) and args[idx][0] != '-':
+                idx += 1
+        else:
+            raise ValueError(nargs)
+        last_arg = None
+
+    if idx < len(args) and args[idx] == '--':
+        return args[:idx], args[idx + 1:]
+    return args[:idx], args[idx:]

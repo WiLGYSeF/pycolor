@@ -4,67 +4,310 @@ import arguments
 
 
 ARGS = 'args'
-SUBSET = 'subset'
+ACTIONS = 'actions'
 RESULT = 'result'
 
-CONSECUTIVE_END_ARGS = [
+class MockAction:
+    def __init__(self, option_strings, nargs):
+        self.option_strings = option_strings
+        self.nargs = nargs
+
+SPLIT_ARGS_NORMAL = [
     {
         ARGS: [],
-        SUBSET: [],
-        RESULT: (True, 0)
+        ACTIONS: [],
+        RESULT: (
+            [],
+            []
+        )
     },
     {
-        ARGS: ['--color', 'on', 'abc'],
-        SUBSET: [],
-        RESULT: (True, 3)
+        ARGS: ['abc', '-a', '-b'],
+        ACTIONS: [
+            MockAction(['-a'], 0),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            [],
+            ['abc', '-a', '-b']
+        )
     },
     {
-        ARGS: ['abc'],
-        SUBSET: ['abc'],
-        RESULT: (True, 0)
+        ARGS: ['-a', '-b'],
+        ACTIONS: [
+            MockAction(['-a'], 0),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            ['-a', '-b'],
+            []
+        )
     },
     {
-        ARGS: ['--color', 'on', 'abc'],
-        SUBSET: ['abc'],
-        RESULT: (True, 2)
+        ARGS: ['-a', 'abc', '-b'],
+        ACTIONS: [
+            MockAction(['-a'], 0),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            ['-a'],
+            ['abc', '-b']
+        )
+    },
+]
+
+SPLIT_ARGS_NARGS_INT = [
+    {
+        ARGS: ['-a', 'abc', '-b', 'zzz'],
+        ACTIONS: [
+            MockAction(['-a'], 1),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            ['-a', 'abc', '-b'],
+            ['zzz']
+        )
     },
     {
-        ARGS: ['--', 'asdf', '--color', 'on', 'abc'],
-        SUBSET: ['asdf', '--color', 'on', 'abc'],
-        RESULT: (True, 1)
+        ARGS: ['-a', 'abc', '-b', 'zzz'],
+        ACTIONS: [
+            MockAction(['-a'], 2),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            ['-a', 'abc'],
+            ['-b', 'zzz']
+        )
     },
     {
-        ARGS: ['asdf', '--color', 'on', 'abc'],
-        SUBSET: ['asdf', 'abc'],
-        RESULT: (False, 0)
+        ARGS: ['-a', 'abc', 'def', '-b', 'zzz'],
+        ACTIONS: [
+            MockAction(['-a'], 2),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            ['-a', 'abc', 'def', '-b'],
+            ['zzz']
+        )
+    },
+]
+
+SPLIT_ARGS_NARGS_QUESTION = [
+    {
+        ARGS: ['-a', 'abc', '-b', 'zzz'],
+        ACTIONS: [
+            MockAction(['-a'], '?'),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            ['-a', 'abc', '-b'],
+            ['zzz']
+        )
     },
     {
-        ARGS: ['asdf', 'abc', '--color', 'on'],
-        SUBSET: ['asdf', 'abc'],
-        RESULT: (False, 0)
+        ARGS: ['-a', 'abc', 'def', '-b', 'zzz'],
+        ACTIONS: [
+            MockAction(['-a'], '?'),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            ['-a', 'abc'],
+            ['def', '-b', 'zzz']
+        )
     },
     {
-        ARGS: ['asdf', 'abc', '--color', 'on'],
-        SUBSET: ['nowhere'],
-        RESULT: (False, 4)
+        ARGS: ['-a', '-b', 'zzz'],
+        ACTIONS: [
+            MockAction(['-a'], '?'),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            ['-a', '-b'],
+            ['zzz']
+        )
+    },
+]
+
+SPLIT_ARGS_NARGS_STAR = [
+    {
+        ARGS: ['-a', 'abc', '-b', 'zzz'],
+        ACTIONS: [
+            MockAction(['-a'], '*'),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            ['-a', 'abc', '-b'],
+            ['zzz']
+        )
     },
     {
-        ARGS: ['asdf', 'abc', '--color', 'on'],
-        SUBSET: ['abc'],
-        RESULT: (False, 1)
+        ARGS: ['-a', '-b', 'zzz'],
+        ACTIONS: [
+            MockAction(['-a'], '*'),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            ['-a', '-b'],
+            ['zzz']
+        )
     },
     {
-        ARGS: ['ee', 'asdf', 'abc'],
-        SUBSET: ['asdf', 'abc', '123', '4'],
-        RESULT: (False, -1)
+        ARGS: ['-a', 'abc', 'def', '-b', 'zzz'],
+        ACTIONS: [
+            MockAction(['-a'], '*'),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            ['-a', 'abc', 'def', '-b'],
+            ['zzz']
+        )
+    },
+]
+
+SPLIT_ARGS_NARGS_PLUS = [
+    {
+        ARGS: ['-a', 'abc', '-b', 'zzz'],
+        ACTIONS: [
+            MockAction(['-a'], '+'),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            ['-a', 'abc', '-b'],
+            ['zzz']
+        )
+    },
+    {
+        ARGS: ['-a', '-b', 'zzz'],
+        ACTIONS: [
+            MockAction(['-a'], '+'),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            ['-a', '-b'],
+            ['zzz']
+        )
+    },
+    {
+        ARGS: ['-a', 'abc', 'def', '-b', 'zzz'],
+        ACTIONS: [
+            MockAction(['-a'], '+'),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            ['-a', 'abc', 'def', '-b'],
+            ['zzz']
+        )
+    },
+]
+
+SPLIT_ARGS_NARGS_NONE = [
+    {
+        ARGS: ['-a', 'abc', '-b', 'zzz'],
+        ACTIONS: [
+            MockAction(['-a'], None),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            ['-a', 'abc', '-b'],
+            ['zzz']
+        )
+    },
+    {
+        ARGS: ['-a', '-b', 'zzz'],
+        ACTIONS: [
+            MockAction(['-a'], None),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            ['-a', '-b'],
+            ['zzz']
+        )
+    },
+    {
+        ARGS: ['-a', 'abc', 'def', '-b', 'zzz'],
+        ACTIONS: [
+            MockAction(['-a'], None),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            ['-a', 'abc'],
+            ['def', '-b', 'zzz']
+        )
+    },
+]
+
+SPLIT_ARGS_NARGS_DASHDASH = [
+    {
+        ARGS: ['-a', '--', '-b', 'zzz'],
+        ACTIONS: [
+            MockAction(['-a'], 0),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            ['-a'],
+            ['-b', 'zzz']
+        )
+    },
+    {
+        ARGS: ['-a', 'abc', '--', 'def', '-b', 'zzz'],
+        ACTIONS: [
+            MockAction(['-a'], '+'),
+            MockAction(['-b'], 0),
+        ],
+        RESULT: (
+            ['-a', 'abc'],
+            ['def', '-b', 'zzz']
+        )
     },
 ]
 
 
 class ArgumentsTest(unittest.TestCase):
-    def test_consecutive_end_args(self):
-        for entry in CONSECUTIVE_END_ARGS:
+    def test_split_args_normal(self):
+        for entry in SPLIT_ARGS_NORMAL:
             self.assertTupleEqual(
-                arguments.consecutive_end_args(entry[ARGS], entry[SUBSET]),
+                arguments.split_args(entry[ARGS], entry[ACTIONS]),
+                entry[RESULT]
+            )
+
+    def test_split_args_nargs_int(self):
+        for entry in SPLIT_ARGS_NARGS_INT:
+            self.assertTupleEqual(
+                arguments.split_args(entry[ARGS], entry[ACTIONS]),
+                entry[RESULT]
+            )
+
+    def test_split_args_nargs_question(self):
+        for entry in SPLIT_ARGS_NARGS_QUESTION:
+            self.assertTupleEqual(
+                arguments.split_args(entry[ARGS], entry[ACTIONS]),
+                entry[RESULT]
+            )
+
+    def test_split_args_nargs_star(self):
+        for entry in SPLIT_ARGS_NARGS_STAR:
+            self.assertTupleEqual(
+                arguments.split_args(entry[ARGS], entry[ACTIONS]),
+                entry[RESULT]
+            )
+
+    def test_split_args_nargs_plus(self):
+        for entry in SPLIT_ARGS_NARGS_PLUS:
+            self.assertTupleEqual(
+                arguments.split_args(entry[ARGS], entry[ACTIONS]),
+                entry[RESULT]
+            )
+
+    def test_split_args_nargs_none(self):
+        for entry in SPLIT_ARGS_NARGS_NONE:
+            self.assertTupleEqual(
+                arguments.split_args(entry[ARGS], entry[ACTIONS]),
+                entry[RESULT]
+            )
+
+    def test_split_args_nargs_dashdash(self):
+        for entry in SPLIT_ARGS_NARGS_DASHDASH:
+            self.assertTupleEqual(
+                arguments.split_args(entry[ARGS], entry[ACTIONS]),
                 entry[RESULT]
             )
