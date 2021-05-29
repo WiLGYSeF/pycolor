@@ -8,6 +8,7 @@ from applypattern import apply_pattern
 from colorpositions import insert_color_data
 from colorstate import ColorState
 import execute
+from printerr import printerr
 from profileloader import ProfileLoader
 import pyformat
 from which import which
@@ -267,6 +268,3 @@ class Pycolor:
 
     def is_being_redirected(self):
         return not self.stdout.isatty()
-
-def printerr(*args):
-    print(*args, file=sys.stderr)

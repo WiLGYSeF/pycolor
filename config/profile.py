@@ -1,6 +1,4 @@
-import re
-
-from config import load_schema, join_str_list
+from config import load_schema, compile_re, join_str_list
 from config.argpattern import ArgPattern
 from config.fromprofile import FromProfile
 from config.pattern import Pattern
@@ -25,7 +23,7 @@ class Profile:
             if hasattr(self, attr):
                 setattr(self, attr, join_str_list(getattr(self, attr)))
 
-        self.name_regex = re.compile(self.name_expression) if self.name_expression else None
+        self.name_regex = compile_re(self.name_expression, 'name_expression')
 
         if self.profile_name is not None and len(self.profile_name) == 0:
             self.profile_name = None

@@ -36,6 +36,12 @@ GET_NAMED_GROUP_INDEX = [
         ARG: 'two',
         RESULT: 2
     },
+    {
+        STRING: 'this is a test',
+        REGEX: re.compile(r'this (?P<one>[a-z]+) (?P<two>[a-z]+) ([a-z]+) ?(?P<four>[a-z]+)?'),
+        ARG: 'invalid',
+        RESULT: None
+    }
 ]
 
 GET_NAMED_GROUP_AT_INDEX = [
@@ -44,6 +50,12 @@ GET_NAMED_GROUP_AT_INDEX = [
         REGEX: re.compile(r'this (?P<one>[a-z]+) (?P<two>[a-z]+) ([a-z]+) ?(?P<four>[a-z]+)?'),
         ARG: 2,
         RESULT: 'two'
+    },
+    {
+        STRING: 'this is a test',
+        REGEX: re.compile(r'this (?P<one>[a-z]+) (?P<two>[a-z]+) ([a-z]+) ?(?P<four>[a-z]+)?'),
+        ARG: 100,
+        RESULT: None
     },
 ]
 
