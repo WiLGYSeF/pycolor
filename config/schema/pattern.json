@@ -13,7 +13,8 @@
         },
         "expression": {
             "description": "the regex pattern that must match, used for the replace properties",
-            "type": ["array", "string"]
+            "type": ["null", "array", "string"],
+            "default": null
         },
 
         "separator": {

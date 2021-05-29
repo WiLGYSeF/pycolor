@@ -56,7 +56,7 @@
         },
         "less_output": {
             "description": "send the output through the less command when finished",
-            "type": ["boolean"],
+            "type": "boolean",
             "default": false
         },
         "tty": {

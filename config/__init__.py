@@ -42,8 +42,10 @@ def load_schema(schema_name, cfg, dest):
         setattr(dest, key, val)
 
 def compile_re(expression, prop):
+    if expression is None:
+        return None
     try:
-        return re.compile(expression) if expression else None
+        return re.compile(expression) if len(expression) != 0 else None
     except re.error as rer:
         raise ConfigRegexException(prop, rer) from rer
 
