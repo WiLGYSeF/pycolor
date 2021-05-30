@@ -36,8 +36,9 @@ def readlines(stream, data=None):
     lines = []
     last = 0
 
+    datalen = len(data)
     idx = 0
-    while idx < len(data):
+    while idx < datalen:
         ret = is_eol_idx(data, idx)
         if ret is not False:
             lines.append(data[last:ret + 1])
@@ -45,7 +46,7 @@ def readlines(stream, data=None):
             idx = ret
         idx += 1
 
-    if last < len(data):
+    if last < datalen:
         lines.append(data[last:])
     return lines
 
@@ -98,9 +99,10 @@ def is_eol(char):
     return char == 10 or char == 13 #pylint: disable=consider-using-in
 
 def is_eol_idx(string, idx):
-    if idx < len(string) - 1 and string[idx] == 13 and string[idx + 1] == 10:
+    char = string[idx]
+    if idx < len(string) - 1 and char == 13 and string[idx + 1] == 10:
         return idx + 1
-    return idx if is_eol(string[idx]) else False
+    return idx if is_eol(char) else False
 
 def execute(cmd, stdout_callback, stderr_callback, **kwargs):
     tty = kwargs.get('tty', False)
