@@ -156,6 +156,10 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
                 pass
 
         stdin = sys.stdin
+        # TODO: io does not like unblocked data
+        # this works because we ignore the TypeError expection thrown and
+        # is needed in order to not hang on stdin
+        # see https://bugs.python.org/issue13322
         nonblock(stdin)
 
         readable = {
@@ -187,6 +191,8 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
                                 process.stdin.write(recv)
                                 process.stdin.flush()
                             except BrokenPipeError:
+                                break
+                            except TypeError:
                                 break
                         else:
                             _read(fde, readable[fde], data=data)
