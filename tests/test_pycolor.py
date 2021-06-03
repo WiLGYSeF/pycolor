@@ -179,18 +179,29 @@ class PycolorTest(unittest.TestCase):
         )
 
     @contextmanager
-    def check_debug_log(self, mocked_data_dir, test_name):
+    def check_debug_log(self, mocked_data_dir, test_name, **kwargs):
+        print_output = kwargs.get('print_output', False)
+        write_output = kwargs.get('write_output', False)
+
         try:
             fname = random_tmp_filename()
             yield fname
         finally:
             try:
+                debug_fname = os.path.join(mocked_data_dir, test_name) + '.out.debug.txt'
+
                 with open(fname, 'r') as file:
-                    with open(
-                        os.path.join(mocked_data_dir, test_name) + '.out.debug.txt',
-                        'r'
-                    ) as debugfile:
-                        self.assertEqual(file.read(), debugfile.read())
+                    filedata = file.read()
+                    if print_output: #pragma: no cover
+                        print(filedata)
+
+                    if write_output:
+                        #pragma: no cover
+                        with open(debug_fname, 'w') as debugfile:
+                            debugfile.write(filedata)
+                    else:
+                        with open(debug_fname, 'r') as debugfile:
+                            self.assertEqual(filedata, debugfile.read())
             finally:
                 os.remove(fname)
 

@@ -1,45 +1,45 @@
     DEBUG1: using profile "ls"
-    DEBUG1: received: b'total 108'
+    DEBUG1: received: b'total 108\n'
 total 108
-    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef  8096 Apr  7 13:53 README.md'
+    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef  8096 Apr  7 13:53 README.md\n'
 -rw-rw-r-- 1 wilgysef wilgysef  8096 Apr  7 13:53 README.md
-    DEBUG1: received: b'drwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 14:00 __pycache__'
+    DEBUG1: received: b'drwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 14:00 __pycache__\n'
 drwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 14:00 __pycache__
-    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef  1664 Apr  7 13:53 argpattern.py'
+    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef  1664 Apr  7 13:53 argpattern.py\n'
 -rw-rw-r-- 1 wilgysef wilgysef  1664 Apr  7 13:53 argpattern.py
-    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef  5933 Apr  7 13:53 colorstate.py'
+    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef  5933 Apr  7 13:53 colorstate.py\n'
 -rw-rw-r-- 1 wilgysef wilgysef  5933 Apr  7 13:53 colorstate.py
-    DEBUG1: received: b'drwxr-xr-x 4 wilgysef wilgysef  4096 Feb  8 20:45 docs'
+    DEBUG1: received: b'drwxr-xr-x 4 wilgysef wilgysef  4096 Feb  8 20:45 docs\n'
 drwxr-xr-x 4 wilgysef wilgysef  4096 Feb  8 20:45 docs
-    DEBUG1: received: b'-rw-r--r-- 1 wilgysef wilgysef  3199 Feb  9 20:36 execute.py'
+    DEBUG1: received: b'-rw-r--r-- 1 wilgysef wilgysef  3199 Feb  9 20:36 execute.py\n'
 -rw-r--r-- 1 wilgysef wilgysef  3199 Feb  9 20:36 execute.py
-    DEBUG1: received: b'-rw-r--r-- 1 wilgysef wilgysef   588 Feb 11 14:07 fromprofile.py'
+    DEBUG1: received: b'-rw-r--r-- 1 wilgysef wilgysef   588 Feb 11 14:07 fromprofile.py\n'
 -rw-r--r-- 1 wilgysef wilgysef   588 Feb 11 14:07 fromprofile.py
-    DEBUG1: received: b'drwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 12:04 htmlcov'
+    DEBUG1: received: b'drwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 12:04 htmlcov\n'
 drwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 12:04 htmlcov
-    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef  6613 Apr  7 13:53 pattern.py'
+    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef  6613 Apr  7 13:53 pattern.py\n'
 -rw-rw-r-- 1 wilgysef wilgysef  6613 Apr  7 13:53 pattern.py
-    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef  2238 Apr  7 13:53 profile_class.py'
+    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef  2238 Apr  7 13:53 profile_class.py\n'
 -rw-rw-r-- 1 wilgysef wilgysef  2238 Apr  7 13:53 profile_class.py
-    DEBUG1: received: b'-rwxrwxr-x 1 wilgysef wilgysef  3917 Apr  7 13:59 pycolor.py'
+    DEBUG1: received: b'-rwxrwxr-x 1 wilgysef wilgysef  3917 Apr  7 13:59 pycolor.py\n'
 -rwxrwxr-x 1 wilgysef wilgysef  3917 Apr  7 13:59 pycolor.py
-    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef 13150 Apr  7 13:53 pycolor_class.py'
+    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef 13150 Apr  7 13:53 pycolor_class.py\n'
 -rw-rw-r-- 1 wilgysef wilgysef 13150 Apr  7 13:53 pycolor_class.py
-    DEBUG1: received: b'drwxrwxr-x 3 wilgysef wilgysef  4096 Apr  7 13:53 pyformat'
+    DEBUG1: received: b'drwxrwxr-x 3 wilgysef wilgysef  4096 Apr  7 13:53 pyformat\n'
 drwxrwxr-x 3 wilgysef wilgysef  4096 Apr  7 13:53 pyformat
-    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef    30 Apr  7 13:53 requirements.txt'
+    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef    30 Apr  7 13:53 requirements.txt\n'
 -rw-rw-r-- 1 wilgysef wilgysef    30 Apr  7 13:53 requirements.txt
-    DEBUG1: received: b'-rw-r--r-- 1 wilgysef wilgysef  2645 Feb  8 20:45 search_replace.py'
+    DEBUG1: received: b'-rw-r--r-- 1 wilgysef wilgysef  2645 Feb  8 20:45 search_replace.py\n'
 -rw-r--r-- 1 wilgysef wilgysef  2645 Feb  8 20:45 search_replace.py
-    DEBUG1: received: b'-rw-r--r-- 1 wilgysef wilgysef   448 Jan 22 11:23 split.py'
+    DEBUG1: received: b'-rw-r--r-- 1 wilgysef wilgysef   448 Jan 22 11:23 split.py\n'
 -rw-r--r-- 1 wilgysef wilgysef   448 Jan 22 11:23 split.py
-    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef   193 Jan  6 16:26 static_vars.py'
+    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef   193 Jan  6 16:26 static_vars.py\n'
 -rw-rw-r-- 1 wilgysef wilgysef   193 Jan  6 16:26 static_vars.py
-    DEBUG1: received: b'drwxrwxr-x 2 wilgysef wilgysef  4096 Feb  9 19:45 test_scripts'
+    DEBUG1: received: b'drwxrwxr-x 2 wilgysef wilgysef  4096 Feb  9 19:45 test_scripts\n'
 drwxrwxr-x 2 wilgysef wilgysef  4096 Feb  9 19:45 test_scripts
-    DEBUG1: received: b'drwxrwxr-x 7 wilgysef wilgysef  4096 Apr  7 13:53 tests'
+    DEBUG1: received: b'drwxrwxr-x 7 wilgysef wilgysef  4096 Apr  7 13:53 tests\n'
 drwxrwxr-x 7 wilgysef wilgysef  4096 Apr  7 13:53 tests
-    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef   285 Apr  7 13:31 todo.txt'
+    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef   285 Apr  7 13:31 todo.txt\n'
 -rw-rw-r-- 1 wilgysef wilgysef   285 Apr  7 13:31 todo.txt
-    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef   351 Jan  6 15:53 which.py'
+    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef   351 Jan  6 15:53 which.py\n'
 -rw-rw-r-- 1 wilgysef wilgysef   351 Jan  6 15:53 which.py

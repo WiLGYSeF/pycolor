@@ -1,11 +1,11 @@
 2000-01-02 03:45:56: running ['free', '-h']
 2000-01-02 03:45:56: using profile "free"
-2000-01-02 03:45:56: received: b'              total        used        free      shared  buff/cache   available'
+2000-01-02 03:45:56: received: b'              total        used        free      shared  buff/cache   available\r\n'
 2000-01-02 03:45:56: apply  0: b'              total        used        free      shared  buff/cache   available'
 2000-01-02 03:45:56: writing:  b'              total        used        free      shared  buff/cache   available'
-2000-01-02 03:45:56: received: b'Mem:           7.7G        2.7G        1.1G         92M        3.8G        4.6G'
+2000-01-02 03:45:56: received: b'Mem:           7.7G        2.7G        1.1G         92M        3.8G        4.6G\r\n'
 2000-01-02 03:45:56: apply  1: b'Mem:           \x1b[34m7.7G\x1b[0m        2.7G        \x1b[32m1.1G\x1b[0m         \x1b[34m92M\x1b[0m        3.8G        \x1b[32m4.6G\x1b[0m'
 2000-01-02 03:45:56: writing:  b'Mem:           \x1b[34m7.7G\x1b[0m        2.7G        \x1b[32m1.1G\x1b[0m         \x1b[34m92M\x1b[0m        3.8G        \x1b[32m4.6G\x1b[0m'
-2000-01-02 03:45:56: received: b'Swap:          2.0G          0B        2.0G'
+2000-01-02 03:45:56: received: b'Swap:          2.0G          0B        2.0G\r\n'
 2000-01-02 03:45:56: apply  2: b'\x1b[95mSwap:\x1b[0m          \x1b[33m2.0G\x1b[0m          \x1b[33m0B\x1b[0m        \x1b[33m2.0G\x1b[0m'
 2000-01-02 03:45:56: writing:  b'\x1b[95mSwap:\x1b[0m          \x1b[33m2.0G\x1b[0m          \x1b[33m0B\x1b[0m        \x1b[33m2.0G\x1b[0m'

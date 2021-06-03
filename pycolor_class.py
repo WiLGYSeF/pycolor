@@ -127,6 +127,9 @@ class Pycolor:
         removed_newline = False
         removed_carriagereturn = False
 
+        self.debug_print(4, 'on line %d', self.linenum)
+        self.debug_print(1, 'received: %s', data.encode('utf-8'))
+
         if self.current_profile.remove_input_color:
             data = pyformat.color.remove_ansi_color(data)
 
@@ -137,9 +140,6 @@ class Pycolor:
         if len(data) != 0 and data[-1] == '\r':
             data = data[:-1]
             removed_carriagereturn = True
-
-        self.debug_print(4, 'on line %d', self.linenum)
-        self.debug_print(1, 'received: %s', data.encode('utf-8'))
 
         color_positions = {}
         context = {

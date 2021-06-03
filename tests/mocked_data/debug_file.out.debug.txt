@@ -1,5 +1,5 @@
 2000-01-02 03:45:56: running ['free', '-h']
 2000-01-02 03:45:56: using profile "free"
-2000-01-02 03:45:56: received: b'              total        used        free      shared  buff/cache   available'
-2000-01-02 03:45:56: received: b'Mem:           7.7G        2.7G        1.1G         92M        3.8G        4.6G'
-2000-01-02 03:45:56: received: b'Swap:          2.0G          0B        2.0G'
+2000-01-02 03:45:56: received: b'              total        used        free      shared  buff/cache   available\r\n'
+2000-01-02 03:45:56: received: b'Mem:           7.7G        2.7G        1.1G         92M        3.8G        4.6G\r\n'
+2000-01-02 03:45:56: received: b'Swap:          2.0G          0B        2.0G\r\n'
