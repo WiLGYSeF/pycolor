@@ -70,6 +70,15 @@ class PycolorTest(unittest.TestCase):
                 'ls_profile_named'
             )
 
+    def test_unknown_command(self):
+        with self.assertRaises(SystemExit):
+            self.check_pycolor_main(
+                ['this-is-not-a-valid-command-peucrnh'],
+                MOCKED_DATA,
+                'unknown_command',
+                patch_stderr=True
+            )
+
     def test_free_tty(self):
         self.check_pycolor_main(
             ['free', '-h'],
@@ -132,6 +141,7 @@ class PycolorTest(unittest.TestCase):
         **kwargs
     ):
         patch_stdout = kwargs.get('patch_stdout', False)
+        patch_stderr = kwargs.get('patch_stderr', False)
         print_output = kwargs.get('print_output', False)
         write_output = kwargs.get('write_output', False)
 
@@ -148,6 +158,8 @@ class PycolorTest(unittest.TestCase):
             stack.enter_context(execute_patch(pycolor_class.execute, stdout_in, stderr_in))
             if patch_stdout:
                 stack.enter_context(patch(sys, 'stdout', stdout))
+            if patch_stderr:
+                stack.enter_context(patch(sys, 'stderr', stderr))
 
             try:
                 pycolor.main(args, stdout_stream=stdout, stderr_stream=stderr)
