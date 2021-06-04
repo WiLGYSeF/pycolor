@@ -14,6 +14,10 @@ import pyformat
 from which import which
 
 
+FMT_DEBUG = pyformat.format_string('%Cz%Cde')
+FMT_RESET = pyformat.format_string('%Cz')
+
+
 class Pycolor:
     def __init__(self, **kwargs):
         self.color_mode = kwargs.get('color_mode', 'auto')
@@ -243,10 +247,10 @@ class Pycolor:
             return
 
         if self.is_color_enabled():
-            reset = pyformat.format_string('%Cz%Cde')
+            reset = FMT_DEBUG
             oldstate = str(self.color_state)
             if len(oldstate) == 0:
-                oldstate = pyformat.format_string('%Cz')
+                oldstate = FMT_RESET
         else:
             reset = ''
             oldstate = ''
