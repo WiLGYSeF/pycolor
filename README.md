@@ -10,14 +10,10 @@
 	- [Group Formatting](#groups).
 	- [Field Formatting](#fields).
 	- [Padding](#padding).
+5. [Limitations](#limitations).
 
 A Python program that executes commands to perform real-time terminal output coloring using ANSI color codes.
 Color formatting can be added to program output using JSON configuration files and regular expressions to improve readability of the output.
-
-# Limitations
-
-- Programs that expect interactive standard input may not work properly.
-- Interactive programs that rewrite parts of the screen may cause unexpected behavior.
 
 # Installation
 
@@ -206,3 +202,9 @@ For example, left-padding group 1 to 12 characters can be done with the format s
 The pad formatter will take the length of `value`, which can contain string formats or a normal string, and will format to the necessary number of pad characters if `value` is not long enough.
 
 Right-padding is simply done by moving the pad formatter to the right of the group: `%G1%P(12;%G1)`.
+
+# Limitations
+
+- Commands that write a lot of data at once may cause a `BlockingIOError` (work in progress)
+- Programs that expect interactive standard input may not work properly.
+- Interactive programs that rewrite parts of the screen may cause unexpected behavior.

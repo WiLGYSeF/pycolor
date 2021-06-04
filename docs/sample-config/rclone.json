@@ -54,7 +54,7 @@
 					"replace_groups": ["%Cb%Gc%Cz"]
 				},
 				{
-					"expression": "^ \\* +(.+): +(\\d+%) / *([0-9.]+[A-Za-z]), ([0-9.]+[A-Za-z]+/s), (.+)$",
+					"expression": "^ \\* +(.+): *(\\d+%) / *([0-9.]+[A-Za-z]), ([0-9.]+[A-Za-z]+/s), (.+)$",
 					"replace_groups": ["%Cy%Gc%CZ", "%Clc%Gc%Cz", "%Cc%Gc%Cz", "%Clb%Gc%Cz", "%Cb%Gc%Cz"]
 				},
 				{
