@@ -18,51 +18,51 @@ MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_
 
 
 class PycolorTest(unittest.TestCase):
-    def test_main_ls_numbers(self):
+    def test_ls_numbers(self):
         self.check_pycolor_main(['ls', '-l'], MOCKED_DATA, 'ls_numbers')
 
-    def test_main_ls_numbers_known_arg_parse(self):
+    def test_ls_numbers_known_arg_parse(self):
         self.check_pycolor_main(['ls', '-l', '--color', 'off'], MOCKED_DATA, 'ls_numbers')
 
-    def test_main_no_profile_stdin(self):
+    def test_no_profile_stdin(self):
         with self.assertRaises(SystemExit), patch(pycolor, 'printerr', lambda x: None):
             self.check_pycolor_main([], MOCKED_DATA, 'ls_numbers')
 
     @freeze_time('2000-01-02 03:45:56')
-    def test_main_ls_timestamp_arg(self):
+    def test_ls_timestamp_arg(self):
         self.check_pycolor_main(['--timestamp', '--', 'ls', '-l'], MOCKED_DATA, 'ls_timestamp_arg')
 
     @freeze_time('2000-01-02 03:45:56')
-    def test_main_ls_timestamp_arg_default_profile(self):
+    def test_ls_timestamp_arg_default_profile(self):
         self.check_pycolor_main(
             ['--timestamp', '--', 'ls', '-l'],
             MOCKED_DATA,
             'ls_timestamp_arg_default_profile'
         )
 
-    def test_main_ls_profile_named(self):
+    def test_ls_profile_named(self):
         self.check_pycolor_main(
             ['--profile', 'num', '--', 'ls', '-l'],
             MOCKED_DATA,
             'ls_profile_named'
         )
 
-    def test_main_ls_profile_none(self):
+    def test_ls_profile_none(self):
         self.check_pycolor_main(
             ['--no-execv', '--profile=', '--', 'ls', '-l'],
             MOCKED_DATA,
             'ls_profile_none'
         )
 
-    def test_main_debug_color(self):
+    def test_debug_color(self):
         self.check_pycolor_main(['--debug-color'], MOCKED_DATA, 'debug_color', patch_stdout=True)
 
-    def test_main_debug_format(self):
+    def test_debug_format(self):
         self.check_pycolor_main([
             '--debug-format', 'this %C(lr)is %C(und;ly)a %C(^und;bol;bli;g)test'
         ], MOCKED_DATA, 'debug_format', patch_stdout=True)
 
-    def test_main_ls_profile_fail(self):
+    def test_ls_profile_fail(self):
         with self.assertRaises(SystemExit), patch(pycolor, 'printerr', lambda x: None):
             self.check_pycolor_main(
                 ['--profile', 'invalid', '--', 'ls', '-l'],
@@ -77,7 +77,7 @@ class PycolorTest(unittest.TestCase):
             'free_tty'
         )
 
-    def test_main_ls_debug_v1(self):
+    def test_ls_debug_v1(self):
         self.check_pycolor_main(
             ['-v', '--', 'ls', '-l'],
             MOCKED_DATA,
@@ -85,7 +85,7 @@ class PycolorTest(unittest.TestCase):
             patch_stdout=True
         )
 
-    def test_main_ls_debug_v1_no_color(self):
+    def test_ls_debug_v1_no_color(self):
         self.check_pycolor_main(
             ['-v', '--color=off', '--', 'ls', '-l'],
             MOCKED_DATA,
@@ -93,7 +93,7 @@ class PycolorTest(unittest.TestCase):
             patch_stdout=True
         )
 
-    def test_main_ls_debug_v2(self):
+    def test_ls_debug_v2(self):
         self.check_pycolor_main(
             ['-vv', '--', 'ls', '-l'],
             MOCKED_DATA,
@@ -101,7 +101,7 @@ class PycolorTest(unittest.TestCase):
             patch_stdout=True
         )
 
-    def test_main_ls_debug_v3(self):
+    def test_ls_debug_v3(self):
         self.check_pycolor_main(
             ['-vvv', '--', 'ls', '-l'],
             MOCKED_DATA,
