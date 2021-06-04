@@ -143,6 +143,17 @@ class PycolorTest(unittest.TestCase):
                 test_name
             )
 
+    @freeze_time('2000-01-02 03:45:56')
+    def test_debug_file_out(self):
+        test_name = 'debug_file_out'
+        with self.check_debug_log(MOCKED_DATA, test_name) as fname:
+            self.check_pycolor_main(
+                ['--debug-log-out', fname, 'free', '-h'],
+                MOCKED_DATA,
+                test_name,
+                patch_stdout=True
+            )
+
     def check_pycolor_main(self,
         args,
         mocked_data_dir,

@@ -16,9 +16,8 @@ from pycolor_class import Pycolor
 import pyformat
 
 
-CONFIG_DEFAULT_NAME = '.pycolor.json'
 CONFIG_DIR = os.path.join(os.getenv('HOME'), '.pycolor.d')
-CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), CONFIG_DEFAULT_NAME)
+CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), '.pycolor.json')
 
 
 def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=sys.stdin):

@@ -1,0 +1,7 @@
+[0m[90m    DEBUG1: using profile "free"[0m
+[0m[90m    DEBUG1: received: b'              total        used        free      shared  buff/cache   available\r\n'[0m
+              total        used        free      shared  buff/cache   available
+[0m[90m    DEBUG1: received: b'Mem:           7.7G        2.7G        1.1G         92M        3.8G        4.6G\r\n'[0m
+Mem:           [34m7.7G[0m        2.7G        [32m1.1G[0m         [34m92M[0m        3.8G        [32m4.6G[0m
+[0m[90m    DEBUG1: received: b'Swap:          2.0G          0B        2.0G\r\n'[0m
+[95mSwap:[0m          [33m2.0G[0m          [33m0B[0m        [33m2.0G[0m
