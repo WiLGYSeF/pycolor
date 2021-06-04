@@ -19,7 +19,8 @@ def format_string(string, context=None, return_color_positions=False):
         context['color'] = {}
     ctx_color = context['color']
 
-    if ctx_color.get('enabled', True):
+    color_enabled = ctx_color.get('enabled', True)
+    if color_enabled:
         if 'state' not in ctx_color:
             ctx_color['state'] = ColorState()
         if 'string' in context:
@@ -36,25 +37,27 @@ def format_string(string, context=None, return_color_positions=False):
     color_positions = {}
     idx = 0
 
-    while idx < len(string):
+    strlen = len(string)
+    while idx < strlen:
         if string[idx] == '%':
-            if idx + 1 < len(string) and string[idx + 1] == '%':
+            if idx + 1 < strlen and string[idx + 1] == '%':
                 newstring += '%'
                 idx += 2
                 continue
 
             formatter, value, newidx = get_formatter(string, idx)
             if formatter is not None:
-                if ctx_color.get('enabled', True):
+                if color_enabled:
                     ctx_color['state_current'].set_state_by_string(
                         insert_color_data(newstring, color_positions)
                     )
 
                 result = do_format(string, formatter, value, idx, newidx, context)
                 if formatter == FORMAT_COLOR:
-                    if len(newstring) not in color_positions:
-                        color_positions[len(newstring)] = ''
-                    color_positions[len(newstring)] += result
+                    newstrlen = len(newstring)
+                    if newstrlen not in color_positions:
+                        color_positions[newstrlen] = ''
+                    color_positions[newstrlen] += result
                 else:
                     newstring += result
 
@@ -143,8 +146,10 @@ def do_format(string, formatter, value, idx, newidx, context):
     return string[idx:newidx]
 
 def get_formatter(string, idx):
+    strlen = len(string)
     begin_idx = idx
-    if idx >= len(string) - 1 or string[idx] != '%':
+
+    if idx >= strlen - 1 or string[idx] != '%':
         return None, None, begin_idx
     idx += 1
 
@@ -152,7 +157,7 @@ def get_formatter(string, idx):
     startidx = idx
     paren = -1
 
-    while idx < len(string):
+    while idx < strlen:
         if string[idx] not in FORMAT_CHAR_VALID:
             break
         idx += 1
@@ -161,12 +166,12 @@ def get_formatter(string, idx):
     if len(formatter) == 0:
         return None, None, begin_idx
 
-    if idx != len(string) and string[idx] == '(':
+    if idx != strlen and string[idx] == '(':
         paren = 1
         idx += 1
 
         startidx = idx
-        while idx < len(string):
+        while idx < strlen:
             char = string[idx]
             if paren == 0:
                 break

@@ -32,9 +32,10 @@ def readlines(stream, data=None):
     last = 0
 
     datalen = len(data)
+    len_m1 = datalen - 1
     idx = 0
     while idx < datalen:
-        ret = is_eol_idx(data, idx)
+        ret = is_eol_idx(data, len_m1, idx)
         if ret is not False:
             lines.append(data[last:ret + 1])
             last = ret + 1
@@ -93,9 +94,9 @@ def is_eol(char):
     # '\n' and '\r'
     return char == 10 or char == 13 #pylint: disable=consider-using-in
 
-def is_eol_idx(string, idx):
+def is_eol_idx(string, len_m1, idx):
     char = string[idx]
-    if idx < len(string) - 1 and char == 13 and string[idx + 1] == 10:
+    if idx < len_m1 and char == 13 and string[idx + 1] == 10:
         return idx + 1
     return idx if is_eol(char) else False
 
