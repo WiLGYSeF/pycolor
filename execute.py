@@ -24,12 +24,7 @@ def nonblock(file):
 
 def readlines(stream, data=None):
     if data is None:
-        if isinstance(stream, int):
-            file = io.FileIO(stream, closefd=False)
-            data = file.read()
-            file.close()
-        else:
-            data = stream.read()
+        data = stream.read()
     if data is None or len(data) == 0:
         return None
 
