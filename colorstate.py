@@ -118,27 +118,28 @@ class ColorState:
     def set_special_color_states(self, codes):
         newcodes = []
 
+        codelen = len(codes)
         i = 0
-        while i < len(codes):
+        while i < codelen:
             code = codes[i]
             if code not in (38, 48):
                 newcodes.append(code)
                 i += 1
                 continue
 
-            if i + 1 == len(codes):
+            if i + 1 == codelen:
                 break
 
             color = None
             if codes[i + 1] == 5:
-                if i + 2 < len(codes):
+                if i + 2 < codelen:
                     if codes[i + 2] < 256:
                         color = '%d;5;%d' % (code, codes[i + 2])
                     i += 2
                 else:
-                    i = len(codes)
+                    i = codelen
             elif codes[i + 1] == 2:
-                if i + 4 < len(codes):
+                if i + 4 < codelen:
                     if codes[i + 2] < 256 and codes[i + 3] < 256 and codes[i + 4] < 256:
                         color = '%d;2;%d;%d;%d' % (
                             code,
@@ -148,7 +149,7 @@ class ColorState:
                         )
                     i += 4
                 else:
-                    i = len(codes)
+                    i = codelen
 
             if color is not None:
                 if code == 38:
@@ -225,10 +226,7 @@ class ColorState:
             codes.append(state[COLOR_FOREGROUND])
         if COLOR_BACKGROUND in state:
             codes.append(state[COLOR_BACKGROUND])
-
-        if len(codes) == 0:
-            return ''
-        return '\x1b[%sm' % ';'.join(codes)
+        return '\x1b[%sm' % ';'.join(codes) if len(codes) != 0 else ''
 
     @staticmethod
     def from_str(string):
