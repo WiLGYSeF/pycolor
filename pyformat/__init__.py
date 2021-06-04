@@ -15,23 +15,6 @@ FORMAT_PADDING = 'P'
 def format_string(string, context=None, return_color_positions=False):
     if context is None:
         context = {}
-    if 'color' not in context:
-        context['color'] = {}
-    ctx_color = context['color']
-
-    color_enabled = ctx_color.get('enabled', True)
-    if color_enabled:
-        if 'state' not in ctx_color:
-            ctx_color['state'] = ColorState()
-        if 'string' in context:
-            ctx_color['state'].set_state_by_string(
-                insert_color_data(
-                    context['string'],
-                    ctx_color['positions'],
-                    context['idx']
-                )
-            )
-        ctx_color['state_current'] = ctx_color['state'].copy()
 
     newstring = ''
     color_positions = {}
@@ -47,12 +30,16 @@ def format_string(string, context=None, return_color_positions=False):
 
             formatter, value, newidx = get_formatter(string, idx)
             if formatter is not None:
-                if color_enabled:
-                    ctx_color['state_current'].set_state_by_string(
-                        insert_color_data(newstring, color_positions)
-                    )
-
-                result = do_format(string, formatter, value, idx, newidx, context)
+                result = do_format(
+                    string,
+                    formatter,
+                    value,
+                    idx,
+                    newidx,
+                    context,
+                    newstring=newstring,
+                    color_positions=color_positions,
+                )
                 if formatter == FORMAT_COLOR:
                     newstrlen = len(newstring)
                     if newstrlen not in color_positions:
@@ -71,18 +58,26 @@ def format_string(string, context=None, return_color_positions=False):
         return newstring, color_positions
     return insert_color_data(newstring, color_positions)
 
-def do_format(string, formatter, value, idx, newidx, context):
+def do_format(string, formatter, value, idx, newidx, context, **kwargs):
     if formatter == FORMAT_COLOR:
         ctx = context.get('color', {})
         if not ctx.get('enabled', True):
             return ''
 
         if value == 'prev':
-            prev = str(ctx['state'])
+            prev = str(_get_state(context))
             return prev if len(prev) != 0 else '\x1b[0m'
         if value in ('s', 'soft'):
+            newstring = kwargs.get('newstring', None)
+            color_positions = kwargs.get('color_positions', {})
+
+            curstate = _get_state(context)
+            if newstring is not None:
+                curstate.set_state_by_string(
+                    insert_color_data(newstring, color_positions)
+                )
             return ColorState().get_string(
-                compare_state=ctx['state_current']
+                compare_state=curstate
             )
 
         colorstr = color.get_color(
@@ -103,10 +98,11 @@ def do_format(string, formatter, value, idx, newidx, context):
 
                 value = value[value_sep + 1:]
 
-                newctx = dictcopy(context)
-                newctx['color']['enabled'] = False
+                if 'color' in context:
+                    context = dictcopy(context)
+                    context['color']['enabled'] = False
 
-                return padchar * (padcount - len(format_string(value, context=newctx)))
+                return padchar * (padcount - len(format_string(value, context=context)))
             except ValueError:
                 pass
         return ''
@@ -196,6 +192,20 @@ def get_formatter(string, idx):
         formatter = formatter[:1]
 
     return formatter, value, idx
+
+def _get_state(context):
+    ctx_color = context.get('color', {})
+    state = ctx_color['state'] if 'state' in ctx_color else ColorState()
+
+    if 'string' in context:
+        state.set_state_by_string(
+            insert_color_data(
+                context['string'],
+                ctx_color.get('positions', {}),
+                context['idx']
+            )
+        )
+    return state
 
 def dictcopy(dct):
     copy = {}
