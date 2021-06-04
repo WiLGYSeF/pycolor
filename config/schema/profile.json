@@ -11,8 +11,18 @@
             "type": ["null", "string"],
             "default": null
         },
+        "command": {
+            "description": "alias for \"name\"",
+            "type": ["null", "string"],
+            "default": null
+        },
         "name_expression": {
             "description": "a regex pattern that must match the command name",
+            "type": ["null", "array", "string"],
+            "default": null
+        },
+        "command_expression": {
+            "description": "alias for \"name_expression\"",
             "type": ["null", "array", "string"],
             "default": null
         },

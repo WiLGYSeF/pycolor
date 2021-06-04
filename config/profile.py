@@ -7,7 +7,9 @@ from config.pattern import Pattern
 class Profile:
     def __init__(self, cfg):
         self.name = None
+        self.command = None
         self.name_expression = None
+        self.command_expression = None
         self.which = None
         self.profile_name = None
 
@@ -19,9 +21,15 @@ class Profile:
 
         for attr in [
             'name_expression',
+            'command_expression',
         ]:
             if hasattr(self, attr):
                 setattr(self, attr, join_str_list(getattr(self, attr)))
+
+        if self.name is None:
+            self.name = self.command
+        if self.name_expression is None:
+            self.name_expression = self.command_expression
 
         self.name_regex = compile_re(self.name_expression, 'name_expression')
 

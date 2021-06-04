@@ -227,8 +227,7 @@ class PycolorTest(unittest.TestCase):
                     if print_output: #pragma: no cover
                         print(filedata)
 
-                    if write_output:
-                        #pragma: no cover
+                    if write_output: #pragma: no cover
                         with open(debug_fname, 'w') as debugfile:
                             debugfile.write(filedata)
                     else:

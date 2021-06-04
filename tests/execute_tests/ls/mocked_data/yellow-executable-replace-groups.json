@@ -1,7 +1,7 @@
 {
 	"profiles": [
 		{
-			"name": "ls",
+			"command": "ls",
 			"patterns": [
 				{
 					"expression": "..x (\\d+) +([^ ]+) ([^ ]+) +(?P<fs>\\d+) ([A-Za-z]+)",
