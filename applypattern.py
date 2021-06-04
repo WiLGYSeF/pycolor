@@ -224,16 +224,15 @@ def apply_pattern(pat, linenum, data, context):
 
 def pat_schrep(pattern, string, context):
     color_positions = {}
-    ctx = pyformat.dictcopy(context)
 
     def replacer(match):
-        ctx['string'] = string
-        ctx['idx'] = match.start()
-        ctx['match'] = match
+        context['string'] = string
+        context['idx'] = match.start()
+        context['match'] = match
 
         newstring, colorpos = pyformat.format_string(
             pattern.replace,
-            context=ctx,
+            context=context,
             return_color_positions=True
         )
 

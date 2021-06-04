@@ -17,6 +17,8 @@ from which import which
 FMT_DEBUG = pyformat.format_string('%Cz%Cde')
 FMT_RESET = pyformat.format_string('%Cz')
 
+DEFAULT_TIMESTAMP = '%Y-%m-%d %H:%M:%S: '
+
 
 class Pycolor:
     def __init__(self, **kwargs):
@@ -128,7 +130,6 @@ class Pycolor:
         return retcode
 
     def data_callback(self, stream, data):
-        color_positions = {}
         removed_newline = False
         removed_carriagereturn = False
 
@@ -186,14 +187,15 @@ class Pycolor:
 
         if len(color_positions) != 0:
             data = insert_color_data(data, color_positions)
+        encoded_data = data.encode('utf-8')
 
-        self.debug_print(2, 'writing:  %s', data.encode('utf-8'))
+        self.debug_print(2, 'writing:  %s', encoded_data)
 
         if self.current_profile.timestamp:
             self.write_timestamp(stream)
 
         stream.flush()
-        stream.buffer.write(data.encode('utf-8'))
+        stream.buffer.write(encoded_data)
 
         self.color_state.set_state_by_string(data)
 
@@ -210,7 +212,7 @@ class Pycolor:
         stream.flush()
 
     def write_timestamp(self, stream):
-        timestamp = '%Y-%m-%d %H:%M:%S: '
+        timestamp = DEFAULT_TIMESTAMP
         if isinstance(self.current_profile.timestamp, str):
             timestamp = self.current_profile.timestamp
 
