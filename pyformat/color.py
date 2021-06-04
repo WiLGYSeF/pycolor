@@ -100,14 +100,14 @@ def get_color(colorstr, aliases=None):
     if match:
         return '\x1b[%sm' % match[1]
 
-    val = ';'.join(filter(
-        lambda x: x is not None,
-        [ _colorval(clr, aliases) for clr in colorstr.split(';') ]
-    ))
-    if len(val) == 0:
-        return None
+    colors = []
 
-    return '\x1b[%sm' % val
+    for clr in colorstr.split(';'):
+        val = _colorval(clr, aliases)
+        if val is not None:
+            colors.append(val)
+
+    return '\x1b[%sm' % ';'.join(colors) if len(colors) != 0 else None
 
 def _colorval(color, aliases=None):
     if aliases is not None and color in aliases:
