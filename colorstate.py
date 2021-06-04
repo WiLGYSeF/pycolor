@@ -1,5 +1,7 @@
 import re
 
+import pyformat.color
+
 
 BOLD = 'bold'
 DIM = 'dim'
@@ -29,6 +31,32 @@ DEFAULT_COLOR_STATE = {
 
     COLOR_FOREGROUND: '39',
     COLOR_BACKGROUND: '49'
+}
+
+STYLE_CODE_ENABLE = {
+    1: BOLD,
+    2: DIM,
+    3: ITALIC,
+    4: UNDERLINE,
+    5: BLINK,
+    7: INVERT,
+    8: CONCEAL,
+    9: STRIKETHROUGH,
+
+    53: OVERLINE
+}
+
+STYLE_CODE_DISABLE = {
+    21: BOLD,
+    22: DIM,
+    23: ITALIC,
+    24: UNDERLINE,
+    25: BLINK,
+    27: INVERT,
+    28: CONCEAL,
+    29: STRIKETHROUGH,
+
+    55: OVERLINE
 }
 
 ANSI_REGEX = re.compile(r'\x1b\[([0-9;]+)m')
@@ -144,41 +172,15 @@ class ColorState:
         return newcodes
 
     def set_state_by_codes(self, codes):
-        style_code_enable = {
-            1: BOLD,
-            2: DIM,
-            3: ITALIC,
-            4: UNDERLINE,
-            5: BLINK,
-            7: INVERT,
-            8: CONCEAL,
-            9: STRIKETHROUGH,
-
-            53: OVERLINE
-        }
-
-        style_code_disable = {
-            21: BOLD,
-            22: DIM,
-            23: ITALIC,
-            24: UNDERLINE,
-            25: BLINK,
-            27: INVERT,
-            28: CONCEAL,
-            29: STRIKETHROUGH,
-
-            55: OVERLINE
-        }
-
         for code in codes:
             if code == 0:
                 self.reset()
-            elif code in style_code_enable:
-                code = style_code_enable[code]
+            elif code in STYLE_CODE_ENABLE:
+                code = STYLE_CODE_ENABLE[code]
                 self.color_state[code] = True
                 self.state_changed.add(code)
-            elif code in style_code_disable:
-                code = style_code_disable[code]
+            elif code in STYLE_CODE_DISABLE:
+                code = STYLE_CODE_DISABLE[code]
                 self.color_state[code] = False
                 self.state_changed.add(code)
             elif (code >= 30 and code <= 39) or (code >= 90 and code <= 97):
@@ -209,23 +211,10 @@ class ColorState:
         return self.get_state_by_keys(self.diff_keys(compare_state))
 
     def get_string(self, compare_state=None):
-        styles = {
-            BOLD: 1,
-            DIM: 2,
-            ITALIC: 3,
-            UNDERLINE: 4,
-            BLINK: 5,
-            INVERT: 7,
-            CONCEAL: 8,
-            STRIKETHROUGH: 9,
-
-            OVERLINE: 53
-        }
-
         state = self.get_changed_state(compare_state)
         codes = []
 
-        for key, val in styles.items():
+        for key, val in pyformat.color.STYLES.items():
             if key in state:
                 if state[key]:
                     codes.append(str(val))
