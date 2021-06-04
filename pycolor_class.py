@@ -119,6 +119,7 @@ class Pycolor:
                     printerr("command 'less' not found")
                 sys.exit(1)
             os.wait()
+            tmpfile.close()
 
         return retcode
 
