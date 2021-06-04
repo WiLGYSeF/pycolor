@@ -12,10 +12,14 @@ def apply_pattern(pat, linenum, data, context):
     if pat.super_regex is not None and not pat.super_regex.search(data):
         return False, None
 
+    def del_if_exist(obj, key):
+        if key in obj:
+            del obj[key]
+
     color_positions = context['color']['positions']
-    context = pyformat.dictcopy(context)
-    context['color']['positions'] = color_positions
     context['string'] = data
+    for key in ['field', 'match', 'field_cur', 'match_cur', 'idx']:
+        del_if_exist(context, key)
 
     if pat.separator_regex is not None:
         fields = re_split(pat.separator_regex, data)
