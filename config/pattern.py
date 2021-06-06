@@ -28,8 +28,8 @@ class Pattern:
         mutually_exclusive(self, ['replace', 'replace_all'])
         mutually_exclusive(self, ['field', 'replace_groups'])
         mutually_exclusive(self, ['stdout_only', 'stderr_only'])
-        mutually_exclusive(self, ['activation_line', 'activation_expression'])
-        mutually_exclusive(self, ['deactivation_line', 'deactivation_expression'])
+        #mutually_exclusive(self, ['activation_line', 'activation_expression'])
+        #mutually_exclusive(self, ['deactivation_line', 'deactivation_expression'])
 
         for attr in [
             'expression',
@@ -147,8 +147,12 @@ class Pattern:
                 if idx != 0:
                     idx -= 1
             if idx == 0 and self.activation_ranges[0][0] > linenum:
-                return inactive() if self.activation_ranges[0][1] else active()
-            return active() if self.activation_ranges[idx][1] else inactive()
+                active = not self.activation_ranges[0][1]
+            else:
+                active = self.activation_ranges[idx][1]
+            if active != self.active:
+                self.active = active
+                return active
 
         if self.active or self.deactivation_expression_line_offset > 0:
             if self.deactivation_regex is not None and re.search(self.deactivation_regex, data):
