@@ -1,0 +1,57 @@
+{
+	"profiles": [
+		{
+			"name": "git",
+			"arg_patterns": [
+				{
+					"subcommand": "push"
+				}
+			],
+			"tty": true,
+			"patterns": [
+				{
+					"expression": "^Counting objects: (\\d+%)",
+					"replace_groups": ["%Clc%Gc%Cz"]
+				},
+				{
+					"expression": "^Compressing objects: +(\\d+%) \\((\\d+)/(\\d+)\\)",
+					"replace_groups": ["%Clc%Gc%Cz", "%Cg%Gc%Cz", "%Cc%Gc%Cz"]
+				},
+				{
+					"expression": "^Writing objects: +(\\d+%) \\((\\d+)/(\\d+)\\), ([\\d.]+ .+) \\| ([\\d.]+ [^,]+)",
+					"replace_groups": ["%Clc%Gc%Cz", "%Cg%Gc%Cz", "%Cc%Gc%Cz", "%Cg%Gc%Cz", "%Cb%Gc%Cz"]
+				},
+				{
+					"expression": "^Total (\\d+) \\(delta \\d+\\), reused (\\d+) \\(delta \\d+\\)",
+					"replace_groups": ["%Cg%Gc%Cz", "%Cg%Gc%Cz"]
+				},
+				{
+					"expression": "^ +([0-9a-f]+)..([0-9a-f]+) +(.*) -> (.*)$",
+					"replace_groups": {
+						"1,2": "%Cy%Gc%Cz",
+						"3,4": "%C(bol;c)%Gc%Cz"
+					}
+				},
+				{
+					"expression": "^ \\* \\[(new branch)\\] +(.*) -> (.*)$",
+					"replace_groups": {
+						"1": "%Cy%Gc%Cz",
+						"2,3": "%C(bol;c)%Gc%Cz"
+					}
+				},
+				{
+					"expression": "^ \\+ +([0-9a-f]+)\\.+([0-9a-f]+) +(.*) -> (.*) (\\(forced update\\))$",
+					"replace_groups": {
+						"1,2": "%Cy%Gc%Cz",
+						"3,4": "%C(bol;c)%Gc%Cz",
+						"5": "%C(bol;y)%Gc%Cz"
+					}
+				},
+				{
+					"expression": "^ \\- \\[deleted\\] +(.+)$",
+					"replace_groups": ["%Cr%Gc%Cz"]
+				}
+			]
+		}
+	]
+}

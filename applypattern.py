@@ -308,26 +308,24 @@ def get_range(number, length):
     start = spl[0]
     start = int(start) if len(start) != 0 else 1
     if start >= length:
-        return start, start + 1, 1
+        return range(start, start + 1)
     while start < 0:
         start += length
 
-    end = spl[1] if len(spl) >= 2 else start + 1
+    end = spl[1] if len(spl) >= 2 else start
     end = int(end) if not isinstance(end, str) or len(end) != 0 else length
-    if end > length:
+    if end >= length:
         end = length
     while end < 0:
         end += length
 
-    step = int(spl[2]) if len(spl) >= 3 else 1
-    return start, end, step
+    return range(start, end + 1, int(spl[2]) if len(spl) >= 3 else 1)
 
 def _get_group_range(groups, obj, idx):
     for key, val in obj.items():
         for num in key.split(','):
             try:
-                start, end, step = get_range(num, len(groups))
-                if idx in range(start, end + 1, step):
+                if idx in get_range(num, len(groups)):
                     return val
             except ValueError:
                 pass

@@ -21,3 +21,10 @@ class GitTest(unittest.TestCase):
             MOCKED_DATA,
             'status-deactivation-line-offset'
         )
+
+    def test_push(self):
+        check_pycolor_execute(self,
+            ['git', 'push'],
+            MOCKED_DATA,
+            'push'
+        )

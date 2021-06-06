@@ -1,0 +1,9 @@
+Enumerating objects: 57, done.
+Counting objects: [96m100%[0m (57/57), done.
+Delta compression using up to 8 threads
+Compressing objects: [96m100%[0m ([32m41[0m/[36m41[0m), done.
+Writing objects: [96m100%[0m ([32m41[0m/[36m41[0m), [32m5.08 KiB[0m | [34m1.27 MiB/s[0m, done.
+Total [32m41[0m (delta 29), reused [32m0[0m (delta 0)
+remote: Resolving deltas: 100% (29/29), completed with 15 local objects.
+To github.com:WiLGYSeF/pycolor.git
+   [33me4612a6[0m..[33m1f78ec5[0m  [1;36mmaster[0m -> [1;36mmaster[0m

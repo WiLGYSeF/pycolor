@@ -9,7 +9,7 @@ def get_field_range(number, length):
         if start < 0:
             start += last_field_num + 1
         start = num_to_idx(start)
-        return start, start + 1, 1
+        return start, start, 1
 
     rangespl = number.split('*')
     start = rangespl[0]
