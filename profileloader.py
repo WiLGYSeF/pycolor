@@ -43,7 +43,9 @@ class ProfileLoader:
         return profiles
 
     def include_from_profile(self, patterns, from_profiles):
+        fidx = -1
         for fprof in from_profiles:
+            fidx += 1
             if not fprof.enabled:
                 continue
 
@@ -53,6 +55,11 @@ class ProfileLoader:
                     'from_profiles',
                     'profile "%s" was not found' % fprof.name
                 )
+
+            # it's ok to modify these without copying
+            for i in range(len(fromprof.patterns)):
+                pat = fromprof.patterns[i]
+                pat.from_profile = '%d:%d' % (fidx, i)
 
             if fprof.order == 'before':
                 orig_patterns = patterns.copy()

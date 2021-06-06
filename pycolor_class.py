@@ -156,7 +156,6 @@ class Pycolor:
             }
         }
 
-        patcount = 0
         for pat in self.current_profile.patterns:
             if any([
                 not pat.enabled,
@@ -173,14 +172,13 @@ class Pycolor:
                     break
 
                 if self.debug >= 3:
-                    self.debug_print(3, 'apply%3d: %s',
-                        patcount, insert_color_data(applied, color_positions).encode('utf-8')
+                    self.debug_print(3, 'apply%3s: %s',
+                        pat.from_profile, insert_color_data(applied, color_positions).encode('utf-8')
                     )
 
                 data = applied
                 if pat.skip_others:
                     break
-            patcount += 1
 
         if data is None:
             return

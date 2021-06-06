@@ -21,6 +21,8 @@ class Pattern:
         self.activation_exp_line_off = 0
         self.deactivation_exp_line_off = 0
 
+        self.from_profile = None
+
         load_schema('pattern', cfg, self)
 
         for attr in [
