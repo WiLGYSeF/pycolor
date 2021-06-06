@@ -5,6 +5,9 @@ from config.profile import Profile
 from which import which
 
 
+PROF_IDX_SEP = ';'
+
+
 class ProfileLoader:
     def __init__(self):
         self.profiles = []
@@ -59,7 +62,7 @@ class ProfileLoader:
             # it's ok to modify these without copying
             for i in range(len(fromprof.patterns)):
                 pat = fromprof.patterns[i]
-                pat.from_profile = '%d:%d' % (fidx, i)
+                pat.from_profile = '%x%s%x' % (fidx, PROF_IDX_SEP,i)
 
             if fprof.order == 'before':
                 orig_patterns = patterns.copy()

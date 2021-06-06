@@ -172,8 +172,12 @@ class Pycolor:
                     break
 
                 if self.debug >= 3:
+                    fromprof_str = pat.from_profile
+                    #if len(fromprof_str) > 3 and profileloader.PROF_IDX_SEP in fromprof_str:
+
                     self.debug_print(3, 'apply%3s: %s',
-                        pat.from_profile, insert_color_data(applied, color_positions).encode('utf-8')
+                        fromprof_str,
+                        insert_color_data(applied, color_positions).encode('utf-8')
                     )
 
                 data = applied

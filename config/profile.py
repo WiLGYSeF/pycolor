@@ -46,7 +46,7 @@ class Profile:
 
         for i in range(len(self.patterns)):
             self.patterns[i] = Pattern(self.patterns[i])
-            self.patterns[i].from_profile = str(i)
+            self.patterns[i].from_profile = '%x' % i
 
     def get_name(self):
         for name in [
