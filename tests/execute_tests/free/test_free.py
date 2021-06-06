@@ -28,3 +28,6 @@ class FreeTest(unittest.TestCase):
 
     def test_replace_groups_all(self):
         check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'replace-groups-all')
+
+    def test_invalid_option(self):
+        check_pycolor_execute(self, ['free', '-a'], MOCKED_DATA, 'invalid-option')

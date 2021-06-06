@@ -1,0 +1,26 @@
+{
+	"profiles": [
+		{
+			"name": "free",
+			"arg_patterns": [
+				{
+					"expression": "--help",
+					"match_not": true
+				}
+			],
+			"patterns": [
+				{
+					"deactivation_expression": "^free: invalid option",
+					"separator": " +",
+					"field": 0,
+					"min_fields": 7,
+					"max_fields": 7,
+					"expression": ".*",
+					"replace_fields": {
+						"*": "%Cg%Fc%Cz"
+					}
+				}
+			]
+		}
+	]
+}

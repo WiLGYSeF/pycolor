@@ -18,6 +18,9 @@ def apply_pattern(pat, linenum, data, context):
         if key in context:
             del context[key]
 
+    fields = None
+    field_idxs = []
+
     if pat.separator_regex is not None:
         fields = re_split(pat.separator_regex, data)
         field_idxs = pat.get_field_indexes(fields)
