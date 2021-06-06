@@ -302,37 +302,32 @@ def get_replace_group(match, idx, replace_groups):
         return replace_groups[idx - 1]
     return None
 
-def get_range(arr, number):
-    if '*' not in number:
-        start = int(number)
-        if start <= 0:
-            start += len(arr)
-        return start, start + 1, 1
+def get_range(number, length):
+    spl = number.split('*')
 
-    rangespl = number.split('*')
-    start = rangespl[0]
-    end = rangespl[1]
-    step = int(rangespl[2]) if len(rangespl) >= 3 else 1
-
+    start = spl[0]
     start = int(start) if len(start) != 0 else 1
+    if start >= length:
+        return start, start + 1, 1
+    while start < 0:
+        start += length
 
-    if len(end) == 0:
-        end = len(arr) + 1
-    else:
-        end = int(end) + 1
-        if end <= 0:
-            end += len(arr)
-        elif end > len(arr) + 1:
-            end = len(arr) + 1
+    end = spl[1] if len(spl) >= 2 else start + 1
+    end = int(end) if not isinstance(end, str) or len(end) != 0 else length
+    if end > length:
+        end = length
+    while end < 0:
+        end += length
 
+    step = int(spl[2]) if len(spl) >= 3 else 1
     return start, end, step
 
 def _get_group_range(groups, obj, idx):
     for key, val in obj.items():
         for num in key.split(','):
             try:
-                start, end, step = get_range(groups, num)
-                if idx in range(start, end, step):
+                start, end, step = get_range(num, len(groups))
+                if idx in range(start, end + 1, step):
                     return val
             except ValueError:
                 pass
