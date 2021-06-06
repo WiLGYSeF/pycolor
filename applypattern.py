@@ -12,14 +12,11 @@ def apply_pattern(pat, linenum, data, context):
     if pat.super_regex is not None and not pat.super_regex.search(data):
         return False, None
 
-    def del_if_exist(obj, key):
-        if key in obj:
-            del obj[key]
-
     color_positions = context['color']['positions']
     context['string'] = data
     for key in ['field', 'match', 'field_cur', 'match_cur', 'idx']:
-        del_if_exist(context, key)
+        if key in context:
+            del context[key]
 
     if pat.separator_regex is not None:
         fields = re_split(pat.separator_regex, data)
@@ -61,108 +58,11 @@ def apply_pattern(pat, linenum, data, context):
             len(pat.replace_fields) != 0,
             len(field_idxs) != 0
         ]):
-            replace_ranges = []
-            colorpos_arr = []
-            original_color_positions = color_positions.copy()
-            newdata = ''
-            changed = False
-            offset = 0
-            origin_offset = 0
-            field_idx = 0
-
-            match = pat.regex.search(data)
-            if match is not None:
-                context['match'] = match
-
-            for idx in range(0, len(fields) + 1, 2):
-                replace_val = get_replace_field(fields, field_idx, pat.replace_fields)
-                sep = fields[idx + 1] if idx != len(fields) - 1 else ''
-
-                if replace_val is None:
-                    replace_val = fields[idx]
-                else:
-                    changed = True
-
-                context['field_cur'] = fields[idx]
-                context['idx'] = len(newdata)
-
-                replace_val, colorpos = pyformat.format_string(
-                    replace_val,
-                    context=context,
-                    return_color_positions=True
-                )
-
-                colorpos = offset_color_positions(colorpos, offset)
-                colorpos_arr.append(colorpos)
-                update_color_positions(color_positions, colorpos)
-
-                replace_ranges.append((
-                    (
-                        origin_offset,
-                        origin_offset + len(fields[idx])
-                    ),
-                    (
-                        offset,
-                        offset + len(replace_val)
-                    )
-                ))
-
-                newdata += replace_val + sep
-                offset += len(replace_val) + len(sep)
-                origin_offset += len(fields[idx]) + len(sep)
-                field_idx += 1
-
-            color_positions.clear()
-            color_positions.update(original_color_positions)
-
-            update_positions(color_positions, replace_ranges)
-            for colorpos in colorpos_arr:
-                update_color_positions(color_positions, colorpos)
-
-            return changed, newdata
+            return _replace_fields(pat, data, fields, color_positions, context)
 
         if len(pat.replace_groups) != 0:
-            replace_ranges = []
-            colorpos_arr = []
-            original_color_positions = color_positions.copy()
+            return _replace_groups(pat, data, color_positions, context)
 
-            def replace_group(match, idx, offset):
-                replace_val = get_replace_group(match, idx, pat.replace_groups)
-                if replace_val is None:
-                    return match.group(idx)
-
-                context['match'] = match
-                context['idx'] = match.start(idx)
-                context['match_cur'] = match.group(idx)
-
-                replace_val, colorpos = pyformat.format_string(
-                    replace_val,
-                    context=context,
-                    return_color_positions=True
-                )
-
-                colorpos = offset_color_positions(colorpos, match.start(idx) - offset)
-                colorpos_arr.append(colorpos)
-                update_color_positions(color_positions, colorpos)
-
-                replace_ranges.append((
-                    match.span(idx),
-                    (
-                        match.start(idx) - offset,
-                        match.start(idx) - offset + len(replace_val)
-                    )
-                ))
-                return replace_val
-
-            newdata = match_group_replace(pat.regex, data, replace_group)
-            color_positions.clear()
-            color_positions.update(original_color_positions)
-
-            update_positions(color_positions, replace_ranges)
-            for colorpos in colorpos_arr:
-                update_color_positions(color_positions, colorpos)
-
-            return 'match' in context, newdata
         return pat.regex.search(data), data
 
     if pat.replace_all is not None:
@@ -221,6 +121,110 @@ def apply_pattern(pat, linenum, data, context):
             return True, data
 
     return False, None
+
+def _replace_fields(pat, data, fields, color_positions, context):
+    replace_ranges = []
+    colorpos_arr = []
+    original_color_positions = color_positions.copy()
+    newdata = ''
+    changed = False
+    offset = 0
+    origin_offset = 0
+    field_idx = 0
+
+    match = pat.regex.search(data)
+    if match is not None:
+        context['match'] = match
+
+    for idx in range(0, len(fields) + 1, 2):
+        replace_val = get_replace_field(fields, field_idx, pat.replace_fields)
+        sep = fields[idx + 1] if idx != len(fields) - 1 else ''
+
+        if replace_val is None:
+            replace_val = fields[idx]
+        else:
+            changed = True
+
+        context['field_cur'] = fields[idx]
+        context['idx'] = len(newdata)
+
+        replace_val, colorpos = pyformat.format_string(
+            replace_val,
+            context=context,
+            return_color_positions=True
+        )
+
+        colorpos = offset_color_positions(colorpos, offset)
+        colorpos_arr.append(colorpos)
+        update_color_positions(color_positions, colorpos)
+
+        replace_ranges.append((
+            (
+                origin_offset,
+                origin_offset + len(fields[idx])
+            ),
+            (
+                offset,
+                offset + len(replace_val)
+            )
+        ))
+
+        newdata += replace_val + sep
+        offset += len(replace_val) + len(sep)
+        origin_offset += len(fields[idx]) + len(sep)
+        field_idx += 1
+
+    color_positions.clear()
+    color_positions.update(original_color_positions)
+
+    update_positions(color_positions, replace_ranges)
+    for colorpos in colorpos_arr:
+        update_color_positions(color_positions, colorpos)
+
+    return changed, newdata
+
+def _replace_groups(pat, data, color_positions, context):
+    replace_ranges = []
+    colorpos_arr = []
+    original_color_positions = color_positions.copy()
+
+    def replace_group(match, idx, offset):
+        replace_val = get_replace_group(match, idx, pat.replace_groups)
+        if replace_val is None:
+            return match.group(idx)
+
+        context['match'] = match
+        context['idx'] = match.start(idx)
+        context['match_cur'] = match.group(idx)
+
+        replace_val, colorpos = pyformat.format_string(
+            replace_val,
+            context=context,
+            return_color_positions=True
+        )
+
+        colorpos = offset_color_positions(colorpos, match.start(idx) - offset)
+        colorpos_arr.append(colorpos)
+        update_color_positions(color_positions, colorpos)
+
+        replace_ranges.append((
+            match.span(idx),
+            (
+                match.start(idx) - offset,
+                match.start(idx) - offset + len(replace_val)
+            )
+        ))
+        return replace_val
+
+    newdata = match_group_replace(pat.regex, data, replace_group)
+    color_positions.clear()
+    color_positions.update(original_color_positions)
+
+    update_positions(color_positions, replace_ranges)
+    for colorpos in colorpos_arr:
+        update_color_positions(color_positions, colorpos)
+
+    return 'match' in context, newdata
 
 def pat_schrep(pattern, string, context):
     color_positions = {}
@@ -313,9 +317,7 @@ def get_range(number, length):
         start += length
 
     end = spl[1] if len(spl) >= 2 else start
-    end = int(end) if not isinstance(end, str) or len(end) != 0 else length
-    if end >= length:
-        end = length
+    end = min(int(end) if not isinstance(end, str) or len(end) != 0 else length, length)
     while end < 0:
         end += length
 
