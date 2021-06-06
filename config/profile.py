@@ -1,4 +1,4 @@
-from config import load_schema, compile_re, join_str_list
+from config import load_schema, compile_re, mutually_exclusive, join_str_list
 from config.argpattern import ArgPattern
 from config.fromprofile import FromProfile
 from config.pattern import Pattern
@@ -18,6 +18,9 @@ class Profile:
         self.patterns = []
 
         load_schema('profile', cfg, self)
+
+        mutually_exclusive(self, ['name', 'command'])
+        mutually_exclusive(self, ['name_expression', 'command_expression'])
 
         for attr in [
             'name_expression',

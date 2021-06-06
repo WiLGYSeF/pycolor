@@ -25,6 +25,10 @@ class ConfigRegexException(ConfigPropertyException):
     def __init__(self, prop, message):
         super().__init__(prop, 'regex %s' % message)
 
+class ConfigExclusivePropertyException(ConfigException):
+    def __init__(self, message):
+        super().__init__(message)
+
 def load_schema(schema_name, cfg, dest):
     validator = validators.get(schema_name)
     if validator is None:
@@ -47,6 +51,24 @@ def compile_re(expression, prop):
         return re.compile(expression) if len(expression) != 0 else None
     except re.error as rer:
         raise ConfigRegexException(prop, rer) from rer
+
+def mutually_exclusive(self, attrlist):
+    count = 0
+    for attr in attrlist:
+        if not hasattr(self, attr):
+            continue
+        val = getattr(self, attr)
+        if any([
+            isinstance(val, bool) and val is False,
+            isinstance(val, dict) and len(val) == 0,
+            isinstance(val, int) and val == -1, # TODO: replace with something more concrete
+            isinstance(val, list) and len(val) == 0,
+            val is None,
+        ]):
+            continue
+        count += 1
+    if count > 1:
+        raise ConfigExclusivePropertyException('mutually exclusive: %s' % str(attrlist))
 
 def join_str_list(val):
     if val is None:

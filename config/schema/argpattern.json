@@ -37,5 +37,8 @@
             "type": "boolean",
             "default": false
         }
+    },
+    "dependencies": {
+        "position": ["expression"]
     }
 }

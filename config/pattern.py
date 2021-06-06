@@ -1,6 +1,6 @@
 import re
 
-from config import load_schema, compile_re, join_str_list
+from config import load_schema, compile_re, mutually_exclusive, join_str_list
 import pyformat
 
 
@@ -24,6 +24,12 @@ class Pattern:
         self.from_profile = None
 
         load_schema('pattern', cfg, self)
+
+        mutually_exclusive(self, ['replace', 'replace_all'])
+        mutually_exclusive(self, ['field', 'replace_groups'])
+        mutually_exclusive(self, ['stdout_only', 'stderr_only'])
+        mutually_exclusive(self, ['activation_line', 'activation_expression'])
+        mutually_exclusive(self, ['deactivation_line', 'deactivation_expression'])
 
         for attr in [
             'expression',

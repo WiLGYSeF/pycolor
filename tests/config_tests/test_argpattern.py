@@ -86,6 +86,7 @@ class GetArgPatternTest(unittest.TestCase):
         for entry in GET_ARG_RANGES:
             self.assertListEqual(
                 list(ArgPattern({
+                    'expression': '.*',
                     'position': entry[POSITION]
                 }).get_arg_range(entry[ARGLEN])),
                 entry[RANGE]

@@ -1,6 +1,6 @@
 import re
 
-from config import load_schema, compile_re, join_str_list
+from config import load_schema, compile_re, mutually_exclusive, join_str_list
 
 
 ARGRANGE_REGEX = re.compile(r'([<>+-])?(\*|[0-9]+)')
@@ -13,6 +13,8 @@ class ArgPattern:
         self.subcommand = []
 
         load_schema('argpattern', cfg, self)
+
+        mutually_exclusive(self, ['expression', 'subcommand'])
 
         for attr in [
             'expression',
