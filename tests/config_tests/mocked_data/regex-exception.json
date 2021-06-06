@@ -1,0 +1,7 @@
+{
+    "profiles": [
+        {
+            "name_expression": "invalid(regex"
+        }
+    ]
+}

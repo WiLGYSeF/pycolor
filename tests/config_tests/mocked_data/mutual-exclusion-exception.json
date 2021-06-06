@@ -1,0 +1,8 @@
+{
+    "profiles": [
+        {
+            "name": "my_command",
+            "command": "same as 'name'"
+        }
+    ]
+}
