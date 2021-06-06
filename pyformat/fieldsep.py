@@ -1,8 +1,8 @@
 CHAR_SEPARATOR = 's'
 
 
-def get_field_range(number, fields):
-    last_field_num = idx_to_num(len(fields))
+def get_field_range(number, length):
+    last_field_num = idx_to_num(length)
 
     if '*' not in number:
         start = int(number)
@@ -18,15 +18,13 @@ def get_field_range(number, fields):
 
     start = num_to_idx(int(start) if len(start) != 0 else 1)
 
-    if len(end) == 0:
-        end = len(fields)
-    else:
+    if len(end) != 0:
         end = int(end)
         if end < 0:
             end += last_field_num + 1
-        end = num_to_idx(end)
-        if end >= len(fields):
-            end = len(fields) - 1
+        end = min(num_to_idx(end), length)
+    else:
+        end = length
 
     return start, end, step
 
@@ -43,17 +41,13 @@ def get_fields(formatter, context):
         number = formatter
         sep = None
 
-    start, end, _ = get_field_range(number, fields)
+    start, end, _ = get_field_range(number, len(fields))
     if start > end or start >= len(fields):
         return ''
 
     string = fields[start]
     for i in range(start + 2, end + 1, 2):
-        if sep is None:
-            string += fields[i - 1] + fields[i]
-        else:
-            string += sep + fields[i]
-
+        string += (fields[i - 1] if sep is None else sep) + fields[i]
     return string
 
 def get_join_field(num, fields):

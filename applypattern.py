@@ -337,7 +337,7 @@ def _get_field_range(fields, obj, idx):
     for key, val in obj.items():
         for num in key.split(','):
             try:
-                start, end, step = pyformat.fieldsep.get_field_range(num, fields)
+                start, end, step = pyformat.fieldsep.get_field_range(num, len(fields))
                 start = pyformat.fieldsep.idx_to_num(start)
                 end = pyformat.fieldsep.idx_to_num(end)
                 if idx in range(start - 1, end, step):
