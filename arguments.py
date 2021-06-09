@@ -61,21 +61,22 @@ def get_args(args):
         help='force enable "interactive" for all profiles'
     )
 
-    parser.add_argument('--debug-color',
+    group = parser.add_argument_group('debug options')
+    group.add_argument('--debug-color',
         action='store_true', default=False,
         help='displays all available color styles and exits'
     )
-    parser.add_argument('-f', '--debug-format',
+    group.add_argument('-f', '--debug-format',
         action=DebugFormatAction, metavar='FORMAT',
         help='displays the formatted string and exits, using the long form will ensure that'
         + ' the ANSI colors will be reset afterwards'
     )
-    parser.add_argument('--debug-from-stdin',
+    group.add_argument('--debug-from-stdin',
         action='store_true', default=False,
         help='reads stdin instead of running the given command'
     )
 
-    group = parser.add_mutually_exclusive_group()
+    group = group.add_mutually_exclusive_group()
     group.add_argument('--debug-log',
         action='store', metavar='FILE',
         help='write debug messages to a file instead of stdout'
