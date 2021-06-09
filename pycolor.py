@@ -29,7 +29,8 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         sys.exit(0)
 
     if argspace.debug_format:
-        print(pyformat.format_string(argspace.debug_format + '%Cz'))
+        fmt = argspace.debug_format + ('%Cz' if argspace.debug_format_reset else '')
+        print(pyformat.format_string(fmt))
         sys.exit(0)
 
     debug_log = None

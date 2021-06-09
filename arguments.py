@@ -1,6 +1,13 @@
 import argparse
-import sys
 
+
+class DebugFormatAction(argparse.Action):
+    def __init__(self, option_strings, dest, nargs=None, **kwargs):
+        super().__init__(option_strings, dest, **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, 'debug_format_reset', option_string == '--debug-format')
+        setattr(namespace, self.dest, values)
 
 def get_args(args):
     parser = argparse.ArgumentParser(
@@ -58,9 +65,10 @@ def get_args(args):
         action='store_true', default=False,
         help='displays all available color styles and exits'
     )
-    parser.add_argument('--debug-format',
-        action='store', metavar='FORMAT',
-        help='displays the formatted string and exits'
+    parser.add_argument('-f', '--debug-format',
+        action=DebugFormatAction, metavar='FORMAT',
+        help='displays the formatted string and exits, using the long form will ensure that'
+        + ' the ANSI colors will be reset afterwards'
     )
     parser.add_argument('--debug-from-stdin',
         action='store_true', default=False,
@@ -109,7 +117,7 @@ def split_args(args, actions):
 
         nargs = action_nargs[last_arg]
         if nargs is None:
-            # TODO: this depends on the action
+            # TODO: this depends on the action, but is usually 1
             idx += 1
         elif isinstance(nargs, int):
             while nargs > 0 and idx < len(args) and args[idx][0] != '-':
