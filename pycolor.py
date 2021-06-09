@@ -11,7 +11,7 @@ import arguments
 import config
 import debug_colors
 from execute import read_stream
-from printerr import printerr
+from printerr import printerr, is_color_enabled
 from pycolor_class import Pycolor
 import pyformat
 
@@ -30,7 +30,11 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
 
     if argspace.debug_format:
         fmt = argspace.debug_format + ('%Cz' if argspace.debug_format_reset else '')
-        print(pyformat.format_string(fmt))
+        print(pyformat.format_string(fmt, context={
+            'color': {
+                'enabled': is_color_enabled(argspace.color)
+            }
+        }))
         sys.exit(0)
 
     debug_log = None
