@@ -2,10 +2,7 @@
 
 import json
 import os
-import re
 import sys
-
-import fastjsonschema
 
 import arguments
 import config
