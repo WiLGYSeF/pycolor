@@ -1,6 +1,9 @@
 styles:
 [0m nor [0m[1m bol [0m[2m dim [0m[3m ita [0m[4m und [0m[5m bli [0m[7m inv [0m[8m hid [0m[9m str [0m[53m ove [0m[0m
 
+bold on and off:
+[1m on [21m off [0m
+
 3-bit color palette (normal and light):
 [30m bla [0m[31m red [0m[32m gre [0m[33m yel [0m[34m blu [0m[35m mag [0m[36m cya [0m[37m gra [0m[40m bla [0m[41m red [0m[42m gre [0m[43m yel [0m[44m blu [0m[45m mag [0m[46m cya [0m[47m gra [0m[0m
 [90m bla [0m[91m red [0m[92m gre [0m[93m yel [0m[94m blu [0m[95m mag [0m[96m cya [0m[97m gra [0m[100m bla [0m[101m red [0m[102m gre [0m[103m yel [0m[104m blu [0m[105m mag [0m[106m cya [0m[107m gra [0m[0m

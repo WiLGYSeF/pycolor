@@ -22,6 +22,11 @@ def debug_colors():
         print(pyformat.format_string('%%C(%s) %s %%Cz' % (style, style)), end='')
     print(reset)
 
+    print('\nbold on and off:')
+    print(pyformat.format_string('%C(bol) on '), end='')
+    print(pyformat.format_string('%C(^bol) off '), end='')
+    print(reset)
+
     def color_3bit(light=False):
         colors = [
             'black',
