@@ -1,3 +1,4 @@
+from collections import namedtuple
 from contextlib import ExitStack, contextmanager
 import os
 import random
@@ -55,7 +56,18 @@ class PycolorTest(unittest.TestCase):
         )
 
     def test_debug_color(self):
-        self.check_pycolor_main(['--debug-color'], MOCKED_DATA, 'debug_color', patch_stdout=True)
+        #pylint: disable=invalid-name
+        def get_terminal_size(fd=None):
+            TerminalSize = namedtuple('terminal_size', ['columns', 'lines'])
+            return TerminalSize(80, 24)
+
+        with patch(os, 'get_terminal_size', get_terminal_size):
+            self.check_pycolor_main(
+                ['--debug-color'],
+                MOCKED_DATA,
+                'debug_color',
+                patch_stdout=True
+            )
 
     def test_debug_format(self):
         self.check_pycolor_main([
