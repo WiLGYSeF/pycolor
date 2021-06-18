@@ -32,15 +32,15 @@ def format_string(string, context=None, return_color_positions=False):
             formatter, value, newidx = get_formatter(string, idx)
             if formatter is not None:
                 result = do_format(
-                    string,
                     formatter,
                     value,
-                    idx,
-                    newidx,
                     context,
                     newstring=newstring,
                     color_positions=color_positions,
                 )
+                if result is None:
+                    result = string[idx:newidx]
+
                 if formatter == FORMAT_COLOR:
                     newstrlen = len(newstring)
                     if newstrlen not in color_positions:
@@ -59,22 +59,22 @@ def format_string(string, context=None, return_color_positions=False):
         return newstring, color_positions
     return insert_color_data(newstring, color_positions)
 
-def do_format(string, formatter, value, idx, newidx, context, **kwargs):
+def do_format(formatter, value, context, **kwargs):
     if formatter == FORMAT_COLOR:
-        return do_format_color(value, idx, newidx, context, **kwargs)
+        return do_format_color(value, context, **kwargs)
     if formatter == FORMAT_PADDING:
-        return do_format_padding(value, idx, newidx, context, **kwargs)
+        return do_format_padding(value, context, **kwargs)
     if 'match' in context:
         if formatter == FORMAT_GROUP:
-            return do_format_group(value, idx, newidx, context, **kwargs)
+            return do_format_group(value, context, **kwargs)
         if formatter == FORMAT_GROUP_COLOR and 'match_cur' in context:
-            return do_format_group_color(value, idx, newidx, context, **kwargs)
+            return do_format_group_color(value, context, **kwargs)
     if 'fields' in context:
         if formatter == FORMAT_FIELD:
-            return do_format_field(value, idx, newidx, context, **kwargs)
-    return string[idx:newidx]
+            return do_format_field(value, context, **kwargs)
+    return None
 
-def do_format_color(value, idx, newidx, context, **kwargs):
+def do_format_color(value, context, **kwargs):
     ctx = context.get('color', {})
     if not ctx.get('enabled', True):
         return ''
@@ -103,7 +103,7 @@ def do_format_color(value, idx, newidx, context, **kwargs):
         colorstr = ''
     return colorstr
 
-def do_format_padding(value, idx, newidx, context, **kwargs):
+def do_format_padding(value, context, **kwargs):
     value_sep = value.find(';')
     if value_sep != -1:
         try:
@@ -122,7 +122,7 @@ def do_format_padding(value, idx, newidx, context, **kwargs):
             pass
     return ''
 
-def do_format_group(value, idx, newidx, context, **kwargs):
+def do_format_group(value, context, **kwargs):
     if value == 'c' and 'match_cur' in context:
         return context['match_cur']
 
@@ -149,7 +149,7 @@ def do_format_group(value, idx, newidx, context, **kwargs):
             pass
     return matchgroup if matchgroup else ''
 
-def do_format_group_color(value, idx, newidx, context, **kwargs):
+def do_format_group_color(value, context, **kwargs):
     result, color_pos = format_string(
         '%C' + value + '%Gc%Cz',
         context=context,
@@ -163,7 +163,7 @@ def do_format_group_color(value, idx, newidx, context, **kwargs):
         return result
     return insert_color_data(result, color_pos)
 
-def do_format_field(value, idx, newidx, context, **kwargs):
+def do_format_field(value, context, **kwargs):
     if value == 'c' and 'field_cur' in context:
         return context['field_cur']
     return fieldsep.get_fields(value, context)
