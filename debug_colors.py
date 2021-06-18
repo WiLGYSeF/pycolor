@@ -1,3 +1,5 @@
+import os
+
 import pyformat
 
 
@@ -42,7 +44,7 @@ def debug_colors():
                 )), end='')
         print(reset)
 
-    print('\n3-bit color palette:')
+    print('\n3-bit color palette (normal and light):')
     color_3bit()
     color_3bit(light=True)
 
@@ -53,7 +55,7 @@ def debug_colors():
                 i,
                 i
             )), end='')
-            if (i & 15) == 15:
+            if (i & 7) == 7:
                 print(reset)
         print(reset)
 
@@ -61,7 +63,7 @@ def debug_colors():
     color_8bit()
     color_8bit(background=True)
 
-    def color_24bit(step, background=False):
+    def color_24bit(step, background=False, col_limit=10):
         range24 = range(0, 16, step)
         col = 0
 
@@ -81,14 +83,19 @@ def debug_colors():
                     )), end='')
 
                     col += 1
-                    if col == 10:
+                    if col == col_limit:
                         col = 0
                         print(reset)
         print(reset)
 
+    try:
+        col_limit = (os.get_terminal_size().columns // 8) // 8 * 8
+    except OSError:
+        col_limit = 8
+
     print('\n24-bit color palette sample:')
-    color_24bit(3)
-    color_24bit(3, background=True)
+    color_24bit(2, col_limit=col_limit)
+    color_24bit(2, background=True, col_limit=col_limit)
 
 def _hex(val):
     charset = '0123456789abcdef'
