@@ -28,14 +28,6 @@ def get_args(args):
         action='store', metavar='NAME',
         help='specifically use this profile even if it does not match the current arguments'
     )
-    parser.add_argument('-t', '--timestamp',
-        action='store', metavar='FORMAT', default=False, nargs='?',
-        help='force enable "timestamp" for all profiles with an optional FORMAT'
-    )
-    parser.add_argument('--less',
-        action='store_true', default=False,
-        help='force enable "less_output" for all profiles'
-    )
     parser.add_argument('-v', '--verbose',
         action='count', default=0,
         help='enable debug mode to assist in configuring profiles'
@@ -48,22 +40,32 @@ def get_args(args):
         dest='execv', action='store_false',
         help='do not use execv() if no profile matches the given command'
     )
-    parser.add_argument('--tty',
-        action='store_true', default=False,
-        help='run the command in a pseudo-terminal'
-    )
-    parser.add_argument('--no-tty',
-        dest='tty', action='store_false',
-        help='do not run the command in a pseudo-terminal (default)'
-    )
-    parser.add_argument('-i', '--interactive',
-        action='store_true', default=False,
-        help='force enable "interactive" for all profiles'
-    )
     parser.add_argument('--stdin',
         action='store_true', default=False,
         help='reads from stdin instead of running the given command. '
         + 'the command can still be given to let pycolor know which profile it should use'
+    )
+
+    group = parser.add_argument_group('profile options')
+    group.add_argument('--less',
+        action='store_true', default=False,
+        help='force enable "less_output" for all profiles'
+    )
+    group.add_argument('-t', '--timestamp',
+        action='store', metavar='FORMAT', default=False, nargs='?',
+        help='force enable "timestamp" for all profiles with an optional FORMAT'
+    )
+    group.add_argument('--tty',
+        action='store_true', default=False,
+        help='run the command in a pseudo-terminal'
+    )
+    group.add_argument('--no-tty',
+        dest='tty', action='store_false',
+        help='do not run the command in a pseudo-terminal (default)'
+    )
+    group.add_argument('-i', '--interactive',
+        action='store_true', default=False,
+        help='force enable "interactive" for all profiles'
     )
 
     group = parser.add_argument_group('debug options')
