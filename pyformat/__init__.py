@@ -64,14 +64,18 @@ def do_format(formatter, value, context, **kwargs):
         return do_format_color(value, context, **kwargs)
     if formatter == FORMAT_PADDING:
         return do_format_padding(value, context, **kwargs)
-    if 'match' in context:
-        if formatter == FORMAT_GROUP:
-            return do_format_group(value, context, **kwargs)
-        if formatter == FORMAT_GROUP_COLOR and 'match_cur' in context:
-            return do_format_group_color(value, context, **kwargs)
-    if 'fields' in context:
-        if formatter == FORMAT_FIELD:
-            return do_format_field(value, context, **kwargs)
+    if formatter == FORMAT_GROUP:
+        if 'match' not in context:
+            return ''
+        return do_format_group(value, context, **kwargs)
+    if formatter == FORMAT_GROUP_COLOR:
+        if 'match' not in context or 'match_cur' not in context:
+            return ''
+        return do_format_group_color(value, context, **kwargs)
+    if formatter == FORMAT_FIELD:
+        if 'fields' not in context:
+            return ''
+        return do_format_field(value, context, **kwargs)
     return None
 
 def do_format_color(value, context, **kwargs):
