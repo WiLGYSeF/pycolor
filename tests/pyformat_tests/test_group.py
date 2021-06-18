@@ -105,11 +105,33 @@ FORMAT_CONTEXT_GROUP_STRINGS = [
     },
 ]
 
+FORMAT_CONTEXT_GROUP_COLOR = [
+    {
+        STRING: '[%Hg]',
+        CONTEXT: {
+            'match': Match('abc', {
+                1: 'abc'
+            })
+        },
+        RESULT: '[\x1b[32mabc\x1b[0m]'
+    },
+]
+
 
 class GroupTest(unittest.TestCase):
     def test_format_context_group_string(self):
         for entry in FORMAT_CONTEXT_GROUP_STRINGS:
             self.assertEqual(
                 pyformat.format_string(entry[STRING], context=entry[CONTEXT]),
+                entry[RESULT]
+            )
+
+    def test_format_context_group_color(self):
+        for entry in FORMAT_CONTEXT_GROUP_COLOR:
+            context = entry[CONTEXT]
+            context['match_cur'] = context['match'][1]
+
+            self.assertEqual(
+                pyformat.format_string(entry[STRING], context=context),
                 entry[RESULT]
             )

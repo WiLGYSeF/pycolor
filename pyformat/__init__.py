@@ -9,6 +9,7 @@ FORMAT_CHAR_VALID = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvw
 FORMAT_COLOR = 'C'
 FORMAT_FIELD = 'F'
 FORMAT_GROUP = 'G'
+FORMAT_GROUP_COLOR = 'H'
 FORMAT_PADDING = 'P'
 
 
@@ -107,32 +108,46 @@ def do_format(string, formatter, value, idx, newidx, context, **kwargs):
                 pass
         return ''
 
-    if formatter == FORMAT_GROUP and 'match' in context:
-        if value == 'c' and 'match_cur' in context:
-            return context['match_cur']
-
-        try:
-            group = int(value)
-            context['match_incr'] = group + 1
-        except ValueError:
-            group = value
-
-        try:
-            matchgroup = context['match'][group]
-        except IndexError:
-            matchgroup = None
-
-        if matchgroup is None and group == 'n':
-            if 'match_incr' not in context:
-                context['match_incr'] = 1
+    if 'match' in context:
+        if formatter == FORMAT_GROUP:
+            if value == 'c' and 'match_cur' in context:
+                return context['match_cur']
 
             try:
-                matchgroup = context['match'][context['match_incr']]
-                context['match_incr'] += 1
-                return matchgroup
+                group = int(value)
+                context['match_incr'] = group + 1
+            except ValueError:
+                group = value
+
+            try:
+                matchgroup = context['match'][group]
             except IndexError:
-                pass
-        return matchgroup if matchgroup else ''
+                matchgroup = None
+
+            if matchgroup is None and group == 'n':
+                if 'match_incr' not in context:
+                    context['match_incr'] = 1
+
+                try:
+                    matchgroup = context['match'][context['match_incr']]
+                    context['match_incr'] += 1
+                    return matchgroup
+                except IndexError:
+                    pass
+            return matchgroup if matchgroup else ''
+        if formatter == FORMAT_GROUP_COLOR and 'match_cur' in context:
+            result, color_pos = format_string(
+                '%C' + value + '%Gc%Cz',
+                context=context,
+                return_color_positions=True
+            )
+            if 'color_positions' in kwargs:
+                color_positions = kwargs['color_positions']
+                offset = len(kwargs.get('newstring', ''))
+                for pos, val in color_pos.items():
+                    color_positions[pos + offset] = val
+                return result
+            return insert_color_data(result, color_pos)
 
     if formatter == FORMAT_FIELD and 'fields' in context:
         if value == 'c' and 'field_cur' in context:
