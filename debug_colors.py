@@ -53,20 +53,21 @@ def debug_colors():
     color_3bit()
     color_3bit(light=True)
 
-    def color_8bit(background=False):
-        for i in range(256):
-            print(pyformat.format_string('%%C(%s%d) %3d ' % (
-                '^' if background else '',
-                i,
-                i
-            )), end='')
-            if (i & 7) == 7:
-                print(reset)
-        print(reset)
+    def color_8bit():
+        for row in range(32):
+            for i in range(2):
+                for col in range(8):
+                    val = row * 8 + col
+                    print(pyformat.format_string('%%C(%s%d) %3d ' % (
+                        '^' if i == 1 else '',
+                        val,
+                        val
+                    )), end='')
+                print(reset, end='')
+            print(reset)
 
     print('\n8-bit color palette:')
     color_8bit()
-    color_8bit(background=True)
 
     def color_24bit(step, background=False, col_limit=10):
         range24 = range(0, 16, step)
