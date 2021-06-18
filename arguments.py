@@ -60,6 +60,11 @@ def get_args(args):
         action='store_true', default=False,
         help='force enable "interactive" for all profiles'
     )
+    parser.add_argument('--stdin',
+        action='store_true', default=False,
+        help='reads from stdin instead of running the given command. '
+        + 'the command can still be given to let pycolor know which profile it should use'
+    )
 
     group = parser.add_argument_group('debug options')
     group.add_argument('--debug-color',
@@ -70,10 +75,6 @@ def get_args(args):
         action=DebugFormatAction, metavar='FORMAT',
         help='displays the formatted string and exits, using the long form will ensure that'
         + ' the ANSI colors will be reset afterwards'
-    )
-    group.add_argument('--debug-from-stdin',
-        action='store_true', default=False,
-        help='reads stdin instead of running the given command'
     )
 
     group = group.add_mutually_exclusive_group()

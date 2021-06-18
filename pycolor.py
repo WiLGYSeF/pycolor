@@ -19,7 +19,7 @@ CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), '.pycolor.json')
 
 def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=sys.stdin):
     argspace, cmd_args = arguments.get_args(args)
-    read_stdin = len(cmd_args) == 0 or argspace.debug_from_stdin
+    read_stdin = len(cmd_args) == 0 or argspace.stdin
 
     if argspace.debug_color:
         debug_colors.debug_colors()
