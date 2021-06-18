@@ -55,6 +55,20 @@ class PycolorTest(unittest.TestCase):
             'ls_profile_none'
         )
 
+    def test_ls_stdin(self):
+        name = 'ls_stdin'
+        stdin = open(os.path.join(MOCKED_DATA, name + '.txt'), 'r')
+
+        try:
+            self.check_pycolor_main(
+                ['--stdin', 'ls', '-l'],
+                MOCKED_DATA,
+                name,
+                stdin=stdin
+            )
+        finally:
+            stdin.close()
+
     def test_debug_color(self):
         #pylint: disable=invalid-name
         def get_terminal_size(fd=None):
@@ -177,6 +191,7 @@ class PycolorTest(unittest.TestCase):
         test_name,
         **kwargs
     ):
+        stdin = kwargs.get('stdin', sys.stdin)
         patch_stdout = kwargs.get('patch_stdout', False)
         patch_stderr = kwargs.get('patch_stderr', False)
         print_output = kwargs.get('print_output', False)
@@ -199,7 +214,7 @@ class PycolorTest(unittest.TestCase):
                 stack.enter_context(patch(sys, 'stderr', stderr))
 
             try:
-                pycolor.main(args, stdout_stream=stdout, stderr_stream=stderr)
+                pycolor.main(args, stdout_stream=stdout, stderr_stream=stderr, stdin_stream=stdin)
             except SystemExit as sexc:
                 if sexc.code != 0:
                     raise sexc
