@@ -137,9 +137,6 @@ def do_format_padding(value, context, **kwargs):
     return ''
 
 def do_format_group(value, context, **kwargs):
-    if value == 'c' and 'match_cur' in context:
-        return context['match_cur']
-
     try:
         group = int(value)
         context['match_incr'] = group + 1
@@ -148,20 +145,22 @@ def do_format_group(value, context, **kwargs):
 
     try:
         matchgroup = context['match'][group]
+        return matchgroup if matchgroup else ''
     except IndexError:
-        matchgroup = None
+        pass
 
-    if matchgroup is None and group == 'n':
+    if 'match_cur' in context and group == 'c':
+        return context['match_cur']
+    if group == 'n':
         if 'match_incr' not in context:
             context['match_incr'] = 1
-
         try:
             matchgroup = context['match'][context['match_incr']]
             context['match_incr'] += 1
-            return matchgroup
+            return matchgroup if matchgroup else ''
         except IndexError:
             pass
-    return matchgroup if matchgroup else ''
+    return ''
 
 def do_format_group_color(value, context, **kwargs):
     result, color_pos = format_string(
