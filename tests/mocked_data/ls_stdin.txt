@@ -1,0 +1,22 @@
+total 108
+-rw-rw-r-- 1 wilgysef wilgysef  8096 Apr  7 13:53 README.md
+drwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 14:00 __pycache__
+-rw-rw-r-- 1 wilgysef wilgysef  1664 Apr  7 13:53 argpattern.py
+-rw-rw-r-- 1 wilgysef wilgysef  5933 Apr  7 13:53 colorstate.py
+drwxr-xr-x 4 wilgysef wilgysef  4096 Feb  8 20:45 docs
+-rw-r--r-- 1 wilgysef wilgysef  3199 Feb  9 20:36 execute.py
+-rw-r--r-- 1 wilgysef wilgysef   588 Feb 11 14:07 fromprofile.py
+drwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 12:04 htmlcov
+-rw-rw-r-- 1 wilgysef wilgysef  6613 Apr  7 13:53 pattern.py
+-rw-rw-r-- 1 wilgysef wilgysef  2238 Apr  7 13:53 profile_class.py
+-rwxrwxr-x 1 wilgysef wilgysef  3917 Apr  7 13:59 pycolor.py
+-rw-rw-r-- 1 wilgysef wilgysef 13150 Apr  7 13:53 pycolor_class.py
+drwxrwxr-x 3 wilgysef wilgysef  4096 Apr  7 13:53 pyformat
+-rw-rw-r-- 1 wilgysef wilgysef    30 Apr  7 13:53 requirements.txt
+-rw-r--r-- 1 wilgysef wilgysef  2645 Feb  8 20:45 search_replace.py
+-rw-r--r-- 1 wilgysef wilgysef   448 Jan 22 11:23 split.py
+-rw-rw-r-- 1 wilgysef wilgysef   193 Jan  6 16:26 static_vars.py
+drwxrwxr-x 2 wilgysef wilgysef  4096 Feb  9 19:45 test_scripts
+drwxrwxr-x 7 wilgysef wilgysef  4096 Apr  7 13:53 tests
+-rw-rw-r-- 1 wilgysef wilgysef   285 Apr  7 13:31 todo.txt
+-rw-rw-r-- 1 wilgysef wilgysef   351 Jan  6 15:53 which.py

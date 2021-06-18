@@ -28,6 +28,7 @@ COLORS = {
 
     'darkgray': 90,
     'darkgrey': 90,
+    'lightblack': 90,
     'lightred': 91,
     'lightgreen': 92,
     'lightyellow': 93,

@@ -1,3 +1,5 @@
+import os
+
 import pyformat
 
 
@@ -18,6 +20,11 @@ def debug_colors():
         'ove',
     ]:
         print(pyformat.format_string('%%C(%s) %s %%Cz' % (style, style)), end='')
+    print(reset)
+
+    print('\nbold on and off:')
+    print(pyformat.format_string('%C(bol) on '), end='')
+    print(pyformat.format_string('%C(^bol) off '), end='')
     print(reset)
 
     def color_3bit(light=False):
@@ -42,26 +49,27 @@ def debug_colors():
                 )), end='')
         print(reset)
 
-    print('\n3-bit color palette:')
+    print('\n3-bit color palette (normal and light):')
     color_3bit()
     color_3bit(light=True)
 
-    def color_8bit(background=False):
-        for i in range(256):
-            print(pyformat.format_string('%%C(%s%d) %3d ' % (
-                '^' if background else '',
-                i,
-                i
-            )), end='')
-            if (i & 15) == 15:
-                print(reset)
-        print(reset)
+    def color_8bit():
+        for row in range(32):
+            for i in range(2):
+                for col in range(8):
+                    val = row * 8 + col
+                    print(pyformat.format_string('%%C(%s%d) %3d ' % (
+                        '^' if i == 1 else '',
+                        val,
+                        val
+                    )), end='')
+                print(reset, end='')
+            print(reset)
 
     print('\n8-bit color palette:')
     color_8bit()
-    color_8bit(background=True)
 
-    def color_24bit(step, background=False):
+    def color_24bit(step, background=False, col_limit=10):
         range24 = range(0, 16, step)
         col = 0
 
@@ -81,14 +89,19 @@ def debug_colors():
                     )), end='')
 
                     col += 1
-                    if col == 10:
+                    if col == col_limit:
                         col = 0
                         print(reset)
         print(reset)
 
+    try:
+        col_limit = (os.get_terminal_size().columns // 8) // 8 * 8
+    except OSError:
+        col_limit = 8
+
     print('\n24-bit color palette sample:')
-    color_24bit(3)
-    color_24bit(3, background=True)
+    color_24bit(2, col_limit=col_limit)
+    color_24bit(2, background=True, col_limit=col_limit)
 
 def _hex(val):
     charset = '0123456789abcdef'
