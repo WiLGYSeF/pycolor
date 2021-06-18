@@ -61,100 +61,112 @@ def format_string(string, context=None, return_color_positions=False):
 
 def do_format(string, formatter, value, idx, newidx, context, **kwargs):
     if formatter == FORMAT_COLOR:
-        ctx = context.get('color', {})
-        if not ctx.get('enabled', True):
-            return ''
-
-        if value == 'prev':
-            prev = str(_get_state(context))
-            return prev if len(prev) != 0 else '\x1b[0m'
-        if value in ('s', 'soft'):
-            newstring = kwargs.get('newstring', None)
-            color_positions = kwargs.get('color_positions', {})
-
-            curstate = _get_state(context)
-            if newstring is not None:
-                curstate.set_state_by_string(
-                    insert_color_data(newstring, color_positions)
-                )
-            return ColorState().get_string(
-                compare_state=curstate
-            )
-
-        colorstr = color.get_color(
-            value,
-            aliases=ctx.get('aliases', {})
-        )
-        if colorstr is None:
-            colorstr = ''
-        return colorstr
-
+        return do_format_color(value, idx, newidx, context, **kwargs)
     if formatter == FORMAT_PADDING:
-        value_sep = value.find(';')
-        if value_sep != -1:
-            try:
-                spl = value[0:value_sep].split(',')
-                padcount = int(spl[0])
-                padchar = ' ' if len(spl) == 1 else spl[1][0]
-
-                value = value[value_sep + 1:]
-
-                if 'color' in context:
-                    context = dictcopy(context)
-                    context['color']['enabled'] = False
-
-                return padchar * (padcount - len(format_string(value, context=context)))
-            except ValueError:
-                pass
-        return ''
-
+        return do_format_padding(value, idx, newidx, context, **kwargs)
     if 'match' in context:
         if formatter == FORMAT_GROUP:
-            if value == 'c' and 'match_cur' in context:
-                return context['match_cur']
-
-            try:
-                group = int(value)
-                context['match_incr'] = group + 1
-            except ValueError:
-                group = value
-
-            try:
-                matchgroup = context['match'][group]
-            except IndexError:
-                matchgroup = None
-
-            if matchgroup is None and group == 'n':
-                if 'match_incr' not in context:
-                    context['match_incr'] = 1
-
-                try:
-                    matchgroup = context['match'][context['match_incr']]
-                    context['match_incr'] += 1
-                    return matchgroup
-                except IndexError:
-                    pass
-            return matchgroup if matchgroup else ''
+            return do_format_group(value, idx, newidx, context, **kwargs)
         if formatter == FORMAT_GROUP_COLOR and 'match_cur' in context:
-            result, color_pos = format_string(
-                '%C' + value + '%Gc%Cz',
-                context=context,
-                return_color_positions=True
-            )
-            if 'color_positions' in kwargs:
-                color_positions = kwargs['color_positions']
-                offset = len(kwargs.get('newstring', ''))
-                for pos, val in color_pos.items():
-                    color_positions[pos + offset] = val
-                return result
-            return insert_color_data(result, color_pos)
-
-    if formatter == FORMAT_FIELD and 'fields' in context:
-        if value == 'c' and 'field_cur' in context:
-            return context['field_cur']
-        return fieldsep.get_fields(value, context)
-
+            return do_format_group_color(value, idx, newidx, context, **kwargs)
+    if 'fields' in context:
+        if formatter == FORMAT_FIELD:
+            return do_format_field(value, idx, newidx, context, **kwargs)
     return string[idx:newidx]
+
+def do_format_color(value, idx, newidx, context, **kwargs):
+    ctx = context.get('color', {})
+    if not ctx.get('enabled', True):
+        return ''
+
+    if value == 'prev':
+        prev = str(_get_state(context))
+        return prev if len(prev) != 0 else '\x1b[0m'
+    if value in ('s', 'soft'):
+        newstring = kwargs.get('newstring', None)
+        color_positions = kwargs.get('color_positions', {})
+
+        curstate = _get_state(context)
+        if newstring is not None:
+            curstate.set_state_by_string(
+                insert_color_data(newstring, color_positions)
+            )
+        return ColorState().get_string(
+            compare_state=curstate
+        )
+
+    colorstr = color.get_color(
+        value,
+        aliases=ctx.get('aliases', {})
+    )
+    if colorstr is None:
+        colorstr = ''
+    return colorstr
+
+def do_format_padding(value, idx, newidx, context, **kwargs):
+    value_sep = value.find(';')
+    if value_sep != -1:
+        try:
+            spl = value[0:value_sep].split(',')
+            padcount = int(spl[0])
+            padchar = ' ' if len(spl) == 1 else spl[1][0]
+
+            value = value[value_sep + 1:]
+
+            if 'color' in context:
+                context = dictcopy(context)
+                context['color']['enabled'] = False
+
+            return padchar * (padcount - len(format_string(value, context=context)))
+        except ValueError:
+            pass
+    return ''
+
+def do_format_group(value, idx, newidx, context, **kwargs):
+    if value == 'c' and 'match_cur' in context:
+        return context['match_cur']
+
+    try:
+        group = int(value)
+        context['match_incr'] = group + 1
+    except ValueError:
+        group = value
+
+    try:
+        matchgroup = context['match'][group]
+    except IndexError:
+        matchgroup = None
+
+    if matchgroup is None and group == 'n':
+        if 'match_incr' not in context:
+            context['match_incr'] = 1
+
+        try:
+            matchgroup = context['match'][context['match_incr']]
+            context['match_incr'] += 1
+            return matchgroup
+        except IndexError:
+            pass
+    return matchgroup if matchgroup else ''
+
+def do_format_group_color(value, idx, newidx, context, **kwargs):
+    result, color_pos = format_string(
+        '%C' + value + '%Gc%Cz',
+        context=context,
+        return_color_positions=True
+    )
+    if 'color_positions' in kwargs:
+        color_positions = kwargs['color_positions']
+        offset = len(kwargs.get('newstring', ''))
+        for pos, val in color_pos.items():
+            color_positions[pos + offset] = val
+        return result
+    return insert_color_data(result, color_pos)
+
+def do_format_field(value, idx, newidx, context, **kwargs):
+    if value == 'c' and 'field_cur' in context:
+        return context['field_cur']
+    return fieldsep.get_fields(value, context)
 
 def get_formatter(string, idx):
     strlen = len(string)
