@@ -79,14 +79,28 @@ def do_format_color(value, context, **kwargs):
     if not ctx.get('enabled', True):
         return ''
 
+    def get_state(context):
+        ctx_color = context.get('color', {})
+        state = ctx_color['state'] if 'state' in ctx_color else ColorState()
+
+        if 'string' in context:
+            state.set_state_by_string(
+                insert_color_data(
+                    context['string'],
+                    ctx_color.get('positions', {}),
+                    context['idx']
+                )
+            )
+        return state
+
     if value == 'prev':
-        prev = str(_get_state(context))
+        prev = str(get_state(context))
         return prev if len(prev) != 0 else '\x1b[0m'
     if value in ('s', 'soft'):
         newstring = kwargs.get('newstring', None)
         color_positions = kwargs.get('color_positions', {})
 
-        curstate = _get_state(context)
+        curstate = get_state(context)
         if newstring is not None:
             curstate.set_state_by_string(
                 insert_color_data(newstring, color_positions)
@@ -219,20 +233,6 @@ def get_formatter(string, idx):
         formatter = formatter[:1]
 
     return formatter, value, idx
-
-def _get_state(context):
-    ctx_color = context.get('color', {})
-    state = ctx_color['state'] if 'state' in ctx_color else ColorState()
-
-    if 'string' in context:
-        state.set_state_by_string(
-            insert_color_data(
-                context['string'],
-                ctx_color.get('positions', {}),
-                context['idx']
-            )
-        )
-    return state
 
 def dictcopy(dct):
     copy = {}
