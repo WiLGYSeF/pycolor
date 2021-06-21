@@ -168,7 +168,7 @@ def do_format_group(value, context, **kwargs):
 
 def do_format_group_color(value, context, **kwargs):
     result, color_pos = format_string(
-        '%C' + value + '%Gc%Cz',
+        '%C(' + value + ')%Gc%Cz',
         context=context,
         return_color_positions=True
     )

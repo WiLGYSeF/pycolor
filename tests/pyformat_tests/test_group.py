@@ -115,6 +115,15 @@ FORMAT_CONTEXT_GROUP_COLOR = [
         },
         RESULT: '[\x1b[32mabc\x1b[0m]'
     },
+    {
+        STRING: '[%H(bol;r)]',
+        CONTEXT: {
+            'match': Match('abc', {
+                1: 'abc'
+            })
+        },
+        RESULT: '[\x1b[1;31mabc\x1b[0m]'
+    },
 ]
 
 
