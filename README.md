@@ -11,6 +11,7 @@
 	- [Field Formatting](#fields).
 	- [Padding](#padding).
 5. [Limitations](#limitations).
+6. [Known Bugs](#known-bugs).
 
 A Python program that executes commands to perform real-time terminal output coloring using ANSI color codes.
 Color formatting can be added to program output using JSON configuration files and regular expressions to improve readability of the output.
@@ -208,3 +209,7 @@ Right-padding is simply done by moving the pad formatter to the right of the gro
 - Commands that write a lot of data at once may cause a `BlockingIOError` (work in progress)
 - Programs that expect interactive standard input may not work properly.
 - Interactive programs that rewrite parts of the screen may cause unexpected behavior.
+
+# Known Bugs
+
+- BlockingIOError is sometimes thrown and is not caught
