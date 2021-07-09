@@ -13,6 +13,8 @@ from pycolor_class import Pycolor
 import pyformat
 
 
+__version__ = "0.0.1"
+
 CONFIG_DIR = os.path.join(os.getenv('HOME'), '.pycolor.d')
 CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), '.pycolor.json')
 
@@ -20,6 +22,10 @@ CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), '.pycolor.json')
 def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=sys.stdin):
     argspace, cmd_args = arguments.get_args(args)
     read_stdin = len(cmd_args) == 0 or argspace.stdin
+
+    if argspace.version:
+        print(__version__)
+        sys.exit(0)
 
     if argspace.debug_color:
         debug_colors.debug_colors()

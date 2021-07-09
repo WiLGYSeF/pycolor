@@ -14,6 +14,10 @@ def get_args(args):
         description='do real-time output coloring and formatting for commands',
         usage='%(prog)s [options] COMMAND ARG ...'
     )
+    parser.add_argument('-V', '--version',
+        action='store_true', default=False,
+        help='prints the version and exits'
+    )
     parser.add_argument('--color',
         action='store', default='auto', nargs='?',
         choices=['auto', 'always', 'never', 'on', 'off'],
