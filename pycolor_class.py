@@ -174,7 +174,7 @@ class Pycolor:
             if not pat.active:
                 continue
 
-            matched, applied = apply_pattern(pat, self.linenum, data, context)
+            matched, applied = apply_pattern(pat, data, context)
             if matched:
                 if pat.filter:
                     self.debug_print(2, 'filtered: %s', data.encode('utf-8'))
