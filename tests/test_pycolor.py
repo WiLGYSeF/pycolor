@@ -166,6 +166,7 @@ class PycolorTest(unittest.TestCase):
 
     @freeze_time('2000-01-02 03:45:56')
     def test_debug_file_v3(self):
+        self.maxDiff = None
         test_name = 'debug_file_v3'
         with self.check_debug_log(MOCKED_DATA, test_name) as fname:
             self.check_pycolor_main(
@@ -247,26 +248,25 @@ class PycolorTest(unittest.TestCase):
         print_output = kwargs.get('print_output', False)
         write_output = kwargs.get('write_output', False)
 
+        fname = random_tmp_filename()
+        yield fname
+
         try:
-            fname = random_tmp_filename()
-            yield fname
+            debug_fname = os.path.join(mocked_data_dir, test_name) + '.out.debug.txt'
+
+            with open(fname, 'r') as file:
+                filedata = file.read()
+                if print_output: #pragma: no cover
+                    print(filedata)
+
+                if write_output: #pragma: no cover
+                    with open(debug_fname, 'w') as debugfile:
+                        debugfile.write(filedata)
+                else:
+                    with open(debug_fname, 'r') as debugfile:
+                        self.assertEqual(filedata, debugfile.read())
         finally:
-            try:
-                debug_fname = os.path.join(mocked_data_dir, test_name) + '.out.debug.txt'
-
-                with open(fname, 'r') as file:
-                    filedata = file.read()
-                    if print_output: #pragma: no cover
-                        print(filedata)
-
-                    if write_output: #pragma: no cover
-                        with open(debug_fname, 'w') as debugfile:
-                            debugfile.write(filedata)
-                    else:
-                        with open(debug_fname, 'r') as debugfile:
-                            self.assertEqual(filedata, debugfile.read())
-            finally:
-                os.remove(fname)
+            os.remove(fname)
 
 def random_tmp_filename():
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
