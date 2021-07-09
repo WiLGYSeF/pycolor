@@ -94,9 +94,6 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
     if read_stdin:
         if profile is None and len(cmd_args) != 0:
             profile = pycobj.get_profile_by_command(cmd_args[0], cmd_args[1:])
-        if profile is None:
-            printerr('no profile selected with --profile')
-            sys.exit(1)
 
         pycobj.set_current_profile(profile)
         read_input_stream(pycobj, stdin_stream)

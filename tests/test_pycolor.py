@@ -37,10 +37,6 @@ class PycolorTest(unittest.TestCase):
     def test_ls_numbers_known_arg_parse(self):
         self.check_pycolor_main(['ls', '-l', '--color', 'off'], MOCKED_DATA, 'ls_numbers')
 
-    def test_no_profile_stdin(self):
-        with self.assertRaises(SystemExit), patch(pycolor, 'printerr', lambda x: None):
-            self.check_pycolor_main([], MOCKED_DATA, 'ls_numbers')
-
     @freeze_time('2000-01-02 03:45:56')
     def test_ls_timestamp_arg(self):
         self.check_pycolor_main(['--timestamp', '--', 'ls', '-l'], MOCKED_DATA, 'ls_timestamp_arg')

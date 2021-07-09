@@ -13,8 +13,8 @@ import sys
 import termios
 import time
 
-from static_vars import static_vars
 from printerr import printerr
+from static_vars import static_vars
 
 
 def nonblock(file):
