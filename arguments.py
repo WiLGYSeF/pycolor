@@ -51,10 +51,6 @@ def get_args(args):
     )
 
     group = parser.add_argument_group('profile options')
-    group.add_argument('--less',
-        action='store_true', default=False,
-        help='force enable "less_output" for all profiles'
-    )
     group.add_argument('-t', '--timestamp',
         action='store', metavar='FORMAT', default=False, nargs='?',
         help='force enable "timestamp" for all profiles with an optional FORMAT'

@@ -121,15 +121,6 @@ class PycolorTest(unittest.TestCase):
             'free_tty'
         )
 
-    def test_ls_less(self):
-        with patch(pycolor_class.os, 'fork', lambda: -1):
-            with patch(pycolor_class.os, 'wait', lambda: None):
-                self.check_pycolor_main(
-                    ['--less', '--', 'ls', '-l'],
-                    MOCKED_DATA,
-                    'ls_less',
-                )
-
     def test_ls_debug_v1(self):
         self.check_pycolor_main(
             ['-v', '--', 'ls', '-l'],
