@@ -15,8 +15,12 @@ import pyformat
 
 __version__ = "0.0.1"
 
-CONFIG_DIR = os.path.join(os.getenv('HOME'), '.pycolor.d')
-CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), '.pycolor.json')
+if os.name == 'nt':
+    HOME = os.getenv('USERPROFILE')
+else:
+    HOME = os.getenv('HOME')
+CONFIG_DIR = os.path.join(HOME, '.pycolor.d')
+CONFIG_DEFAULT = os.path.join(HOME, '.pycolor.json')
 
 
 def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=sys.stdin):

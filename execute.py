@@ -1,23 +1,30 @@
 from contextlib import contextmanager, ExitStack
 import errno
-import fcntl
 import io
 import os
-import pty
 import select
 import shutil
 import signal
 import struct
 import subprocess
 import sys
-import termios
 import time
+
+try:
+    import fcntl
+    import pty
+    import termios
+except:
+    pass
 
 from printerr import printerr
 from static_vars import static_vars
 
 
 def nonblock(file):
+    if os.name == 'nt':
+        return
+
     # TODO: not compatible with windows
     fde = file.fileno()
     flag = fcntl.fcntl(fde, fcntl.F_GETFL)
@@ -233,6 +240,9 @@ def ignore_sigint():
 
 @contextmanager
 def sync_sigwinch(tty_fd):
+    if os.name == 'nt':
+        return
+
     # TODO: not compatible with windows
     def set_window_size():
         col, row = shutil.get_terminal_size()
