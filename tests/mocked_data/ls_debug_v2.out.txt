@@ -1,67 +1,67 @@
 [0m[90m    DEBUG1: using profile "ls"[0m
 [0m[90m    DEBUG1: received: b'total 108\n'[0m
-[0m[90m    DEBUG2: writing:  b'total \x1b[32m108\x1b[0m'[0m
+[0m[90m    DEBUG2: writing:  b'total \x1b[32m108\x1b[0m\n'[0m
 total [32m108[0m
 [0m[90m    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef  8096 Apr  7 13:53 README.md\n'[0m
-[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m8096\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m README.md'[0m
+[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m8096\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m README.md\n'[0m
 -rw-rw-r-- [32m1[0m wilgysef wilgysef  [32m8096[0m Apr  [32m7[0m [32m13[0m:[32m53[0m README.md
 [0m[90m    DEBUG1: received: b'drwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 14:00 __pycache__\n'[0m
-[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 14:00 __pycache__\x1b[0m'[0m
+[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 14:00 __pycache__\x1b[0m\n'[0m
 [1;34mdrwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 14:00 __pycache__[0m
 [0m[90m    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef  1664 Apr  7 13:53 argpattern.py\n'[0m
-[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m1664\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m argpattern.py'[0m
+[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m1664\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m argpattern.py\n'[0m
 -rw-rw-r-- [32m1[0m wilgysef wilgysef  [32m1664[0m Apr  [32m7[0m [32m13[0m:[32m53[0m argpattern.py
 [0m[90m    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef  5933 Apr  7 13:53 colorstate.py\n'[0m
-[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m5933\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m colorstate.py'[0m
+[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m5933\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m colorstate.py\n'[0m
 -rw-rw-r-- [32m1[0m wilgysef wilgysef  [32m5933[0m Apr  [32m7[0m [32m13[0m:[32m53[0m colorstate.py
 [0m[90m    DEBUG1: received: b'drwxr-xr-x 4 wilgysef wilgysef  4096 Feb  8 20:45 docs\n'[0m
-[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxr-xr-x 4 wilgysef wilgysef  4096 Feb  8 20:45 docs\x1b[0m'[0m
+[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxr-xr-x 4 wilgysef wilgysef  4096 Feb  8 20:45 docs\x1b[0m\n'[0m
 [1;34mdrwxr-xr-x 4 wilgysef wilgysef  4096 Feb  8 20:45 docs[0m
 [0m[90m    DEBUG1: received: b'-rw-r--r-- 1 wilgysef wilgysef  3199 Feb  9 20:36 execute.py\n'[0m
-[0m[90m    DEBUG2: writing:  b'-rw-r--r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m3199\x1b[0m Feb  \x1b[32m9\x1b[0m \x1b[32m20\x1b[0m:\x1b[32m36\x1b[0m execute.py'[0m
+[0m[90m    DEBUG2: writing:  b'-rw-r--r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m3199\x1b[0m Feb  \x1b[32m9\x1b[0m \x1b[32m20\x1b[0m:\x1b[32m36\x1b[0m execute.py\n'[0m
 -rw-r--r-- [32m1[0m wilgysef wilgysef  [32m3199[0m Feb  [32m9[0m [32m20[0m:[32m36[0m execute.py
 [0m[90m    DEBUG1: received: b'-rw-r--r-- 1 wilgysef wilgysef   588 Feb 11 14:07 fromprofile.py\n'[0m
-[0m[90m    DEBUG2: writing:  b'-rw-r--r-- \x1b[32m1\x1b[0m wilgysef wilgysef   \x1b[32m588\x1b[0m Feb \x1b[32m11\x1b[0m \x1b[32m14\x1b[0m:\x1b[32m07\x1b[0m fromprofile.py'[0m
+[0m[90m    DEBUG2: writing:  b'-rw-r--r-- \x1b[32m1\x1b[0m wilgysef wilgysef   \x1b[32m588\x1b[0m Feb \x1b[32m11\x1b[0m \x1b[32m14\x1b[0m:\x1b[32m07\x1b[0m fromprofile.py\n'[0m
 -rw-r--r-- [32m1[0m wilgysef wilgysef   [32m588[0m Feb [32m11[0m [32m14[0m:[32m07[0m fromprofile.py
 [0m[90m    DEBUG1: received: b'drwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 12:04 htmlcov\n'[0m
-[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 12:04 htmlcov\x1b[0m'[0m
+[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 12:04 htmlcov\x1b[0m\n'[0m
 [1;34mdrwxr-xr-x 2 wilgysef wilgysef  4096 Apr  7 12:04 htmlcov[0m
 [0m[90m    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef  6613 Apr  7 13:53 pattern.py\n'[0m
-[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m6613\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m pattern.py'[0m
+[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m6613\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m pattern.py\n'[0m
 -rw-rw-r-- [32m1[0m wilgysef wilgysef  [32m6613[0m Apr  [32m7[0m [32m13[0m:[32m53[0m pattern.py
 [0m[90m    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef  2238 Apr  7 13:53 profile_class.py\n'[0m
-[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m2238\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m profile_class.py'[0m
+[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m2238\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m profile_class.py\n'[0m
 -rw-rw-r-- [32m1[0m wilgysef wilgysef  [32m2238[0m Apr  [32m7[0m [32m13[0m:[32m53[0m profile_class.py
 [0m[90m    DEBUG1: received: b'-rwxrwxr-x 1 wilgysef wilgysef  3917 Apr  7 13:59 pycolor.py\n'[0m
-[0m[90m    DEBUG2: writing:  b'-rwxrwxr-x \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m3917\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m59\x1b[0m pycolor.py'[0m
+[0m[90m    DEBUG2: writing:  b'-rwxrwxr-x \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m3917\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m59\x1b[0m pycolor.py\n'[0m
 -rwxrwxr-x [32m1[0m wilgysef wilgysef  [32m3917[0m Apr  [32m7[0m [32m13[0m:[32m59[0m pycolor.py
 [0m[90m    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef 13150 Apr  7 13:53 pycolor_class.py\n'[0m
-[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef \x1b[32m13150\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m pycolor_class.py'[0m
+[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef \x1b[32m13150\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m pycolor_class.py\n'[0m
 -rw-rw-r-- [32m1[0m wilgysef wilgysef [32m13150[0m Apr  [32m7[0m [32m13[0m:[32m53[0m pycolor_class.py
 [0m[90m    DEBUG1: received: b'drwxrwxr-x 3 wilgysef wilgysef  4096 Apr  7 13:53 pyformat\n'[0m
-[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxrwxr-x 3 wilgysef wilgysef  4096 Apr  7 13:53 pyformat\x1b[0m'[0m
+[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxrwxr-x 3 wilgysef wilgysef  4096 Apr  7 13:53 pyformat\x1b[0m\n'[0m
 [1;34mdrwxrwxr-x 3 wilgysef wilgysef  4096 Apr  7 13:53 pyformat[0m
 [0m[90m    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef    30 Apr  7 13:53 requirements.txt\n'[0m
-[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef    \x1b[32m30\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m requirements.txt'[0m
+[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef    \x1b[32m30\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m53\x1b[0m requirements.txt\n'[0m
 -rw-rw-r-- [32m1[0m wilgysef wilgysef    [32m30[0m Apr  [32m7[0m [32m13[0m:[32m53[0m requirements.txt
 [0m[90m    DEBUG1: received: b'-rw-r--r-- 1 wilgysef wilgysef  2645 Feb  8 20:45 search_replace.py\n'[0m
-[0m[90m    DEBUG2: writing:  b'-rw-r--r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m2645\x1b[0m Feb  \x1b[32m8\x1b[0m \x1b[32m20\x1b[0m:\x1b[32m45\x1b[0m search_replace.py'[0m
+[0m[90m    DEBUG2: writing:  b'-rw-r--r-- \x1b[32m1\x1b[0m wilgysef wilgysef  \x1b[32m2645\x1b[0m Feb  \x1b[32m8\x1b[0m \x1b[32m20\x1b[0m:\x1b[32m45\x1b[0m search_replace.py\n'[0m
 -rw-r--r-- [32m1[0m wilgysef wilgysef  [32m2645[0m Feb  [32m8[0m [32m20[0m:[32m45[0m search_replace.py
 [0m[90m    DEBUG1: received: b'-rw-r--r-- 1 wilgysef wilgysef   448 Jan 22 11:23 split.py\n'[0m
-[0m[90m    DEBUG2: writing:  b'-rw-r--r-- \x1b[32m1\x1b[0m wilgysef wilgysef   \x1b[32m448\x1b[0m Jan \x1b[32m22\x1b[0m \x1b[32m11\x1b[0m:\x1b[32m23\x1b[0m split.py'[0m
+[0m[90m    DEBUG2: writing:  b'-rw-r--r-- \x1b[32m1\x1b[0m wilgysef wilgysef   \x1b[32m448\x1b[0m Jan \x1b[32m22\x1b[0m \x1b[32m11\x1b[0m:\x1b[32m23\x1b[0m split.py\n'[0m
 -rw-r--r-- [32m1[0m wilgysef wilgysef   [32m448[0m Jan [32m22[0m [32m11[0m:[32m23[0m split.py
 [0m[90m    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef   193 Jan  6 16:26 static_vars.py\n'[0m
-[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef   \x1b[32m193\x1b[0m Jan  \x1b[32m6\x1b[0m \x1b[32m16\x1b[0m:\x1b[32m26\x1b[0m static_vars.py'[0m
+[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef   \x1b[32m193\x1b[0m Jan  \x1b[32m6\x1b[0m \x1b[32m16\x1b[0m:\x1b[32m26\x1b[0m static_vars.py\n'[0m
 -rw-rw-r-- [32m1[0m wilgysef wilgysef   [32m193[0m Jan  [32m6[0m [32m16[0m:[32m26[0m static_vars.py
 [0m[90m    DEBUG1: received: b'drwxrwxr-x 2 wilgysef wilgysef  4096 Feb  9 19:45 test_scripts\n'[0m
-[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxrwxr-x 2 wilgysef wilgysef  4096 Feb  9 19:45 test_scripts\x1b[0m'[0m
+[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxrwxr-x 2 wilgysef wilgysef  4096 Feb  9 19:45 test_scripts\x1b[0m\n'[0m
 [1;34mdrwxrwxr-x 2 wilgysef wilgysef  4096 Feb  9 19:45 test_scripts[0m
 [0m[90m    DEBUG1: received: b'drwxrwxr-x 7 wilgysef wilgysef  4096 Apr  7 13:53 tests\n'[0m
-[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxrwxr-x 7 wilgysef wilgysef  4096 Apr  7 13:53 tests\x1b[0m'[0m
+[0m[90m    DEBUG2: writing:  b'\x1b[1;34mdrwxrwxr-x 7 wilgysef wilgysef  4096 Apr  7 13:53 tests\x1b[0m\n'[0m
 [1;34mdrwxrwxr-x 7 wilgysef wilgysef  4096 Apr  7 13:53 tests[0m
 [0m[90m    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef   285 Apr  7 13:31 todo.txt\n'[0m
-[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef   \x1b[32m285\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m31\x1b[0m todo.txt'[0m
+[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef   \x1b[32m285\x1b[0m Apr  \x1b[32m7\x1b[0m \x1b[32m13\x1b[0m:\x1b[32m31\x1b[0m todo.txt\n'[0m
 -rw-rw-r-- [32m1[0m wilgysef wilgysef   [32m285[0m Apr  [32m7[0m [32m13[0m:[32m31[0m todo.txt
 [0m[90m    DEBUG1: received: b'-rw-rw-r-- 1 wilgysef wilgysef   351 Jan  6 15:53 which.py\n'[0m
-[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef   \x1b[32m351\x1b[0m Jan  \x1b[32m6\x1b[0m \x1b[32m15\x1b[0m:\x1b[32m53\x1b[0m which.py'[0m
+[0m[90m    DEBUG2: writing:  b'-rw-rw-r-- \x1b[32m1\x1b[0m wilgysef wilgysef   \x1b[32m351\x1b[0m Jan  \x1b[32m6\x1b[0m \x1b[32m15\x1b[0m:\x1b[32m53\x1b[0m which.py\n'[0m
 -rw-rw-r-- [32m1[0m wilgysef wilgysef   [32m351[0m Jan  [32m6[0m [32m15[0m:[32m53[0m which.py

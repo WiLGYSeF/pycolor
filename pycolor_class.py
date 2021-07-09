@@ -189,8 +189,13 @@ class Pycolor:
 
         if len(color_positions) != 0:
             data = insert_color_data(data, color_positions)
-        encoded_data = data.encode('utf-8')
 
+        if removed_carriagereturn:
+            data += '\r'
+        if removed_newline:
+            data += '\n'
+
+        encoded_data = data.encode('utf-8')
         self.debug_print(2, 'writing:  %s', encoded_data)
 
         if self.current_profile.timestamp:
@@ -198,20 +203,9 @@ class Pycolor:
 
         stream.flush()
         stream.buffer.write(encoded_data)
+        stream.flush()
 
         self.color_state.set_state_by_string(data)
-
-        if self.current_profile.soft_reset_eol:
-            stream.write(self.color_state_orig.get_string(
-                compare_state=self.color_state
-            ))
-
-        if removed_carriagereturn:
-            stream.write('\r')
-        if removed_newline:
-            stream.write('\n')
-
-        stream.flush()
 
     def write_timestamp(self, stream):
         timestamp = DEFAULT_TIMESTAMP

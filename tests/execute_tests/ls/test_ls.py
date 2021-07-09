@@ -32,9 +32,6 @@ class LsTest(unittest.TestCase):
     def test_filter_field_py(self):
         check_pycolor_execute(self, ['ls', '-l'], MOCKED_DATA, 'filter-field-py')
 
-    def test_yellow_executable_soft_reset(self):
-        check_pycolor_execute(self, ['ls', '-l'], MOCKED_DATA, 'yellow-executable-soft-reset')
-
     def test_yellow_executable_replace_groups(self):
         check_pycolor_execute(self, ['ls', '-l'], MOCKED_DATA, 'yellow-executable-replace-groups')
 

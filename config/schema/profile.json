@@ -79,11 +79,6 @@
             "type": "boolean",
             "default": false
         },
-        "soft_reset_eol": {
-            "description": "append a soft reset, %Cs, at the end of each line",
-            "type": "boolean",
-            "default": false
-        },
         "remove_input_color": {
             "description": "remove ANSI colors from the command input before processing",
             "type": "boolean",
