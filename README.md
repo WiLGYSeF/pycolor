@@ -206,7 +206,8 @@ Right-padding is simply done by moving the pad formatter to the right of the gro
 
 # Limitations
 
-- Commands that write a lot of data at once may cause a `BlockingIOError` (work in progress)
+- Not compatible with Windows (requires fcntl and select), but it does work in WSL.
+- Commands that write a lot of data at once may cause a `BlockingIOError` (work in progress).
 - Programs that expect interactive standard input may not work properly.
 - Interactive programs that rewrite parts of the screen may cause unexpected behavior.
 
