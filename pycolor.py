@@ -73,9 +73,6 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
             argspace.timestamp = True
         override_profile_conf(pycobj, 'timestamp', argspace.timestamp)
 
-    if argspace.less is True:
-        override_profile_conf(pycobj, 'less_output', True)
-
     if argspace.tty:
         override_profile_conf(pycobj, 'tty', argspace.tty)
     if argspace.interactive:

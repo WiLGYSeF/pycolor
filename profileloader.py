@@ -124,7 +124,6 @@ class ProfileLoader:
         return all([
             profile == self.profile_default,
             profile.timestamp is False,
-            profile.less_output is False,
         ])
 
     @staticmethod

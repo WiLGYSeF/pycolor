@@ -64,11 +64,6 @@
             ],
             "default": false
         },
-        "less_output": {
-            "description": "send the output through the less command when finished",
-            "type": "boolean",
-            "default": false
-        },
         "tty": {
             "description": "run the command in a pseudo-terminal environment",
             "type": "boolean",
