@@ -6,9 +6,7 @@ from search_replace import search_replace
 from split import re_split
 
 
-def apply_pattern(pat, linenum, data, context):
-    if not pat.is_active(linenum, data):
-        return False, None
+def apply_pattern(pat, data, context):
     if pat.super_regex is not None and not pat.super_regex.search(data):
         return False, None
 

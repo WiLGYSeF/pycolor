@@ -19,6 +19,18 @@ MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_
 
 
 class PycolorTest(unittest.TestCase):
+    def test_version(self):
+        stdout = textstream()
+        with patch(sys, 'stdout', stdout):
+            try:
+                pycolor.main(['--version'])
+            except SystemExit as sexc:
+                if sexc.code != 0:
+                    raise sexc
+
+            stdout.seek(0)
+            self.assertEqual(stdout.read(), pycolor.__version__ + '\n')
+
     def test_ls_numbers(self):
         self.check_pycolor_main(['ls', '-l'], MOCKED_DATA, 'ls_numbers')
 
@@ -57,17 +69,13 @@ class PycolorTest(unittest.TestCase):
 
     def test_ls_stdin(self):
         name = 'ls_stdin'
-        stdin = open(os.path.join(MOCKED_DATA, name + '.txt'), 'r')
-
-        try:
+        with open(os.path.join(MOCKED_DATA, name + '.txt'), 'r') as stdin:
             self.check_pycolor_main(
                 ['--stdin', 'ls', '-l'],
                 MOCKED_DATA,
                 name,
                 stdin=stdin
             )
-        finally:
-            stdin.close()
 
     def test_debug_color(self):
         #pylint: disable=invalid-name
@@ -247,26 +255,25 @@ class PycolorTest(unittest.TestCase):
         print_output = kwargs.get('print_output', False)
         write_output = kwargs.get('write_output', False)
 
+        fname = random_tmp_filename()
+        yield fname
+
         try:
-            fname = random_tmp_filename()
-            yield fname
+            debug_fname = os.path.join(mocked_data_dir, test_name) + '.out.debug.txt'
+
+            with open(fname, 'r') as file:
+                filedata = file.read()
+                if print_output: #pragma: no cover
+                    print(filedata)
+
+                if write_output: #pragma: no cover
+                    with open(debug_fname, 'w') as debugfile:
+                        debugfile.write(filedata)
+                else:
+                    with open(debug_fname, 'r') as debugfile:
+                        self.assertEqual(filedata, debugfile.read())
         finally:
-            try:
-                debug_fname = os.path.join(mocked_data_dir, test_name) + '.out.debug.txt'
-
-                with open(fname, 'r') as file:
-                    filedata = file.read()
-                    if print_output: #pragma: no cover
-                        print(filedata)
-
-                    if write_output: #pragma: no cover
-                        with open(debug_fname, 'w') as debugfile:
-                            debugfile.write(filedata)
-                    else:
-                        with open(debug_fname, 'r') as debugfile:
-                            self.assertEqual(filedata, debugfile.read())
-            finally:
-                os.remove(fname)
+            os.remove(fname)
 
 def random_tmp_filename():
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
