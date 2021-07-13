@@ -1,8 +1,5 @@
 from contextlib import contextmanager, ExitStack
-import errno
-import io
 import os
-import select
 import shutil
 import signal
 import struct
@@ -13,10 +10,16 @@ import threading
 
 try:
     import fcntl
-    import pty
     import termios
-except:
-    pass
+    HAS_FCNTL = True
+except ModuleNotFoundError:
+    HAS_FCNTL = False
+
+try:
+    import pty
+    HAS_PTY = True
+except ModuleNotFoundError:
+    HAS_PTY = False
 
 from printerr import printerr
 from static_vars import static_vars
@@ -117,7 +120,7 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
             last=last
         )
 
-    if tty:
+    if tty and HAS_PTY:
         # https://stackoverflow.com/a/31953436
         masters, slaves = zip(pty.openpty(), pty.openpty())
 
@@ -221,10 +224,10 @@ def ignore_sigint():
 
 @contextmanager
 def sync_sigwinch(tty_fd):
-    if os.name == 'nt':
+    # Unix only
+    if not HAS_FCNTL or not hasattr(signal, 'SIGWINCH'):
         return
 
-    # TODO: not compatible with windows
     def set_window_size():
         col, row = shutil.get_terminal_size()
         # https://stackoverflow.com/a/6420070
