@@ -20,6 +20,7 @@ except:
 
 from printerr import printerr
 from static_vars import static_vars
+from threadwait import ThreadWait
 
 
 def readlines(stream, data=None):
@@ -145,9 +146,10 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
             stdout = process.stdout
             stderr = process.stderr
 
-        def read_thread(stream, callback):
+        def read_thread(stream, callback, flag):
             use_os_read = isinstance(stream, int)
             while True:
+                flag.unset()
                 if use_os_read:
                     try:
                         data = os.read(stream, 1024)
@@ -159,8 +161,9 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
                     if _read(stream, callback) is None:
                         break
 
-        def write_stdin():
+        def write_stdin(flag):
             while True:
+                flag.unset()
                 recv = stdin.read()
                 if recv is None or len(recv) == 0:
                     break
@@ -168,25 +171,30 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
                 process.stdin.write(recv.encode())
                 process.stdin.flush()
 
+        wait = ThreadWait()
         thr_stdout = threading.Thread(target=read_thread, args=(
             stdout,
-            stdout_callback
+            stdout_callback,
+            wait.get_flag(),
         ), daemon=True)
         thr_stderr = threading.Thread(target=read_thread, args=(
             stderr,
-            stderr_callback
+            stderr_callback,
+            wait.get_flag(),
         ), daemon=True)
-        thr_stdin = threading.Thread(target=write_stdin, daemon=True)
+        thr_stdin = threading.Thread(target=write_stdin, args=(
+            wait.get_flag(),
+        ),
+        daemon=True)
 
         thr_stdout.start()
         thr_stderr.start()
         thr_stdin.start()
 
+        # TODO: this is probably not the best way to wait
         while process.poll() is None:
-            time.sleep(0.0001)
-
-        #thr_stdout.join()
-        #thr_stderr.join()
+            time.sleep(0.001)
+        wait.wait(timeout=0.05)
 
         if tty:
             for fde in slaves:
