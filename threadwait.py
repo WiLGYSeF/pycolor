@@ -21,22 +21,21 @@ class ThreadWait:
 
         while len(self.flags) != 0:
             for flag in self.flags:
-                try:
+                if not flag.is_set():
                     flag.set()
                     timers[flag] = time.perf_counter()
-                except FlagAlreadySet:
+                else:
                     if time.perf_counter() - timers[flag] >= timeout:
                         remove.add(flag)
                         del timers[flag]
             self.flags -= remove
+            time.sleep(0.0001)
 
 class Flag:
     def __init__(self):
         self.value = None
 
     def set(self, value=1):
-        if self.value != None:
-            raise FlagAlreadySet()
         self.value = value
 
     def unset(self):
@@ -44,5 +43,5 @@ class Flag:
         self.value = None
         return value
 
-class FlagAlreadySet(Exception):
-    pass
+    def is_set(self):
+        return self.value is not None
