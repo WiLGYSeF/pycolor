@@ -26,8 +26,7 @@ class ConfigRegexException(ConfigPropertyException):
         super().__init__(prop, 'regex %s' % message)
 
 class ConfigExclusivePropertyException(ConfigException):
-    def __init__(self, message):
-        super().__init__(message)
+    pass
 
 def load_schema(schema_name, cfg, dest):
     validator = validators.get(schema_name)
