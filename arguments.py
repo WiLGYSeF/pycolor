@@ -98,6 +98,15 @@ def parse_known_args(parser, args):
     return argspace, cmd_args
 
 def split_args(args, actions):
+    """Splits the arguments between ones that belong to pycolor and the command
+
+    Args:
+        args (list): The program arguments
+        actions (list): The argument actions recognized by the argument parser
+
+    Returns:
+        tuple: the arguments split into two lists
+    """
     action_nargs = {}
 
     for action in actions:

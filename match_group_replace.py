@@ -3,6 +3,16 @@ from typing import Pattern
 
 
 def match_group_replace(pattern, string, replace_func):
+    """Replace groups in regex matches in a string
+
+    Args:
+        pattern (Pattern): Regex pattern
+        string (str): The string to match with pattern
+        replace_func (function): The replace function to call on each group
+
+    Returns:
+        str: The string with replaced values
+    """
     result = ''
     last = 0
 

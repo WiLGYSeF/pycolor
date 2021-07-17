@@ -60,6 +60,7 @@ class ProfileLoader:
                 )
 
             # it's ok to modify these without copying
+            # pylint: disable=consider-using-enumerate
             for i in range(len(fromprof.patterns)):
                 pat = fromprof.patterns[i]
                 pat.from_profile = '%x%s%x' % (fidx, PROF_IDX_SEP,i)

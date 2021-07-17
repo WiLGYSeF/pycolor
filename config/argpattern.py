@@ -28,6 +28,14 @@ class ArgPattern:
             self.subcommand = [ self.subcommand ]
 
     def get_arg_range(self, arglen):
+        """Returns a range of argument indicies that position matches
+
+        Args:
+            arglen (int): The length of the arguments
+
+        Returns:
+            range: Range of matching indicies
+        """
         if self.position is None:
             return range(arglen)
 
