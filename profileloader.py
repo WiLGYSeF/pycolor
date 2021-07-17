@@ -1,8 +1,8 @@
 import json
+from shutil import which
 
 from config import ConfigPropertyException
 from config.profile import Profile
-from which import which
 
 
 PROF_IDX_SEP = ';'
