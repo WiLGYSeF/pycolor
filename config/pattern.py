@@ -76,6 +76,14 @@ class Pattern:
             self.max_fields = -1
 
     def get_field_indexes(self, fields):
+        """Returns a range of field indicies that field matches
+
+        Args:
+            fields (list): Fields
+
+        Returns:
+            range: The range of fields
+        """
         fieldcount = pyformat.fieldsep.idx_to_num(len(fields))
         if self.min_fields > fieldcount or (
             self.max_fields > 0 and self.max_fields < fieldcount
@@ -168,6 +176,16 @@ class Pattern:
         return self.active
 
 def bsearch_closest(arr, val, cmp_fnc=lambda x, y: x - y):
+    """Binary search that returns the closest value if not found
+
+    Args:
+        arr (list): Array of values
+        val: Value to search for
+        cmp_fnc (function): The compare function
+
+    Returns:
+        int: The index of the matching or closest matching value
+    """
     low, mid, high = 0, 0, len(arr) - 1
     while low <= high:
         mid = (high + low) // 2

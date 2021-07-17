@@ -1,6 +1,7 @@
 import datetime
 import io
 import os
+from shutil import which
 import sys
 import tempfile
 
@@ -11,7 +12,6 @@ import execute
 from printerr import printerr
 from profileloader import ProfileLoader
 import pyformat
-from which import which
 
 
 FMT_DEBUG = pyformat.format_string('%Cz%Cde')

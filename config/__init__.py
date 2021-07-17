@@ -26,8 +26,7 @@ class ConfigRegexException(ConfigPropertyException):
         super().__init__(prop, 'regex %s' % message)
 
 class ConfigExclusivePropertyException(ConfigException):
-    def __init__(self, message):
-        super().__init__(message)
+    pass
 
 def load_schema(schema_name, cfg, dest):
     validator = validators.get(schema_name)
@@ -60,9 +59,8 @@ def mutually_exclusive(self, attrlist):
         val = getattr(self, attr)
         if any([
             isinstance(val, bool) and val is False,
-            isinstance(val, dict) and len(val) == 0,
+            isinstance(val, (dict, list)) and len(val) == 0,
             isinstance(val, int) and val == -1, # TODO: replace with something more concrete
-            isinstance(val, list) and len(val) == 0,
             val is None,
         ]):
             continue
