@@ -64,7 +64,9 @@ def apply_pattern(pat, data, context):
         if len(pat.replace_groups) != 0:
             return _replace_groups(pat, data, color_positions, context)
 
-        return pat.regex.search(data), data
+        if pat.regex is not None:
+            return pat.regex.search(data), data
+        return False, data
 
     if pat.replace_all is not None:
         for field_idx in field_idxs:
@@ -116,10 +118,11 @@ def apply_pattern(pat, data, context):
             return False, None
         return True, ''.join(fields)
 
-    for field_idx in field_idxs:
-        match = pat.regex.search(fields[field_idx])
-        if match is not None:
-            return True, data
+    if pat.regex is not None:
+        for field_idx in field_idxs:
+            match = pat.regex.search(fields[field_idx])
+            if match is not None:
+                return True, data
 
     return False, None
 
