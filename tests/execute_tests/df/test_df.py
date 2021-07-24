@@ -41,3 +41,6 @@ class DfTest(unittest.TestCase):
 
     def test_color_fields_pad(self):
         check_pycolor_execute(self, ['df', '-h'], MOCKED_DATA, 'color-fields-pad')
+
+    def test_table(self):
+        check_pycolor_execute(self, ['df', '-h'], MOCKED_DATA, 'truncate')

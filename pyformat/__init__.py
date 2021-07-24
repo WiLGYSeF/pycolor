@@ -188,6 +188,67 @@ def do_format_padding(value, context, **kwargs):
             pass
     return ''
 
+def do_format_truncate(value, context, **kwargs):
+    str_loc_sep = value.rfind(';')
+    string_repl = value[:str_loc_sep]
+    location, length = value[str_loc_sep + 1:].split(',')
+
+    rev_string_repl = ''
+    string_repl_sep = len(string_repl)
+    i = len(string_repl) - 1
+    while i >= 0:
+        if i > 0 and string_repl[i - 1] == '\\':
+            rev_string_repl += string_repl[i]
+            i -= 2
+            continue
+        if string_repl[i] == ';':
+            string_repl_sep = i
+            rev_string_repl += string_repl[:i + 1][::-1]
+            break
+        rev_string_repl += string_repl[i]
+        i -= 1
+
+    string_repl = rev_string_repl[::-1]
+    string = string_repl[:string_repl_sep]
+    repl = string_repl[string_repl_sep + 1:]
+
+    location = location.lower()
+    length = int(length)
+    if length <= 0:
+        raise ValueError('invalid length: %d' % length)
+
+    if 'color' in context:
+        context = dictcopy(context)
+        context['color']['enabled'] = False
+    string = format_string(string, context=context)
+
+    if location in ('start', 's'):
+        if len(string) > length:
+            length -= len(repl)
+            string = repl + string[-length:]
+    elif location in ('start-add', 'sa'):
+        if len(string) > length:
+            string = repl + string[-length:]
+    elif location in ('mid', 'm'):
+        if len(string) > length:
+            length -= len(repl)
+            half = length // 2
+            string = string[:half] + repl + string[-(length - half):]
+    elif location in ('mid-add', 'ma'):
+        if len(string) > length:
+            half = length // 2
+            string = string[:half] + repl + string[-(length - half):]
+    elif location in ('end', 'e'):
+        if len(string) > length:
+            length -= len(repl)
+            string = string[:length] + repl
+    elif location in ('end-add', 'ea'):
+        if len(string) > length:
+            string = string[:length] + repl
+    else:
+        raise ValueError('invalid truncate location: %s' % location)
+    return string
+
 def get_formatter(string, idx):
     strlen = len(string)
     begin_idx = idx
