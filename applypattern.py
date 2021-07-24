@@ -54,7 +54,10 @@ def apply_pattern(pat, data, context):
             update_color_positions(color_positions, colorpos)
             return True, data
 
-        if 'fields' in context and len(pat.replace_fields) != 0:
+        if 'fields' in context and all([
+            len(pat.replace_fields) != 0,
+            len(field_idxs) != 0,
+        ]):
             return _replace_fields(pat, data, fields, color_positions, context)
 
         if len(pat.replace_groups) != 0:
@@ -113,6 +116,12 @@ def apply_pattern(pat, data, context):
         if not matched:
             return False, None
         return True, ''.join(fields)
+
+    if 'fields' in context and all([
+        len(pat.replace_fields) != 0,
+        len(field_idxs) != 0,
+    ]):
+        return _replace_fields(pat, data, fields, color_positions, context)
 
     if pat.regex is not None:
         for field_idx in field_idxs:
