@@ -266,7 +266,7 @@ def random_tmp_filename():
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     length = 8
 
-    fname = 'tmp'
+    fname = 'tmp-'
     for _ in range(length):
         fname += chars[random.randint(0, len(chars) - 1)]
     return fname

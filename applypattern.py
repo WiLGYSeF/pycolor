@@ -25,7 +25,6 @@ def apply_pattern(pat, data, context):
         context['fields'] = fields
 
     if pat.separator_regex is None or all([
-        pat.field is not None,
         pat.field == 0,
         len(field_idxs) != 0
     ]):
@@ -57,14 +56,16 @@ def apply_pattern(pat, data, context):
 
         if 'fields' in context and all([
             len(pat.replace_fields) != 0,
-            len(field_idxs) != 0
+            len(field_idxs) != 0,
         ]):
             return _replace_fields(pat, data, fields, color_positions, context)
 
         if len(pat.replace_groups) != 0:
             return _replace_groups(pat, data, color_positions, context)
 
-        return pat.regex.search(data), data
+        if pat.regex is not None:
+            return pat.regex.search(data), data
+        return False, data
 
     if pat.replace_all is not None:
         for field_idx in field_idxs:
@@ -116,10 +117,17 @@ def apply_pattern(pat, data, context):
             return False, None
         return True, ''.join(fields)
 
-    for field_idx in field_idxs:
-        match = pat.regex.search(fields[field_idx])
-        if match is not None:
-            return True, data
+    if 'fields' in context and all([
+        len(pat.replace_fields) != 0,
+        len(field_idxs) != 0,
+    ]):
+        return _replace_fields(pat, data, fields, color_positions, context)
+
+    if pat.regex is not None:
+        for field_idx in field_idxs:
+            match = pat.regex.search(fields[field_idx])
+            if match is not None:
+                return True, data
 
     return False, None
 
@@ -132,10 +140,6 @@ def _replace_fields(pat, data, fields, color_positions, context):
     offset = 0
     origin_offset = 0
     field_idx = 0
-
-    match = pat.regex.search(data)
-    if match is not None:
-        context['match'] = match
 
     for idx in range(0, len(fields) + 1, 2):
         replace_val = get_replace_field(fields, field_idx, pat.replace_fields)
