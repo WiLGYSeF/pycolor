@@ -25,7 +25,6 @@ def apply_pattern(pat, data, context):
         context['fields'] = fields
 
     if pat.separator_regex is None or all([
-        pat.field is not None,
         pat.field == 0,
         len(field_idxs) != 0
     ]):
@@ -55,10 +54,7 @@ def apply_pattern(pat, data, context):
             update_color_positions(color_positions, colorpos)
             return True, data
 
-        if 'fields' in context and all([
-            len(pat.replace_fields) != 0,
-            len(field_idxs) != 0
-        ]):
+        if 'fields' in context and len(pat.replace_fields) != 0:
             return _replace_fields(pat, data, fields, color_positions, context)
 
         if len(pat.replace_groups) != 0:
