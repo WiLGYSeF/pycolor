@@ -100,7 +100,8 @@ HEX_TO_RGB = {
     'fff': (255, 255, 255),
     '0xffaa00': (255, 170, 0),
     '0xfa0': (255, 170, 0),
-    'invalid': ValueError()
+    'invalid': ValueError,
+    '0xbcdefg': ValueError,
 }
 
 
@@ -153,7 +154,7 @@ class ColorTest(unittest.TestCase):
 
     def test_hex_to_rgb(self):
         for key, val in HEX_TO_RGB.items():
-            if isinstance(val, Exception):
-                self.assertRaises(Exception, pyformat.color.hex_to_rgb, key)
+            if isinstance(val, type):
+                self.assertRaises(val, pyformat.color.hex_to_rgb, key)
             else:
                 self.assertTupleEqual(pyformat.color.hex_to_rgb(key), val)

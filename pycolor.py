@@ -13,7 +13,7 @@ from pycolor_class import Pycolor
 import pyformat
 
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 CONFIG_DIR = os.path.join(os.getenv('HOME'), '.pycolor.d')
 CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), '.pycolor.json')
@@ -73,9 +73,6 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
             argspace.timestamp = True
         override_profile_conf(pycobj, 'timestamp', argspace.timestamp)
 
-    if argspace.less is True:
-        override_profile_conf(pycobj, 'less_output', True)
-
     if argspace.tty:
         override_profile_conf(pycobj, 'tty', argspace.tty)
     if argspace.interactive:
@@ -94,9 +91,6 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
     if read_stdin:
         if profile is None and len(cmd_args) != 0:
             profile = pycobj.get_profile_by_command(cmd_args[0], cmd_args[1:])
-        if profile is None:
-            printerr('no profile selected with --profile')
-            sys.exit(1)
 
         pycobj.set_current_profile(profile)
         read_input_stream(pycobj, stdin_stream)

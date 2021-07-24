@@ -3,6 +3,20 @@ from typing import Pattern
 
 
 def search_replace(pattern, string, replace, **kwargs):
+    """Search and replace in string
+
+    Args:
+        pattern (Pattern): The search pattern
+        string (str): The string to search and replace in
+        replace: The value to replace with
+
+        ignore_ranges (list): Do not replace matches in these ranges
+        start_occurrence (int): Start replacing when finding the nth occurrence
+        max_count (int): Replace at most this many occurrences (-1 is all)
+
+    Returns:
+        tuple: The new string and the ranges replaced
+    """
     ignore_ranges = kwargs.get('ignore_ranges', [])
     start_occurrence = kwargs.get('start_occurrence', 1)
     max_count = kwargs.get('max_count', -1)

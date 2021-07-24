@@ -11,6 +11,7 @@ FORMAT_FIELD = 'F'
 FORMAT_GROUP = 'G'
 FORMAT_GROUP_COLOR = 'H'
 FORMAT_PADDING = 'P'
+FORMAT_TRUNCATE = 'T'
 
 
 def format_string(string, context=None, return_color_positions=False):
@@ -62,8 +63,10 @@ def format_string(string, context=None, return_color_positions=False):
 def do_format(formatter, value, context, **kwargs):
     if formatter == FORMAT_COLOR:
         return do_format_color(value, context, **kwargs)
-    if formatter == FORMAT_PADDING:
-        return do_format_padding(value, context, **kwargs)
+    if formatter == FORMAT_FIELD:
+        if 'fields' not in context:
+            return ''
+        return do_format_field(value, context, **kwargs)
     if formatter == FORMAT_GROUP:
         if 'match' not in context:
             return ''
@@ -72,10 +75,10 @@ def do_format(formatter, value, context, **kwargs):
         if 'match' not in context or 'match_cur' not in context:
             return ''
         return do_format_group_color(value, context, **kwargs)
-    if formatter == FORMAT_FIELD:
-        if 'fields' not in context:
-            return ''
-        return do_format_field(value, context, **kwargs)
+    if formatter == FORMAT_PADDING:
+        return do_format_padding(value, context, **kwargs)
+    if formatter == FORMAT_TRUNCATE:
+        return do_format_truncate(value, context, **kwargs)
     return None
 
 def do_format_color(value, context, **kwargs):
@@ -121,24 +124,10 @@ def do_format_color(value, context, **kwargs):
         colorstr = ''
     return colorstr
 
-def do_format_padding(value, context, **kwargs):
-    value_sep = value.find(';')
-    if value_sep != -1:
-        try:
-            spl = value[0:value_sep].split(',')
-            padcount = int(spl[0])
-            padchar = ' ' if len(spl) == 1 else spl[1][0]
-
-            value = value[value_sep + 1:]
-
-            if 'color' in context:
-                context = dictcopy(context)
-                context['color']['enabled'] = False
-
-            return padchar * (padcount - len(format_string(value, context=context)))
-        except ValueError:
-            pass
-    return ''
+def do_format_field(value, context, **kwargs):
+    if value == 'c' and 'field_cur' in context:
+        return context['field_cur']
+    return fieldsep.get_fields(value, context)
 
 def do_format_group(value, context, **kwargs):
     try:
@@ -180,10 +169,85 @@ def do_format_group_color(value, context, **kwargs):
         return result
     return insert_color_data(result, color_pos)
 
-def do_format_field(value, context, **kwargs):
-    if value == 'c' and 'field_cur' in context:
-        return context['field_cur']
-    return fieldsep.get_fields(value, context)
+def do_format_padding(value, context, **kwargs):
+    value_sep = value.find(';')
+    if value_sep != -1:
+        try:
+            spl = value[0:value_sep].split(',')
+            padcount = int(spl[0])
+            padchar = ' ' if len(spl) == 1 else spl[1][0]
+
+            value = value[value_sep + 1:]
+
+            if 'color' in context:
+                context = dictcopy(context)
+                context['color']['enabled'] = False
+
+            return padchar * (padcount - len(format_string(value, context=context)))
+        except ValueError:
+            pass
+    return ''
+
+def do_format_truncate(value, context, **kwargs):
+    str_loc_sep = value.rfind(';')
+    string_repl = value[:str_loc_sep]
+    location, length = value[str_loc_sep + 1:].split(',')
+
+    rev_string_repl = ''
+    string_repl_sep = len(string_repl)
+    i = len(string_repl) - 1
+    while i >= 0:
+        if i > 0 and string_repl[i - 1] == '\\':
+            rev_string_repl += string_repl[i]
+            i -= 2
+            continue
+        if string_repl[i] == ';':
+            string_repl_sep = i
+            rev_string_repl += string_repl[:i + 1][::-1]
+            break
+        rev_string_repl += string_repl[i]
+        i -= 1
+
+    string_repl = rev_string_repl[::-1]
+    string = string_repl[:string_repl_sep]
+    repl = string_repl[string_repl_sep + 1:]
+
+    location = location.lower()
+    length = int(length)
+    if length <= 0:
+        raise ValueError('invalid length: %d' % length)
+
+    if 'color' in context:
+        context = dictcopy(context)
+        context['color']['enabled'] = False
+    string = format_string(string, context=context)
+
+    if location in ('start', 's'):
+        if len(string) > length:
+            length -= len(repl)
+            string = repl + string[-length:]
+    elif location in ('start-add', 'sa'):
+        if len(string) > length:
+            string = repl + string[-length:]
+    elif location in ('mid', 'm'):
+        if len(string) > length:
+            length -= len(repl)
+            half = length // 2
+            string = string[:half] + repl + string[-(length - half):]
+    elif location in ('mid-add', 'ma'):
+        if len(string) > length:
+            half = length // 2
+            string = string[:half] + repl + string[-(length - half):]
+    elif location in ('end', 'e'):
+        if len(string) > length:
+            length -= len(repl)
+            string = string[:length] + repl
+    elif location in ('end-add', 'ea'):
+        if len(string) > length:
+            string = string[:length] + repl
+    else:
+        raise ValueError('invalid truncate location: %s' % location)
+    return string
 
 def get_formatter(string, idx):
     strlen = len(string)

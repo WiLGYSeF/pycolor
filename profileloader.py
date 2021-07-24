@@ -1,8 +1,8 @@
 import json
+from shutil import which
 
 from config import ConfigPropertyException
 from config.profile import Profile
-from which import which
 
 
 PROF_IDX_SEP = ';'
@@ -60,6 +60,7 @@ class ProfileLoader:
                 )
 
             # it's ok to modify these without copying
+            # pylint: disable=consider-using-enumerate
             for i in range(len(fromprof.patterns)):
                 pat = fromprof.patterns[i]
                 pat.from_profile = '%x%s%x' % (fidx, PROF_IDX_SEP,i)
@@ -124,7 +125,6 @@ class ProfileLoader:
         return all([
             profile == self.profile_default,
             profile.timestamp is False,
-            profile.less_output is False,
         ])
 
     @staticmethod

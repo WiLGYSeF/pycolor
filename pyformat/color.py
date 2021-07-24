@@ -93,6 +93,7 @@ STYLES = {
     'ove': 53,
 }
 
+# STYLES are considered colors
 COLORS.update(STYLES)
 
 

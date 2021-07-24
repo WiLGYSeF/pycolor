@@ -51,6 +51,14 @@ def get_fields(formatter, context):
     return string
 
 def get_join_field(num, fields):
+    """Get the separator value at num
+
+    Args:
+        fields (list): Field values and separators
+
+    Returns:
+        string: The field separator value at num
+    """
     if num < 0:
         num += idx_to_num(len(fields)) + 1
     if num <= 1:

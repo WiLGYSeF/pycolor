@@ -19,15 +19,23 @@ MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_
 
 
 class PycolorTest(unittest.TestCase):
+    def test_version(self):
+        stdout = textstream()
+        with patch(sys, 'stdout', stdout):
+            try:
+                pycolor.main(['--version'])
+            except SystemExit as sexc:
+                if sexc.code != 0:
+                    raise sexc
+
+            stdout.seek(0)
+            self.assertEqual(stdout.read(), pycolor.__version__ + '\n')
+
     def test_ls_numbers(self):
         self.check_pycolor_main(['ls', '-l'], MOCKED_DATA, 'ls_numbers')
 
     def test_ls_numbers_known_arg_parse(self):
         self.check_pycolor_main(['ls', '-l', '--color', 'off'], MOCKED_DATA, 'ls_numbers')
-
-    def test_no_profile_stdin(self):
-        with self.assertRaises(SystemExit), patch(pycolor, 'printerr', lambda x: None):
-            self.check_pycolor_main([], MOCKED_DATA, 'ls_numbers')
 
     @freeze_time('2000-01-02 03:45:56')
     def test_ls_timestamp_arg(self):
@@ -57,17 +65,13 @@ class PycolorTest(unittest.TestCase):
 
     def test_ls_stdin(self):
         name = 'ls_stdin'
-        stdin = open(os.path.join(MOCKED_DATA, name + '.txt'), 'r')
-
-        try:
+        with open(os.path.join(MOCKED_DATA, name + '.txt'), 'r') as stdin:
             self.check_pycolor_main(
                 ['--stdin', 'ls', '-l'],
                 MOCKED_DATA,
                 name,
                 stdin=stdin
             )
-        finally:
-            stdin.close()
 
     def test_debug_color(self):
         #pylint: disable=invalid-name
@@ -116,15 +120,6 @@ class PycolorTest(unittest.TestCase):
             MOCKED_DATA,
             'free_tty'
         )
-
-    def test_ls_less(self):
-        with patch(pycolor_class.os, 'fork', lambda: -1):
-            with patch(pycolor_class.os, 'wait', lambda: None):
-                self.check_pycolor_main(
-                    ['--less', '--', 'ls', '-l'],
-                    MOCKED_DATA,
-                    'ls_less',
-                )
 
     def test_ls_debug_v1(self):
         self.check_pycolor_main(
@@ -247,32 +242,31 @@ class PycolorTest(unittest.TestCase):
         print_output = kwargs.get('print_output', False)
         write_output = kwargs.get('write_output', False)
 
+        fname = random_tmp_filename()
+        yield fname
+
         try:
-            fname = random_tmp_filename()
-            yield fname
+            debug_fname = os.path.join(mocked_data_dir, test_name) + '.out.debug.txt'
+
+            with open(fname, 'r') as file:
+                filedata = file.read()
+                if print_output: #pragma: no cover
+                    print(filedata)
+
+                if write_output: #pragma: no cover
+                    with open(debug_fname, 'w') as debugfile:
+                        debugfile.write(filedata)
+                else:
+                    with open(debug_fname, 'r') as debugfile:
+                        self.assertEqual(filedata, debugfile.read())
         finally:
-            try:
-                debug_fname = os.path.join(mocked_data_dir, test_name) + '.out.debug.txt'
-
-                with open(fname, 'r') as file:
-                    filedata = file.read()
-                    if print_output: #pragma: no cover
-                        print(filedata)
-
-                    if write_output: #pragma: no cover
-                        with open(debug_fname, 'w') as debugfile:
-                            debugfile.write(filedata)
-                    else:
-                        with open(debug_fname, 'r') as debugfile:
-                            self.assertEqual(filedata, debugfile.read())
-            finally:
-                os.remove(fname)
+            os.remove(fname)
 
 def random_tmp_filename():
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     length = 8
 
-    fname = 'tmp'
+    fname = 'tmp-'
     for _ in range(length):
         fname += chars[random.randint(0, len(chars) - 1)]
     return fname

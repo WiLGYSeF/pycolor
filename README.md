@@ -10,6 +10,7 @@
 	- [Group Formatting](#groups).
 	- [Field Formatting](#fields).
 	- [Padding](#padding).
+	- [Truncate](#truncate).
 5. [Limitations](#limitations).
 6. [Known Bugs](#known-bugs).
 
@@ -17,6 +18,8 @@ A Python program that executes commands to perform real-time terminal output col
 Color formatting can be added to program output using JSON configuration files and regular expressions to improve readability of the output.
 
 # Installation
+
+TODO: add to PyPI
 
 1. Clone this project to somewhere like `~/.local/bin/pycolor-py/`
 2. Create a symlink from `~/.local/bin/pycolor-py/pycolor.py` to `~/.local/bin/pycolor`
@@ -63,7 +66,7 @@ Patterns are applied first-to-last for each profile.
 
 JSON schema files that describe the config format can be found in `config/schema/`.
 
-Sample config files can also be found in `docs/sample-config/`.
+[Sample config files can also be found in `/docs/sample-config/`](/docs/sample-config/).
 
 # Formatting Strings
 
@@ -204,9 +207,52 @@ The pad formatter will take the length of `value`, which can contain string form
 
 Right-padding is simply done by moving the pad formatter to the right of the group: `%G1%P(12;%G1)`.
 
+## Truncate
+
+Truncate strings to a certain length using `%T(<string>;<replace>;<location>,<length>)`, where:
+
+| Value | Description |
+|---|---|
+| `string` | the string to be truncated |
+| `replace` | insert this string at the truncation (e.g `...`) |
+| `location` | where to truncate `string`, see below for more |
+| `length` | truncate `string` to this length |
+
+`replace` may be empty (`%T(<string>;;<location>,<length>)`).
+
+Possible `location` values:
+
+| Location | Description |
+|---|---|
+| start | truncate the *start* of the string, replacement string length **is** counted as part of `length` |
+| start-add | truncate the *start* of the string, replacement string length **is not** counted as part of `length` |
+| mid | truncate the *middle* of the string, replacement string length **is** counted as part of `length` |
+| mid-add | truncate the *middle* of the string, replacement string length **is not** counted as part of `length` |
+| end | truncate the *end* of the string, replacement string length **is** counted as part of `length` |
+| end-add | truncate the *end* of the string, replacement string length **is not** counted as part of `length` |
+
+### Truncate Samples
+
+Truncate the value of group 1 to 8 chars, adding `...` if necessary: `%T(%G1;...;end-add,8)`.
+
+| String | Result |
+|---|---|
+| `Testing` | `Testing` |
+| `LongString` | `LongStri...` |
+
+Truncate the value of a path in field 1 to 16 chars, inserting `...` if necessary: `%T(%F1;...;mid,16)`.
+
+| String | Result |
+|---|---|
+| `/root/` | `/root/` |
+| `/path/to/a/certain/file` | `/path/...in/file` |
+
+Truncate above with right padding (all results will always have a length of 16): `%T(%F1;...;mid,16)%P(16,%F1)`.
+
 # Limitations
 
-- Commands that write a lot of data at once may cause a `BlockingIOError` (work in progress)
+- Not compatible with Windows (requires fcntl and select), but it does work in WSL.
+- Commands that write a lot of data at once may cause a `BlockingIOError` (work in progress).
 - Programs that expect interactive standard input may not work properly.
 - Interactive programs that rewrite parts of the screen may cause unexpected behavior.
 

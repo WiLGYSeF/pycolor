@@ -1,6 +1,7 @@
 import datetime
 import io
 import os
+from shutil import which
 import sys
 import tempfile
 
@@ -11,7 +12,6 @@ import execute
 from printerr import printerr
 from profileloader import ProfileLoader
 import pyformat
-from which import which
 
 
 FMT_DEBUG = pyformat.format_string('%Cz%Cde')
@@ -91,12 +91,6 @@ class Pycolor:
 
         self.debug_print(1, 'using profile "%s"', profile.get_name())
 
-        if profile.less_output:
-            tmpfile = tempfile.NamedTemporaryFile()
-            self.stdout = io.TextIOWrapper(tmpfile)
-            if self.color_mode == 'auto':
-                self.color_mode = 'always'
-
         try:
             retcode = execute.execute(
                 cmd,
@@ -111,21 +105,6 @@ class Pycolor:
 
         if self.debug_file is not None:
             self.debug_file.close()
-
-        if profile.less_output:
-            self.stdout.flush()
-            self.stderr.flush()
-
-            pid = os.fork()
-            if pid == 0:
-                less_path = which('less')
-                try:
-                    os.execv(less_path, [less_path, '-FKRSX', tmpfile.name])
-                except FileNotFoundError:
-                    printerr("command 'less' not found")
-                sys.exit(1)
-            os.wait()
-            tmpfile.close()
 
         return retcode
 
@@ -164,7 +143,17 @@ class Pycolor:
             ]):
                 continue
 
-            matched, applied = apply_pattern(pat, self.linenum, data, context)
+            was_active = pat.active
+            pat.is_active(self.linenum, data)
+
+            if pat.active != was_active:
+                self.debug_print(3,
+                    '%s %s' % ('active:  ' if pat.active else 'inactive:', pat.from_profile)
+                )
+            if not pat.active:
+                continue
+
+            matched, applied = apply_pattern(pat, data, context)
             if matched:
                 if pat.filter:
                     self.debug_print(2, 'filtered: %s', data.encode('utf-8'))
