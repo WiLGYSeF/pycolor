@@ -19,6 +19,8 @@ Color formatting can be added to program output using JSON configuration files a
 
 # Installation
 
+TODO: add to PyPI
+
 1. Clone this project to somewhere like `~/.local/bin/pycolor-py/`
 2. Create a symlink from `~/.local/bin/pycolor-py/pycolor.py` to `~/.local/bin/pycolor`
 3. Create color configuration profiles for commands in `~/.pycolor.d/`
@@ -64,7 +66,7 @@ Patterns are applied first-to-last for each profile.
 
 JSON schema files that describe the config format can be found in `config/schema/`.
 
-Sample config files can also be found in `docs/sample-config/`.
+[Sample config files can also be found in `/docs/sample-config/`](/docs/sample-config/).
 
 # Formatting Strings
 
