@@ -11,21 +11,21 @@ SCHEMA_DIR = os.path.join(DIRNAME, 'schema')
 validators = {}
 
 
-class ConfigException(Exception):
+class ConfigError(Exception):
     def __init__(self, message):
         self.message = message
         super().__init__(self.message)
 
-class ConfigPropertyException(ConfigException):
+class ConfigPropertyError(ConfigError):
     def __init__(self, prop, message):
         self.property = prop
         super().__init__('"%s": %s' % (self.property, message))
 
-class ConfigRegexException(ConfigPropertyException):
+class ConfigRegexError(ConfigPropertyError):
     def __init__(self, prop, message):
         super().__init__(prop, 'regex %s' % message)
 
-class ConfigExclusivePropertyException(ConfigException):
+class ConfigExclusivePropertyError(ConfigError):
     pass
 
 def load_schema(schema_name, cfg, dest):
@@ -38,7 +38,7 @@ def load_schema(schema_name, cfg, dest):
     try:
         validator(cfg)
     except fastjsonschema.JsonSchemaException as jse:
-        raise ConfigException(jse) from jse
+        raise ConfigError(jse) from jse
 
     for key, val in cfg.items():
         setattr(dest, key, val)
@@ -49,7 +49,7 @@ def compile_re(expression, prop):
     try:
         return re.compile(expression) if len(expression) != 0 else None
     except re.error as rer:
-        raise ConfigRegexException(prop, rer) from rer
+        raise ConfigRegexError(prop, rer) from rer
 
 def mutually_exclusive(self, attrlist):
     count = 0
@@ -66,7 +66,7 @@ def mutually_exclusive(self, attrlist):
             continue
         count += 1
     if count > 1:
-        raise ConfigExclusivePropertyException('mutually exclusive: %s' % str(attrlist))
+        raise ConfigExclusivePropertyError('mutually exclusive: %s' % str(attrlist))
 
 def join_str_list(val):
     if val is None:

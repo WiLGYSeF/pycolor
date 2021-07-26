@@ -148,7 +148,7 @@ class Pycolor:
 
             if pat.active != was_active:
                 self.debug_print(3,
-                    '%s %s' % ('active:  ' if pat.active else 'inactive:', pat.from_profile)
+                    '%s %s' % ('active:  ' if pat.active else 'inactive:', pat.from_profile_str)
                 )
             if not pat.active:
                 continue
@@ -161,11 +161,8 @@ class Pycolor:
                     break
 
                 if self.debug >= 3:
-                    fromprof_str = pat.from_profile
-                    #if len(fromprof_str) > 3 and profileloader.PROF_IDX_SEP in fromprof_str:
-
                     self.debug_print(3, 'apply%3s: %s',
-                        fromprof_str,
+                        pat.from_profile_str,
                         insert_color_data(applied, color_positions).encode('utf-8')
                     )
 

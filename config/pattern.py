@@ -1,6 +1,12 @@
 import re
 
-from config import load_schema, compile_re, mutually_exclusive, join_str_list
+from config import (
+    ConfigPropertyError,
+    compile_re,
+    join_str_list,
+    load_schema,
+    mutually_exclusive,
+)
 import pyformat
 
 
@@ -21,15 +27,13 @@ class Pattern:
         self.activation_exp_line_off = 0
         self.deactivation_exp_line_off = 0
 
-        self.from_profile = None
+        self.from_profile_str = None
 
         load_schema('pattern', cfg, self)
 
         mutually_exclusive(self, ['replace', 'replace_all'])
         mutually_exclusive(self, ['field', 'replace_groups'])
         mutually_exclusive(self, ['stdout_only', 'stderr_only'])
-        #mutually_exclusive(self, ['activation_line', 'activation_expression'])
-        #mutually_exclusive(self, ['deactivation_line', 'deactivation_expression'])
 
         for attr in [
             'expression',
@@ -74,6 +78,9 @@ class Pattern:
             self.field = None
             self.min_fields = -1
             self.max_fields = -1
+
+        if self.min_fields != -1 and self.max_fields != -1 and self.min_fields > self.max_fields:
+            raise ConfigPropertyError('min_fields', 'cannot be larger than max_fields')
 
     def get_field_indexes(self, fields):
         """Returns a range of field indicies that field matches

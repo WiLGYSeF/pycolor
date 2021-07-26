@@ -1,7 +1,7 @@
 import json
 from shutil import which
 
-from config import ConfigPropertyException
+from config import ConfigPropertyError
 from config.profile import Profile
 
 
@@ -54,7 +54,7 @@ class ProfileLoader:
 
             fromprof = self.get_profile_by_name(fprof.name)
             if fromprof is None:
-                raise ConfigPropertyException(
+                raise ConfigPropertyError(
                     'from_profiles',
                     'profile "%s" was not found' % fprof.name
                 )
@@ -63,7 +63,7 @@ class ProfileLoader:
             # pylint: disable=consider-using-enumerate
             for i in range(len(fromprof.patterns)):
                 pat = fromprof.patterns[i]
-                pat.from_profile = '%x%s%x' % (fidx, PROF_IDX_SEP,i)
+                pat.from_profile_str = '%x%s%x' % (fidx, PROF_IDX_SEP,i)
 
             if fprof.order == 'before':
                 orig_patterns = patterns.copy()
