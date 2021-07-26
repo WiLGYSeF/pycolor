@@ -21,7 +21,7 @@ GET_ARG_RANGES = [
     {
         ARGLEN: 4,
         POSITION: 'blah',
-        RANGE: [0, 1, 2, 3],
+        RANGE: Exception,
     },
     {
         ARGLEN: 4,
@@ -84,10 +84,17 @@ GET_ARG_RANGES = [
 class GetArgPatternTest(unittest.TestCase):
     def test_get_arg_range(self):
         for entry in GET_ARG_RANGES:
-            self.assertListEqual(
-                list(ArgPattern({
-                    'expression': '.*',
-                    'position': entry[POSITION]
-                }).get_arg_range(entry[ARGLEN])),
-                entry[RANGE]
-            )
+            if isinstance(entry[RANGE], type):
+                with self.assertRaises(entry[RANGE]):
+                    ArgPattern({
+                        'expression': '.*',
+                        'position': entry[POSITION]
+                    }).get_arg_range(entry[ARGLEN])
+            else:
+                self.assertListEqual(
+                    list(ArgPattern({
+                        'expression': '.*',
+                        'position': entry[POSITION]
+                    }).get_arg_range(entry[ARGLEN])),
+                    entry[RANGE]
+                )
