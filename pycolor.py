@@ -13,7 +13,7 @@ from pycolor_class import Pycolor
 import pyformat
 
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 CONFIG_DIR = os.path.join(os.getenv('HOME'), '.pycolor.d')
 CONFIG_DEFAULT = os.path.join(os.getenv('HOME'), '.pycolor.json')
