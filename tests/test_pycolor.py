@@ -19,6 +19,18 @@ MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_
 
 
 class PycolorTest(unittest.TestCase):
+    def test_load_sample_config(self):
+        curpath = os.path.dirname(os.path.realpath(__file__))
+        with patch(
+            pycolor, 'CONFIG_DIR', os.path.join(curpath, '../docs/sample-config')
+        ), patch(
+            pycolor, 'CONFIG_DEFAULT', os.path.join(curpath, '../docs/sample-config/rsync.json')
+        ):
+            try:
+                pycolor.main([], stdin_stream=textstream())
+            except SystemExit as sexc:
+                self.assertEqual(sexc.code, 0)
+
     def test_version(self):
         stdout = textstream()
         with patch(sys, 'stdout', stdout):

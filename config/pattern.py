@@ -34,8 +34,6 @@ class Pattern:
         mutually_exclusive(self, ['replace', 'replace_all'])
         mutually_exclusive(self, ['field', 'replace_groups'])
         mutually_exclusive(self, ['stdout_only', 'stderr_only'])
-        #mutually_exclusive(self, ['activation_line', 'activation_expression'])
-        #mutually_exclusive(self, ['deactivation_line', 'deactivation_expression'])
 
         for attr in [
             'expression',
