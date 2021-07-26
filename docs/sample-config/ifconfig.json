@@ -11,23 +11,23 @@
 			"patterns": [
 				{
 					"expression": "^([A-Za-z0-9-]+): flags=([0-9]+)<([A-Z,]+)>  mtu ([0-9]+)",
-					"replace_groups": ["%C(bol;c)%Gc%Cz", "%Cg%Gc%Cz", "%Cm%Gc%Cz", "%Cg%Gc%Cz"]
+					"replace_groups": ["%H(bol;c)", "%Hg", "%Hm", "%Hg"]
 				},
 				{
 					"expression": "^ +inet ((?:[0-9]+\\.){3}[0-9]+)  netmask ((?:[0-9]+\\.){3}[0-9]+)  (?:broadcast|destination) ((?:[0-9]+\\.){3}[0-9]+)",
-					"replace_groups": ["%Cy%Gc%Cz", "%C(dim;y)%Gc%Cz", "%C(dim;y)%Gc%Cz"]
+					"replace_groups": ["%Hy", "%H(dim;y)", "%H(dim;y)"]
 				},
 				{
 					"expression": "^ +inet ((?:[0-9]+\\.){3}[0-9]+)  netmask ((?:[0-9]+\\.){3}[0-9]+)",
-					"replace_groups": ["%Cly%Gc%Cz", "%C(dim;y)%Gc%Cz"]
+					"replace_groups": ["%Hly", "%H(dim;y)"]
 				},
 				{
 					"expression": "^ +inet6 ([0-9a-f:]+)  prefixlen ([0-9]+)  scopeid (0x[0-9a-f]{2})<([a-z]+)>",
-					"replace_groups": ["%Cly%Gc%Cz", "%Cg%Gc%Cz", "%Cg%Gc%Cz", "%Cb%Gc%Cz"]
+					"replace_groups": ["%Hly", "%Hg", "%Hg", "%Hb"]
 				},
 				{
 					"expression": "^ +[a-z]+(?: ([0-9a-f:-]+))?  txqueuelen ([0-9]+)  \\(([A-Za-z0-9 ]+)\\)",
-					"replace_groups": ["%Cy%Gc%Cz", "%Cg%Gc%Cz", "%Cb%Gc%Cz"]
+					"replace_groups": ["%Hy", "%Hg", "%Hb"]
 				},
 				{
 					"super_expression": "^ +RX",
@@ -37,7 +37,7 @@
 				{
 					"super_expression": "^ +RX",
 					"expression": "\\(([A-Z0-9. ]+)\\)",
-					"replace_groups": ["%Cc%G1%Cz"]
+					"replace_groups": ["%Hc"]
 				},
 				{
 					"super_expression": "^ +TX",
@@ -47,7 +47,7 @@
 				{
 					"super_expression": "^ +TX",
 					"expression": "\\(([A-Z0-9. ]+)\\)",
-					"replace_groups": ["%Cg%G1%Cz"]
+					"replace_groups": ["%Hg"]
 				}
 			]
 		}

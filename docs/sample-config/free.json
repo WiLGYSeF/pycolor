@@ -14,6 +14,7 @@
 					"skip_others": true
 				},
 				{
+					"deactivation_expression": "^free: invalid option",
 					"separator": " +",
 					"field": 0,
 					"min_fields": 7,
@@ -24,10 +25,10 @@
 						"3": "%Cr%Fc%Cz",
 						"4,7": "%Cg%Fc%Cz",
 						"6": "%Cy%Fc%Cz"
-					},
-					"activation_line": 2
+					}
 				},
 				{
+					"deactivation_expression": "^free: invalid option",
 					"separator": " +",
 					"field": 0,
 					"min_fields": 8,
@@ -38,10 +39,10 @@
 						"3": "%Cr%Fc%Cz",
 						"4,8": "%Cg%Fc%Cz",
 						"6,7": "%Cy%Fc%Cz"
-					},
-					"activation_line": 2
+					}
 				},
 				{
+					"deactivation_expression": "^free: invalid option",
 					"separator": " +",
 					"field": 0,
 					"min_fields": 4,
@@ -51,8 +52,7 @@
 						"2": "%Cb%Fc%Cz",
 						"3": "%Cr%Fc%Cz",
 						"4": "%Cg%Fc%Cz"
-					},
-					"activation_line": 2
+					}
 				}
 			]
 		}

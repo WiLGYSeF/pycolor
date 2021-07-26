@@ -1,0 +1,59 @@
+{
+	"profiles": [
+		{
+			"name": "dig",
+			"patterns": [
+				{
+					"activation_expression": "^;; QUESTION SECTION:$",
+					"deactivation_expression": "^;;",
+					"separator": "\t+",
+					"min_fields": 3,
+					"max_fields": 3,
+					"field": 0,
+					"expression": "^;([^; \t]+)",
+					"replace_fields": [
+						";%Cy%G1%Cz",
+						"%Ce%Fc%Cz",
+						"%Clb%Fc%Cz"
+					]
+				},
+				{
+					"activation_expression": "^;; ANSWER SECTION:$",
+					"deactivation_expression": "^;",
+					"separator": "\t+",
+					"min_fields": 5,
+					"max_fields": 5,
+					"field": 0,
+					"expression": "^[^;]",
+					"replace_fields": [
+						"%Cy%Fc%Cz",
+						"%Ce%Fc%Cz",
+						"%Ce%Fc%Cz",
+						"%Clb%Fc%Cz",
+						"%Cg%Fc%Cz"
+					]
+				},
+				{
+					"expression": "^;; Query time: ([0-9]+)",
+					"replace_groups": ["%Hg"]
+				},
+				{
+					"expression": "^;; SERVER: (.*)$",
+					"replace_groups": ["%Hy"]
+				},
+				{
+					"expression": "^;; WHEN: (.*)$",
+					"replace_groups": ["%Hb"]
+				},
+				{
+					"expression": "^;; MSG SIZE  rcvd: (.*)$",
+					"replace_groups": ["%Hg"]
+				},
+				{
+					"expression": "^; <<>> ([^<]+) <<>> ?(.*)$",
+					"replace_all": "%Ce; <<>> %Cw%G1%Ce <<>> %Cy%G2%Cz"
+				}
+			]
+		}
+	]
+}

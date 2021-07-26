@@ -10,19 +10,19 @@
 			"patterns": [
 				{
 					"expression": "^delete: (.*)$",
-					"replace_groups": ["%C(bold;r)%Gc%Cz"]
+					"replace_groups": ["%H(bold;r)"]
 				},
 				{
 					"expression": "^upload: (.*)$",
-					"replace_groups": ["%C(bold;g)%Gc%Cz"]
+					"replace_groups": ["%H(bold;g)"]
 				},
 				{
 					"expression": "^\\(dryrun\\) delete: (.*)$",
-					"replace_groups": ["%Cr%Gc%Cz"]
+					"replace_groups": ["%Hr"]
 				},
 				{
 					"expression": "^\\(dryrun\\) upload: (.*)$",
-					"replace_groups": ["%Cg%Gc%Cz"]
+					"replace_groups": ["%Hg"]
 				}
 			]
 		}
