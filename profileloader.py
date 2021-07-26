@@ -1,7 +1,7 @@
 import json
 from shutil import which
 
-from config import ConfigPropertyException
+from config import ConfigPropertyError
 from config.profile import Profile
 
 
@@ -54,7 +54,7 @@ class ProfileLoader:
 
             fromprof = self.get_profile_by_name(fprof.name)
             if fromprof is None:
-                raise ConfigPropertyException(
+                raise ConfigPropertyError(
                     'from_profiles',
                     'profile "%s" was not found' % fprof.name
                 )

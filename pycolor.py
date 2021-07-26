@@ -125,7 +125,7 @@ def try_load_file(pycobj, fname):
         return True
     except json.decoder.JSONDecodeError as jde:
         printerr(jde, filename=fname)
-    except config.ConfigException as cex:
+    except config.ConfigError as cex:
         printerr(cex, filename=fname)
     return False
 

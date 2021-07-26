@@ -1,7 +1,7 @@
 import re
 
 from config import (
-    ConfigPropertyException,
+    ConfigPropertyError,
     compile_re,
     join_str_list,
     load_schema,
@@ -34,7 +34,7 @@ class ArgPattern:
             self.subcommand = [ self.subcommand ]
 
         if isinstance(self.position, str) and not ARGRANGE_REGEX.match(self.position):
-            raise ConfigPropertyException('position', 'is not a valid argument position')
+            raise ConfigPropertyError('position', 'is not a valid argument position')
 
     def get_arg_range(self, arglen):
         """Returns a range of argument indicies that position matches

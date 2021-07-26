@@ -1,5 +1,5 @@
 from config import (
-    ConfigPropertyException,
+    ConfigPropertyError,
     compile_re,
     join_str_list,
     load_schema,
@@ -52,7 +52,7 @@ class Profile:
 
         if isinstance(self.min_args, int) and isinstance(self.max_args, int):
             if self.min_args > self.max_args:
-                raise ConfigPropertyException('min_args', 'cannot be larger than max_args')
+                raise ConfigPropertyError('min_args', 'cannot be larger than max_args')
 
         if not isinstance(self.from_profiles, list):
             self.from_profiles = [self.from_profiles]

@@ -1,6 +1,11 @@
 import re
 
-from config import load_schema, compile_re, mutually_exclusive, join_str_list
+from config import (
+    compile_re,
+    join_str_list,
+    load_schema,
+    mutually_exclusive,
+)
 import pyformat
 
 
