@@ -9,7 +9,7 @@ FORMAT_CHAR_VALID = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvw
 FORMAT_COLOR = 'C'
 FORMAT_FIELD = 'F'
 FORMAT_GROUP = 'G'
-FORMAT_GROUP_COLOR = 'H'
+FORMAT_CONTEXT_COLOR = 'H'
 FORMAT_PADDING = 'P'
 FORMAT_TRUNCATE = 'T'
 
@@ -71,10 +71,12 @@ def do_format(formatter, value, context, **kwargs):
         if 'match' not in context:
             return ''
         return do_format_group(value, context, **kwargs)
-    if formatter == FORMAT_GROUP_COLOR:
-        if 'match' not in context or 'match_cur' not in context:
-            return ''
-        return do_format_group_color(value, context, **kwargs)
+    if formatter == FORMAT_CONTEXT_COLOR:
+        if 'match' in context and 'match_cur' in context:
+            return do_format_field_group_color(value, context, '%Gc',**kwargs)
+        if 'field_cur' in context:
+            return do_format_field_group_color(value, context, '%Fc', **kwargs)
+        return ''
     if formatter == FORMAT_PADDING:
         return do_format_padding(value, context, **kwargs)
     if formatter == FORMAT_TRUNCATE:
@@ -155,9 +157,9 @@ def do_format_group(value, context, **kwargs):
             pass
     return ''
 
-def do_format_group_color(value, context, **kwargs):
+def do_format_field_group_color(value, context, format_type, **kwargs):
     result, color_pos = format_string(
-        '%C(' + value + ')%Gc%Cz',
+        '%C(' + value + ')' + format_type + '%Cz',
         context=context,
         return_color_positions=True
     )
