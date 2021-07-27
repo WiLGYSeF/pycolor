@@ -30,11 +30,11 @@ TODO: add to PyPI
 
 Pycolor can be used explicitly on the command line:
 
-__Before:__
+**Before:**
 
 ![sample df output](/docs/images/sample-df-output.png)
 
-__After:__
+**After:**
 
 ![sample colored df output](/docs/images/sample-df-output-colored.png)
 
@@ -47,35 +47,43 @@ Pycolor can also be aliased in `~/.bashrc` like so:
 alias rsync='pycolor rsync'
 ```
 
-__Before:__
+**Before:**
 
 ![sample rsync output](/docs/images/sample-rsync-output.png)
 
-__After:__ (note Pycolor omitted lines with trailing slashes in addition to coloring output for better readability)
+**After:**
+*Note pycolor omitted lines with trailing slashes in addition to coloring output for better readability.*
 
 ![sample colored rsync output](/docs/images/sample-rsync-output-colored.png)
 
 [Sample rsync configuration file.](/docs/sample-config/rsync.json)
 
 # Configuration
+
 Pycolor will first try to load configuration from `~/.pycolor.json` before loading files found in `~/.pycolor.d/` in filename order.
 
 When looking for a profile to use, pycolor will select the last matching profile based on the `name`, `name_expression`, or `which` property.
 
 Patterns are applied first-to-last for each profile.
 
-JSON schema files that describe the config format can be found in `config/schema/`.
+[JSON schema files that describe the config format can be found in `/config/schema/`](/config/schema/).
 
 [Sample config files can also be found in `/docs/sample-config/`](/docs/sample-config/).
 
 # Formatting Strings
 
-Use formatting strings to color/manipulate the program output in real-time. A formatted string looks like this: `%C(red)`, where
-- `%` is the start of the formatter
-- `C` is the format type
-- `red` is the argument that is passed to the formatter
+Use formatting strings to color/manipulate the program output in real-time: `%<format type>(<format value>)`.
 
-Formatting strings can also be written like `%Cred`, where the first letter is used as the format type and the rest is the argument.
+| Format Type Code | Description |
+|---|---|
+| [C](#colors) | Color formatter |
+| [F](#fields) | Field (separator) formatter |
+| [G](#groups) | Regex group formatter |
+| H | Context-aware field/group color alias |
+| [P](#padding) | Padding formatter |
+| [T](#truncate) | Truncation formatter |
+
+Formatting strings can written like `%C(red)` or `%Cred`, where the first letter is used as the format type and the rest is the argument.
 `%C(red)hello` formats the string `hello` in red, but `%Credhello` is incorrect.
 
 A literal `%` can be used in a format string by using `%%`.
@@ -87,11 +95,9 @@ Valid formatting argument characters are upper/lowercase letters and numbers, un
 
 ## Colors
 
-[Click here for a list of all attributes and color codes](https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_%28Select_Graphic_Rendition%29_parameters).
-
 To colorize output through a replace pattern use `%C<color argument>`.
 
-### Recognized Attributes, Colors:
+### Recognized Attributes and Colors:
 | Color Argument | Aliases | ANSI Code | Description |
 |---|---|---|---|
 | reset | normal, res, nor, z | `\e[0m` | Resets all ANSI color formatting |
@@ -122,6 +128,8 @@ To colorize output through a replace pattern use `%C<color argument>`.
 | lightcyan | lc | `\e[96m` | Light cyan color |
 | white | lightgrey,  le, w | `\e[97m` | White color |
 
+[Click here for a list of all attributes and color codes](https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_%28Select_Graphic_Rendition%29_parameters).
+
 ### Modifier Characters
 
 You can select multiple colors by separating them with `;` (must be wrapped in parentheses). e.g. `%C(bold;red)`.
@@ -135,13 +143,13 @@ Note that for turning off bold (`%C(^bold)` i.e. `\e[21m`) instead turns on doub
 ### Special Colors
 
 #### 256-Color
-If a color format is just a number (e.g. `%C130`), then it will use the 256-color set (in this case, a brown color): `\e[38;5;130m`.
+If a color format is just a number (e.g. `%C130`), then it will use the 256-color set (in this case, a brown color: `\e[38;5;130m`).
 This also works for background colors as well (e.g. `%C(^130)` produces `\e[48;5;130m`).
 
 [Click here to see the 256-color table](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit).
 
 #### 24-bit Color
-24-bit color is also supported similarly to 256-color by using hex codes (`%C0xffaa00` or `%C0xfa0` will produce orange: `\e[38;2;255;170;0m`).
+24-bit color is also supported by using hex codes (`%C0xffaa00` or `%C0xfa0` will produce orange: `\e[38;2;255;170;0m`).
 
 ### Raw ANSI Codes
 If for some reason you would like to use raw codes in the color formats: `%C(raw1;3;36)` will produce bold, italic, cyan (`\e[1;3;36m`).
@@ -149,7 +157,13 @@ If for some reason you would like to use raw codes in the color formats: `%C(raw
 ## Groups
 
 Regex groups can be referenced with the format: `%G<group number or name>`.
-`%G0` will be the text that the pattern's `expression` property matches. `%G1` will be the first matching group, `%G2` will be the second, etc. If the regex group is named, it can also be referenced (e.g. `%Gmyregexgroup`).
+`%G0` is the entire matching text from `expression`. `%G1` is the first matching group, `%G2` is the second, etc. If the regex group is named, it can also be referenced (e.g. `%G(myregexgroup)`).
+
+### Group Incrementer
+
+Instead of using groups explicitly in order (e.g. `%G1, %G2: %G3`), using the special incrementer instead of numbers, `%Gn, %Gn: %Gn`, will result in the same format output.
+
+Note that if a named group `n` is defined in the expression, then the special incrementer will be overridden.
 
 ## Fields
 
