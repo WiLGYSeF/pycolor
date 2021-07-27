@@ -13,7 +13,7 @@
 					"expression": "^;([^; \t]+)",
 					"replace_fields": [
 						";%Cy%G1%Cz",
-						"%Ce%Fc%Cz",
+						"%He",
 						"%Clb%Fc%Cz"
 					]
 				},
@@ -26,11 +26,11 @@
 					"field": 0,
 					"expression": "^[^;]",
 					"replace_fields": [
-						"%Cy%Fc%Cz",
-						"%Ce%Fc%Cz",
-						"%Ce%Fc%Cz",
-						"%Clb%Fc%Cz",
-						"%Cg%Fc%Cz"
+						"%Hy",
+						"%He",
+						"%He",
+						"%Hlb",
+						"%Hg"
 					]
 				},
 				{
