@@ -12,10 +12,11 @@
 	- [Padding](#padding).
 	- [Truncate](#truncate).
 5. [Limitations](#limitations).
-6. [Known Bugs](#known-bugs).
 
 A Python program that executes commands to perform real-time terminal output coloring using ANSI color codes.
 Color formatting can be added to program output using JSON configuration files and regular expressions to improve readability of the output.
+
+Designed for Unix, but works in Windows.
 
 # Installation
 
@@ -265,11 +266,5 @@ Truncate above with right padding (all results will always have a length of 16):
 
 # Limitations
 
-- Not compatible with Windows (requires fcntl and select), but it does work in WSL.
-- Commands that write a lot of data at once may cause a `BlockingIOError` (work in progress).
 - Programs that expect interactive standard input may not work properly.
 - Interactive programs that rewrite parts of the screen may cause unexpected behavior.
-
-# Known Bugs
-
-- BlockingIOError is sometimes thrown and is not caught
