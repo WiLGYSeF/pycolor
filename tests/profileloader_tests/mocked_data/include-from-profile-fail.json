@@ -1,0 +1,8 @@
+{
+	"profiles": [
+		{
+			"profile_name": "asdf",
+			"from_profiles": [ "does_not_exist" ]
+		}
+	]
+}

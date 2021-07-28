@@ -1,5 +1,7 @@
+import os
 import unittest
 
+from config import ConfigPropertyError
 from config.argpattern import ArgPattern
 from profileloader import ProfileLoader
 
@@ -213,8 +215,15 @@ CHECK_ARG_PATTERNS_SUBCOMMAND = [
     },
 ]
 
+MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_data')
+
 
 class ProfileLoaderTest(unittest.TestCase):
+    def test_include_from_profile_fail(self):
+        loader = ProfileLoader()
+        with self.assertRaises(ConfigPropertyError):
+            loader.load_file(os.path.join(MOCKED_DATA, 'include-from-profile-fail.json'))
+
     def test_check_arg_patterns(self):
         for entry in CHECK_ARG_PATTERNS:
             argpats = list(map(lambda x: ArgPattern(x), entry[ARGPATTERNS]))
