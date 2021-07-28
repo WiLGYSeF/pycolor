@@ -164,14 +164,18 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
                 flag.unset()
                 if use_os_read:
                     try:
-                        data = os.read(stream, 1024)
+                        data = os.read(stream, 4098)
                     except OSError:
                         break
                     if len(data) == 0 or _read(stream, callback, data=data) is None:
                         break
+                    if interactive and not is_buffer_empty(stream):
+                        _read(stream, callback, data=b'', last=True)
                 else:
                     if _read(stream, callback) is None:
                         break
+                    if interactive and not is_buffer_empty(stream):
+                        _read(stream, callback, last=True)
 
         def write_stdin(flag):
             while True:
