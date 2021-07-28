@@ -3,6 +3,7 @@ from shutil import which
 
 from config import ConfigPropertyError
 from config.profile import Profile
+from printmsg import printwarn
 
 
 PROF_IDX_SEP = ';'
@@ -26,6 +27,8 @@ class ProfileLoader:
         for prof in profiles:
             self.profiles.append(prof)
             if prof.profile_name is not None:
+                if prof.profile_name in self.named_profiles:
+                    printwarn('conflicting profiles with the name "%s"' % prof.profile_name)
                 self.named_profiles[prof.profile_name] = prof
 
         for prof in profiles:
