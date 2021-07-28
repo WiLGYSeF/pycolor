@@ -1,10 +1,13 @@
 import os
+import sys
 import unittest
 
 from config import ConfigPropertyError
 from config.argpattern import ArgPattern
+import printmsg
 from profileloader import ProfileLoader
-
+from tests.execute_tests.helpers import textstream
+from tests.testutils import patch
 
 ARGS = 'args'
 ARGPATTERNS = 'argpatterns'
@@ -219,6 +222,18 @@ MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_
 
 
 class ProfileLoaderTest(unittest.TestCase):
+    def test_load_file_same_profile_name(self):
+        loader = ProfileLoader()
+        stderr = textstream()
+
+        with patch(sys, 'stderr', stderr), patch(printmsg, 'is_color_enabled', lambda x: True):
+            loader.load_file(os.path.join(MOCKED_DATA, 'load-file-same-profile-name.json'))
+        stderr.seek(0)
+        self.assertEqual(
+            stderr.read(),
+            '\x1b[93mwarn\x1b[0m: conflicting profiles with the name "test"\n'
+        )
+
     def test_include_from_profile_fail(self):
         loader = ProfileLoader()
         with self.assertRaises(ConfigPropertyError):

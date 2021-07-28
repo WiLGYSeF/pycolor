@@ -43,7 +43,7 @@ def printmsg(*args, **kwargs):
                 string
             )
         else:
-            string = 'error: ' + string
+            string =  '%s: %s' % (prefix, string)
 
     print(string, **kwargs, file=sys.stderr)
 
