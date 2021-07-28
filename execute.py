@@ -1,27 +1,30 @@
 from contextlib import contextmanager, ExitStack
-import errno
-import fcntl
 import io
 import os
-import pty
-import select
 import shutil
 import signal
 import struct
 import subprocess
 import sys
-import termios
 import time
+import threading
 
-from printerr import printerr
+try:
+    import fcntl
+    import termios
+    HAS_FCNTL = True
+except ModuleNotFoundError:
+    HAS_FCNTL = False
+
+try:
+    import pty
+    HAS_PTY = True
+except ModuleNotFoundError:
+    HAS_PTY = False
+
 from static_vars import static_vars
+from threadwait import ThreadWait
 
-
-def nonblock(file):
-    # TODO: not compatible with windows
-    fde = file.fileno()
-    flag = fcntl.fcntl(fde, fcntl.F_GETFL)
-    fcntl.fcntl(fde, fcntl.F_SETFL, flag | os.O_NONBLOCK)
 
 def readlines(stream, data=None):
     if data is None:
@@ -106,6 +109,11 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
     encoding = kwargs.get('encoding', 'utf-8')
     interactive = kwargs.get('interactive', False)
 
+    stdin = sys.stdin
+
+    if tty and not HAS_PTY:
+        tty = False
+
     def _read(stream, callback, data=None, last=False):
         return read_stream(
             stream,
@@ -121,13 +129,6 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
 
     with ExitStack() as stack:
         stack.enter_context(ignore_sigint())
-
-        stdin = sys.stdin
-        # TODO: io does not like unblocked data
-        # this works because we ignore the TypeError expection thrown and
-        # is needed in order to not hang on stdin
-        # see https://bugs.python.org/issue13322
-        nonblock(stdin)
 
         if tty:
             stack.enter_context(sync_sigwinch(masters[0]))
@@ -151,61 +152,79 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
             stdout = process.stdout
             stderr = process.stderr
 
-            try:
-                nonblock(stdout)
-                nonblock(stderr)
-            except AttributeError:
-                pass
-            except io.UnsupportedOperation:
-                pass
+        def read_thread(stream, callback, flag):
+            if isinstance(stream, io.IOBase):
+                try:
+                    stream = stream.fileno()
+                except OSError:
+                    pass
 
-        readable = {
-            stdout: stdout_callback,
-            stderr: stderr_callback,
-            stdin: None
-        }
-
-        while readable and process.poll() is None:
-            # in case something goes horribly wrong
-            try:
-                # TODO: not compatible with windows
-                for fde in select.select(readable, [], [], 0.1)[0]:
-                    do_read = False
+            use_os_read = isinstance(stream, int)
+            while True:
+                flag.unset()
+                if use_os_read:
                     try:
-                        if isinstance(fde, int):
-                            data = os.read(fde, 1024)
-                            do_read = True
-                        else:
-                            data = None
-                            do_read = True
-                    except OSError as ose:
-                        if ose.errno != errno.EIO:
-                            raise
-                        del readable[fde]
-                    else:
-                        if do_read:
-                            if fde is stdin:
-                                try:
-                                    recv = stdin.read().encode()
-                                    process.stdin.write(recv)
-                                    process.stdin.flush()
-                                except BrokenPipeError:
-                                    break
-                                except TypeError:
-                                    break
-                            else:
-                                _read(fde, readable[fde], data=data)
-                        else:
-                            del readable[fde]
+                        data = os.read(stream, 4098)
+                    except OSError:
+                        break
+                    if len(data) == 0 or _read(stream, callback, data=data) is None:
+                        break
+                    if interactive and not is_buffer_empty(stream):
+                        _read(stream, callback, data=b'', last=True)
+                else:
+                    if _read(stream, callback) is None:
+                        break
+                    if interactive and not is_buffer_empty(stream):
+                        _read(stream, callback, last=True)
 
-                if interactive and not is_buffer_empty(stdout):
-                    if tty:
-                        _read(stdout, stdout_callback, data=b'', last=True)
-                    else:
-                        _read(stdout, stdout_callback, last=True)
-            except Exception as exc:
-                printerr(exc)
-            time.sleep(0.0001)
+        def write_stdin(flag):
+            stream = stdin
+            if isinstance(stream, io.IOBase):
+                try:
+                    stream = stream.fileno()
+                except OSError:
+                    pass
+
+            use_os_read = isinstance(stream, int)
+            while True:
+                flag.unset()
+                if use_os_read:
+                    recv = os.read(stream, 4098)
+                    if len(recv) == 0:
+                        break
+                else:
+                    recv = stdin.read()
+                    if recv is None or len(recv) == 0:
+                        break
+                    recv = recv.encode()
+
+                process.stdin.write(recv)
+                process.stdin.flush()
+
+        wait = ThreadWait()
+        thr_stdout = threading.Thread(target=read_thread, args=(
+            stdout,
+            stdout_callback,
+            wait.get_flag(),
+        ), daemon=True)
+        thr_stderr = threading.Thread(target=read_thread, args=(
+            stderr,
+            stderr_callback,
+            wait.get_flag(),
+        ), daemon=True)
+        thr_stdin = threading.Thread(target=write_stdin, args=(
+            wait.get_flag(),
+        ),
+        daemon=True)
+
+        thr_stdout.start()
+        thr_stderr.start()
+        thr_stdin.start()
+
+        # TODO: this is probably not the best way to wait
+        while process.poll() is None:
+            time.sleep(0.001)
+        wait.wait(timeout=0.075)
 
         if tty:
             for fde in slaves:
@@ -220,7 +239,6 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
             _read(stderr, stderr_callback, last=True)
 
         process.stdin.close()
-
         return process.poll()
 
 @contextmanager
@@ -233,7 +251,10 @@ def ignore_sigint():
 
 @contextmanager
 def sync_sigwinch(tty_fd):
-    # TODO: not compatible with windows
+    # Unix only
+    if not HAS_FCNTL or not hasattr(signal, 'SIGWINCH'):
+        return
+
     def set_window_size():
         col, row = shutil.get_terminal_size()
         # https://stackoverflow.com/a/6420070
