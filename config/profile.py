@@ -17,6 +17,7 @@ class Profile:
         self.name_expression = None
         self.command_expression = None
         self.which = None
+        self.which_ignore_case = False
         self.profile_name = None
 
         self.arg_patterns = []
@@ -47,6 +48,7 @@ class Profile:
         if self.profile_name is not None and len(self.profile_name) == 0:
             self.profile_name = None
 
+        # pylint: disable=consider-using-enumerate
         for i in range(len(self.arg_patterns)):
             self.arg_patterns[i] = ArgPattern(self.arg_patterns[i])
 

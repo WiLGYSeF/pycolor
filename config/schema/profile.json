@@ -36,6 +36,11 @@
             "type": ["null", "string"],
             "default": null
         },
+        "which_ignore_case": {
+            "description": "ignore case sensitivity when comparing paths using \"which\"",
+            "type": "boolean",
+            "default": false
+        },
 
         "arg_patterns": {
             "description": "a list of patterns that must match command arguments",
