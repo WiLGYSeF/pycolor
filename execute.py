@@ -178,13 +178,27 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
                         _read(stream, callback, last=True)
 
         def write_stdin(flag):
+            stream = stdin
+            if isinstance(stream, io.IOBase):
+                try:
+                    stream = stream.fileno()
+                except OSError:
+                    pass
+
+            use_os_read = isinstance(stream, int)
             while True:
                 flag.unset()
-                recv = stdin.read()
-                if recv is None or len(recv) == 0:
-                    break
+                if use_os_read:
+                    recv = os.read(stream, 4098)
+                    if len(recv) == 0:
+                        break
+                else:
+                    recv = stdin.read()
+                    if recv is None or len(recv) == 0:
+                        break
+                    recv = recv.encode()
 
-                process.stdin.write(recv.encode())
+                process.stdin.write(recv)
                 process.stdin.flush()
 
         wait = ThreadWait()
