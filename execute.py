@@ -1,4 +1,5 @@
 from contextlib import contextmanager, ExitStack
+import io
 import os
 import shutil
 import signal
@@ -21,7 +22,6 @@ try:
 except ModuleNotFoundError:
     HAS_PTY = False
 
-from printerr import printerr
 from static_vars import static_vars
 from threadwait import ThreadWait
 
@@ -153,6 +153,12 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
             stderr = process.stderr
 
         def read_thread(stream, callback, flag):
+            if isinstance(stream, io.IOBase):
+                try:
+                    stream = stream.fileno()
+                except OSError:
+                    pass
+
             use_os_read = isinstance(stream, int)
             while True:
                 flag.unset()
