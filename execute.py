@@ -22,6 +22,7 @@ try:
 except ModuleNotFoundError:
     HAS_PTY = False
 
+from printmsg import printwarn
 from static_vars import static_vars
 from threadwait import ThreadWait
 
@@ -112,6 +113,7 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
     stdin = sys.stdin
 
     if tty and not HAS_PTY:
+        printwarn('tty is not supported on this system')
         tty = False
 
     def _read(stream, callback, data=None, last=False):

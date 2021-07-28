@@ -8,7 +8,7 @@ import arguments
 import config
 import debug_colors
 from execute import read_stream
-from printerr import printerr, is_color_enabled
+from printmsg import printerr, is_color_enabled
 from pycolor_class import Pycolor
 import pyformat
 
