@@ -1,7 +1,9 @@
 {
 	"profiles": [
 		{
+			"profile_name": "ping-unix",
 			"name": "ping",
+			"which": "/usr/bin/ping",
 			"patterns": [
 				{
 					"expression": "^PING (.+) \\((.+)\\) [0-9a-f]+\\(\\d+\\) bytes of data\\.$",
