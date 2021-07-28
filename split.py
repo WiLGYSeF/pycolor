@@ -3,6 +3,15 @@ from typing import Pattern
 
 
 def re_split(sep, string):
+    """Split a string with a regex separator
+
+    Args:
+        sep (Pattern): The separator pattern
+        string (str): The string to split
+
+    Returns:
+        list: The list of split parts
+    """
     if sep is None:
         return [ string ]
 

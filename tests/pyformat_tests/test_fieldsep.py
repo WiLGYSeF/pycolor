@@ -32,6 +32,23 @@ FORMAT_CONTEXT_FIELDSEP_STRING = [
         RESULT: 'test   test   a'
     },
     {
+        STRING: '%F(s3)',
+        CONTEXT: {
+            'fields': FIELDS_THIS_IS_A_TEST
+        },
+        RESULT: '    '
+    },
+    {
+        STRING: '%F(s10)',
+        CONTEXT: {
+            'fields': FIELDS_THIS_IS_A_TEST
+        },
+        RESULT: ''
+    },
+]
+
+FORMAT_CONTEXT_FIELDSEP_STRING_RANGE = [
+    {
         STRING: '%F(1*3)',
         CONTEXT: {
             'fields': FIELDS_THIS_IS_A_TEST
@@ -80,20 +97,9 @@ FORMAT_CONTEXT_FIELDSEP_STRING = [
         },
         RESULT: ''
     },
-    {
-        STRING: '%F(s3)',
-        CONTEXT: {
-            'fields': FIELDS_THIS_IS_A_TEST
-        },
-        RESULT: '    '
-    },
-    {
-        STRING: '%F(s10)',
-        CONTEXT: {
-            'fields': FIELDS_THIS_IS_A_TEST
-        },
-        RESULT: ''
-    },
+]
+
+FORMAT_CONTEXT_FIELDSEP_STRING_RANGE_REPLACE = [
     {
         STRING: '%F(1*3,+)',
         CONTEXT: {
@@ -114,6 +120,17 @@ FORMAT_CONTEXT_FIELDSEP_STRING = [
             'fields': FIELDS_THIS_IS_A_TEST
         },
         RESULT: ''
+    },
+]
+
+FORMAT_CONTEXT_FIELDSEP_COLOR = [
+    {
+        STRING: '%F1 %Hb',
+        CONTEXT: {
+            'field_cur': 'test',
+            'fields': FIELDS_THIS_IS_A_TEST
+        },
+        RESULT: 'this \x1b[34mtest\x1b[0m'
     }
 ]
 
@@ -154,6 +171,27 @@ GET_JOIN_FIELD = [
 class FieldsepTest(unittest.TestCase):
     def test_format_context_fieldsep_string(self):
         for entry in FORMAT_CONTEXT_FIELDSEP_STRING:
+            self.assertEqual(
+                pyformat.format_string(entry[STRING], context=entry[CONTEXT]),
+                entry[RESULT]
+            )
+
+    def test_format_context_fieldsep_string_range(self):
+        for entry in FORMAT_CONTEXT_FIELDSEP_STRING_RANGE:
+            self.assertEqual(
+                pyformat.format_string(entry[STRING], context=entry[CONTEXT]),
+                entry[RESULT]
+            )
+
+    def test_format_context_fieldsep_string_range_replace(self):
+        for entry in FORMAT_CONTEXT_FIELDSEP_STRING_RANGE_REPLACE:
+            self.assertEqual(
+                pyformat.format_string(entry[STRING], context=entry[CONTEXT]),
+                entry[RESULT]
+            )
+
+    def test_format_context_fieldsep_color(self):
+        for entry in FORMAT_CONTEXT_FIELDSEP_COLOR:
             self.assertEqual(
                 pyformat.format_string(entry[STRING], context=entry[CONTEXT]),
                 entry[RESULT]

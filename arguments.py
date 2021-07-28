@@ -51,10 +51,6 @@ def get_args(args):
     )
 
     group = parser.add_argument_group('profile options')
-    group.add_argument('--less',
-        action='store_true', default=False,
-        help='force enable "less_output" for all profiles'
-    )
     group.add_argument('-t', '--timestamp',
         action='store', metavar='FORMAT', default=False, nargs='?',
         help='force enable "timestamp" for all profiles with an optional FORMAT'
@@ -102,6 +98,15 @@ def parse_known_args(parser, args):
     return argspace, cmd_args
 
 def split_args(args, actions):
+    """Splits the arguments between ones that belong to pycolor and the command
+
+    Args:
+        args (list): The program arguments
+        actions (list): The argument actions recognized by the argument parser
+
+    Returns:
+        tuple: the arguments split into two lists
+    """
     action_nargs = {}
 
     for action in actions:

@@ -1,5 +1,6 @@
 import unittest
 
+from config import ConfigPropertyError
 import config.pattern
 from config.pattern import Pattern
 
@@ -110,6 +111,14 @@ BSEARCH_CLOSEST = [
 
 
 class PatternTest(unittest.TestCase):
+    def test_min_max_fields_fail(self):
+        with self.assertRaises(ConfigPropertyError):
+            Pattern({
+                'separator': ' +',
+                'min_fields': 5,
+                'max_fields': 4,
+            })
+
     def test_get_activation_ranges(self):
         for entry in GET_ACTIVATION_RANGES:
             self.assertListEqual(

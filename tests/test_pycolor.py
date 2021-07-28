@@ -19,6 +19,18 @@ MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_
 
 
 class PycolorTest(unittest.TestCase):
+    def test_load_sample_config(self):
+        curpath = os.path.dirname(os.path.realpath(__file__))
+        with patch(
+            pycolor, 'CONFIG_DIR', os.path.join(curpath, '../docs/sample-config')
+        ), patch(
+            pycolor, 'CONFIG_DEFAULT', os.path.join(curpath, '../docs/sample-config/rsync.json')
+        ):
+            try:
+                pycolor.main([], stdin_stream=textstream())
+            except SystemExit as sexc:
+                self.assertEqual(sexc.code, 0)
+
     def test_version(self):
         stdout = textstream()
         with patch(sys, 'stdout', stdout):
@@ -120,15 +132,6 @@ class PycolorTest(unittest.TestCase):
             MOCKED_DATA,
             'free_tty'
         )
-
-    def test_ls_less(self):
-        with patch(pycolor_class.os, 'fork', lambda: -1):
-            with patch(pycolor_class.os, 'wait', lambda: None):
-                self.check_pycolor_main(
-                    ['--less', '--', 'ls', '-l'],
-                    MOCKED_DATA,
-                    'ls_less',
-                )
 
     def test_ls_debug_v1(self):
         self.check_pycolor_main(
@@ -275,7 +278,7 @@ def random_tmp_filename():
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     length = 8
 
-    fname = 'tmp'
+    fname = 'tmp-'
     for _ in range(length):
         fname += chars[random.randint(0, len(chars) - 1)]
     return fname

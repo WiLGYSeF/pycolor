@@ -14,45 +14,39 @@
 					"skip_others": true
 				},
 				{
+					"deactivation_expression": "^free: invalid option",
 					"separator": " +",
-					"field": 0,
 					"min_fields": 7,
 					"max_fields": 7,
-					"expression": ".*",
 					"replace_fields": {
-						"2,5": "%Cb%Fc%Cz",
-						"3": "%Cr%Fc%Cz",
-						"4,7": "%Cg%Fc%Cz",
-						"6": "%Cy%Fc%Cz"
-					},
-					"activation_line": 2
+						"2,5": "%Hb",
+						"3": "%Hr",
+						"4,7": "%Hg",
+						"6": "%Hy"
+					}
 				},
 				{
+					"deactivation_expression": "^free: invalid option",
 					"separator": " +",
-					"field": 0,
 					"min_fields": 8,
 					"max_fields": 8,
-					"expression": ".*",
 					"replace_fields": {
-						"2,5": "%Cb%Fc%Cz",
-						"3": "%Cr%Fc%Cz",
-						"4,8": "%Cg%Fc%Cz",
-						"6,7": "%Cy%Fc%Cz"
-					},
-					"activation_line": 2
+						"2,5": "%Hb",
+						"3": "%Hr",
+						"4,8": "%Hg",
+						"6,7": "%Hy"
+					}
 				},
 				{
+					"deactivation_expression": "^free: invalid option",
 					"separator": " +",
-					"field": 0,
 					"min_fields": 4,
 					"max_fields": 4,
-					"expression": ".*",
 					"replace_fields": {
-						"2": "%Cb%Fc%Cz",
-						"3": "%Cr%Fc%Cz",
-						"4": "%Cg%Fc%Cz"
-					},
-					"activation_line": 2
+						"2": "%Hb",
+						"3": "%Hr",
+						"4": "%Hg"
+					}
 				}
 			]
 		}

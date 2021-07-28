@@ -17,12 +17,12 @@
             "default": []
         },
         "position": {
-            "description": "the position the argument must be in. if position is a string (e.g. \"+4\"), then it will match arguments in position 4 and above",
+            "description": "the position the argument must be in. if position is a string (e.g. \">4\"), then it will match arguments in position 4 and above",
             "type": ["null", "string", "integer"],
             "examples": [
                 1,
-                "+4",
-                "-3"
+                ">4",
+                "<3"
             ],
             "default": null
         },
