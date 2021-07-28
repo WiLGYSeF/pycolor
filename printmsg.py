@@ -3,6 +3,9 @@ import sys
 import pyformat
 
 
+FMT_RESET = pyformat.format_string('%Cz')
+
+
 def printmsg(*args, **kwargs):
     color = kwargs.get('color')
     filename = kwargs.get('filename')
@@ -27,7 +30,7 @@ def printmsg(*args, **kwargs):
     if filename:
         if use_color:
             string = '%s: %s' % (
-                pyformat.format_string('%Cly') + filename + pyformat.format_string('%Cz'),
+                pyformat.format_string('%Cly') + filename + FMT_RESET,
                 string
             )
         else:
@@ -36,7 +39,7 @@ def printmsg(*args, **kwargs):
     if prefix:
         if use_color:
             string = '%s: %s' % (
-                pyformat.format_string(prefix_color) + prefix + pyformat.format_string('%Cz'),
+                pyformat.format_string(prefix_color) + prefix + FMT_RESET,
                 string
             )
         else:
