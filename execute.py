@@ -111,6 +111,9 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
 
     stdin = sys.stdin
 
+    if tty and not HAS_PTY:
+        tty = False
+
     def _read(stream, callback, data=None, last=False):
         return read_stream(
             stream,
@@ -120,7 +123,7 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
             last=last
         )
 
-    if tty and HAS_PTY:
+    if tty:
         # https://stackoverflow.com/a/31953436
         masters, slaves = zip(pty.openpty(), pty.openpty())
 
