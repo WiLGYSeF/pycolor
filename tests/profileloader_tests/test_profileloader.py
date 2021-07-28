@@ -239,6 +239,26 @@ class ProfileLoaderTest(unittest.TestCase):
         with self.assertRaises(ConfigPropertyError):
             loader.load_file(os.path.join(MOCKED_DATA, 'include-from-profile-fail.json'))
 
+    def test_get_profile_by_command_which(self):
+        loader = ProfileLoader()
+        loader.load_file(os.path.join(MOCKED_DATA, 'get-profile-by-command-which.json'))
+
+        self.assertEqual(
+            loader.get_profile_by_command('date', []),
+            loader.get_profile_by_name('which')
+        )
+        self.assertIsNone(loader.get_profile_by_command('noexist', []))
+
+    def test_get_profile_by_command_which_ignore_case(self):
+        loader = ProfileLoader()
+        loader.load_file(os.path.join(MOCKED_DATA, 'get-profile-by-command-which-ignore-case.json'))
+
+        self.assertEqual(
+            loader.get_profile_by_command('date', []),
+            loader.get_profile_by_name('which-ignore-case')
+        )
+        self.assertIsNone(loader.get_profile_by_command('noexist', []))
+
     def test_check_arg_patterns(self):
         for entry in CHECK_ARG_PATTERNS:
             argpats = list(map(lambda x: ArgPattern(x), entry[ARGPATTERNS]))

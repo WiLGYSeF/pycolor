@@ -101,13 +101,14 @@ class ProfileLoader:
 
             if prof.which is not None:
                 result = which(command)
-                if result is not None:
-                    if prof.which_ignore_case:
-                        if result.lower() != prof.which.lower():
-                            continue
-                    else:
-                        if result != prof.which:
-                            continue
+                if result is None:
+                    continue
+                if prof.which_ignore_case:
+                    if result.lower() != prof.which.lower():
+                        continue
+                else:
+                    if result != prof.which:
+                        continue
 
             if any([
                 prof.name is not None and command != prof.name,
