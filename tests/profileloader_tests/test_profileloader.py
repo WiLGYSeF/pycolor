@@ -243,6 +243,14 @@ class ProfileLoaderTest(unittest.TestCase):
         numbers = loader.get_profile_by_name('numbers')
         self.assertEqual(prof.loaded_patterns[0].expression, numbers.patterns[0]['expression'])
 
+    def test_from_profile_nested(self):
+        loader = ProfileLoader()
+        loader.load_file(os.path.join(MOCKED_DATA, 'from-profile-nested.json'))
+
+        prof = loader.get_profile_by_name('test')
+        numbers = loader.get_profile_by_name('def')
+        self.assertEqual(prof.loaded_patterns[0].expression, numbers.patterns[0]['expression'])
+
     def test_include_from_profile_fail(self):
         loader = ProfileLoader()
         with self.assertRaises(ConfigPropertyError):
