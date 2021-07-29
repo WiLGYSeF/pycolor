@@ -118,6 +118,8 @@ def split_args(args, actions):
 
     while idx < len(args):
         arg = args[idx]
+        if len(arg) == 0:
+            continue
         if arg == '--':
             break
         if arg[0] == '-':
