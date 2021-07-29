@@ -228,7 +228,7 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
         # TODO: this is probably not the best way to wait
         while process.poll() is None:
             time.sleep(0.001)
-        wait.wait(timeout=0.075)
+        wait.wait(timeout=0.05)
 
         if tty:
             for fde in slaves:
