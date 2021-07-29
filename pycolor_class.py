@@ -135,7 +135,7 @@ class Pycolor:
             }
         }
 
-        for pat in self.current_profile.patterns:
+        for pat in self.current_profile.loaded_patterns:
             if any([
                 not pat.enabled,
                 pat.stdout_only and stream != self.stdout,

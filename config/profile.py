@@ -26,6 +26,9 @@ class Profile:
         self.from_profiles = []
         self.patterns = []
 
+        self._loaded_patterns = []
+        self.patterns_loaded = False
+
         load_schema('profile', cfg, self)
 
         mutually_exclusive(self, ['name', 'command'])
@@ -61,9 +64,19 @@ class Profile:
         for i in range(len(self.from_profiles)):
             self.from_profiles[i] = FromProfile(self.from_profiles[i])
 
+    @property
+    def loaded_patterns(self):
+        if not self.patterns_loaded:
+            self._load_patterns()
+        return self._loaded_patterns
+
+    def _load_patterns(self):
+        # pylint: disable=consider-using-enumerate
         for i in range(len(self.patterns)):
-            self.patterns[i] = Pattern(self.patterns[i])
-            self.patterns[i].from_profile_str = '%x' % i
+            pat = Pattern(self.patterns[i])
+            pat.from_profile_str = '%x' % i
+            self._loaded_patterns.append(pat)
+        self.patterns_loaded = True
 
     def get_name(self):
         for name in [
