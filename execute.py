@@ -27,6 +27,9 @@ from static_vars import static_vars
 from threadwait import ThreadWait
 
 
+BUFFER_SZ = 4098
+
+
 def readlines(stream, data=None):
     if data is None:
         data = stream.read()
@@ -166,7 +169,7 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
                 flag.unset()
                 if use_os_read:
                     try:
-                        data = os.read(stream, 4098)
+                        data = os.read(stream, BUFFER_SZ)
                     except OSError:
                         break
                     if len(data) == 0 or _read(stream, callback, data=data) is None:
@@ -191,7 +194,7 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
             while True:
                 flag.unset()
                 if use_os_read:
-                    recv = os.read(stream, 4098)
+                    recv = os.read(stream, BUFFER_SZ)
                     if len(recv) == 0:
                         break
                 else:
