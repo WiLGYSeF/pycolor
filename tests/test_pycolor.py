@@ -126,6 +126,15 @@ class PycolorTest(unittest.TestCase):
                 patch_stderr=True
             )
 
+    def test_from_profile_not_exist(self):
+        with self.assertRaises(SystemExit):
+            self.check_pycolor_main(
+                ['-p=test', 'ls', '-l'],
+                MOCKED_DATA,
+                'from_profile_not_exist',
+                patch_stderr=True
+            )
+
     def test_free_tty(self):
         self.check_pycolor_main(
             ['free', '-h'],

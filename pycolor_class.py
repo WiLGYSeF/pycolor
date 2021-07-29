@@ -91,6 +91,9 @@ class Pycolor:
 
         self.debug_print(1, 'using profile "%s"', profile.get_name())
 
+        # ensure patterns are loaded here first
+        profile.loaded_patterns
+
         try:
             retcode = execute.execute(
                 cmd,
@@ -135,7 +138,7 @@ class Pycolor:
             }
         }
 
-        for pat in self.current_profile.patterns:
+        for pat in self.current_profile.loaded_patterns:
             if any([
                 not pat.enabled,
                 pat.stdout_only and stream != self.stdout,

@@ -1,8 +1,13 @@
+import os
+import sys
 import unittest
 
+from config import ConfigPropertyError
 from config.argpattern import ArgPattern
+import printmsg
 from profileloader import ProfileLoader
-
+from tests.execute_tests.helpers import textstream
+from tests.testutils import patch
 
 ARGS = 'args'
 ARGPATTERNS = 'argpatterns'
@@ -213,8 +218,57 @@ CHECK_ARG_PATTERNS_SUBCOMMAND = [
     },
 ]
 
+MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_data')
+
 
 class ProfileLoaderTest(unittest.TestCase):
+    def test_load_file_same_profile_name(self):
+        loader = ProfileLoader()
+        stderr = textstream()
+
+        with patch(sys, 'stderr', stderr), patch(printmsg, 'is_color_enabled', lambda x: True):
+            loader.load_file(os.path.join(MOCKED_DATA, 'load-file-same-profile-name.json'))
+        stderr.seek(0)
+        self.assertEqual(
+            stderr.read(),
+            '\x1b[93mwarn\x1b[0m: conflicting profiles with the name "test"\n'
+        )
+
+    def test_from_profile_separate_file(self):
+        loader = ProfileLoader()
+        loader.load_file(os.path.join(MOCKED_DATA, 'from-profile-separate-file1.json'))
+        loader.load_file(os.path.join(MOCKED_DATA, 'from-profile-separate-file2.json'))
+
+        prof = loader.get_profile_by_name('test')
+        numbers = loader.get_profile_by_name('numbers')
+        self.assertEqual(prof.loaded_patterns[0].expression, numbers.patterns[0]['expression'])
+
+    def test_include_from_profile_fail(self):
+        loader = ProfileLoader()
+        with self.assertRaises(ConfigPropertyError):
+            loader.load_file(os.path.join(MOCKED_DATA, 'include-from-profile-fail.json'))
+            loader.get_profile_by_name('asdf').loaded_patterns
+
+    def test_get_profile_by_command_which(self):
+        loader = ProfileLoader()
+        loader.load_file(os.path.join(MOCKED_DATA, 'get-profile-by-command-which.json'))
+
+        self.assertEqual(
+            loader.get_profile_by_command('date', []),
+            loader.get_profile_by_name('which')
+        )
+        self.assertIsNone(loader.get_profile_by_command('noexist', []))
+
+    def test_get_profile_by_command_which_ignore_case(self):
+        loader = ProfileLoader()
+        loader.load_file(os.path.join(MOCKED_DATA, 'get-profile-by-command-which-ignore-case.json'))
+
+        self.assertEqual(
+            loader.get_profile_by_command('date', []),
+            loader.get_profile_by_name('which-ignore-case')
+        )
+        self.assertIsNone(loader.get_profile_by_command('noexist', []))
+
     def test_check_arg_patterns(self):
         for entry in CHECK_ARG_PATTERNS:
             argpats = list(map(lambda x: ArgPattern(x), entry[ARGPATTERNS]))

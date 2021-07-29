@@ -1,0 +1,9 @@
+{
+	"profiles": [
+		{
+			"profile_name": "which-ignore-case",
+			"which": "/uSr/BiN/dAtE",
+			"which_ignore_case": true
+		}
+	]
+}
