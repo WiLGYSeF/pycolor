@@ -11,7 +11,7 @@ from config.pattern import Pattern
 
 
 class Profile:
-    def __init__(self, cfg):
+    def __init__(self, cfg, loader=None):
         self.name = None
         self.command = None
         self.name_expression = None
@@ -25,6 +25,10 @@ class Profile:
         self.max_args = None
         self.from_profiles = []
         self.patterns = []
+
+        self.loader = loader
+        self._loaded_patterns = []
+        self.patterns_loaded = False
 
         load_schema('profile', cfg, self)
 
@@ -61,9 +65,22 @@ class Profile:
         for i in range(len(self.from_profiles)):
             self.from_profiles[i] = FromProfile(self.from_profiles[i])
 
+    @property
+    def loaded_patterns(self):
+        if not self.patterns_loaded:
+            self._load_patterns()
+        return self._loaded_patterns
+
+    def _load_patterns(self):
+        # pylint: disable=consider-using-enumerate
         for i in range(len(self.patterns)):
-            self.patterns[i] = Pattern(self.patterns[i])
-            self.patterns[i].from_profile_str = '%x' % i
+            pat = Pattern(self.patterns[i])
+            pat.from_profile_str = '%x' % i
+            self._loaded_patterns.append(pat)
+
+        if self.loader is not None:
+            self.loader.include_from_profile(self._loaded_patterns, self.from_profiles)
+        self.patterns_loaded = True
 
     def get_name(self):
         for name in [

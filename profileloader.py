@@ -18,7 +18,7 @@ class ProfileLoader:
 
         self.profile_default = Profile({
             'profile_name': 'none_found_default',
-        })
+        }, loader=self)
 
     def load_file(self, fname):
         with open(fname, 'r') as file:
@@ -31,12 +31,6 @@ class ProfileLoader:
                     printwarn('conflicting profiles with the name "%s"' % prof.profile_name)
                 self.named_profiles[prof.profile_name] = prof
 
-        for prof in profiles:
-            self.include_from_profile(
-                prof.patterns,
-                prof.from_profiles
-            )
-
     def parse_file(self, file):
         config = json.loads(file.read())
         profiles = []
@@ -44,7 +38,7 @@ class ProfileLoader:
         self.color_aliases.update(config.get('color_aliases', {}))
 
         for cfg in config.get('profiles', []):
-            profiles.append(Profile(cfg))
+            profiles.append(Profile(cfg, loader=self))
 
         return profiles
 
@@ -62,19 +56,19 @@ class ProfileLoader:
                     'profile "%s" was not found' % fprof.name
                 )
 
-            # it's ok to modify these without copying
             # pylint: disable=consider-using-enumerate
-            for i in range(len(fromprof.patterns)):
-                pat = fromprof.patterns[i]
-                pat.from_profile_str = '%x%s%x' % (fidx, PROF_IDX_SEP,i)
+            for i in range(len(fromprof.loaded_patterns)):
+                pat = fromprof.loaded_patterns[i]
+                # it's ok to modify these without copying
+                pat.from_profile_str = '%x%s%x' % (fidx, PROF_IDX_SEP, i)
 
             if fprof.order == 'before':
                 orig_patterns = patterns.copy()
                 patterns.clear()
-                patterns.extend(fromprof.patterns)
+                patterns.extend(fromprof.loaded_patterns)
                 patterns.extend(orig_patterns)
             elif fprof.order == 'after':
-                patterns.extend(fromprof.patterns)
+                patterns.extend(fromprof.loaded_patterns)
 
     def get_profile_by_name(self, name):
         profile = self.named_profiles.get(name)

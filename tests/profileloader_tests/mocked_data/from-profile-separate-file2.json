@@ -1,0 +1,13 @@
+{
+	"profiles": [
+		{
+			"name": "numbers",
+			"patterns": [
+				{
+					"expression": "\\d+",
+					"replace": "%Cg%G0%Cz"
+				}
+			]
+		}
+	]
+}
