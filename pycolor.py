@@ -96,12 +96,24 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         if profile is None and len(cmd_args) != 0:
             profile = pycobj.get_profile_by_command(cmd_args[0], cmd_args[1:])
 
+        if profile is not None:
+            try:
+                # ensure patterns are loaded here first
+                profile.loaded_patterns
+            except config.ConfigError as cex:
+                printerr(cex)
+                sys.exit(1)
+
         pycobj.set_current_profile(profile)
         read_input_stream(pycobj, stdin_stream)
         sys.exit(0)
 
-    returncode = pycobj.execute(cmd_args, profile=profile)
-    sys.exit(returncode)
+    try:
+        returncode = pycobj.execute(cmd_args, profile=profile)
+        sys.exit(returncode)
+    except config.ConfigError as cex:
+        printerr(cex)
+        sys.exit(1)
 
 def read_input_stream(pycobj, stream):
     while True:

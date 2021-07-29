@@ -91,6 +91,9 @@ class Pycolor:
 
         self.debug_print(1, 'using profile "%s"', profile.get_name())
 
+        # ensure patterns are loaded here first
+        profile.loaded_patterns
+
         try:
             retcode = execute.execute(
                 cmd,

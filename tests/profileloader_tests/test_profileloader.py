@@ -234,10 +234,20 @@ class ProfileLoaderTest(unittest.TestCase):
             '\x1b[93mwarn\x1b[0m: conflicting profiles with the name "test"\n'
         )
 
+    def test_from_profile_separate_file(self):
+        loader = ProfileLoader()
+        loader.load_file(os.path.join(MOCKED_DATA, 'from-profile-separate-file1.json'))
+        loader.load_file(os.path.join(MOCKED_DATA, 'from-profile-separate-file2.json'))
+
+        prof = loader.get_profile_by_name('test')
+        numbers = loader.get_profile_by_name('numbers')
+        self.assertEqual(prof.loaded_patterns[0].expression, numbers.patterns[0]['expression'])
+
     def test_include_from_profile_fail(self):
         loader = ProfileLoader()
         with self.assertRaises(ConfigPropertyError):
             loader.load_file(os.path.join(MOCKED_DATA, 'include-from-profile-fail.json'))
+            loader.get_profile_by_name('asdf').loaded_patterns
 
     def test_get_profile_by_command_which(self):
         loader = ProfileLoader()

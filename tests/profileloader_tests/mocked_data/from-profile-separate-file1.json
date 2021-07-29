@@ -1,0 +1,8 @@
+{
+	"profiles": [
+		{
+			"name": "test",
+			"from_profiles": "numbers"
+		}
+	]
+}
