@@ -97,6 +97,8 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
             profile = pycobj.get_profile_by_command(cmd_args[0], cmd_args[1:])
 
         if profile is not None:
+            pycobj.debug_print(1, 'using profile "%s"', profile.get_name())
+
             try:
                 # ensure patterns are loaded here first
                 profile.loaded_patterns
