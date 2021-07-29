@@ -29,6 +29,7 @@ class ThreadWait:
                         remove.add(flag)
                         del timers[flag]
             self.flags -= remove
+            remove.clear()
             time.sleep(0.0001)
 
 class Flag:

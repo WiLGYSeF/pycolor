@@ -216,8 +216,7 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
         ), daemon=True)
         thr_stdin = threading.Thread(target=write_stdin, args=(
             wait.get_flag(),
-        ),
-        daemon=True)
+        ), daemon=True)
 
         thr_stdout.start()
         thr_stderr.start()
