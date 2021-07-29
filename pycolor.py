@@ -13,7 +13,7 @@ from pycolor_class import Pycolor
 import pyformat
 
 
-__version__ = "0.0.4"
+__version__ = '0.0.4'
 
 if os.name == 'nt':
     HOME = os.getenv('USERPROFILE')
