@@ -14,8 +14,6 @@ class ProfileLoader:
         self.profiles = []
         self.named_profiles = {}
 
-        self.color_aliases = {}
-
         self.profile_default = Profile({
             'profile_name': 'none_found_default',
         }, loader=self)
@@ -34,8 +32,6 @@ class ProfileLoader:
     def parse_file(self, file):
         config = json.loads(file.read())
         profiles = []
-
-        self.color_aliases.update(config.get('color_aliases', {}))
 
         for cfg in config.get('profiles', []):
             profiles.append(Profile(cfg, loader=self))

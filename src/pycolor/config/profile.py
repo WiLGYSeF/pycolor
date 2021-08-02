@@ -23,6 +23,9 @@ class Profile:
         self.arg_patterns = []
         self.min_args = None
         self.max_args = None
+
+        self.color_aliases = {}
+
         self.from_profiles = []
         self.patterns = []
 

@@ -133,7 +133,7 @@ class Pycolor:
         context = {
             'color': {
                 'enabled': self.is_color_enabled(),
-                'aliases': self.profloader.color_aliases,
+                'aliases': self.current_profile.color_aliases,
                 'positions': color_positions,
             }
         }
