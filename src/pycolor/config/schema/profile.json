@@ -85,6 +85,17 @@
             "default": false
         },
 
+        "color_alias": {
+            "description": "color aliases for color format strings",
+            "type": ["object"],
+            "examples": [
+                {
+                    "orange": "0xffaa00"
+                }
+            ],
+            "default": {}
+        },
+
         "from_profiles": {
             "description": "include the patterns from these named profiles",
             "type": ["array", "object", "string"],
