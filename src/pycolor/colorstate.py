@@ -1,6 +1,6 @@
 import re
 
-import pyformat.color
+from . import pyformat
 
 
 BOLD = 'bold'

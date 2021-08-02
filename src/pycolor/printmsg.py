@@ -1,6 +1,6 @@
 import sys
 
-import pyformat
+from . import pyformat
 
 
 FMT_RESET = pyformat.format_string('%Cz')

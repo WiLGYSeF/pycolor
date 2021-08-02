@@ -1,6 +1,6 @@
 import unittest
 
-from config.argpattern import ArgPattern
+from src.pycolor.config.argpattern import ArgPattern
 
 
 ARGLEN = 'arglen'

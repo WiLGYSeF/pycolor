@@ -1,10 +1,7 @@
 import unittest
 
-from config import ConfigPropertyError
-import config.profile
-from config.profile import Profile
-
-
+from src.pycolor.config import ConfigPropertyError
+from src.pycolor.config.profile import Profile
 
 
 class ProfileTest(unittest.TestCase):

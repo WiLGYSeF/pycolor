@@ -11,8 +11,8 @@ from tests.execute_tests.helpers import (
     execute_patch, open_fstream, read_file, test_stream, textstream
 )
 from tests.testutils import patch
-import pycolor
-import pycolor_class
+from src.pycolor import __main__ as pycolor
+from src.pycolor import pycolor_class
 
 
 MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_data')

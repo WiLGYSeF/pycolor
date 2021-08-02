@@ -1,7 +1,7 @@
 import re
 import unittest
 
-import group_index
+from src.pycolor import group_index
 
 
 STRING = 'string'

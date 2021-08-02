@@ -1,8 +1,7 @@
 import unittest
 
-from config import ConfigPropertyError
-import config.pattern
-from config.pattern import Pattern
+from src.pycolor.config import ConfigPropertyError
+from src.pycolor.config.pattern import Pattern, bsearch_closest
 
 
 ACTIVATIONS = 'activations'
@@ -132,6 +131,6 @@ class PatternTest(unittest.TestCase):
     def test_bsearch_closest(self):
         for entry in BSEARCH_CLOSEST:
             self.assertEqual(
-                config.pattern.bsearch_closest(entry[ARRAY], entry[VALUE]),
+                bsearch_closest(entry[ARRAY], entry[VALUE]),
                 entry[RESULT]
             )

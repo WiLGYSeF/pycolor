@@ -4,16 +4,15 @@ import json
 import os
 import sys
 
-import arguments
-import config
-import debug_colors
-from execute import read_stream
-from printmsg import printerr, is_color_enabled
-from pycolor_class import Pycolor
-import pyformat
+from . import arguments
+from . import config
+from . import debug_colors
+from .execute import read_stream
+from .printmsg import printerr, is_color_enabled
+from .pycolor_class import Pycolor
+from . import pyformat
+from . import __version__
 
-
-__version__ = '0.0.4'
 
 if os.name == 'nt':
     HOME = os.getenv('USERPROFILE')
@@ -22,6 +21,9 @@ else:
 CONFIG_DIR = os.path.join(HOME, '.pycolor.d')
 CONFIG_DEFAULT = os.path.join(HOME, '.pycolor.json')
 
+
+def main_args():
+    main(sys.argv[1:])
 
 def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=sys.stdin):
     argspace, cmd_args = arguments.get_args(args)
@@ -147,6 +149,5 @@ def try_load_file(pycobj, fname):
         printerr(cex, filename=fname)
     return False
 
-
 if __name__ == '__main__': #pragma: no cover
-    main(sys.argv[1:])
+    main_args()

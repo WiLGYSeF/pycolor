@@ -1,9 +1,9 @@
 import json
 from shutil import which
 
-from config import ConfigPropertyError
-from config.profile import Profile
-from printmsg import printwarn
+from .config import ConfigPropertyError
+from .config.profile import Profile
+from .printmsg import printwarn
 
 
 PROF_IDX_SEP = ';'

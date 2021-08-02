@@ -1,13 +1,13 @@
-from config import (
+from . import (
     ConfigPropertyError,
     compile_re,
     join_str_list,
     load_schema,
     mutually_exclusive,
 )
-from config.argpattern import ArgPattern
-from config.fromprofile import FromProfile
-from config.pattern import Pattern
+from .argpattern import ArgPattern
+from .fromprofile import FromProfile
+from .pattern import Pattern
 
 
 class Profile:

@@ -1,7 +1,6 @@
 import unittest
 
-import pyformat
-import pyformat.color
+from src.pycolor import pyformat
 
 
 STRING = 'string'

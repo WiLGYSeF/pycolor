@@ -1,9 +1,9 @@
-from colorpositions import update_color_positions, offset_color_positions
-from group_index import get_named_group_at_index
-from match_group_replace import match_group_replace
-import pyformat
-from search_replace import search_replace
-from split import re_split
+from .colorpositions import update_color_positions, offset_color_positions
+from .group_index import get_named_group_at_index
+from .match_group_replace import match_group_replace
+from . import pyformat
+from .search_replace import search_replace
+from .split import re_split
 
 
 def apply_pattern(pat, data, context):

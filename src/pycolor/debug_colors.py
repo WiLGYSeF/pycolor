@@ -1,6 +1,6 @@
 import os
 
-import pyformat
+from . import pyformat
 
 
 def debug_colors():

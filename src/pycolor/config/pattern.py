@@ -1,13 +1,13 @@
 import re
 
-from config import (
+from . import (
     ConfigPropertyError,
     compile_re,
     join_str_list,
     load_schema,
     mutually_exclusive,
 )
-import pyformat
+from .. import pyformat
 
 
 class Pattern:

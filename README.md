@@ -1,4 +1,5 @@
 # Pycolor
+
 [![Build Status](https://www.travis-ci.com/WiLGYSeF/pycolor.svg?branch=master)](https://www.travis-ci.com/WiLGYSeF/pycolor)
 [![codecov](https://codecov.io/gh/WiLGYSeF/pycolor/branch/master/graph/badge.svg?token=7ASXFQTOOG)](https://codecov.io/gh/WiLGYSeF/pycolor)
 
@@ -20,12 +21,9 @@ Designed for Unix, but works in Windows.
 
 # Installation
 
-TODO: add to PyPI
-
-1. Clone this project to somewhere like `~/.local/bin/pycolor-py/`
-2. Create a symlink from `~/.local/bin/pycolor-py/pycolor.py` to `~/.local/bin/pycolor`
-3. Create color configuration profiles for commands in `~/.pycolor.d/`
-4. (Optional) Create aliases to commands in your `.bashrc`
+```bash
+pip install pycolor-term
+```
 
 # Example Usage
 

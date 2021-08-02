@@ -1,7 +1,7 @@
 import re
 import unittest
 
-from split import re_split
+from src.pycolor.split import re_split
 
 
 SEP = 'sep'

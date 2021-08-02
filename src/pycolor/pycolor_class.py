@@ -5,13 +5,13 @@ from shutil import which
 import sys
 import tempfile
 
-from applypattern import apply_pattern
-from colorpositions import insert_color_data
-from colorstate import ColorState
-import execute
-from printmsg import printerr
-from profileloader import ProfileLoader
-import pyformat
+from .applypattern import apply_pattern
+from .colorpositions import insert_color_data
+from .colorstate import ColorState
+from . import execute
+from .printmsg import printerr
+from .profileloader import ProfileLoader
+from . import pyformat
 
 
 FMT_DEBUG = pyformat.format_string('%Cz%Cde')

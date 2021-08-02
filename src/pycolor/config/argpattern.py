@@ -1,6 +1,6 @@
 import re
 
-from config import (
+from . import (
     ConfigPropertyError,
     compile_re,
     join_str_list,

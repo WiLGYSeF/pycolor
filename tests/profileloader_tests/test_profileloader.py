@@ -2,10 +2,10 @@ import os
 import sys
 import unittest
 
-from config import ConfigPropertyError
-from config.argpattern import ArgPattern
-import printmsg
-from profileloader import ProfileLoader
+from src.pycolor.config import ConfigPropertyError
+from src.pycolor.config.argpattern import ArgPattern
+from src.pycolor import printmsg
+from src.pycolor.profileloader import ProfileLoader
 from tests.execute_tests.helpers import textstream
 from tests.testutils import patch
 
