@@ -12,7 +12,10 @@
 	- [Field Formatting](#fields).
 	- [Padding](#padding).
 	- [Truncate](#truncate).
-5. [Limitations](#limitations).
+5. [Debugging and Creating Profiles](#debugging-and-creating-profiles).
+	- [Debug Colors](#debug-colors).
+	- [Creating Profiles](#creating-profiles).
+6. [Limitations](#limitations).
 
 A Python program that executes commands to perform real-time terminal output coloring using ANSI color codes.
 Color formatting can be added to program output using JSON configuration files and regular expressions to improve readability of the output.
@@ -261,6 +264,37 @@ Truncate the value of a path in field 1 to 16 chars, inserting `...` if necessar
 | `/path/to/a/certain/file` | `/path/...in/file` |
 
 Truncate above with right padding (all results will always have a length of 16): `%T(%F1;...;mid,16)%P(16,%F1)`.
+
+# Debugging and Creating Profiles
+
+## Debug Colors
+
+To check the supported color codes of your terminal, run `pycolor --debug-color` to print all the labelled ANSI color codes.
+Using `--debug-color` will show the results of the text styles, 16-color output, 8-bit color support, and 24-bit color support.
+
+Output of `pycolor --debug-color` run on Windows PowerShell (24-bit colors are not shown in this image for brevity):
+
+![--debug-color output](https://raw.githubusercontent.com/WiLGYSeF/pycolor/master/docs/images/debug-color.png)
+
+*Note: bold off (`\x1b[21m`) is actually bold underline in PowerShell*
+
+## Creating Profiles
+
+To create profiles quickly and efficiently, pycolor has a debug mode when running commands that shows the raw output of the command.
+Debug mode is turned on using `-v` or `--verbose` and can be used multiple times to increase the debug level.
+
+Debug levels (previous levels are applied to the current):
+
+| Level | Command | Description |
+|---|---|---|
+| 1 | `-v`    | Print received output |
+| 2 | `-vv`   | Print final output written |
+| 3 | `-vvv`  | Print each matching pattern index and its output |
+| 4 | `-vvvv` | Print the output line number |
+
+Using debug level 3 on `free -h` with a profile loaded:
+
+![--debug-color output](https://raw.githubusercontent.com/WiLGYSeF/pycolor/master/docs/images/debug-3-free.png)
 
 # Limitations
 
