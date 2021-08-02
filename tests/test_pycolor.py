@@ -85,6 +85,13 @@ class PycolorTest(unittest.TestCase):
                 stdin=stdin
             )
 
+    def test_df_color_alias(self):
+        self.check_pycolor_main(
+            ['df', '-h'],
+            MOCKED_DATA,
+            'df_color_alias'
+        )
+
     def test_debug_color(self):
         #pylint: disable=invalid-name
         def get_terminal_size(fd=None):
