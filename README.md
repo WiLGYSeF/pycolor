@@ -31,13 +31,13 @@ Pycolor can be used explicitly on the command line:
 
 **Before:**
 
-![sample df output](/docs/images/sample-df-output.png)
+![sample df output](https://raw.githubusercontent.com/WiLGYSeF/pycolor/master/docs/images/sample-df-output.png)
 
 **After:**
 
-![sample colored df output](/docs/images/sample-df-output-colored.png)
+![sample colored df output](https://raw.githubusercontent.com/WiLGYSeF/pycolor/master/docs/images/sample-df-output-colored.png)
 
-[Sample df configuration file.](/docs/sample-config/df.json)
+[Sample df configuration file.](https://raw.githubusercontent.com/WiLGYSeF/pycolor/master/docs/sample-config/df.json)
 
 ----
 
@@ -48,14 +48,14 @@ alias rsync='pycolor rsync'
 
 **Before:**
 
-![sample rsync output](/docs/images/sample-rsync-output.png)
+![sample rsync output](https://raw.githubusercontent.com/WiLGYSeF/pycolor/master/docs/images/sample-rsync-output.png)
 
 **After:**
 *Note pycolor omitted lines with trailing slashes in addition to coloring output for better readability.*
 
-![sample colored rsync output](/docs/images/sample-rsync-output-colored.png)
+![sample colored rsync output](https://raw.githubusercontent.com/WiLGYSeF/pycolor/master/docs/images/sample-rsync-output-colored.png)
 
-[Sample rsync configuration file.](/docs/sample-config/rsync.json)
+[Sample rsync configuration file.](https://github.com/WiLGYSeF/pycolor/blob/master/docs/sample-config/rsync.json)
 
 # Configuration
 
@@ -65,9 +65,9 @@ When looking for a profile to use, pycolor will select the last matching profile
 
 Patterns are applied first-to-last for each profile.
 
-[JSON schema files that describe the config format can be found in `/config/schema/`](/config/schema/).
+[JSON schema files that describe the config format can be found in `/config/schema/`](https://github.com/WiLGYSeF/pycolor/blob/master/src/pycolor/config/schema/profile.json).
 
-[Sample config files can also be found in `/docs/sample-config/`](/docs/sample-config/).
+[Sample config files can also be found in `/docs/sample-config/`](https://github.com/WiLGYSeF/pycolor/blob/master/docs/sample-config/).
 
 # Formatting Strings
 
@@ -90,7 +90,7 @@ E.g. the format string `The total is %C(red)15%%` will become `The total is 15%`
 
 Valid formatting argument characters are upper/lowercase letters and numbers, unless the argument is encapsulated in parentheses, then everything in the parenthesis pair is used.
 
-[Check `/docs/sample-config/` for examples of formatting strings being used for actual programs](/docs/sample-config/).
+[Check `/docs/sample-config/` for examples of formatting strings being used for actual programs](https://github.com/WiLGYSeF/pycolor/blob/master/docs/sample-config/).
 
 ## Colors
 
