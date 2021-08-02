@@ -22,9 +22,9 @@ try:
 except ModuleNotFoundError:
     HAS_PTY = False
 
-from printmsg import printwarn
-from static_vars import static_vars
-from threadwait import ThreadWait
+from .printmsg import printwarn
+from .static_vars import static_vars
+from .threadwait import ThreadWait
 
 
 BUFFER_SZ = 4098

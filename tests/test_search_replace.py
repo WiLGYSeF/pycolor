@@ -1,6 +1,6 @@
 import unittest
 
-from search_replace import search_replace
+from src.pycolor.search_replace import search_replace
 
 
 # TODO: more test cases

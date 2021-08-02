@@ -1,6 +1,6 @@
 import unittest
 
-import pyformat
+from src.pycolor import pyformat
 
 
 class Match:

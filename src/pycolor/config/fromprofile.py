@@ -1,4 +1,4 @@
-from config import load_schema
+from . import load_schema
 
 
 class FromProfile:

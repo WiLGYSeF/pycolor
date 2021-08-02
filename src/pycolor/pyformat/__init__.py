@@ -1,7 +1,7 @@
-from colorpositions import insert_color_data
-from colorstate import ColorState
-from pyformat import color
-from pyformat import fieldsep
+from ..colorpositions import insert_color_data
+from ..colorstate import ColorState
+from . import color
+from . import fieldsep
 
 
 FORMAT_CHAR_VALID = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'

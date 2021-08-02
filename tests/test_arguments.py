@@ -1,6 +1,6 @@
 import unittest
 
-import arguments
+from src.pycolor import arguments
 
 
 ARGS = 'args'

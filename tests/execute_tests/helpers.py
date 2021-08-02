@@ -1,13 +1,10 @@
 from contextlib import contextmanager
 import io
 import os
-import select
-import sys
 
+from src.pycolor import __main__ as pycolor
+from src.pycolor import pycolor_class
 from tests.testutils import patch
-
-import pycolor
-import pycolor_class
 
 
 def check_pycolor_execute(
@@ -130,7 +127,6 @@ def execute_patch(obj, stdout_stream, stderr_stream):
                 if self.polled > 1:
                     self.returncode = 0
                 self.polled += 1
-
                 return self.returncode
 
         return MockProcess(
