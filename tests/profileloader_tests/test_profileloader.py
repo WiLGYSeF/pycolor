@@ -5,6 +5,7 @@ import unittest
 from src.pycolor.config import ConfigPropertyError
 from src.pycolor.config.argpattern import ArgPattern
 from src.pycolor import printmsg
+from src.pycolor import profileloader
 from src.pycolor.profileloader import ProfileLoader
 from tests.execute_tests.helpers import textstream
 from tests.testutils import patch
@@ -261,20 +262,22 @@ class ProfileLoaderTest(unittest.TestCase):
         loader = ProfileLoader()
         loader.load_file(os.path.join(MOCKED_DATA, 'get-profile-by-command-which.json'))
 
-        self.assertEqual(
-            loader.get_profile_by_command('date', []),
-            loader.get_profile_by_name('which')
-        )
+        with patch(profileloader, 'which', lambda x: '/usr/bin/date'):
+            self.assertEqual(
+                loader.get_profile_by_command('date', []),
+                loader.get_profile_by_name('which')
+            )
         self.assertIsNone(loader.get_profile_by_command('noexist', []))
 
     def test_get_profile_by_command_which_ignore_case(self):
         loader = ProfileLoader()
         loader.load_file(os.path.join(MOCKED_DATA, 'get-profile-by-command-which-ignore-case.json'))
 
-        self.assertEqual(
-            loader.get_profile_by_command('date', []),
-            loader.get_profile_by_name('which-ignore-case')
-        )
+        with patch(profileloader, 'which', lambda x: '/usr/bin/date'):
+            self.assertEqual(
+                loader.get_profile_by_command('date', []),
+                loader.get_profile_by_name('which-ignore-case')
+            )
         self.assertIsNone(loader.get_profile_by_command('noexist', []))
 
     def test_check_arg_patterns(self):
