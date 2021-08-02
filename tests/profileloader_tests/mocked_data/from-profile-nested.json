@@ -1,21 +1,21 @@
 {
-	"profiles": [
-		{
-			"profile_name": "test",
-			"from_profiles": [ "abc" ]
-		},
-		{
-			"profile_name": "abc",
-			"from_profiles": "def"
-		},
-		{
-			"profile_name": "def",
-			"patterns": [	
-				{
-					"expression": "\\d+",
-					"replace": "%Cg%G0%Cz"
-				}
-			]
-		}
-	]
+    "profiles": [
+        {
+            "profile_name": "test",
+            "from_profiles": [ "abc" ]
+        },
+        {
+            "profile_name": "abc",
+            "from_profiles": "def"
+        },
+        {
+            "profile_name": "def",
+            "patterns": [
+                {
+                    "expression": "\\d+",
+                    "replace": "%Cg%G0%Cz"
+                }
+            ]
+        }
+    ]
 }

@@ -1,19 +1,19 @@
 {
-	"profiles": [
-		{
-			"name": "ls",
-			"from_profiles": [
-				"numbers"
-			]
-		},
-		{
-			"profile_name": "numbers",
-			"patterns": [
-				{
-					"expression": "[0-9]+",
-					"replace": "%Cg%G0%Cz"
-				}
-			]
-		}
-	]
+    "profiles": [
+        {
+            "name": "ls",
+            "from_profiles": [
+                "numbers"
+            ]
+        },
+        {
+            "profile_name": "numbers",
+            "patterns": [
+                {
+                    "expression": "[0-9]+",
+                    "replace": "%Cg%G0%Cz"
+                }
+            ]
+        }
+    ]
 }

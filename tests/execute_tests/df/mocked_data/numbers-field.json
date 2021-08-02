@@ -1,14 +1,14 @@
 {
-	"profiles": [
-		{
-			"name": "df",
-			"patterns": [
-				{
-					"separator": " +",
-					"expression": "([0-9.]+)",
-					"replace": "%Cg%G1%Cz"
-				}
-			]
-		}
-	]
+    "profiles": [
+        {
+            "name": "df",
+            "patterns": [
+                {
+                    "separator": " +",
+                    "expression": "([0-9.]+)",
+                    "replace": "%Cg%G1%Cz"
+                }
+            ]
+        }
+    ]
 }

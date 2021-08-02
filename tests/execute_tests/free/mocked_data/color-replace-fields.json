@@ -1,44 +1,44 @@
 {
-	"profiles": [
-		{
-			"name": "free",
-			"arg_patterns": [
-				{
-					"expression": "--help",
-					"match_not": true
-				}
-			],
-			"patterns": [
-				{
-					"expression": "^ +total",
-					"skip_others": true
-				},
-				{
-					"separator": " +",
-					"field": 0,
-					"min_fields": 7,
-					"max_fields": 7,
-					"expression": ".*",
-					"replace_fields": {
-						"2,5": "%Cb%Fc%Cz",
-						"3": "%Cr%Fc%Cz",
-						"4,7": "%Cg%Fc%Cz",
-						"6": "%Cy%Fc%Cz"
-					},
-					"activation_line": 2
-				},
-				{
-					"separator": " +",
-					"field": 0,
-					"min_fields": 4,
-					"max_fields": 4,
-					"expression": ".*",
-					"replace_fields": {
-						"2*4*2": "%Cc%Fc%Cz"
-					},
-					"activation_line": 2
-				}
-			]
-		}
-	]
+    "profiles": [
+        {
+            "name": "free",
+            "arg_patterns": [
+                {
+                    "expression": "--help",
+                    "match_not": true
+                }
+            ],
+            "patterns": [
+                {
+                    "expression": "^ +total",
+                    "skip_others": true
+                },
+                {
+                    "separator": " +",
+                    "field": 0,
+                    "min_fields": 7,
+                    "max_fields": 7,
+                    "expression": ".*",
+                    "replace_fields": {
+                        "2,5": "%Cb%Fc%Cz",
+                        "3": "%Cr%Fc%Cz",
+                        "4,7": "%Cg%Fc%Cz",
+                        "6": "%Cy%Fc%Cz"
+                    },
+                    "activation_line": 2
+                },
+                {
+                    "separator": " +",
+                    "field": 0,
+                    "min_fields": 4,
+                    "max_fields": 4,
+                    "expression": ".*",
+                    "replace_fields": {
+                        "2*4*2": "%Cc%Fc%Cz"
+                    },
+                    "activation_line": 2
+                }
+            ]
+        }
+    ]
 }
