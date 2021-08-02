@@ -8,8 +8,8 @@
 3. [Configuration](#configuration).
 4. [Formatting Strings](#formatting-strings).
 	- [Color Formatting](#colors).
-	- [Group Formatting](#groups).
 	- [Field Formatting](#fields).
+	- [Group Formatting](#groups).
 	- [Padding](#padding).
 	- [Truncate](#truncate).
 5. [Debugging and Creating Profiles](#debugging-and-creating-profiles).
@@ -64,43 +64,43 @@ alias rsync='pycolor rsync'
 
 Pycolor will first try to load configuration from `~/.pycolor.json` before loading files found in `~/.pycolor.d/` in filename order.
 
-When looking for a profile to use, pycolor will select the last matching profile based on the `name`, `name_expression`, or `which` property.
+When looking for a profile to use, pycolor will select the last matching profile based on the `name`/`command`, `name_expression`/`command_expression`, or `which` property.
 
-Patterns are applied first-to-last for each profile.
+Matching patterns are applied first-to-last for each profile.
 
-[JSON schema files that describe the config format can be found in `/config/schema/`](https://github.com/WiLGYSeF/pycolor/blob/master/src/pycolor/config/schema/profile.json).
+JSON schema files that describe the config format can be found in [`/config/schema/`](https://github.com/WiLGYSeF/pycolor/blob/master/src/pycolor/config/schema/profile.json).
 
-[Sample config files can also be found in `/docs/sample-config/`](https://github.com/WiLGYSeF/pycolor/blob/master/docs/sample-config/).
+Sample config files can be found in [`/docs/sample-config/`](https://github.com/WiLGYSeF/pycolor/blob/master/docs/sample-config/).
 
 # Formatting Strings
 
-Use formatting strings to color/manipulate the program output in real-time: `%<format type>(<format value>)`.
+Use formatting strings to color/manipulate the program output in real-time: `%<format code>(<format value>)`.
 
-| Format Type Code | Description |
+| Format Code | Description |
 |---|---|
 | [C](#colors) | Color formatter |
 | [F](#fields) | Field (separator) formatter |
 | [G](#groups) | Regex group formatter |
-| H | Context-aware field/group color alias |
+| [H](#context-aware-color-alias-format) | Context-aware field/group color alias |
 | [P](#padding) | Padding formatter |
 | [T](#truncate) | Truncation formatter |
 
-Formatting strings can written like `%C(red)` or `%Cred`, where the first letter is used as the format type and the rest is the argument.
-`%C(red)hello` formats the string `hello` in red, but `%Credhello` is incorrect.
+Formatting strings can written like `%C(red)` (or its short form, `%Cr`) where the first letter is used as the format type and the rest is the argument.
+`%C(red)hello` formats the string `hello` in red
 
 A literal `%` can be used in a format string by using `%%`.
 E.g. the format string `The total is %C(red)15%%` will become `The total is 15%`, with the `15%` part in red.
 
-Valid formatting argument characters are upper/lowercase letters and numbers, unless the argument is encapsulated in parentheses, then everything in the parenthesis pair is used.
+Valid format value characters are upper/lowercase letters and numbers, unless the argument is encapsulated in parentheses, then everything in the parenthesis pair is used.
 
-[Check `/docs/sample-config/` for examples of formatting strings being used for actual programs](https://github.com/WiLGYSeF/pycolor/blob/master/docs/sample-config/).
+Check [`/docs/sample-config/`](https://github.com/WiLGYSeF/pycolor/blob/master/docs/sample-config/) for examples of formatting strings being used for actual programs.
 
 ## Colors
 
-To colorize output through a replace pattern use `%C<color argument>`.
+To colorize output through a replace pattern use `%C<color value>`.
 
 ### Recognized Attributes and Colors:
-| Color Argument | Aliases | ANSI Code | Description |
+| Color Value | Aliases | ANSI Code | Description |
 |---|---|---|---|
 | reset | normal, res, nor, z | `\e[0m` | Resets all ANSI color formatting |
 | bold | bright, bol, bri | `\e[1m` | Bold characters |
@@ -134,47 +134,38 @@ To colorize output through a replace pattern use `%C<color argument>`.
 
 ### Modifier Characters
 
-You can select multiple colors by separating them with `;` (must be wrapped in parentheses). e.g. `%C(bold;red)`.
+You can select multiple color values by separating them with `;` (must be wrapped in parentheses). e.g. `%C(bold;red)`.
 
-If a `^` is prepended before a color (e.g. `%C(^red)`), then it is used to set the background color instead.
+If a `^` is added before a color (e.g. `%C(^red)`), then it is used to set the background color instead.
 The color formatting for bold, red-on-yellow text can be written as `%C(bold;red;^yellow)hello`, or `%C(bol;r;^y)hello`, which will produce `\e[1;31;43mhello`.
 
-If a `^` is prepended before a style (e.g. `%C(^italic)` produces `\e[23m`), then the style is turned off.
-Note that for turning off bold (`%C(^bold)` i.e. `\e[21m`) instead turns on double underline for some terminals.
+If a `^` is added before a style (e.g. `%C(^italic)` produces `\e[23m`), then the style is turned off.
+
+Note that turning off bold (`%C(^bold)` i.e. `\e[21m`) instead turns on double underline for some terminals.
 
 ### Special Colors
 
-#### 256-Color
-If a color format is just a number (e.g. `%C130`), then it will use the 256-color set (in this case, a brown color: `\e[38;5;130m`).
+#### 8-bit Color
+If a color value is just a number (e.g. `%C130`), then it will use the 8-bit color set (in this case, a brown color: `\e[38;5;130m`).
 This also works for background colors as well (e.g. `%C(^130)` produces `\e[48;5;130m`).
 
-[Click here to see the 256-color table](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit).
+[Click here to see the 8-bit color table](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit).
 
 #### 24-bit Color
 24-bit color is also supported by using hex codes (`%C0xffaa00` or `%C0xfa0` will produce orange: `\e[38;2;255;170;0m`).
 
 ### Raw ANSI Codes
-If for some reason you would like to use raw codes in the color formats: `%C(raw1;3;36)` will produce bold, italic, cyan (`\e[1;3;36m`).
-
-## Groups
-
-Regex groups can be referenced with the format: `%G<group number or name>`.
-`%G0` is the entire matching text from `expression`. `%G1` is the first matching group, `%G2` is the second, etc. If the regex group is named, it can also be referenced (e.g. `%G(myregexgroup)`).
-
-### Group Incrementer
-
-Instead of using groups explicitly in order (e.g. `%G1, %G2: %G3`), using the special incrementer instead of numbers, `%Gn, %Gn: %Gn`, will result in the same format output.
-
-Note that if a named group `n` is defined in the expression, then the special incrementer will be overridden.
+If for some reason you would like to use raw color codes, `%C(raw1;3;36)` will produce bold, italic, cyan (`\e[1;3;36m`).
 
 ## Fields
 
-If the pattern's `separator` property is set, then fields and their separators can be referenced in the format string.
+If the pattern's `separator` property is set, then the fields and their separators can be referenced in the format string.
 
 To get a field's text, use `%F<field number>`.
-If a output line is `this is a test`, and the pattern `separator` property is ` `, the format string `%F2 %F1 %F3 %F4` will format to `is this a test` for that line.
+If an output line is `this is a test`, and the pattern `separator` property is ` ` (a space), then the format string `%F2 %F1 %F3 %F4` will format to `is this a test` for that line.
 
-To get the field separator string, use `%Fs<field number>`. This will return the field separator string that precedes the field number. (e.g. `%Fs3` will get the field separator string that comes before the third field `%F3`).
+To get the field separator string, use `%Fs<field number>`. This will return the field separator string that precedes that field number.
+(e.g. `%Fs3` will get the field separator string that comes before the third field `%F3`).
 
 If `separator` is set to `#+`, and the output line is `a#b##c###d##e#f`, the field format values will be:
 
@@ -199,7 +190,7 @@ Field formats support negative indexing, so `%F(-1)_%F(-2)` will format to `f_e`
 ### Field Ranges
 
 Giving a range of fields is possible using the `*` character, where `%F(<start range>*<end range>)`.
-A sample table is given below, using the same example as above:
+Using the same example as above:
 
 | Field Format | Value |
 |---|---|
@@ -213,6 +204,83 @@ A sample table is given below, using the same example as above:
 
 If you want to format using field ranges, but want to override the separator used to be a constant-length string, use `%F(<start range>*<end range>,<separator>)`.
 Using the previous input as an example, `%F(*4,_)` formats to  `a_b_c_d`.
+
+### `replace-fields`
+
+Changing only the matched fields is possible using pattern's `replace-fields` property.
+Any fields not explicitly set will be left alone.
+
+It can be a list of format strings, where the format string at index `i` is applied to field number `i + 1`.
+
+```
+...
+
+'replace_fields': ["%Cg%Fc%Cz", "%Cr%Fc%Cz", "%Cg%Fc%Cz"],
+
+...
+```
+
+It can also be an object with the keys as field numbers and the value as the format value.
+Keys may be comma-separated numbers, or even ranges (`"<start>*<end>"`).
+
+```
+...
+
+'replace_fields': {
+	"1,3": "%Cg%Fc%Cz",
+	"2": "%Cr%Fc%Cz"
+},
+
+...
+```
+
+## Groups
+
+Regex groups can be referenced with the format: `%G<group number or name>`.
+`%G0` is the entire matching text from `expression`. `%G1` is the first matching group, `%G2` is the second, etc. If the regex group is named, it can also be referenced (e.g. `%G(myregexgroup)`).
+
+### Group Incrementer
+
+Instead of using groups explicitly in order (e.g. `%G1, %G2: %G3`), using the special incrementer instead of numbers, `%Gn, %Gn: %Gn`, will result in the same format output.
+
+Note that if a named group `n` is defined in the expression, then the special incrementer will be overridden.
+
+### `replace-groups`
+
+Changing only the matched regex groups is possible using pattern's `replace-groups` property.
+Any groups not explicitly set will be left alone.
+
+It can be a list of format strings, where the format string at index `i` is applied to group number `i + 1`.
+
+```
+...
+
+'replace_groups': ["%Cg%Gc%Cz", "%Cr%Gc%Cz", "%Cg%Gc%Cz"],
+
+...
+```
+
+
+It can also be an object with the keys as group numbers and the value as the format value.
+Keys may be comma-separated numbers, or even ranges (`"<start>*<end>"`).
+
+```
+...
+
+'replace_groups': {
+	"1,3": "%Cg%Gc%Cz",
+	"2": "%Cr%Gc%Cz"
+},
+
+...
+```
+
+## Context-Aware Color Allias Format
+
+You may find yourself coloring groups or fields often using `%Cg%Gc%Cz` or `%Cg%Fc%Cz`, which is why a context-aware color alias format was added: `%H(<color value>)` is an alias for `%C(<color value>)%Gc%Cz`.
+
+Now `%Cg%Gc%Cz` can be replaced with the shorter alias `%Hg`.
+If `%H` is used in `replace_groups`, it will be an alias for coloring `%Gc`, and if `%H` is used in `replace_fields`, it will be an alias for coloring `%Fc`.
 
 ## Padding
 
@@ -234,7 +302,7 @@ Truncate strings to a certain length using `%T(<string>;<replace>;<location>,<le
 | `location` | where to truncate `string`, see below for more |
 | `length` | truncate `string` to this length |
 
-`replace` may be empty (`%T(<string>;;<location>,<length>)`).
+`replace` can also be empty: `%T(<string>;;<location>,<length>)`.
 
 Possible `location` values:
 
@@ -276,7 +344,7 @@ Output of `pycolor --debug-color` run on Windows PowerShell (24-bit colors are n
 
 ![--debug-color output](https://raw.githubusercontent.com/WiLGYSeF/pycolor/master/docs/images/debug-color.png)
 
-*Note: bold off (`\x1b[21m`) is actually bold underline in PowerShell*
+*Note: bold off (`\e[21m`) is actually bold underline in PowerShell*
 
 ## Creating Profiles
 

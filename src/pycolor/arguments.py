@@ -71,11 +71,11 @@ def get_args(args):
     group = parser.add_argument_group('debug options')
     group.add_argument('--debug-color',
         action='store_true', default=False,
-        help='displays all available color styles and exits'
+        help='display all available color styles and exit'
     )
     group.add_argument('-f', '--debug-format',
         action=DebugFormatAction, metavar='FORMAT',
-        help='displays the formatted string and exits, using the long form will ensure that'
+        help='display the formatted string and exit, using the long form will ensure that'
         + ' the ANSI colors will be reset afterwards'
     )
 
