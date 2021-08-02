@@ -3,9 +3,6 @@ import setuptools
 with open('README.md', 'r', encoding='utf-8') as file:
     long_description = file.read()
 
-with open('requirements.txt', 'r', encoding='utf-8') as file:
-    install_requires = file.read().split('\n')
-
 setuptools.setup(
     name='pycolor-term',
     version='0.0.5',
@@ -23,7 +20,7 @@ setuptools.setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
     ],
-    install_requires=install_requires,
+    install_requires=['fastjsonschema'],
     package_dir={'': 'src'},
     packages=setuptools.find_packages(where='src'),
     python_requires='>=3.6',
