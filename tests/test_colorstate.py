@@ -1,6 +1,6 @@
 import unittest
 
-import colorstate
+from src.pycolor import colorstate
 
 
 STRING = 'string'

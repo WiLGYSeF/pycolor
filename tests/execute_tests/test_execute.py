@@ -3,7 +3,7 @@ import io
 import os
 import unittest
 
-import execute
+from src.pycolor import execute
 
 
 class ExecuteTest(unittest.TestCase):

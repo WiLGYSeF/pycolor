@@ -1,6 +1,6 @@
 import unittest
 
-from config.argpattern import ArgPattern
+from src.pycolor.config.argpattern import ArgPattern
 
 
 ARGLEN = 'arglen'
@@ -16,11 +16,6 @@ GET_ARG_RANGES = [
     {
         ARGLEN: 4,
         POSITION: '*',
-        RANGE: [0, 1, 2, 3],
-    },
-    {
-        ARGLEN: 4,
-        POSITION: 'blah',
         RANGE: [0, 1, 2, 3],
     },
     {
@@ -80,6 +75,13 @@ GET_ARG_RANGES = [
     },
 ]
 
+GET_ARG_RANGES_FAIL = [
+    {
+        ARGLEN: 4,
+        POSITION: 'blah',
+    },
+]
+
 
 class GetArgPatternTest(unittest.TestCase):
     def test_get_arg_range(self):
@@ -91,3 +93,11 @@ class GetArgPatternTest(unittest.TestCase):
                 }).get_arg_range(entry[ARGLEN])),
                 entry[RANGE]
             )
+
+    def test_get_arg_range_fail(self):
+        for entry in GET_ARG_RANGES_FAIL:
+            with self.assertRaises(Exception):
+                ArgPattern({
+                    'expression': '.*',
+                    'position': entry[POSITION]
+                }).get_arg_range(entry[ARGLEN])

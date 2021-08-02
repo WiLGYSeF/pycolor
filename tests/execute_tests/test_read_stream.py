@@ -2,7 +2,7 @@ from io import BytesIO
 import os
 import unittest
 
-from execute import read_stream
+from src.pycolor.execute import read_stream
 
 
 class ReadStreamTest(unittest.TestCase):

@@ -1,7 +1,6 @@
 import unittest
 
-from colorstate import ColorState
-import pyformat
+from src.pycolor import pyformat
 
 
 ARGS = 'args'

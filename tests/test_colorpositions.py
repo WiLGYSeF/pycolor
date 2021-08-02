@@ -1,6 +1,6 @@
 import unittest
 
-import colorpositions
+from src.pycolor import colorpositions
 
 
 DATA = 'data'

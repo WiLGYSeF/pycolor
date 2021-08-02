@@ -2,6 +2,7 @@
 	"profiles": [
 		{
 			"name": "zip",
+			"interactive": true,
 			"patterns": [
 				{
 					"expression": [
@@ -17,14 +18,18 @@
 					],
 					"replace_groups": {
 						"vol": "%Gc",
-						"fc": "%Cg%Gc%Cz",
-						"fz": "%Cc%Gc%Cz",
-						"addname,copname,frename,updname": "%C(bol;g)%Gc%Cz",
-						"delname": "%C(bol;r)%Gc%Cz",
-						"uz": "%Ce%Gc%Cz",
-						"dots": "%Ce%Gc%Cz",
-						"pc": "%Clc%Gc%Cz"
+						"fc": "%Hg",
+						"fz": "%Hc",
+						"addname,copname,frename,updname": "%H(bol;g)",
+						"delname": "%H(bol;r)",
+						"uz": "%He",
+						"dots": "%He",
+						"pc": "%Hlc"
 					}
+				},
+				{
+					"expression": "^ \\((?:deflated|stored) ([0-9]+%)\\)$",
+					"replace_groups": ["%Hlc"]
 				}
 			]
 		}

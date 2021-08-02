@@ -1,7 +1,7 @@
 import unittest
 
-import config.pattern
-from config.pattern import Pattern
+from src.pycolor.config import ConfigPropertyError
+from src.pycolor.config.pattern import Pattern, bsearch_closest
 
 
 ACTIVATIONS = 'activations'
@@ -110,6 +110,14 @@ BSEARCH_CLOSEST = [
 
 
 class PatternTest(unittest.TestCase):
+    def test_min_max_fields_fail(self):
+        with self.assertRaises(ConfigPropertyError):
+            Pattern({
+                'separator': ' +',
+                'min_fields': 5,
+                'max_fields': 4,
+            })
+
     def test_get_activation_ranges(self):
         for entry in GET_ACTIVATION_RANGES:
             self.assertListEqual(
@@ -123,6 +131,6 @@ class PatternTest(unittest.TestCase):
     def test_bsearch_closest(self):
         for entry in BSEARCH_CLOSEST:
             self.assertEqual(
-                config.pattern.bsearch_closest(entry[ARRAY], entry[VALUE]),
+                bsearch_closest(entry[ARRAY], entry[VALUE]),
                 entry[RESULT]
             )

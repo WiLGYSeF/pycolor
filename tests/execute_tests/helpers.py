@@ -1,13 +1,10 @@
 from contextlib import contextmanager
 import io
 import os
-import select
-import sys
 
+from src.pycolor import __main__ as pycolor
+from src.pycolor import pycolor_class
 from tests.testutils import patch
-
-import pycolor
-import pycolor_class
 
 
 def check_pycolor_execute(
@@ -130,7 +127,6 @@ def execute_patch(obj, stdout_stream, stderr_stream):
                 if self.polled > 1:
                     self.returncode = 0
                 self.polled += 1
-
                 return self.returncode
 
         return MockProcess(
@@ -138,24 +134,7 @@ def execute_patch(obj, stdout_stream, stderr_stream):
             **kwargs
         )
 
-    select_unpatched = select.select
-
-    def _select(rlist, wlist, xlist, *args):
-        timeout = args[0] if len(args) >= 1 else -1
-
-        rkeys = []
-        for key in rlist:
-            if key is not sys.stdin:
-                if isinstance(key, int) and key != -1:
-                    fdlist = select_unpatched([key], [], [], 0.001)[0]
-                    if len(fdlist) != 0:
-                        rkeys.extend(fdlist)
-                else:
-                    rkeys.append(key)
-        return (rkeys,)
-
-    with patch(getattr(obj, 'subprocess'), 'Popen', popen),\
-        patch(getattr(obj, 'select'), 'select', _select):
+    with patch(getattr(obj, 'subprocess'), 'Popen', popen):
         yield
 
 def textstream():

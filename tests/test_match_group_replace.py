@@ -1,7 +1,7 @@
 import re
 import unittest
 
-import match_group_replace
+from src.pycolor import match_group_replace
 
 
 STRING = 'string'

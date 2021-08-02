@@ -1,0 +1,44 @@
+{
+    "type": "object",
+    "properties": {
+        "enabled": {
+            "description": "if this pattern should be used",
+            "type" : "boolean",
+            "default": true
+        },
+        "expression": {
+            "description": "the regex pattern to compare the arguments",
+            "type": ["array", "string"],
+            "default": []
+        },
+        "subcommand": {
+            "description": "the subcommands that must be used with the command in order to match. if subcommand is an array, then the subcommands must match in the given order. using null will allow any subcommand in that position",
+            "type": ["array", "string"],
+            "default": []
+        },
+        "position": {
+            "description": "the position the argument must be in. if position is a string (e.g. \">4\"), then it will match arguments in position 4 and above",
+            "type": ["null", "string", "integer"],
+            "examples": [
+                1,
+                ">4",
+                "<3"
+            ],
+            "default": null
+        },
+
+        "match_not": {
+            "description": "the pattern cannot match for this profile to be used",
+            "type": "boolean",
+            "default": false
+        },
+        "optional": {
+            "description": "at least one optional pattern must match, all non-optional patterns must match",
+            "type": "boolean",
+            "default": false
+        }
+    },
+    "dependencies": {
+        "position": ["expression"]
+    }
+}

@@ -11,14 +11,26 @@ from tests.execute_tests.helpers import (
     execute_patch, open_fstream, read_file, test_stream, textstream
 )
 from tests.testutils import patch
-import pycolor
-import pycolor_class
+from src.pycolor import __main__ as pycolor
+from src.pycolor import pycolor_class
 
 
 MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_data')
 
 
 class PycolorTest(unittest.TestCase):
+    def test_load_sample_config(self):
+        curpath = os.path.dirname(os.path.realpath(__file__))
+        with patch(
+            pycolor, 'CONFIG_DIR', os.path.join(curpath, '../docs/sample-config')
+        ), patch(
+            pycolor, 'CONFIG_DEFAULT', os.path.join(curpath, '../docs/sample-config/rsync.json')
+        ):
+            try:
+                pycolor.main([], stdin_stream=textstream())
+            except SystemExit as sexc:
+                self.assertEqual(sexc.code, 0)
+
     def test_version(self):
         stdout = textstream()
         with patch(sys, 'stdout', stdout):
@@ -111,6 +123,15 @@ class PycolorTest(unittest.TestCase):
                 ['this-is-not-a-valid-command-peucrnh'],
                 MOCKED_DATA,
                 'unknown_command',
+                patch_stderr=True
+            )
+
+    def test_from_profile_not_exist(self):
+        with self.assertRaises(SystemExit):
+            self.check_pycolor_main(
+                ['-p=test', 'ls', '-l'],
+                MOCKED_DATA,
+                'from_profile_not_exist',
                 patch_stderr=True
             )
 

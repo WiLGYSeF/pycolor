@@ -1,8 +1,8 @@
 import os
 import unittest
 
-from config import ConfigRegexException, ConfigExclusivePropertyException
-from pycolor_class import Pycolor
+from src.pycolor.config import ConfigRegexError, ConfigExclusivePropertyError
+from src.pycolor.pycolor_class import Pycolor
 
 
 MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_data')
@@ -11,12 +11,12 @@ MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_
 class ConfigTest(unittest.TestCase):
     def test_regex_exception(self):
         pycobj = Pycolor()
-        with self.assertRaises(ConfigRegexException):
+        with self.assertRaises(ConfigRegexError):
             self.load_file(pycobj, 'regex-exception')
 
     def test_mutual_exception(self):
         pycobj = Pycolor()
-        with self.assertRaises(ConfigExclusivePropertyException):
+        with self.assertRaises(ConfigExclusivePropertyError):
             self.load_file(pycobj, 'mutual-exclusion-exception')
 
     def load_file(self, pycobj, name):

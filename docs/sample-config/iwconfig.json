@@ -10,25 +10,25 @@
 				},
 				{
 					"expression": "ESSID:\"([^\"]+)\"",
-					"replace_groups": ["%Cly%Gc%Cz"],
+					"replace_groups": ["%Hly"],
 					"skip_others": true
 				},
 				{
 					"expression": "Access Point: ((?:[0-9A-F]{2}:?){6})",
-					"replace_groups": ["%Cy%Gc%Cz"],
+					"replace_groups": ["%Hy"],
 					"skip_others": true
 				},
 				{
 					"expression": "Link Quality=([0-9]+)/([0-9]+)",
-					"replace_groups": ["%Cg%Gc%Cz", "%Cg%Gc%Cz"]
+					"replace_groups": ["%Hg", "%Hg"]
 				},
 				{
 					"expression": "(?:[a-z][:=] *)(-?[0-9.]+(?: [A-Za-z/]+)?)",
-					"replace_groups": ["%Cg%Gc%Cz"]
+					"replace_groups": ["%Hg"]
 				},
 				{
 					"expression": "(?:[a-z][:=] *)([A-Za-z]+)",
-					"replace_groups": ["%Clg%Gc%Cz"]
+					"replace_groups": ["%Hlg"]
 				},
 				{
 					"expression": "no wireless extensions\\.",
