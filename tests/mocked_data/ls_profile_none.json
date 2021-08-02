@@ -1,13 +1,13 @@
 {
-	"profiles": [
-		{
-			"profile_name": "num",
-			"patterns": [
-				{
-					"expression": "[0-9]+",
-					"replace": "%Cg%G0%Cz"
-				}
-			]
-		}
-	]
+    "profiles": [
+        {
+            "profile_name": "num",
+            "patterns": [
+                {
+                    "expression": "[0-9]+",
+                    "replace": "%Cg%G0%Cz"
+                }
+            ]
+        }
+    ]
 }

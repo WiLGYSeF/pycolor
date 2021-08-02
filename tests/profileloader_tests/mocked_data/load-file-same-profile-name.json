@@ -1,10 +1,10 @@
 {
-	"profiles": [
-		{
-			"profile_name": "test"
-		},
-		{
-			"profile_name": "test"
-		}
-	]
+    "profiles": [
+        {
+            "profile_name": "test"
+        },
+        {
+            "profile_name": "test"
+        }
+    ]
 }

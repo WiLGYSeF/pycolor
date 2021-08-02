@@ -1,55 +1,55 @@
 {
-	"profiles": [
-		{
-			"name": "ifconfig",
-			"arg_patterns": [
-				{
-					"expression": "-[A-Za-z]*s[A-Za-z]*",
-					"match_not": true
-				}
-			],
-			"patterns": [
-				{
-					"expression": "^([A-Za-z0-9-]+): flags=([0-9]+)<([A-Z,]+)>  mtu ([0-9]+)",
-					"replace_groups": ["%H(bol;c)", "%Hg", "%Hm", "%Hg"]
-				},
-				{
-					"expression": "^ +inet ((?:[0-9]+\\.){3}[0-9]+)  netmask ((?:[0-9]+\\.){3}[0-9]+)  (?:broadcast|destination) ((?:[0-9]+\\.){3}[0-9]+)",
-					"replace_groups": ["%Hy", "%H(dim;y)", "%H(dim;y)"]
-				},
-				{
-					"expression": "^ +inet ((?:[0-9]+\\.){3}[0-9]+)  netmask ((?:[0-9]+\\.){3}[0-9]+)",
-					"replace_groups": ["%Hly", "%H(dim;y)"]
-				},
-				{
-					"expression": "^ +inet6 ([0-9a-f:]+)  prefixlen ([0-9]+)  scopeid (0x[0-9a-f]{2})<([a-z]+)>",
-					"replace_groups": ["%Hly", "%Hg", "%Hg", "%Hb"]
-				},
-				{
-					"expression": "^ +[a-z]+(?: ([0-9a-f:-]+))?  txqueuelen ([0-9]+)  \\(([A-Za-z0-9 ]+)\\)",
-					"replace_groups": ["%Hy", "%Hg", "%Hb"]
-				},
-				{
-					"super_expression": "^ +RX",
-					"expression": "[0-9]+",
-					"replace": "%Cc%G0%Cz"
-				},
-				{
-					"super_expression": "^ +RX",
-					"expression": "\\(([A-Z0-9. ]+)\\)",
-					"replace_groups": ["%Hc"]
-				},
-				{
-					"super_expression": "^ +TX",
-					"expression": "[0-9]+",
-					"replace": "%Cg%G0%Cz"
-				},
-				{
-					"super_expression": "^ +TX",
-					"expression": "\\(([A-Z0-9. ]+)\\)",
-					"replace_groups": ["%Hg"]
-				}
-			]
-		}
-	]
+    "profiles": [
+        {
+            "name": "ifconfig",
+            "arg_patterns": [
+                {
+                    "expression": "-[A-Za-z]*s[A-Za-z]*",
+                    "match_not": true
+                }
+            ],
+            "patterns": [
+                {
+                    "expression": "^([A-Za-z0-9-]+): flags=([0-9]+)<([A-Z,]+)>  mtu ([0-9]+)",
+                    "replace_groups": ["%H(bol;c)", "%Hg", "%Hm", "%Hg"]
+                },
+                {
+                    "expression": "^ +inet ((?:[0-9]+\\.){3}[0-9]+)  netmask ((?:[0-9]+\\.){3}[0-9]+)  (?:broadcast|destination) ((?:[0-9]+\\.){3}[0-9]+)",
+                    "replace_groups": ["%Hy", "%H(dim;y)", "%H(dim;y)"]
+                },
+                {
+                    "expression": "^ +inet ((?:[0-9]+\\.){3}[0-9]+)  netmask ((?:[0-9]+\\.){3}[0-9]+)",
+                    "replace_groups": ["%Hly", "%H(dim;y)"]
+                },
+                {
+                    "expression": "^ +inet6 ([0-9a-f:]+)  prefixlen ([0-9]+)  scopeid (0x[0-9a-f]{2})<([a-z]+)>",
+                    "replace_groups": ["%Hly", "%Hg", "%Hg", "%Hb"]
+                },
+                {
+                    "expression": "^ +[a-z]+(?: ([0-9a-f:-]+))?  txqueuelen ([0-9]+)  \\(([A-Za-z0-9 ]+)\\)",
+                    "replace_groups": ["%Hy", "%Hg", "%Hb"]
+                },
+                {
+                    "super_expression": "^ +RX",
+                    "expression": "[0-9]+",
+                    "replace": "%Cc%G0%Cz"
+                },
+                {
+                    "super_expression": "^ +RX",
+                    "expression": "\\(([A-Z0-9. ]+)\\)",
+                    "replace_groups": ["%Hc"]
+                },
+                {
+                    "super_expression": "^ +TX",
+                    "expression": "[0-9]+",
+                    "replace": "%Cg%G0%Cz"
+                },
+                {
+                    "super_expression": "^ +TX",
+                    "expression": "\\(([A-Z0-9. ]+)\\)",
+                    "replace_groups": ["%Hg"]
+                }
+            ]
+        }
+    ]
 }

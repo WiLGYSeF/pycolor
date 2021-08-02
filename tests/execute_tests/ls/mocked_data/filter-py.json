@@ -1,13 +1,13 @@
 {
-	"profiles": [
-		{
-			"name": "ls",
-			"patterns": [
-				{
-					"expression": "\\.py$",
-					"filter": true
-				}
-			]
-		}
-	]
+    "profiles": [
+        {
+            "name": "ls",
+            "patterns": [
+                {
+                    "expression": "\\.py$",
+                    "filter": true
+                }
+            ]
+        }
+    ]
 }

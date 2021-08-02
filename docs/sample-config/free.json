@@ -1,54 +1,54 @@
 {
-	"profiles": [
-		{
-			"name": "free",
-			"arg_patterns": [
-				{
-					"expression": "--help",
-					"match_not": true
-				}
-			],
-			"patterns": [
-				{
-					"expression": "^ +total",
-					"skip_others": true
-				},
-				{
-					"deactivation_expression": "^free: invalid option",
-					"separator": " +",
-					"min_fields": 7,
-					"max_fields": 7,
-					"replace_fields": {
-						"2,5": "%Hb",
-						"3": "%Hr",
-						"4,7": "%Hg",
-						"6": "%Hy"
-					}
-				},
-				{
-					"deactivation_expression": "^free: invalid option",
-					"separator": " +",
-					"min_fields": 8,
-					"max_fields": 8,
-					"replace_fields": {
-						"2,5": "%Hb",
-						"3": "%Hr",
-						"4,8": "%Hg",
-						"6,7": "%Hy"
-					}
-				},
-				{
-					"deactivation_expression": "^free: invalid option",
-					"separator": " +",
-					"min_fields": 4,
-					"max_fields": 4,
-					"replace_fields": {
-						"2": "%Hb",
-						"3": "%Hr",
-						"4": "%Hg"
-					}
-				}
-			]
-		}
-	]
+    "profiles": [
+        {
+            "name": "free",
+            "arg_patterns": [
+                {
+                    "expression": "--help",
+                    "match_not": true
+                }
+            ],
+            "patterns": [
+                {
+                    "expression": "^ +total",
+                    "skip_others": true
+                },
+                {
+                    "deactivation_expression": "^free: invalid option",
+                    "separator": " +",
+                    "min_fields": 7,
+                    "max_fields": 7,
+                    "replace_fields": {
+                        "2,5": "%Hb",
+                        "3": "%Hr",
+                        "4,7": "%Hg",
+                        "6": "%Hy"
+                    }
+                },
+                {
+                    "deactivation_expression": "^free: invalid option",
+                    "separator": " +",
+                    "min_fields": 8,
+                    "max_fields": 8,
+                    "replace_fields": {
+                        "2,5": "%Hb",
+                        "3": "%Hr",
+                        "4,8": "%Hg",
+                        "6,7": "%Hy"
+                    }
+                },
+                {
+                    "deactivation_expression": "^free: invalid option",
+                    "separator": " +",
+                    "min_fields": 4,
+                    "max_fields": 4,
+                    "replace_fields": {
+                        "2": "%Hb",
+                        "3": "%Hr",
+                        "4": "%Hg"
+                    }
+                }
+            ]
+        }
+    ]
 }

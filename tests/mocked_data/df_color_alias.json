@@ -1,16 +1,16 @@
 {
-	"profiles": [
-		{
-			"name": "df",
-			"color_aliases": {
-				"num": "0xffaa00"
-			},
-			"patterns": [
-				{
-					"expression": "([0-9.]+)",
-					"replace_groups": ["%Hnum"]
-				}
-			]
-		}
-	]
+    "profiles": [
+        {
+            "name": "df",
+            "color_aliases": {
+                "num": "0xffaa00"
+            },
+            "patterns": [
+                {
+                    "expression": "([0-9.]+)",
+                    "replace_groups": ["%Hnum"]
+                }
+            ]
+        }
+    ]
 }

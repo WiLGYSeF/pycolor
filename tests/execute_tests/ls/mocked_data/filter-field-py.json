@@ -1,15 +1,15 @@
 {
-	"profiles": [
-		{
-			"name": "ls",
-			"patterns": [
-				{
-					"separator": " +",
-					"field": 9,
-					"expression": "\\.py$",
-					"filter": true
-				}
-			]
-		}
-	]
+    "profiles": [
+        {
+            "name": "ls",
+            "patterns": [
+                {
+                    "separator": " +",
+                    "field": 9,
+                    "expression": "\\.py$",
+                    "filter": true
+                }
+            ]
+        }
+    ]
 }

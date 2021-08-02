@@ -1,8 +1,8 @@
 {
-	"profiles": [
-		{
-			"name": "test",
-			"from_profiles": "numbers"
-		}
-	]
+    "profiles": [
+        {
+            "name": "test",
+            "from_profiles": "numbers"
+        }
+    ]
 }
