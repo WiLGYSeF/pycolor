@@ -1,13 +1,13 @@
 {
-	"profiles": [
-		{
-			"name": "ls",
-			"patterns": [
-				{
-					"expression": "^...x..x..x .*",
-					"replace_all": "%Cy%G0%Cz"
-				}
-			]
-		}
-	]
+    "profiles": [
+        {
+            "name": "ls",
+            "patterns": [
+                {
+                    "expression": "^...x..x..x .*",
+                    "replace_all": "%Cy%G0%Cz"
+                }
+            ]
+        }
+    ]
 }

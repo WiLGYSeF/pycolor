@@ -1,35 +1,35 @@
 {
-	"profiles": [
-		{
-			"profile_name": "ping-windows",
-			"name": "ping",
-			"which": "C:\\Windows\\System32\\ping.exe",
-			"which_ignore_case": true,
-			"patterns": [
-				{
-					"expression": "^Pinging (.+) \\[(.+)\\] with (\\d+) bytes of data:$",
-					"replace_groups": ["%Hly", "%Hy"]
-				},
-				{
-					"expression": "^Reply from (.+): bytes=(\\d+) time=(\\d+)ms TTL=(\\d+)$",
-					"replace_groups": ["%Hy", "%Hg", "%Hb", "%Hlb"]
-				},
-				{
-					"expression": "^Ping statistics for (.+):$",
-					"replace_groups": ["%Hy"]
-				},
-				{
-					"expression": "^    Packets: Sent = (\\d+), Received = (\\d+), Lost = (\\d+) \\((\\d+)% loss\\),$",
-					"replace_groups": {
-						"1,2": "%Hg",
-						"3,4": "%Hr"
-					}
-				},
-				{
-					"expression": "^    Minimum = (\\d+)ms, Maximum = (\\d+)ms, Average = (\\d+)ms$",
-					"replace_groups": ["%Hg", "%Hlg", "%Hc"]
-				}
-			]
-		}
-	]
+    "profiles": [
+        {
+            "profile_name": "ping-windows",
+            "name": "ping",
+            "which": "C:\\Windows\\System32\\ping.exe",
+            "which_ignore_case": true,
+            "patterns": [
+                {
+                    "expression": "^Pinging (.+) \\[(.+)\\] with (\\d+) bytes of data:$",
+                    "replace_groups": ["%Hly", "%Hy"]
+                },
+                {
+                    "expression": "^Reply from (.+): bytes=(\\d+) time=(\\d+)ms TTL=(\\d+)$",
+                    "replace_groups": ["%Hy", "%Hg", "%Hb", "%Hlb"]
+                },
+                {
+                    "expression": "^Ping statistics for (.+):$",
+                    "replace_groups": ["%Hy"]
+                },
+                {
+                    "expression": "^    Packets: Sent = (\\d+), Received = (\\d+), Lost = (\\d+) \\((\\d+)% loss\\),$",
+                    "replace_groups": {
+                        "1,2": "%Hg",
+                        "3,4": "%Hr"
+                    }
+                },
+                {
+                    "expression": "^    Minimum = (\\d+)ms, Maximum = (\\d+)ms, Average = (\\d+)ms$",
+                    "replace_groups": ["%Hg", "%Hlg", "%Hc"]
+                }
+            ]
+        }
+    ]
 }

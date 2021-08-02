@@ -1,56 +1,56 @@
 {
-	"profiles": [
-		{
-			"name": "pylint",
-			"patterns": [
-				{
-					"expression": "^(\\*+ Module) (.*)$",
-					"replace_all": "%C(inv;y)%G1 %G2%Cz"
-				},
-				{
-					"expression": [
-						"^",
-						"(?P<fn>.*):",
-						"(?P<ln>[0-9]+)",
-						"(?P<cn>:[0-9]+):",
-						" (?:(?P<te>[CE][0-9]+)|(?P<tr>R[0-9]+)|(?P<tw>W[0-9]+)):",
-						" .* (?P<rule_c>\\((?P<rule>[^)]+)\\))",
-						"(?P<end>)$"
-					],
-					"replace_groups": {
-						"ln": "%Hg",
-						"cn": "%Hde",
-						"te": "%C(bol;r)%Gc",
-						"tr": "%C(bol;m)%Gc",
-						"tw": "%Cm%Gc",
-						"rule_c": "%C(e)(%Cprev%Grule%Ce)%Cprev",
-						"rule": "",
-						"end": "%Cz"
-					}
-				},
-				{
-					"expression": "Unused (?:argument|variable) '([^']+)'",
-					"replace_groups": ["%Ce%Gc%Cprev"]
-				},
-				{
-					"expression": "\\(fixme\\)",
-					"replace": "(%C(y)fix-me%Ce)%Cz"
-				},
-				{
-					"expression": [
-						"^",
-						"Your code has been rated at ",
-						"(?P<score>[0-9.]+/[0-9.]+)",
-						"(?: \\(previous run: [0-9.]+/[0-9.]+, (?:(?P<pos>\\+[0-9.]+)|(?P<neg>-[0-9.]+))\\))?",
-						"$"
-					],
-					"replace_groups": {
-						"score": "%H(bol;c)",
-						"pos": "%H(bol;g)",
-						"neg": "%H(bol;r)"
-					}
-				}
-			]
-		}
-	]
+    "profiles": [
+        {
+            "name": "pylint",
+            "patterns": [
+                {
+                    "expression": "^(\\*+ Module) (.*)$",
+                    "replace_all": "%C(inv;y)%G1 %G2%Cz"
+                },
+                {
+                    "expression": [
+                        "^",
+                        "(?P<fn>.*):",
+                        "(?P<ln>[0-9]+)",
+                        "(?P<cn>:[0-9]+):",
+                        " (?:(?P<te>[CE][0-9]+)|(?P<tr>R[0-9]+)|(?P<tw>W[0-9]+)):",
+                        " .* (?P<rule_c>\\((?P<rule>[^)]+)\\))",
+                        "(?P<end>)$"
+                    ],
+                    "replace_groups": {
+                        "ln": "%Hg",
+                        "cn": "%Hde",
+                        "te": "%C(bol;r)%Gc",
+                        "tr": "%C(bol;m)%Gc",
+                        "tw": "%Cm%Gc",
+                        "rule_c": "%C(e)(%Cprev%Grule%Ce)%Cprev",
+                        "rule": "",
+                        "end": "%Cz"
+                    }
+                },
+                {
+                    "expression": "Unused (?:argument|variable) '([^']+)'",
+                    "replace_groups": ["%Ce%Gc%Cprev"]
+                },
+                {
+                    "expression": "\\(fixme\\)",
+                    "replace": "(%C(y)fix-me%Ce)%Cz"
+                },
+                {
+                    "expression": [
+                        "^",
+                        "Your code has been rated at ",
+                        "(?P<score>[0-9.]+/[0-9.]+)",
+                        "(?: \\(previous run: [0-9.]+/[0-9.]+, (?:(?P<pos>\\+[0-9.]+)|(?P<neg>-[0-9.]+))\\))?",
+                        "$"
+                    ],
+                    "replace_groups": {
+                        "score": "%H(bol;c)",
+                        "pos": "%H(bol;g)",
+                        "neg": "%H(bol;r)"
+                    }
+                }
+            ]
+        }
+    ]
 }

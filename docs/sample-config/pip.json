@@ -1,45 +1,45 @@
 {
-	"profiles": [
-		{
-			"name_expression": "pip3?",
-			"tty": true,
-			"arg_patterns": [
-				{
-					"subcommand": "install",
-					"optional": true
-				},
-				{
-					"subcommand": "download",
-					"optional": true
-				}
-			],
-			"patterns": [
-				{
-					"expression": "^ *Collecting (?P<name>[^ ]+?)(?:>=(?P<ver>[0-9.]+))?(?: \\(from (?P<from>[^)]+)\\))?$",
-					"replace_groups": {
-						"name": "%H(bol;c)",
-						"ver": "%Hlc",
-						"from": "%Hc"
-					}
-				},
-				{
-					"expression": "^  Downloading (.+) \\(([^)]+)\\)$",
-					"replace_groups": ["%Gc", "%Hg"]
-				},
-				{
-					"expression": " *(?P<pc>[0-9]+%)? \\|(?P<pb>.*) *\\| (?P<size>[0-9.]+ [A-Za-z]+) (?P<rate>[0-9.]+ [A-Za-z]+/s)(?: eta (?P<eta>[0-9]+:[0-9]+:[0-9]+))?",
-					"replace_groups": {
-						"pc": "%Hlc",
-						"size": "%Hg",
-						"rate": "%Hlb",
-						"eta": "%Hb"
-					}
-				},
-				{
-					"expression": "^Requirement already satisfied: ([^ ]+) in (.*) \\((.*)\\)$",
-					"replace_groups": ["%H(bol;c)", "%Hy", "%Hc"]
-				}
-			]
-		}
-	]
+    "profiles": [
+        {
+            "name_expression": "pip3?",
+            "tty": true,
+            "arg_patterns": [
+                {
+                    "subcommand": "install",
+                    "optional": true
+                },
+                {
+                    "subcommand": "download",
+                    "optional": true
+                }
+            ],
+            "patterns": [
+                {
+                    "expression": "^ *Collecting (?P<name>[^ ]+?)(?:>=(?P<ver>[0-9.]+))?(?: \\(from (?P<from>[^)]+)\\))?$",
+                    "replace_groups": {
+                        "name": "%H(bol;c)",
+                        "ver": "%Hlc",
+                        "from": "%Hc"
+                    }
+                },
+                {
+                    "expression": "^  Downloading (.+) \\(([^)]+)\\)$",
+                    "replace_groups": ["%Gc", "%Hg"]
+                },
+                {
+                    "expression": " *(?P<pc>[0-9]+%)? \\|(?P<pb>.*) *\\| (?P<size>[0-9.]+ [A-Za-z]+) (?P<rate>[0-9.]+ [A-Za-z]+/s)(?: eta (?P<eta>[0-9]+:[0-9]+:[0-9]+))?",
+                    "replace_groups": {
+                        "pc": "%Hlc",
+                        "size": "%Hg",
+                        "rate": "%Hlb",
+                        "eta": "%Hb"
+                    }
+                },
+                {
+                    "expression": "^Requirement already satisfied: ([^ ]+) in (.*) \\((.*)\\)$",
+                    "replace_groups": ["%H(bol;c)", "%Hy", "%Hc"]
+                }
+            ]
+        }
+    ]
 }

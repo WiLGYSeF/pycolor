@@ -1,26 +1,26 @@
 {
-	"profiles": [
-		{
-			"name": "blkid",
-			"arg_patterns": [
-				{
-					"expression": "-[A-Za-z]*[hk][A-Za-z]*",
-					"match_not": true
-				}
-			],
-			"patterns": [
-				{
-					"expression": "^([^:]+):",
-					"replace": "%Cy%G1%Cz:"
-				},
-				{
-					"expression": "([A-Z_]+)=\"([^\"]+)\"",
-					"replace_groups": [
-						"%Ce%Gc%Cz",
-						"%Cc%Gc%Cz"
-					]
-				}
-			]
-		}
-	]
+    "profiles": [
+        {
+            "name": "blkid",
+            "arg_patterns": [
+                {
+                    "expression": "-[A-Za-z]*[hk][A-Za-z]*",
+                    "match_not": true
+                }
+            ],
+            "patterns": [
+                {
+                    "expression": "^([^:]+):",
+                    "replace": "%Cy%G1%Cz:"
+                },
+                {
+                    "expression": "([A-Z_]+)=\"([^\"]+)\"",
+                    "replace_groups": [
+                        "%Ce%Gc%Cz",
+                        "%Cc%Gc%Cz"
+                    ]
+                }
+            ]
+        }
+    ]
 }

@@ -1,8 +1,8 @@
 {
-	"profiles": [
-		{
-			"profile_name": "which",
-			"which": "/usr/bin/date"
-		}
-	]
+    "profiles": [
+        {
+            "profile_name": "which",
+            "which": "/usr/bin/date"
+        }
+    ]
 }
