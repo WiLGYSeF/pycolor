@@ -275,7 +275,7 @@ Keys may be comma-separated numbers, or even ranges (`"<start>*<end>"`).
 ...
 ```
 
-## Context-Aware Color Allias Format
+## Context-Aware Color Alias Format
 
 You may find yourself coloring groups or fields often using `%Cg%Gc%Cz` or `%Cg%Fc%Cz`, which is why a context-aware color alias format was added: `%H(<color value>)` is an alias for `%C(<color value>)%Gc%Cz`.
 
