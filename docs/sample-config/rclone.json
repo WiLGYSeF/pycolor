@@ -20,6 +20,10 @@
 					"replace_groups": ["%Hg"]
 				},
 				{
+					"expression": "^.* NOTICE: (.*): Not making directory as dry run is set$",
+					"replace_groups": ["%Hg"]
+				},
+				{
 					"expression": "^.* NOTICE: (.*): Not updating modification time as --dry-run$",
 					"replace_groups": ["%Hde"]
 				},
