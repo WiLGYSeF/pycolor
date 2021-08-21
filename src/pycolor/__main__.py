@@ -109,7 +109,7 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
                 sys.exit(1)
 
         pycobj.set_current_profile(profile)
-        if pycobj.profloader.is_default_profile(pycobj.current_profile):
+        if len(cmd_args) == 0 and pycobj.profloader.is_default_profile(pycobj.current_profile):
             arguments._parser.print_help()
             sys.exit(1)
 
