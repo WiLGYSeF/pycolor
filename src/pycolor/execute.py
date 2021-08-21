@@ -205,6 +205,7 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
 
                 process.stdin.write(recv)
                 process.stdin.flush()
+            process.stdin.close()
 
         wait = ThreadWait()
         thr_stdout = threading.Thread(target=read_thread, args=(
@@ -242,7 +243,6 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
             _read(stdout, stdout_callback, last=True)
             _read(stderr, stderr_callback, last=True)
 
-        process.stdin.close()
         return process.poll()
 
 @contextmanager
