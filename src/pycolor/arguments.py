@@ -1,6 +1,7 @@
 import argparse
 
 
+# messy global
 _parser = None
 
 
@@ -127,6 +128,7 @@ def split_args(args, actions):
     while idx < len(args):
         arg = args[idx]
         if len(arg) == 0:
+            idx += 1
             continue
         if arg == '--':
             break
