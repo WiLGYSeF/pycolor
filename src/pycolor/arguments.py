@@ -1,7 +1,7 @@
 import argparse
 
 
-# messy global
+# TODO: messy global
 _parser = None
 
 
