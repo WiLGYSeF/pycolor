@@ -112,8 +112,7 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
     tty = kwargs.get('tty', False)
     encoding = kwargs.get('encoding', 'utf-8')
     interactive = kwargs.get('interactive', False)
-
-    stdin = sys.stdin
+    stdin = kwargs.get('stdin', sys.stdin)
 
     if tty and not HAS_PTY:
         printwarn('tty is not supported on this system')

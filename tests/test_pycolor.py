@@ -32,14 +32,10 @@ class PycolorTest(unittest.TestCase):
     def test_version(self):
         stdout = textstream()
         with patch(sys, 'stdout', stdout):
-            try:
-                pycolor.main(['--version'])
-            except SystemExit as sexc:
-                if sexc.code != 0:
-                    raise sexc
+            check_pycolor_main(self, ['--version'], MOCKED_DATA, 'version')
 
-            stdout.seek(0)
-            self.assertEqual(stdout.read(), pycolor.__version__ + '\n')
+        stdout.seek(0)
+        self.assertEqual(stdout.read(), pycolor.__version__ + '\n')
 
     def test_ls_numbers(self):
         check_pycolor_main(self, ['ls', '-l'], MOCKED_DATA, 'ls_numbers')
@@ -122,3 +118,12 @@ class PycolorTest(unittest.TestCase):
             MOCKED_DATA,
             'free_tty'
         )
+
+    def test_stdin_no_profile_no_cmd_args(self):
+        with self.assertRaises(SystemExit):
+            check_pycolor_main(self,
+                [],
+                MOCKED_DATA,
+                'stdin_no_profile_no_cmd_args',
+                patch_stdout=True
+            )

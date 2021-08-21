@@ -14,15 +14,11 @@ class ExecuteTest(unittest.TestCase):
                 datetime.datetime.now().strftime('%Y%m%d%H%M%S\n')
             )
 
-        recv_stderr = False
-
         def stderr_cb(data):
-            nonlocal recv_stderr
-            recv_stderr = True
+            self.assertFalse(True)
 
         returncode = execute.execute(['date', '+%Y%m%d%H%M%S'], stdout_cb, stderr_cb)
         self.assertEqual(returncode, 0)
-        self.assertFalse(recv_stderr)
 
     def test_is_buffer_empty(self):
         stream = io.BytesIO()
