@@ -1,56 +1,52 @@
 import argparse
 
 
-class DebugFormatAction(argparse.Action):
-    def __init__(self, option_strings, dest, nargs=None, **kwargs):
-        super().__init__(option_strings, dest, **kwargs)
+_parser = None
 
-    def __call__(self, parser, namespace, values, option_string=None):
-        setattr(namespace, 'debug_format_reset', option_string == '--debug-format')
-        setattr(namespace, self.dest, values)
 
-def get_args(args):
-    parser = argparse.ArgumentParser(
+def _build_parser():
+    global _parser
+    _parser = argparse.ArgumentParser(
         description='do real-time output coloring and formatting for commands',
         usage='%(prog)s [options] COMMAND ARG ...'
     )
-    parser.add_argument('-V', '--version',
+    _parser.add_argument('-V', '--version',
         action='store_true', default=False,
         help='prints the version and exits'
     )
-    parser.add_argument('--color',
+    _parser.add_argument('--color',
         action='store', default='auto', nargs='?',
         choices=['auto', 'always', 'never', 'on', 'off'],
         help='enable/disable coloring output. if set to auto, color will be enabled for'
         + ' terminal output but disabled on output redirection (default auto)'
     )
-    parser.add_argument('--load-file',
+    _parser.add_argument('--load-file',
         action='append', metavar='FILE', default=[],
         help='use this config file containing profiles'
     )
-    parser.add_argument('-p', '--profile',
+    _parser.add_argument('-p', '--profile',
         action='store', metavar='NAME',
         help='specifically use this profile even if it does not match the current arguments'
     )
-    parser.add_argument('-v', '--verbose',
+    _parser.add_argument('-v', '--verbose',
         action='count', default=0,
         help='enable debug mode to assist in configuring profiles'
     )
-    parser.add_argument('--execv',
+    _parser.add_argument('--execv',
         action='store_true', default=True,
         help='use execv() if no profile matches the given command (default)'
     )
-    parser.add_argument('--no-execv',
+    _parser.add_argument('--no-execv',
         dest='execv', action='store_false',
         help='do not use execv() if no profile matches the given command'
     )
-    parser.add_argument('--stdin',
+    _parser.add_argument('--stdin',
         action='store_true', default=False,
         help='reads from stdin instead of running the given command. '
         + 'the command can still be given to let pycolor know which profile it should use'
     )
 
-    group = parser.add_argument_group('profile options')
+    group = _parser.add_argument_group('profile options')
     group.add_argument('-t', '--timestamp',
         action='store', metavar='FORMAT', default=False, nargs='?',
         help='force enable "timestamp" for all profiles with an optional FORMAT'
@@ -68,7 +64,7 @@ def get_args(args):
         help='force enable "interactive" for all profiles'
     )
 
-    group = parser.add_argument_group('debug options')
+    group = _parser.add_argument_group('debug options')
     group.add_argument('--debug-color',
         action='store_true', default=False,
         help='display all available color styles and exit'
@@ -89,7 +85,19 @@ def get_args(args):
         help='write debug messages to a file in addition to stdout'
     )
 
-    return parse_known_args(parser, args)
+class DebugFormatAction(argparse.Action):
+    def __init__(self, option_strings, dest, nargs=None, **kwargs):
+        super().__init__(option_strings, dest, **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, 'debug_format_reset', option_string == '--debug-format')
+        setattr(namespace, self.dest, values)
+
+def get_args(args):
+    global _parser
+    if _parser is None:
+        _build_parser()
+    return parse_known_args(_parser, args)
 
 def parse_known_args(parser, args):
     # TODO: using parser._actions is somewhat of a hack

@@ -27,7 +27,7 @@ class PycolorTest(unittest.TestCase):
             pycolor, 'CONFIG_DEFAULT', os.path.join(curpath, '../docs/sample-config/rsync.json')
         ):
             try:
-                pycolor.main([], stdin_stream=textstream())
+                pycolor.main(['--stdin', 'rsync'], stdin_stream=textstream())
             except SystemExit as sexc:
                 self.assertEqual(sexc.code, 0)
 
