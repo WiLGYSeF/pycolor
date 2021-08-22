@@ -112,8 +112,7 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
     tty = kwargs.get('tty', False)
     encoding = kwargs.get('encoding', 'utf-8')
     interactive = kwargs.get('interactive', False)
-
-    stdin = sys.stdin
+    stdin = kwargs.get('stdin', sys.stdin)
 
     if tty and not HAS_PTY:
         printwarn('tty is not supported on this system')
@@ -205,6 +204,7 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
 
                 process.stdin.write(recv)
                 process.stdin.flush()
+            process.stdin.close()
 
         wait = ThreadWait()
         thr_stdout = threading.Thread(target=read_thread, args=(
@@ -242,7 +242,6 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
             _read(stdout, stdout_callback, last=True)
             _read(stderr, stderr_callback, last=True)
 
-        process.stdin.close()
         return process.poll()
 
 @contextmanager

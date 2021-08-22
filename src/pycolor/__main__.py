@@ -109,7 +109,14 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
                 sys.exit(1)
 
         pycobj.set_current_profile(profile)
-        read_input_stream(pycobj, stdin_stream)
+        if len(cmd_args) == 0 and pycobj.profloader.is_default_profile(pycobj.current_profile):
+            arguments._parser.print_help()
+            sys.exit(1)
+
+        try:
+            read_input_stream(pycobj, stdin_stream)
+        except KeyboardInterrupt:
+            pass
         sys.exit(0)
 
     try:

@@ -5,10 +5,10 @@ with open('README.md', 'r', encoding='utf-8') as file:
 
 setuptools.setup(
     name='pycolor-term',
-    version='0.0.7',
+    version='0.0.8',
     author='wilgysef',
     author_email='wilgysef@gmail.com',
-    description='Execute commands to perform real-time terminal output coloring using ANSI color codes.',
+    description='Execute commands, coloring terminal output in real-time using ANSI color codes.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/WiLGYSeF/pycolor',
