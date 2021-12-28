@@ -107,23 +107,23 @@ HEX_TO_RGB = {
 class ColorTest(unittest.TestCase):
     def test_format_color_string(self):
         for key, val in FORMAT_COLOR_STRING.items():
-            self.assertEqual(pyformat.format_string(key), val)
+            self.assertEqual(pyformat.fmt_str(key), val)
 
     def test_format_color_string_prev(self):
         for entry in FORMAT_COLOR_STRING_PREV:
-            self.assertEqual(pyformat.format_string(
+            self.assertEqual(pyformat.fmt_str(
                 entry[STRING],
                 context=entry[CONTEXT]
             ), entry[RESULT])
 
     def test_format_color_string_soft_reset(self):
         for entry in FORMAT_COLOR_STRING_SOFT_RESET:
-            self.assertEqual(pyformat.format_string(
+            self.assertEqual(pyformat.fmt_str(
                 entry[STRING],
             ), entry[RESULT])
 
     def test_format_color_string_color_disabled(self):
-        self.assertEqual(pyformat.format_string(
+        self.assertEqual(pyformat.fmt_str(
             '%C(red)test',
             context={
                 'color': {
@@ -134,7 +134,7 @@ class ColorTest(unittest.TestCase):
 
     def test_format_color_string_aliases(self):
         for entry in FORMAT_COLOR_STRING_ALIASES:
-            self.assertEqual(pyformat.format_string(
+            self.assertEqual(pyformat.fmt_str(
                 entry[STRING],
                 context={
                     'color': {

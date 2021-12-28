@@ -8,8 +8,8 @@
         },
         "expression": {
             "description": "the regex pattern to compare the arguments",
-            "type": ["array", "string"],
-            "default": []
+            "type": ["null", "array", "string"],
+            "default": null
         },
         "subcommand": {
             "description": "the subcommands that must be used with the command in order to match. if subcommand is an array, then the subcommands must match in the given order. using null will allow any subcommand in that position",

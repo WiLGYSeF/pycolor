@@ -16,8 +16,7 @@ FORMAT_TRUNCATE = 'T'
 
 def format_string(
     string: str,
-    context: dict = None,
-    return_color_positions: bool = False
+    context: dict = None
 ) -> typing.Tuple[str, typing.Dict[int, str]]:
     if context is None:
         context = {}
@@ -60,8 +59,13 @@ def format_string(
         newstring += string[idx]
         idx += 1
 
-    if return_color_positions:
-        return newstring, color_positions
+    return newstring, color_positions
+
+def fmt_str(
+    string: str,
+    context: dict = None
+) -> str:
+    newstring, color_positions = format_string(string, context)
     return insert_color_data(newstring, color_positions)
 
 def _do_format(formatter: str, value: str, context: dict, **kwargs) -> typing.Optional[str]:
@@ -136,6 +140,8 @@ def _do_format_field(value: str, context: dict, **kwargs) -> str:
     return fieldsep.get_fields(value, context)
 
 def _do_format_group(value: str, context: dict, **kwargs) -> str:
+    group: typing.Union[str, int] = -1
+
     try:
         group = int(value)
         context['match_incr'] = group + 1
@@ -164,8 +170,7 @@ def _do_format_group(value: str, context: dict, **kwargs) -> str:
 def _do_format_field_group_color(value: str, context: dict, format_type: str, **kwargs) -> str:
     result, color_pos = format_string(
         '%C(' + value + ')' + format_type + '%Cz',
-        context=context,
-        return_color_positions=True
+        context=context
     )
     if 'color_positions' in kwargs:
         color_positions = kwargs['color_positions']
@@ -189,7 +194,7 @@ def _do_format_padding(value: str, context: dict, **kwargs) -> str:
                 context = dictcopy(context)
                 context['color']['enabled'] = False
 
-            return padchar * (padcount - len(format_string(value, context=context)))
+            return padchar * (padcount - len(fmt_str(value, context=context)))
         except ValueError:
             pass
     return ''
@@ -226,7 +231,7 @@ def _do_format_truncate(value: str, context: dict, **kwargs) -> str:
     if 'color' in context:
         context = dictcopy(context)
         context['color']['enabled'] = False
-    string = format_string(string, context=context)
+    string = fmt_str(string, context=context)
 
     if location in ('start', 's'):
         if len(string) > length:

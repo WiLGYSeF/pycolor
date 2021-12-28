@@ -83,25 +83,25 @@ class TruncateTest(unittest.TestCase):
     def test_truncate_start(self):
         for entry in FORMAT_TRUNCATE_STRING_START:
             self.assertEqual(
-                pyformat.format_string(entry[STRING]),
+                pyformat.fmt_str(entry[STRING]),
                 entry[RESULT]
             )
 
     def test_truncate_mid(self):
         for entry in FORMAT_TRUNCATE_STRING_MID:
             self.assertEqual(
-                pyformat.format_string(entry[STRING]),
+                pyformat.fmt_str(entry[STRING]),
                 entry[RESULT]
             )
 
     def test_truncate_end(self):
         for entry in FORMAT_TRUNCATE_STRING_END:
             self.assertEqual(
-                pyformat.format_string(entry[STRING]),
+                pyformat.fmt_str(entry[STRING]),
                 entry[RESULT]
             )
 
     def test_truncate_fail(self):
         for entry in FORMAT_TRUNCATE_STRING_FAIL:
             with self.assertRaises(entry[RESULT]):
-                pyformat.format_string(entry[STRING])
+                pyformat.fmt_str(entry[STRING])

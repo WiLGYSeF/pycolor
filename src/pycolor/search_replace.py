@@ -1,20 +1,15 @@
 import re
 import typing
 
+Span = typing.Tuple[int, int]
+ReplaceRange = typing.Tuple[Span, Span]
+
 def search_replace(
-    pattern: typing.Union[typing.Pattern, str],
-    string: str,
-    replace: typing.Union[typing.Callable[[re.Match], str], str],
+    pattern: typing.Union[re.Pattern, str],
+    string: typing.AnyStr,
+    replace: typing.Union[typing.Callable[[re.Match], typing.AnyStr], typing.AnyStr],
     **kwargs
-) -> typing.Tuple[
-    str,
-    typing.List[
-        typing.Tuple[
-            typing.Tuple[int, int],
-            typing.Tuple[int, int]
-        ]
-    ]
-]:
+) -> typing.Tuple[typing.AnyStr, typing.List[ReplaceRange]]:
     """Search and replace in string
 
     Args:
@@ -29,14 +24,14 @@ def search_replace(
     Returns:
         tuple: The new string and the ranges replaced
     """
-    ignore_ranges = kwargs.get('ignore_ranges', [])
-    start_occurrence = kwargs.get('start_occurrence', 1)
-    max_count = kwargs.get('max_count', -1)
+    ignore_ranges: typing.List[Span] = kwargs.get('ignore_ranges', [])
+    start_occurrence: int = max(kwargs.get('start_occurrence', 1), 1)
+    max_count: int = kwargs.get('max_count', -1)
 
-    start_occurrence = max(1, start_occurrence)
-
-    regex = pattern if isinstance(pattern, typing.Pattern) else re.compile(pattern)
-    replf: typing.Callable[[re.Match], str] = replace if callable(replace) else lambda x: replace
+    regex = pattern if isinstance(pattern, re.Pattern) else re.compile(pattern)
+    replf: typing.Callable[[re.Match], typing.AnyStr] = (
+        replace if callable(replace) else lambda x: replace # type: ignore
+    )
 
     newstring = string[:0] #str or bytes
     count = 0

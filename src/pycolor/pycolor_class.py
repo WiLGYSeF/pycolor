@@ -14,8 +14,8 @@ from .printmsg import printerr
 from .profileloader import ProfileLoader
 from . import pyformat
 
-FMT_DEBUG = pyformat.format_string('%Cz%Cde')
-FMT_RESET = pyformat.format_string('%Cz')
+FMT_DEBUG = pyformat.fmt_str('%Cz%Cde')
+FMT_RESET = pyformat.fmt_str('%Cz')
 
 DEFAULT_TIMESTAMP = '%Y-%m-%d %H:%M:%S: '
 
@@ -90,8 +90,7 @@ class Pycolor:
 
         self.debug_print(1, 'using profile "%s"', profile.get_name())
 
-        # ensure patterns are loaded here first
-        profile.loaded_patterns
+        profile.load_patterns()
 
         try:
             retcode = execute.execute(

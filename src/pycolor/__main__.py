@@ -31,9 +31,9 @@ def main_args() -> None:
 
 def main(
     args: typing.List[str],
-    stdout_stream=sys.stdout,
-    stderr_stream=sys.stderr,
-    stdin_stream=sys.stdin
+    stdout_stream: io.IOBase = sys.stdout,
+    stderr_stream: io.IOBase = sys.stderr,
+    stdin_stream: io.IOBase = sys.stdin
 ) -> None:
     parser, argspace, cmd_args = arguments.get_args(args)
     read_stdin = len(cmd_args) == 0 or argspace.stdin
@@ -48,7 +48,7 @@ def main(
 
     if argspace.debug_format:
         fmt = argspace.debug_format + ('%Cz' if argspace.debug_format_reset else '')
-        print(pyformat.format_string(fmt, context={
+        print(pyformat.fmt_str(fmt, context={
             'color': {
                 'enabled': is_color_enabled(argspace.color)
             }
@@ -135,7 +135,7 @@ def main(
         printerr(cex)
         sys.exit(1)
 
-def read_input_stream(pycobj: Pycolor, stream) -> None:
+def read_input_stream(pycobj: Pycolor, stream: io.IOBase) -> None:
     while True:
         if read_stream(stream.buffer, pycobj.stdout_cb) is None:
             break

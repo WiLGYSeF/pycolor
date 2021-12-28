@@ -1,6 +1,7 @@
 import typing
 
 from . import (
+    BreakableStr,
     ConfigPropertyError,
     compile_re,
     join_str_list,
@@ -16,13 +17,13 @@ class Profile:
         self.enabled: bool = True
         self.name: typing.Optional[str] = None
         self.command: typing.Optional[str] = None
-        self.name_expression: typing.Union[typing.List[str], str, None] = None
-        self.command_expression:typing.Union[typing.List[str], str, None] = None
+        self._name_expression: BreakableStr = None
+        self._command_expression: BreakableStr = None
         self.profile_name: typing.Optional[str] = None
         self.which: typing.Optional[str] = None
         self.which_ignore_case: bool = False
 
-        self.arg_patterns: typing.List[typing.Union[ArgPattern, dict]] = []
+        self._arg_patterns: typing.List[dict] = []
         self.min_args: typing.Optional[int] = None
         self.max_args: typing.Optional[int] = None
 
@@ -33,7 +34,7 @@ class Profile:
 
         self.color_aliases: typing.Dict[str, str] = {}
 
-        self.from_profiles: typing.List[FromProfile] = []
+        self._from_profiles: typing.Union[typing.List[dict], dict, str] = []
         self.patterns: typing.List[dict] = []
 
         self.loader = loader
@@ -43,16 +44,11 @@ class Profile:
         self.from_profile_str: typing.Optional[str] = None
 
         load_schema('profile', cfg, self)
-
         mutually_exclusive(self, ['name', 'command'])
-        mutually_exclusive(self, ['name_expression', 'command_expression'])
+        mutually_exclusive(self, ['_name_expression', '_command_expression'])
 
-        for attr in [
-            'name_expression',
-            'command_expression',
-        ]:
-            if hasattr(self, attr):
-                setattr(self, attr, join_str_list(getattr(self, attr)))
+        self.name_expression: typing.Optional[str] = join_str_list(self._name_expression)
+        self.command_expression: typing.Optional[str] = join_str_list(self._command_expression)
 
         if self.name is None:
             self.name = self.command
@@ -64,31 +60,33 @@ class Profile:
         if self.profile_name is not None and len(self.profile_name) == 0:
             self.profile_name = None
 
-        # pylint: disable=consider-using-enumerate
-        for i in range(len(self.arg_patterns)):
-            self.arg_patterns[i] = ArgPattern(self.arg_patterns[i])
+        self.arg_patterns: typing.List[ArgPattern] = [
+            ArgPattern(pat) for pat in self._arg_patterns
+        ]
 
         if isinstance(self.min_args, int) and isinstance(self.max_args, int):
             if self.min_args > self.max_args:
                 raise ConfigPropertyError('min_args', 'cannot be larger than max_args')
 
-        if not isinstance(self.from_profiles, list):
-            self.from_profiles = [self.from_profiles]
-        for i in range(len(self.from_profiles)):
-            self.from_profiles[i] = FromProfile(self.from_profiles[i])
+        self.from_profiles: typing.List[FromProfile] = [
+            FromProfile(prof) for prof in (
+                self._from_profiles if isinstance(self._from_profiles, list) else [self._from_profiles]
+            )
+        ]
 
     @property
     def loaded_patterns(self) -> typing.List[Pattern]:
         if not self.patterns_loaded:
-            self._load_patterns()
+            self.load_patterns()
         return self._loaded_patterns
 
-    def _load_patterns(self) -> None:
-        # pylint: disable=consider-using-enumerate
-        for i in range(len(self.patterns)):
-            pat = Pattern(self.patterns[i])
-            pat.from_profile_str = '%x' % i
+    def load_patterns(self) -> None:
+        idx = 0
+        for pattern in self.patterns:
+            pat = Pattern(pattern)
+            pat.from_profile_str = '%x' % idx
             self._loaded_patterns.append(pat)
+            idx += 1
 
         if self.loader is not None:
             self.loader.include_from_profile(self._loaded_patterns, self.from_profiles)

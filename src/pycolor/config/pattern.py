@@ -2,6 +2,7 @@ import re
 import typing
 
 from . import (
+    BreakableStr,
     ConfigPropertyError,
     compile_re,
     join_str_list,
@@ -13,15 +14,16 @@ from .. import pyformat
 class Pattern:
     def __init__(self, cfg: dict):
         self.enabled: bool = True
-        self.super_expression: typing.Union[typing.List[str], str, None] = None
-        self.expression: typing.Union[typing.List[str], str, None] = None
+        self._super_expression: BreakableStr = None
+        self._expression: BreakableStr = None
 
-        self.separator: typing.Union[typing.List[str], str, None] = None
+        self._separator: BreakableStr = None
+        self.field: typing.Optional[int] = None
         self.min_fields: int = -1
         self.max_fields: int = -1
 
-        self.replace: typing.Union[typing.List[str], str, None] = None
-        self.replace_all: typing.Union[typing.List[str], str, None] = None
+        self._replace: BreakableStr = None
+        self._replace_all: BreakableStr = None
         self.replace_groups: typing.Union[
             typing.List[str],
             typing.Dict[typing.Union[int, str], str]
@@ -39,8 +41,8 @@ class Pattern:
         self.activation_line: typing.Union[typing.List[int], int] = -1
         self.deactivation_line: typing.Union[typing.List[int], int] = -1
 
-        self.activation_expression: typing.Union[typing.List[str], str, None] = None
-        self.deactivation_expression: typing.Union[typing.List[str], str, None] = None
+        self._activation_expression: BreakableStr = None
+        self._deactivation_expression: BreakableStr = None
         self.activation_expression_line_offset: int = 0
         self.deactivation_expression_line_offset: int = 0
 
@@ -55,21 +57,17 @@ class Pattern:
         self.from_profile_str: typing.Optional[str] = None
 
         load_schema('pattern', cfg, self)
-
-        mutually_exclusive(self, ['replace', 'replace_all'])
+        mutually_exclusive(self, ['_replace', '_replace_all'])
         mutually_exclusive(self, ['field', 'replace_groups'])
         mutually_exclusive(self, ['stdout_only', 'stderr_only'])
 
-        for attr in [
-            'expression',
-            'separator',
-            'replace',
-            'replace_all',
-            'activation_expression',
-            'deactivation_expression'
-        ]:
-            if hasattr(self, attr):
-                setattr(self, attr, join_str_list(getattr(self, attr)))
+        self.super_expression: typing.Optional[str] = join_str_list(self._super_expression)
+        self.expression: typing.Optional[str] = join_str_list(self._expression)
+        self.separator: typing.Optional[str] = join_str_list(self._separator)
+        self.replace: typing.Optional[str] = join_str_list(self._replace)
+        self.replace_all: typing.Optional[str] = join_str_list(self._replace_all)
+        self.activation_expression: typing.Optional[str] = join_str_list(self._activation_expression)
+        self.deactivation_expression: typing.Optional[str] = join_str_list(self._deactivation_expression)
 
         def as_list(var):
             return var if isinstance(var, list) else [ var ]
@@ -145,11 +143,11 @@ class Pattern:
         new_ranges = [ ranges[idx] ]
 
         while idx < len(ranges):
-            if all([
+            if all((
                 ranges[idx][0] >= 0,
                 ranges[idx][0] != new_ranges[-1][0],
                 ranges[idx][1] != new_ranges[-1][1]
-            ]):
+            )):
                 new_ranges.append(ranges[idx])
             idx += 1
 

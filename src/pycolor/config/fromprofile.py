@@ -1,7 +1,9 @@
+import typing
+
 from . import load_schema
 
 class FromProfile:
-    def __init__(self, cfg: dict):
+    def __init__(self, cfg: typing.Union[dict, str]):
         if isinstance(cfg, str):
             cfg = {
                 'name': cfg

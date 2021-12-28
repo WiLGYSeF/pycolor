@@ -85,7 +85,7 @@
             "default": false
         },
 
-        "color_alias": {
+        "color_aliases": {
             "description": "color aliases for color format strings",
             "type": ["object"],
             "examples": [
