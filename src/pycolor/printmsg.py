@@ -3,12 +3,12 @@ import typing
 
 from . import pyformat
 
-FMT_RESET = pyformat.format_string('%Cz')
+FMT_RESET = pyformat.fmt_str('%Cz')
 
 def printmsg(*args, **kwargs) -> None:
     color: typing.Union[str, bool, None]  = kwargs.get('color')
     filename: typing.Optional[str] = kwargs.get('filename')
-    prefix: bool = kwargs.get('prefix', True)
+    prefix: typing.Optional[str] = kwargs.get('prefix')
     prefix_color: str = kwargs.get('prefix_color', '')
     sep: str = kwargs.get('sep', ' ')
 
@@ -29,16 +29,16 @@ def printmsg(*args, **kwargs) -> None:
     if filename:
         if use_color:
             string = '%s: %s' % (
-                pyformat.format_string('%Cly') + filename + FMT_RESET,
+                pyformat.fmt_str('%Cly') + filename + FMT_RESET,
                 string
             )
         else:
-            string = filename + ': ' + string
+            string = '%s: %s' % (filename, string)
 
     if prefix:
         if use_color:
             string = '%s: %s' % (
-                pyformat.format_string(prefix_color) + prefix + FMT_RESET,
+                pyformat.fmt_str(prefix_color) + prefix + FMT_RESET,
                 string
             )
         else:
@@ -47,16 +47,20 @@ def printmsg(*args, **kwargs) -> None:
     print(string, **kwargs, file=sys.stderr)
 
 def printerr(*args, **kwargs) -> None:
-    new_kwargs = kwargs
-    new_kwargs['prefix'] = 'error'
-    new_kwargs['prefix_color'] = '%Clr'
-    printmsg(*args, **new_kwargs)
+    printmsg(
+        *args,
+        prefix='error',
+        prefix_color='%Clr',
+        **kwargs
+    )
 
 def printwarn(*args, **kwargs) -> None:
-    new_kwargs = kwargs
-    new_kwargs['prefix'] = 'warn'
-    new_kwargs['prefix_color'] = '%Cly'
-    printmsg(*args, **new_kwargs)
+    printmsg(
+        *args,
+        prefix='warn',
+        prefix_color='%Cly',
+        **kwargs
+    )
 
 def is_color_enabled(color: typing.Union[str, bool, None]) -> bool:
     if color in (True, 'always', 'on', '1'):

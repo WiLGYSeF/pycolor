@@ -66,6 +66,6 @@ class PaddingTest(unittest.TestCase):
     def test_format_context_padding_string(self):
         for entry in FORMAT_CONTEXT_PADDING_STRING:
             self.assertEqual(
-                pyformat.format_string(entry[STRING], context=entry[CONTEXT]),
+                pyformat.fmt_str(entry[STRING], context=entry[CONTEXT]),
                 entry[RESULT]
             )

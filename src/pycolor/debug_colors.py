@@ -3,7 +3,7 @@ import os
 from . import pyformat
 
 def debug_colors() -> None:
-    reset = pyformat.format_string('%Cz')
+    reset = pyformat.fmt_str('%Cz')
 
     print('styles:')
     for style in [
@@ -18,12 +18,12 @@ def debug_colors() -> None:
         'str',
         'ove',
     ]:
-        print(pyformat.format_string('%%C(%s) %s %%Cz' % (style, style)), end='')
+        print(pyformat.fmt_str('%%C(%s) %s %%Cz' % (style, style)), end='')
     print(reset)
 
     print('\nbold on and off:')
-    print(pyformat.format_string('%C(bol) on '), end='')
-    print(pyformat.format_string('%C(^bol) off '), end='')
+    print(pyformat.fmt_str('%C(bol) on '), end='')
+    print(pyformat.fmt_str('%C(^bol) off '), end='')
     print(reset)
 
     def color_3bit(light: bool = False) -> None:
@@ -40,7 +40,7 @@ def debug_colors() -> None:
 
         for i in range(2):
             for color in colors:
-                print(pyformat.format_string('%%C(%s%s%s) %s %%Cz' % (
+                print(pyformat.fmt_str('%%C(%s%s%s) %s %%Cz' % (
                     '^' if i == 1 else '',
                     'light' if light else '',
                     color,
@@ -57,7 +57,7 @@ def debug_colors() -> None:
             for i in range(2):
                 for col in range(8):
                     val = row * 8 + col
-                    print(pyformat.format_string('%%C(%s%d) %3d ' % (
+                    print(pyformat.fmt_str('%%C(%s%d) %3d ' % (
                         '^' if i == 1 else '',
                         val,
                         val
@@ -81,7 +81,7 @@ def debug_colors() -> None:
                 for b in range24:
                     bh = _hex(b + (b << 4))
                     rgb = rh + gh + bh
-                    print(pyformat.format_string('%%C(%s0x%s) %s ' % (
+                    print(pyformat.fmt_str('%%C(%s0x%s) %s ' % (
                         '^' if background else '',
                         rgb,
                         rgb

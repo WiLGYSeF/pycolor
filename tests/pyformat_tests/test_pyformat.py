@@ -65,4 +65,4 @@ class PyformatTest(unittest.TestCase):
 
     def test_format_string(self):
         for key, val in FORMAT_STRINGS.items():
-            self.assertEqual(pyformat.format_string(key), val)
+            self.assertEqual(pyformat.fmt_str(key), val)

@@ -6,7 +6,7 @@ from .config.pattern import Pattern
 from .group_index import get_named_group_at_index
 from .match_group_replace import match_group_replace
 from . import pyformat
-from .search_replace import search_replace
+from .search_replace import search_replace, ReplaceRange
 from .split import re_split
 
 def apply_pattern(pat: Pattern, data: str, context: dict) -> typing.Tuple[bool, typing.Optional[str]]:
@@ -42,8 +42,7 @@ def apply_pattern(pat: Pattern, data: str, context: dict) -> typing.Tuple[bool, 
 
                 data, colorpos = pyformat.format_string(
                     pat.replace_all,
-                    context=context,
-                    return_color_positions=True
+                    context=context
                 )
                 color_positions.clear()
                 color_positions.update(colorpos)
@@ -83,8 +82,7 @@ def apply_pattern(pat: Pattern, data: str, context: dict) -> typing.Tuple[bool, 
 
                 data, colorpos = pyformat.format_string(
                     pat.replace_all,
-                    context=context,
-                    return_color_positions=True
+                    context=context
                 )
 
                 color_positions.clear()
@@ -166,8 +164,7 @@ def _replace_fields(
 
         replace_val, colorpos = pyformat.format_string(
             replace_val,
-            context=context,
-            return_color_positions=True
+            context=context
         )
 
         colorpos = offset_color_positions(colorpos, offset)
@@ -220,8 +217,7 @@ def _replace_groups(
 
         replace_val, colorpos = pyformat.format_string(
             replace_val,
-            context=context,
-            return_color_positions=True
+            context=context
         )
 
         colorpos = offset_color_positions(colorpos, match.start(idx) - offset)
@@ -253,12 +249,7 @@ def _pat_schrep(
     context: dict
 ) -> typing.Tuple[
     str,
-    typing.List[
-        typing.Tuple[
-            typing.Tuple[int, int],
-            typing.Tuple[int, int]
-        ]
-    ],
+    typing.List[ReplaceRange],
     typing.Dict[int, str]
 ]:
     color_positions: typing.Dict[int, str] = {}
@@ -270,8 +261,7 @@ def _pat_schrep(
 
         newstring, colorpos = pyformat.format_string(
             pattern.replace,
-            context=context,
-            return_color_positions=True
+            context=context
         )
 
         if match.start() > 0:
@@ -291,12 +281,7 @@ def _pat_schrep(
 
 def update_positions(
     positions: typing.Dict[int, str],
-    replace_ranges: typing.List[
-        typing.Tuple[
-            typing.Tuple[int, int],
-            typing.Tuple[int, int]
-        ]
-    ]
+    replace_ranges: typing.List[ReplaceRange]
 ) -> None:
     replace_ranges.sort(key=lambda x: x[0][0], reverse=True)
 

@@ -131,7 +131,7 @@ class GroupTest(unittest.TestCase):
     def test_format_context_group_string(self):
         for entry in FORMAT_CONTEXT_GROUP_STRINGS:
             self.assertEqual(
-                pyformat.format_string(entry[STRING], context=entry[CONTEXT]),
+                pyformat.fmt_str(entry[STRING], context=entry[CONTEXT]),
                 entry[RESULT]
             )
 
@@ -141,6 +141,6 @@ class GroupTest(unittest.TestCase):
             context['match_cur'] = context['match'][1]
 
             self.assertEqual(
-                pyformat.format_string(entry[STRING], context=context),
+                pyformat.fmt_str(entry[STRING], context=context),
                 entry[RESULT]
             )
