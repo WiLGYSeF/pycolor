@@ -1,24 +1,26 @@
 import json
 from shutil import which
+import typing
 
 from .config import ConfigPropertyError
+from .config.argpattern import ArgPattern
+from .config.fromprofile import FromProfile
+from .config.pattern import Pattern
 from .config.profile import Profile
 from .printmsg import printwarn
 
-
 PROF_IDX_SEP = ';'
-
 
 class ProfileLoader:
     def __init__(self):
-        self.profiles = []
-        self.named_profiles = {}
+        self.profiles: typing.List[Profile] = []
+        self.named_profiles: typing.Dict[str, Profile] = {}
 
-        self.profile_default = Profile({
+        self.profile_default: Profile = Profile({
             'profile_name': 'none_found_default',
         }, loader=self)
 
-    def load_file(self, fname):
+    def load_file(self, fname: str) -> None:
         with open(fname, 'r') as file:
             profiles = self.parse_file(file)
 
@@ -29,7 +31,7 @@ class ProfileLoader:
                     printwarn('conflicting profiles with the name "%s"' % prof.profile_name)
                 self.named_profiles[prof.profile_name] = prof
 
-    def parse_file(self, file):
+    def parse_file(self, file: typing.TextIO) -> typing.List[Profile]:
         config = json.loads(file.read())
         profiles = []
 
@@ -38,7 +40,10 @@ class ProfileLoader:
 
         return profiles
 
-    def include_from_profile(self, patterns, from_profiles):
+    def include_from_profile(self,
+        patterns: typing.List[Pattern],
+        from_profiles: typing.Iterable[FromProfile]
+    ) -> None:
         fidx = -1
         for fprof in from_profiles:
             fidx += 1
@@ -66,7 +71,7 @@ class ProfileLoader:
             elif fprof.order == 'after':
                 patterns.extend(fromprof.loaded_patterns)
 
-    def get_profile_by_name(self, name):
+    def get_profile_by_name(self, name: str) -> typing.Optional[Profile]:
         profile = self.named_profiles.get(name)
         if profile is not None:
             return profile
@@ -76,7 +81,10 @@ class ProfileLoader:
                 return prof
         return None
 
-    def get_profile_by_command(self, command, args):
+    def get_profile_by_command(self,
+        command: str,
+        args: typing.List[str]
+    ) -> typing.Optional[typing.List[Profile]]:
         matches = []
 
         for prof in self.profiles:
@@ -120,14 +128,14 @@ class ProfileLoader:
             return None
         return matches[-1]
 
-    def is_default_profile(self, profile):
+    def is_default_profile(self, profile: Profile) -> bool:
         return all([
             profile == self.profile_default,
             profile.timestamp is False,
         ])
 
     @staticmethod
-    def check_arg_patterns(args, arg_patterns):
+    def check_arg_patterns(args: typing.List[str], arg_patterns: typing.Iterable[ArgPattern]) -> bool:
         default_match = True
         found_match = False
 
@@ -165,7 +173,7 @@ class ProfileLoader:
         return default_match or found_match
 
     @staticmethod
-    def get_subcommands(args):
+    def get_subcommands(args: typing.Iterable[str]) -> typing.List[str]:
         subcmds = []
         for arg in args:
             if arg == '--':

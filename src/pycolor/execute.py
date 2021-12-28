@@ -8,6 +8,7 @@ import subprocess
 import sys
 import time
 import threading
+import typing
 
 try:
     import fcntl
@@ -24,13 +25,11 @@ except ModuleNotFoundError:
 
 from .printmsg import printwarn
 from .static_vars import static_vars
-from .threadwait import ThreadWait
-
+from .threadwait import Flag, ThreadWait
 
 BUFFER_SZ = 4098
 
-
-def readlines(stream, data=None):
+def readlines(stream: io.IOBase, data: bytes = None) -> typing.Optional[typing.List[bytes]]:
     if data is None:
         data = stream.read()
     if data is None or len(data) == 0:
@@ -55,10 +54,16 @@ def readlines(stream, data=None):
     return lines
 
 @static_vars(buffers={})
-def read_stream(stream, callback, data=None, encoding='utf-8', last=False):
+def read_stream(
+    stream: io.IOBase,
+    callback: typing.Callable[[str], None],
+    data: bytes = None,
+    encoding: str = 'utf-8',
+    last: bool = False
+) -> typing.Optional[bool]:
     did_callback = False
 
-    def do_callback(data):
+    def do_callback(data: bytes) -> None:
         nonlocal did_callback
         did_callback = True
         return callback(data.decode(encoding))
@@ -93,32 +98,44 @@ def read_stream(stream, callback, data=None, encoding='utf-8', last=False):
 
     return did_callback
 
-def is_buffer_empty(stream):
+def is_buffer_empty(stream: io.IOBase) -> bool:
     if stream not in read_stream.buffers:
         return True
     return len(read_stream.buffers[stream]) == 0
 
-def is_eol(char):
+def is_eol(char: int) -> bool:
     # '\n' and '\r'
     return char == 10 or char == 13 #pylint: disable=consider-using-in
 
-def is_eol_idx(string, len_m1, idx):
+def is_eol_idx(string: bytes, len_m1: int, idx: int) -> typing.Union[bool, int]:
     char = string[idx]
     if idx < len_m1 and char == 13 and string[idx + 1] == 10:
         return idx + 1
     return idx if is_eol(char) else False
 
-def execute(cmd, stdout_callback, stderr_callback, **kwargs):
+def execute(
+    cmd: typing.List[str],
+    stdout_callback: typing.Callable[[str], None],
+    stderr_callback: typing.Callable[[str], None],
+    **kwargs
+) -> typing.Optional[int]:
     tty = kwargs.get('tty', False)
     encoding = kwargs.get('encoding', 'utf-8')
     interactive = kwargs.get('interactive', False)
+    stdout: typing.Union[io.IOBase, int, None]
+    stderr: typing.Union[io.IOBase, int, None]
     stdin = kwargs.get('stdin', sys.stdin)
 
     if tty and not HAS_PTY:
         printwarn('tty is not supported on this system')
         tty = False
 
-    def _read(stream, callback, data=None, last=False):
+    def _read(
+        stream: io.IOBase,
+        callback: typing.Callable[[str], None],
+        data: bytes = None,
+        last: bool = False
+    ) -> bool:
         return read_stream(
             stream,
             callback,
@@ -156,7 +173,11 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
             stdout = process.stdout
             stderr = process.stderr
 
-        def read_thread(stream, callback, flag):
+        def read_thread(
+            stream: typing.Union[io.IOBase, int],
+            callback: typing.Callable[[str], None],
+            flag: Flag
+        ) -> None:
             if isinstance(stream, io.IOBase):
                 try:
                     stream = stream.fileno()
@@ -181,7 +202,7 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
                     if interactive and not is_buffer_empty(stream):
                         _read(stream, callback, last=True)
 
-        def write_stdin(flag):
+        def write_stdin(flag: Flag) -> None:
             stream = stdin
             if isinstance(stream, io.IOBase):
                 try:
@@ -243,6 +264,7 @@ def execute(cmd, stdout_callback, stderr_callback, **kwargs):
             _read(stderr, stderr_callback, last=True)
 
         return process.poll()
+    return None
 
 @contextmanager
 def ignore_sigint():
@@ -253,12 +275,12 @@ def ignore_sigint():
         signal.signal(signal.SIGINT, signal.default_int_handler)
 
 @contextmanager
-def sync_sigwinch(tty_fd):
+def sync_sigwinch(tty_fd: int) -> None:
     # Unix only
     if not HAS_FCNTL or not hasattr(signal, 'SIGWINCH'):
         return
 
-    def set_window_size():
+    def set_window_size() -> None:
         col, row = shutil.get_terminal_size()
         # https://stackoverflow.com/a/6420070
         winsize = struct.pack('HHHH', row, col, 0, 0)

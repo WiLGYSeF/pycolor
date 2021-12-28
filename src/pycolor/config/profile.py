@@ -1,3 +1,5 @@
+import typing
+
 from . import (
     ConfigPropertyError,
     compile_re,
@@ -9,29 +11,36 @@ from .argpattern import ArgPattern
 from .fromprofile import FromProfile
 from .pattern import Pattern
 
-
 class Profile:
     def __init__(self, cfg, loader=None):
-        self.name = None
-        self.command = None
-        self.name_expression = None
-        self.command_expression = None
-        self.which = None
-        self.which_ignore_case = False
-        self.profile_name = None
+        self.enabled: bool = True
+        self.name: typing.Optional[str] = None
+        self.command: typing.Optional[str] = None
+        self.name_expression: typing.Union[typing.List[str], str, None] = None
+        self.command_expression:typing.Union[typing.List[str], str, None] = None
+        self.profile_name: typing.Optional[str] = None
+        self.which: typing.Optional[str] = None
+        self.which_ignore_case: bool = False
 
-        self.arg_patterns = []
-        self.min_args = None
-        self.max_args = None
+        self.arg_patterns: typing.List[typing.Union[ArgPattern, dict]] = []
+        self.min_args: typing.Optional[int] = None
+        self.max_args: typing.Optional[int] = None
 
-        self.color_aliases = {}
+        self.timestamp: typing.Union[str, bool] = False
+        self.tty: bool = False
+        self.interactive: bool = False
+        self.remove_input_color: bool = False
 
-        self.from_profiles = []
-        self.patterns = []
+        self.color_aliases: typing.Dict[str, str] = {}
+
+        self.from_profiles: typing.List[FromProfile] = []
+        self.patterns: typing.List[dict] = []
 
         self.loader = loader
         self._loaded_patterns = []
         self.patterns_loaded = False
+
+        self.from_profile_str: typing.Optional[str] = None
 
         load_schema('profile', cfg, self)
 
@@ -69,12 +78,12 @@ class Profile:
             self.from_profiles[i] = FromProfile(self.from_profiles[i])
 
     @property
-    def loaded_patterns(self):
+    def loaded_patterns(self) -> typing.List[Pattern]:
         if not self.patterns_loaded:
             self._load_patterns()
         return self._loaded_patterns
 
-    def _load_patterns(self):
+    def _load_patterns(self) -> None:
         # pylint: disable=consider-using-enumerate
         for i in range(len(self.patterns)):
             pat = Pattern(self.patterns[i])
@@ -85,7 +94,7 @@ class Profile:
             self.loader.include_from_profile(self._loaded_patterns, self.from_profiles)
         self.patterns_loaded = True
 
-    def get_name(self):
+    def get_name(self) -> typing.Optional[str]:
         for name in [
             self.profile_name,
             self.which,

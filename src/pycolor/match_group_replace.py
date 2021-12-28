@@ -1,8 +1,11 @@
 import re
-from typing import Pattern
+import typing
 
-
-def match_group_replace(pattern, string, replace_func):
+def match_group_replace(
+    pattern: typing.Union[typing.Pattern, str],
+    string: str,
+    replace_func: typing.Callable[[re.Match, int, int], str]
+) -> str:
     """Replace groups in regex matches in a string
 
     Args:
@@ -16,7 +19,7 @@ def match_group_replace(pattern, string, replace_func):
     result = ''
     last = 0
 
-    regex = pattern if isinstance(pattern, Pattern) else re.compile(pattern)
+    regex = pattern if isinstance(pattern, typing.Pattern) else re.compile(pattern)
 
     for match in regex.finditer(string):
         result += string[last:match.start(0)]

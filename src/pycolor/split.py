@@ -1,8 +1,7 @@
 import re
-from typing import Pattern
+import typing
 
-
-def re_split(sep, string):
+def re_split(sep: typing.Union[typing.Pattern, str], string: str) -> typing.List[str]:
     """Split a string with a regex separator
 
     Args:
@@ -15,7 +14,7 @@ def re_split(sep, string):
     if sep is None:
         return [ string ]
 
-    regex = sep if isinstance(sep, Pattern) else re.compile(sep)
+    regex = sep if isinstance(sep, typing.Pattern) else re.compile(sep)
 
     result = []
     last = 0

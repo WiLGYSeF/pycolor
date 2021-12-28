@@ -1,7 +1,7 @@
 import re
+import typing
 
 from . import pyformat
-
 
 BOLD = 'bold'
 DIM = 'dim'
@@ -61,24 +61,25 @@ STYLE_CODE_DISABLE = {
 
 ANSI_REGEX = re.compile(r'\x1b\[([0-9;]+)m')
 
-
 class ColorState:
-    def __init__(self, state=None):
-        self.color_state = {}
-        self.state_changed = set()
+    def __init__(self,
+        state: typing.Union['ColorState', dict, str, list, tuple] = None
+    ):
+        self.color_state: typing.Dict[str, typing.Any] = {}
+        self.state_changed: typing.Set[str] = set()
         self.reset()
 
         if state is not None:
             self.set(state)
 
-    def reset(self):
+    def reset(self) -> None:
         self.color_state = DEFAULT_COLOR_STATE.copy()
         self.state_changed = set()
 
-    def copy(self):
+    def copy(self) -> 'ColorState':
         return ColorState(self.color_state)
 
-    def set(self, value):
+    def set(self, value: typing.Union['ColorState', dict, str, list, tuple]) -> None:
         if isinstance(value, ColorState):
             self.set_state_by_state(value)
         elif isinstance(value, dict):
@@ -90,18 +91,18 @@ class ColorState:
         else:
             raise ValueError()
 
-    def set_state_by_state(self, state):
+    def set_state_by_state(self, state: 'ColorState') -> None:
         for key, val in state.color_state.items():
             self.color_state[key] = val
         for val in state.state_changed:
             self.state_changed.add(val)
 
-    def set_state_by_dict(self, dct):
+    def set_state_by_dict(self, dct: dict) -> None:
         for key, val in dct.items():
             self.color_state[key] = val
             self.state_changed.add(key)
 
-    def set_state_by_string(self, string):
+    def set_state_by_string(self, string: str) -> None:
         codelist = []
         for match in ANSI_REGEX.finditer(string):
             codes = list(map(
@@ -115,7 +116,7 @@ class ColorState:
 
         self.set_state_by_codes(codelist)
 
-    def set_special_color_states(self, codes):
+    def set_special_color_states(self, codes: typing.List[int]) -> typing.List[int]:
         newcodes = []
 
         codelen = len(codes)
@@ -172,18 +173,18 @@ class ColorState:
 
         return newcodes
 
-    def set_state_by_codes(self, codes):
+    def set_state_by_codes(self, codes: typing.Iterable[int]) -> None:
         for code in codes:
             if code == 0:
                 self.reset()
             elif code in STYLE_CODE_ENABLE:
-                code = STYLE_CODE_ENABLE[code]
-                self.color_state[code] = True
-                self.state_changed.add(code)
+                codestr = STYLE_CODE_ENABLE[code]
+                self.color_state[codestr] = True
+                self.state_changed.add(codestr)
             elif code in STYLE_CODE_DISABLE:
-                code = STYLE_CODE_DISABLE[code]
-                self.color_state[code] = False
-                self.state_changed.add(code)
+                codestr = STYLE_CODE_DISABLE[code]
+                self.color_state[codestr] = False
+                self.state_changed.add(codestr)
             elif (code >= 30 and code <= 39) or (code >= 90 and code <= 97):
                 self.color_state[COLOR_FOREGROUND] = str(code)
                 self.state_changed.add(COLOR_FOREGROUND)
@@ -191,7 +192,7 @@ class ColorState:
                 self.color_state[COLOR_BACKGROUND] = str(code)
                 self.state_changed.add(COLOR_BACKGROUND)
 
-    def diff_keys(self, state):
+    def diff_keys(self, state: 'ColorState') -> typing.List[str]:
         diff_keys = []
 
         for key, val in self.color_state.items():
@@ -200,18 +201,18 @@ class ColorState:
 
         return diff_keys
 
-    def get_state_by_keys(self, keys):
+    def get_state_by_keys(self, keys: typing.Iterable[str]) -> dict:
         state = {}
         for k in keys:
             state[k] = self.color_state[k]
         return state
 
-    def get_changed_state(self, compare_state=None):
+    def get_changed_state(self, compare_state: typing.Optional['ColorState'] = None) -> dict:
         if compare_state is None:
             compare_state = ColorState()
         return self.get_state_by_keys(self.diff_keys(compare_state))
 
-    def get_string(self, compare_state=None):
+    def get_string(self, compare_state: typing.Optional['ColorState'] = None) -> str:
         state = self.get_changed_state(compare_state)
         codes = []
 
@@ -229,10 +230,10 @@ class ColorState:
         return '\x1b[%sm' % ';'.join(codes) if len(codes) != 0 else ''
 
     @staticmethod
-    def from_str(string):
+    def from_str(string: str) -> 'ColorState':
         state = ColorState()
         state.set_state_by_string(string)
         return state
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.get_string()

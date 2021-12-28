@@ -1,4 +1,5 @@
 import re
+import typing
 
 from . import (
     ConfigPropertyError,
@@ -9,25 +10,49 @@ from . import (
 )
 from .. import pyformat
 
-
 class Pattern:
-    def __init__(self, cfg):
-        self.active = True
+    def __init__(self, cfg: dict):
+        self.enabled: bool = True
+        self.super_expression: typing.Union[typing.List[str], str, None] = None
+        self.expression: typing.Union[typing.List[str], str, None] = None
 
-        self.super_expression = None
-        self.expression = None
-        self.separator = None
-        self.activation_line = None
-        self.deactivation_line = None
-        self.activation_expression = None
-        self.deactivation_expression = None
-        self.activation_expression_line_offset = 0
-        self.deactivation_expression_line_offset = 0
+        self.separator: typing.Union[typing.List[str], str, None] = None
+        self.min_fields: int = -1
+        self.max_fields: int = -1
 
-        self.activation_exp_line_off = 0
-        self.deactivation_exp_line_off = 0
+        self.replace: typing.Union[typing.List[str], str, None] = None
+        self.replace_all: typing.Union[typing.List[str], str, None] = None
+        self.replace_groups: typing.Union[
+            typing.List[str],
+            typing.Dict[typing.Union[int, str], str]
+        ] = {}
+        self.replace_fields: typing.Union[
+            typing.List[str],
+            typing.Dict[typing.Union[int, str], str]
+        ] = {}
+        self.filter: bool = False
 
-        self.from_profile_str = None
+        self.stdout_only: bool = False
+        self.stderr_only: bool = False
+        self.skip_others: bool = False
+
+        self.activation_line: typing.Union[typing.List[int], int] = -1
+        self.deactivation_line: typing.Union[typing.List[int], int] = -1
+
+        self.activation_expression: typing.Union[typing.List[str], str, None] = None
+        self.deactivation_expression: typing.Union[typing.List[str], str, None] = None
+        self.activation_expression_line_offset: int = 0
+        self.deactivation_expression_line_offset: int = 0
+
+        self.active: bool = True
+        self.regex: typing.Optional[re.Pattern] = None
+        self.super_regex: typing.Optional[re.Pattern] = None
+        self.separator_regex: typing.Optional[re.Pattern] = None
+        self.activation_regex: typing.Optional[re.Pattern] = None
+        self.deactivation_regex: typing.Optional[re.Pattern] = None
+        self.activation_exp_line_off: int = 0
+        self.deactivation_exp_line_off: int = 0
+        self.from_profile_str: typing.Optional[str] = None
 
         load_schema('pattern', cfg, self)
 
@@ -59,9 +84,6 @@ class Pattern:
         self.regex = compile_re(self.expression, 'expression')
         self.super_regex = compile_re(self.super_expression, 'super_expression')
 
-        self.activation_regex = None
-        self.deactivation_regex = None
-
         if self.activation_expression is not None:
             self.activation_regex = compile_re(self.activation_expression, 'activation_expression')
             self.active = False
@@ -82,7 +104,7 @@ class Pattern:
         if self.min_fields != -1 and self.max_fields != -1 and self.min_fields > self.max_fields:
             raise ConfigPropertyError('min_fields', 'cannot be larger than max_fields')
 
-    def get_field_indexes(self, fields):
+    def get_field_indexes(self, fields: typing.List[str]) -> range:
         """Returns a range of field indicies that field matches
 
         Args:
@@ -133,12 +155,12 @@ class Pattern:
 
         return new_ranges
 
-    def is_active(self, linenum, data):
-        def active():
+    def is_active(self, linenum: int, data: str) -> bool:
+        def active() -> bool:
             self.active = True
             return True
 
-        def inactive():
+        def inactive() -> bool:
             self.active = False
             return False
 
@@ -162,12 +184,12 @@ class Pattern:
                 if idx != 0:
                     idx -= 1
             if idx == 0 and self.activation_ranges[0][0] > linenum:
-                active = not self.activation_ranges[0][1]
+                is_active = not self.activation_ranges[0][1]
             else:
-                active = self.activation_ranges[idx][1]
-            if active != self.active:
-                self.active = active
-                return active
+                is_active = self.activation_ranges[idx][1]
+            if is_active != self.active:
+                self.active = is_active
+                return is_active
 
         if self.active or self.deactivation_expression_line_offset > 0:
             if self.deactivation_regex is not None and re.search(self.deactivation_regex, data):
@@ -182,7 +204,11 @@ class Pattern:
 
         return self.active
 
-def bsearch_closest(arr, val, cmp_fnc=lambda x, y: x - y):
+def bsearch_closest(
+    arr: typing.List[typing.Any],
+    val: typing.Any,
+    cmp_fnc: typing.Callable[[typing.Any, typing.Any], int] = lambda x, y: x - y
+) -> typing.Tuple[int, bool]:
     """Binary search that returns the closest value if not found
 
     Args:

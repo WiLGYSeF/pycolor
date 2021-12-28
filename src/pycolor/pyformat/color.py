@@ -1,5 +1,5 @@
 import re
-
+import typing
 
 RAW_REGEX = re.compile(r'r(?:aw)?([0-9;]+)')
 ANSI_REGEX = re.compile(r'\x1b\[([0-9;]+)m')
@@ -96,8 +96,7 @@ STYLES = {
 # STYLES are considered colors
 COLORS.update(STYLES)
 
-
-def get_color(colorstr, aliases=None):
+def get_color(colorstr: str, aliases: typing.Dict[str, str] = None) -> typing.Optional[str]:
     match = RAW_REGEX.fullmatch(colorstr)
     if match:
         return '\x1b[%sm' % match[1]
@@ -111,7 +110,7 @@ def get_color(colorstr, aliases=None):
 
     return '\x1b[%sm' % ';'.join(colors) if len(colors) != 0 else None
 
-def _colorval(color, aliases=None):
+def _colorval(color: str, aliases: typing.Dict[str, str] = None) -> typing.Optional[str]:
     if aliases is not None and color in aliases:
         color = aliases[color]
 
@@ -156,10 +155,10 @@ def _colorval(color, aliases=None):
 
     return None
 
-def remove_ansi_color(string):
+def remove_ansi_color(string: str) -> str:
     return ANSI_REGEX.sub('', string)
 
-def is_ansi_reset(string):
+def is_ansi_reset(string: str) -> bool:
     match = ANSI_REGEX.fullmatch(string)
     if match is None:
         return False
@@ -169,7 +168,7 @@ def is_ansi_reset(string):
             return False
     return True
 
-def hex_to_rgb(string):
+def hex_to_rgb(string: str) -> typing.Tuple[int, int, int]:
     match = HEX_REGEX.fullmatch(string)
     if match is None:
         raise ValueError()

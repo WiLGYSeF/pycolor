@@ -1,17 +1,16 @@
 import sys
+import typing
 
 from . import pyformat
 
-
 FMT_RESET = pyformat.format_string('%Cz')
 
-
-def printmsg(*args, **kwargs):
-    color = kwargs.get('color')
-    filename = kwargs.get('filename')
-    prefix = kwargs.get('prefix', True)
-    prefix_color = kwargs.get('prefix_color', '')
-    sep = kwargs.get('sep', ' ')
+def printmsg(*args, **kwargs) -> None:
+    color: typing.Union[str, bool, None]  = kwargs.get('color')
+    filename: typing.Optional[str] = kwargs.get('filename')
+    prefix: bool = kwargs.get('prefix', True)
+    prefix_color: str = kwargs.get('prefix_color', '')
+    sep: str = kwargs.get('sep', ' ')
 
     use_color = is_color_enabled(color)
 
@@ -47,19 +46,19 @@ def printmsg(*args, **kwargs):
 
     print(string, **kwargs, file=sys.stderr)
 
-def printerr(*args, **kwargs):
+def printerr(*args, **kwargs) -> None:
     new_kwargs = kwargs
     new_kwargs['prefix'] = 'error'
     new_kwargs['prefix_color'] = '%Clr'
     printmsg(*args, **new_kwargs)
 
-def printwarn(*args, **kwargs):
+def printwarn(*args, **kwargs) -> None:
     new_kwargs = kwargs
     new_kwargs['prefix'] = 'warn'
     new_kwargs['prefix_color'] = '%Cly'
     printmsg(*args, **new_kwargs)
 
-def is_color_enabled(color):
+def is_color_enabled(color: typing.Union[str, bool, None]) -> bool:
     if color in (True, 'always', 'on', '1'):
         return True
     if color in (False, 'never', 'off', '0'):

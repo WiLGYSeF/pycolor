@@ -1,8 +1,9 @@
+import typing
+
 from ..colorpositions import insert_color_data
 from ..colorstate import ColorState
 from . import color
 from . import fieldsep
-
 
 FORMAT_CHAR_VALID = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
@@ -13,13 +14,16 @@ FORMAT_CONTEXT_COLOR = 'H'
 FORMAT_PADDING = 'P'
 FORMAT_TRUNCATE = 'T'
 
-
-def format_string(string, context=None, return_color_positions=False):
+def format_string(
+    string: str,
+    context: dict = None,
+    return_color_positions: bool = False
+) -> typing.Tuple[str, typing.Dict[int, str]]:
     if context is None:
         context = {}
 
     newstring = ''
-    color_positions = {}
+    color_positions: typing.Dict[int, str] = {}
     idx = 0
 
     strlen = len(string)
@@ -31,8 +35,8 @@ def format_string(string, context=None, return_color_positions=False):
                 continue
 
             formatter, value, newidx = get_formatter(string, idx)
-            if formatter is not None:
-                result = do_format(
+            if formatter is not None and value is not None:
+                result = _do_format(
                     formatter,
                     value,
                     context,
@@ -60,35 +64,35 @@ def format_string(string, context=None, return_color_positions=False):
         return newstring, color_positions
     return insert_color_data(newstring, color_positions)
 
-def do_format(formatter, value, context, **kwargs):
+def _do_format(formatter: str, value: str, context: dict, **kwargs) -> typing.Optional[str]:
     if formatter == FORMAT_COLOR:
-        return do_format_color(value, context, **kwargs)
+        return _do_format_color(value, context, **kwargs)
     if formatter == FORMAT_FIELD:
         if 'fields' not in context:
             return ''
-        return do_format_field(value, context, **kwargs)
+        return _do_format_field(value, context, **kwargs)
     if formatter == FORMAT_GROUP:
         if 'match' not in context:
             return ''
-        return do_format_group(value, context, **kwargs)
+        return _do_format_group(value, context, **kwargs)
     if formatter == FORMAT_CONTEXT_COLOR:
         if 'match' in context and 'match_cur' in context:
-            return do_format_field_group_color(value, context, '%Gc',**kwargs)
+            return _do_format_field_group_color(value, context, '%Gc',**kwargs)
         if 'field_cur' in context:
-            return do_format_field_group_color(value, context, '%Fc', **kwargs)
+            return _do_format_field_group_color(value, context, '%Fc', **kwargs)
         return ''
     if formatter == FORMAT_PADDING:
-        return do_format_padding(value, context, **kwargs)
+        return _do_format_padding(value, context, **kwargs)
     if formatter == FORMAT_TRUNCATE:
-        return do_format_truncate(value, context, **kwargs)
+        return _do_format_truncate(value, context, **kwargs)
     return None
 
-def do_format_color(value, context, **kwargs):
+def _do_format_color(value: str, context: dict, **kwargs) -> str:
     ctx = context.get('color', {})
     if not ctx.get('enabled', True):
         return ''
 
-    def get_state(context):
+    def get_state(context: dict) -> ColorState:
         ctx_color = context.get('color', {})
         state = ctx_color['state'] if 'state' in ctx_color else ColorState()
 
@@ -126,12 +130,12 @@ def do_format_color(value, context, **kwargs):
         colorstr = ''
     return colorstr
 
-def do_format_field(value, context, **kwargs):
+def _do_format_field(value: str, context: dict, **kwargs) -> str:
     if value == 'c' and 'field_cur' in context:
         return context['field_cur']
     return fieldsep.get_fields(value, context)
 
-def do_format_group(value, context, **kwargs):
+def _do_format_group(value: str, context: dict, **kwargs) -> str:
     try:
         group = int(value)
         context['match_incr'] = group + 1
@@ -157,7 +161,7 @@ def do_format_group(value, context, **kwargs):
             pass
     return ''
 
-def do_format_field_group_color(value, context, format_type, **kwargs):
+def _do_format_field_group_color(value: str, context: dict, format_type: str, **kwargs) -> str:
     result, color_pos = format_string(
         '%C(' + value + ')' + format_type + '%Cz',
         context=context,
@@ -171,7 +175,7 @@ def do_format_field_group_color(value, context, format_type, **kwargs):
         return result
     return insert_color_data(result, color_pos)
 
-def do_format_padding(value, context, **kwargs):
+def _do_format_padding(value: str, context: dict, **kwargs) -> str:
     value_sep = value.find(';')
     if value_sep != -1:
         try:
@@ -190,10 +194,10 @@ def do_format_padding(value, context, **kwargs):
             pass
     return ''
 
-def do_format_truncate(value, context, **kwargs):
+def _do_format_truncate(value: str, context: dict, **kwargs) -> str:
     str_loc_sep = value.rfind(';')
     string_repl = value[:str_loc_sep]
-    location, length = value[str_loc_sep + 1:].split(',')
+    location, length_str = value[str_loc_sep + 1:].split(',')
 
     rev_string_repl = ''
     string_repl_sep = len(string_repl)
@@ -215,7 +219,7 @@ def do_format_truncate(value, context, **kwargs):
     repl = string_repl[string_repl_sep + 1:]
 
     location = location.lower()
-    length = int(length)
+    length = int(length_str)
     if length <= 0:
         raise ValueError('invalid length: %d' % length)
 
@@ -251,7 +255,14 @@ def do_format_truncate(value, context, **kwargs):
         raise ValueError('invalid truncate location: %s' % location)
     return string
 
-def get_formatter(string, idx):
+def get_formatter(
+    string: str,
+    idx: int
+) -> typing.Tuple[
+    typing.Optional[str],
+    typing.Optional[str],
+    int
+]:
     strlen = len(string)
     begin_idx = idx
 
@@ -303,7 +314,7 @@ def get_formatter(string, idx):
 
     return formatter, value, idx
 
-def dictcopy(dct):
+def dictcopy(dct: dict) -> dict:
     copy = {}
     for key, val in dct.items():
         if isinstance(val, dict):

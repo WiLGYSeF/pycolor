@@ -1,8 +1,20 @@
 import re
-from typing import Pattern
+import typing
 
-
-def search_replace(pattern, string, replace, **kwargs):
+def search_replace(
+    pattern: typing.Union[typing.Pattern, str],
+    string: str,
+    replace: typing.Union[typing.Callable[[re.Match], str], str],
+    **kwargs
+) -> typing.Tuple[
+    str,
+    typing.List[
+        typing.Tuple[
+            typing.Tuple[int, int],
+            typing.Tuple[int, int]
+        ]
+    ]
+]:
     """Search and replace in string
 
     Args:
@@ -23,8 +35,8 @@ def search_replace(pattern, string, replace, **kwargs):
 
     start_occurrence = max(1, start_occurrence)
 
-    regex = pattern if isinstance(pattern, Pattern) else re.compile(pattern)
-    replf = replace if callable(replace) else lambda x: replace
+    regex = pattern if isinstance(pattern, typing.Pattern) else re.compile(pattern)
+    replf: typing.Callable[[re.Match], str] = replace if callable(replace) else lambda x: replace
 
     newstring = string[:0] #str or bytes
     count = 0

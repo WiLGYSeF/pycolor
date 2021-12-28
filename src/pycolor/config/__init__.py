@@ -1,34 +1,33 @@
 import json
 import os
 import re
+import typing
 
 import fastjsonschema
-
 
 DIRNAME = os.path.dirname(os.path.realpath(__file__))
 SCHEMA_DIR = os.path.join(DIRNAME, 'schema')
 
-validators = {}
-
+validators: typing.Dict[str, typing.Callable[[dict], None]] = {}
 
 class ConfigError(Exception):
-    def __init__(self, message):
-        self.message = message
+    def __init__(self, message: str):
+        self.message: str = message
         super().__init__(self.message)
 
 class ConfigPropertyError(ConfigError):
-    def __init__(self, prop, message):
-        self.property = prop
+    def __init__(self, prop: str, message: str):
+        self.property: str = prop
         super().__init__('"%s": %s' % (self.property, message))
 
 class ConfigRegexError(ConfigPropertyError):
-    def __init__(self, prop, message):
+    def __init__(self, prop: str, message: str):
         super().__init__(prop, 'regex %s' % message)
 
 class ConfigExclusivePropertyError(ConfigError):
     pass
 
-def load_schema(schema_name, cfg, dest):
+def load_schema(schema_name: str, cfg: dict, dest: typing.Any) -> None:
     validator = validators.get(schema_name)
     if validator is None:
         with open(os.path.join(SCHEMA_DIR, schema_name + '.json'), 'r') as file:
@@ -43,7 +42,7 @@ def load_schema(schema_name, cfg, dest):
     for key, val in cfg.items():
         setattr(dest, key, val)
 
-def compile_re(expression, prop):
+def compile_re(expression: typing.Optional[str], prop: str) -> typing.Optional[re.Pattern]:
     if expression is None:
         return None
     try:
@@ -51,7 +50,7 @@ def compile_re(expression, prop):
     except re.error as rer:
         raise ConfigRegexError(prop, rer) from rer
 
-def mutually_exclusive(self, attrlist):
+def mutually_exclusive(self, attrlist: typing.Iterable[str]) -> None:
     count = 0
     for attr in attrlist:
         if not hasattr(self, attr):
@@ -68,7 +67,7 @@ def mutually_exclusive(self, attrlist):
     if count > 1:
         raise ConfigExclusivePropertyError('mutually exclusive: %s' % str(attrlist))
 
-def join_str_list(val):
+def join_str_list(val: typing.Any) -> typing.Optional[str]:
     if val is None:
         return None
     return ''.join(val) if isinstance(val, list) else val

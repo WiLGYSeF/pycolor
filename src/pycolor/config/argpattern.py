@@ -1,4 +1,5 @@
 import re
+import typing
 
 from . import (
     ConfigPropertyError,
@@ -8,15 +9,17 @@ from . import (
     mutually_exclusive,
 )
 
-
 ARGRANGE_REGEX = re.compile(r'([<>+-])?(\*|[0-9]+)')
 
-
 class ArgPattern:
-    def __init__(self, cfg):
-        self.expression = None
-        self.position = None
-        self.subcommand = []
+    def __init__(self, cfg: dict):
+        self.enabled: bool = True
+        self.expression: typing.Union[typing.List[str], str, None] = None
+        self.subcommand: typing.Union[typing.List[str], str] = []
+        self.position: typing.Union[int, str, None] = None
+
+        self.match_not: bool = False
+        self.optional: bool = False
 
         load_schema('argpattern', cfg, self)
 
@@ -28,7 +31,7 @@ class ArgPattern:
             if hasattr(self, attr):
                 setattr(self, attr, join_str_list(getattr(self, attr)))
 
-        self.regex = compile_re(self.expression, 'expression')
+        self.regex: typing.Optional[re.Pattern] = compile_re(self.expression, 'expression')
 
         if not isinstance(self.subcommand, list):
             self.subcommand = [ self.subcommand ]
@@ -36,7 +39,7 @@ class ArgPattern:
         if isinstance(self.position, str) and not ARGRANGE_REGEX.match(self.position):
             raise ConfigPropertyError('position', 'is not a valid argument position')
 
-    def get_arg_range(self, arglen):
+    def get_arg_range(self, arglen: int) -> range:
         """Returns a range of argument indicies that position matches
 
         Args:
@@ -62,7 +65,7 @@ class ArgPattern:
             return range(arglen)
         index = int(index)
 
-        arg_range = None
+        arg_range = range(0)
         modifier = match[1]
 
         if modifier is None:
