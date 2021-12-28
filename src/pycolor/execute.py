@@ -24,10 +24,11 @@ except ModuleNotFoundError:
     HAS_PTY = False
 
 from .printmsg import printwarn
-from .static_vars import static_vars
 from .threadwait import Flag, ThreadWait
 
 BUFFER_SZ = 4098
+
+_Stream = typing.Union[io.IOBase, int]
 
 def readlines(stream: io.IOBase, data: bytes = None) -> typing.Optional[typing.List[bytes]]:
     if data is None:
@@ -53,7 +54,8 @@ def readlines(stream: io.IOBase, data: bytes = None) -> typing.Optional[typing.L
         lines.append(data[last:])
     return lines
 
-@static_vars(buffers={})
+_buffers: typing.Dict[_Stream, bytes] = {}
+
 def read_stream(
     stream: io.IOBase,
     callback: typing.Callable[[str], None],
@@ -68,40 +70,40 @@ def read_stream(
         did_callback = True
         return callback(data.decode(encoding))
 
-    if stream not in read_stream.buffers:
-        read_stream.buffers[stream] = b''
+    if stream not in _buffers:
+        _buffers[stream] = b''
 
     lines = readlines(stream, data)
     if lines is None:
-        if last and len(read_stream.buffers[stream]) != 0:
-            do_callback(read_stream.buffers[stream])
-            read_stream.buffers[stream] = b''
+        if last and len(_buffers[stream]) != 0:
+            do_callback(_buffers[stream])
+            _buffers[stream] = b''
         return None
 
     start = 0
     if is_eol(lines[0][-1]):
-        do_callback(read_stream.buffers[stream] + lines[0])
-        read_stream.buffers[stream] = b''
+        do_callback(_buffers[stream] + lines[0])
+        _buffers[stream] = b''
         start = 1
 
     for i in range(start, len(lines) - 1):
         do_callback(lines[i])
 
     if not is_eol(lines[-1][-1]):
-        read_stream.buffers[stream] += lines[-1]
+        _buffers[stream] += lines[-1]
 
         if last:
-            do_callback(read_stream.buffers[stream])
-            read_stream.buffers[stream] = b''
+            do_callback(_buffers[stream])
+            _buffers[stream] = b''
     elif len(lines) > 1:
         do_callback(lines[-1])
 
     return did_callback
 
 def is_buffer_empty(stream: io.IOBase) -> bool:
-    if stream not in read_stream.buffers:
+    if stream not in _buffers:
         return True
-    return len(read_stream.buffers[stream]) == 0
+    return len(_buffers[stream]) == 0
 
 def is_eol(char: int) -> bool:
     # '\n' and '\r'
