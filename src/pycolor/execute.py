@@ -52,7 +52,7 @@ _buffers: typing.Dict[_Stream, bytes] = {}
 def read_stream(
     stream: _Stream,
     callback: typing.Callable[[str], None],
-    data: bytes = None,
+    data: bytes,
     encoding: str = 'utf-8',
     last: bool = False
 ) -> typing.Optional[bool]:
@@ -66,8 +66,8 @@ def read_stream(
     if stream not in _buffers:
         _buffers[stream] = b''
 
-    lines = _readlines(stream.read() if data is None else data)
     try:
+        lines = _readlines(data)
         curline = next(lines)
         if _is_eol(curline[-1]):
             do_callback(_buffers[stream] + curline)
@@ -120,15 +120,15 @@ def execute(
         tty = False
 
     def _read(
-        stream: io.IOBase,
+        stream: _Stream,
         callback: typing.Callable[[str], None],
-        data: bytes = None,
+        data: bytes,
         last: bool = False
-    ) -> bool:
+    ) -> typing.Optional[bool]:
         return read_stream(
             stream,
             callback,
-            data=data,
+            data,
             encoding=encoding,
             last=last
         )
@@ -170,9 +170,13 @@ def execute(
                     if data is None or _read(stream, callback, data) is None:
                         break
                     if interactive and not _is_buffer_empty(stream):
-                        _read(stream, callback, data=b'', last=True)
+                        _read(stream, callback, b'', last=True)
+                _read(stream, callback, b'', last=True)
 
             def write_stdin(flag: Flag) -> None:
+                if process.stdin is None:
+                    return
+
                 while True:
                     flag.unset()
                     recv = _read_stream(stdin)
@@ -213,12 +217,6 @@ def execute(
                 for fde in masters:
                     os.close(fde)
 
-                _read(stdout, stdout_callback, data=b'', last=True)
-                _read(stderr, stderr_callback, data=b'', last=True)
-            else:
-                _read(stdout, stdout_callback, last=True)
-                _read(stderr, stderr_callback, last=True)
-
             return process.poll()
     return None
 
@@ -246,7 +244,7 @@ def _ignore_sigint():
         signal.signal(signal.SIGINT, signal.default_int_handler)
 
 @contextmanager
-def _sync_sigwinch(tty_fd: int) -> None:
+def _sync_sigwinch(tty_fd: int):
     # Unix only
     if not HAS_FCNTL or not hasattr(signal, 'SIGWINCH'):
         return

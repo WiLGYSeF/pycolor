@@ -29,7 +29,7 @@ class ExecuteTest(unittest.TestCase):
 
         stream.write(test_data)
         stream.seek(0)
-        did_callback = execute.read_stream(stream, lambda x: None)
+        did_callback = execute.read_stream(stream, lambda x: None, stream.read())
         self.assertFalse(did_callback)
         self.assertFalse(execute._is_buffer_empty(stream))
         self.assertEqual(execute._buffers[stream], test_data)
@@ -40,7 +40,7 @@ class ExecuteTest(unittest.TestCase):
 
         stream.write(b'\n')
         stream.seek(-1, os.SEEK_CUR)
-        did_callback = execute.read_stream(stream, set_output)
+        did_callback = execute.read_stream(stream, set_output, stream.read())
         self.assertTrue(did_callback)
         self.assertTrue(execute._is_buffer_empty(stream))
         self.assertTrue(len(execute._buffers[stream]) == 0)
