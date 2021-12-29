@@ -160,6 +160,7 @@ class StreamObj:
         read_stream(
             self.stream,
             self.callback,
+            self.stream.read(),
             encoding=encoding,
             last=last
         )

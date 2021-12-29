@@ -25,14 +25,14 @@ class ExecuteTest(unittest.TestCase):
         test_data = b'this is a test'
         output = None
 
-        self.assertTrue(execute.is_buffer_empty(stream))
+        self.assertTrue(execute._is_buffer_empty(stream))
 
         stream.write(test_data)
         stream.seek(0)
-        did_callback = execute.read_stream(stream, lambda x: None)
+        did_callback = execute.read_stream(stream, lambda x: None, stream.read())
         self.assertFalse(did_callback)
-        self.assertFalse(execute.is_buffer_empty(stream))
-        self.assertEqual(execute.read_stream.buffers[stream], test_data)
+        self.assertFalse(execute._is_buffer_empty(stream))
+        self.assertEqual(execute._buffers[stream], test_data)
 
         def set_output(data):
             nonlocal output
@@ -40,8 +40,8 @@ class ExecuteTest(unittest.TestCase):
 
         stream.write(b'\n')
         stream.seek(-1, os.SEEK_CUR)
-        did_callback = execute.read_stream(stream, set_output)
+        did_callback = execute.read_stream(stream, set_output, stream.read())
         self.assertTrue(did_callback)
-        self.assertTrue(execute.is_buffer_empty(stream))
-        self.assertTrue(len(execute.read_stream.buffers[stream]) == 0)
+        self.assertTrue(execute._is_buffer_empty(stream))
+        self.assertTrue(len(execute._buffers[stream]) == 0)
         self.assertEqual(output.encode(), test_data + b'\n')

@@ -138,9 +138,12 @@ def main(
 
 def read_input_stream(pycobj: Pycolor, stream: io.IOBase) -> None:
     while True:
-        if read_stream(stream.buffer, pycobj.stdout_cb) is None:
+        data = stream.read()
+        if not isinstance(data, bytes):
+            data = data.encode()
+        if read_stream(stream.buffer, pycobj.stdout_cb, data) is None:
             break
-    read_stream(stream.buffer, pycobj.stdout_cb, last=True)
+    read_stream(stream.buffer, pycobj.stdout_cb, b'', last=True)
 
 def override_profile_conf(pycobj: Pycolor, attr: str, val: str) -> None:
     for prof in pycobj.profiles:

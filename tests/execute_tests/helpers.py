@@ -129,6 +129,12 @@ def execute_patch(obj, stdout_stream, stderr_stream):
                 self.polled += 1
                 return self.returncode
 
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, val, tb):
+                pass
+
         return MockProcess(
             args,
             **kwargs
