@@ -30,34 +30,27 @@ BUFFER_SZ = 4098
 
 _Stream = typing.Union[io.IOBase, int]
 
-def _readlines(stream: io.IOBase, data: bytes = None) -> typing.Optional[typing.List[bytes]]:
-    if data is None:
-        data = stream.read()
-    if data is None or len(data) == 0:
-        return None
-
-    lines = []
-    last = 0
-
+def _readlines(data: bytes) -> typing.Iterator[bytes]:
     datalen = len(data)
     len_m1 = datalen - 1
+    last = 0
     idx = 0
+
     while idx < datalen:
         ret = _is_eol_idx(data, len_m1, idx)
         if ret is not False:
-            lines.append(data[last:ret + 1])
+            yield data[last:ret + 1]
             last = ret + 1
             idx = ret
         idx += 1
 
     if last < datalen:
-        lines.append(data[last:])
-    return lines
+        yield data[last:]
 
 _buffers: typing.Dict[_Stream, bytes] = {}
 
 def read_stream(
-    stream: io.IOBase,
+    stream: _Stream,
     callback: typing.Callable[[str], None],
     data: bytes = None,
     encoding: str = 'utf-8',
@@ -73,37 +66,31 @@ def read_stream(
     if stream not in _buffers:
         _buffers[stream] = b''
 
-    lines = _readlines(stream, data)
-    if lines is None:
+    lines = _readlines(stream.read() if data is None else data)
+    try:
+        curline = next(lines)
+        if _is_eol(curline[-1]):
+            do_callback(_buffers[stream] + curline)
+            _buffers[stream] = b''
+
+        for curline in lines:
+            if _is_eol(curline[-1]):
+                do_callback(curline)
+        if not _is_eol(curline[-1]):
+            if last:
+                do_callback(_buffers[stream] + curline)
+                _buffers[stream] = b''
+            else:
+                _buffers[stream] += curline
+    except StopIteration:
         if last and len(_buffers[stream]) != 0:
             do_callback(_buffers[stream])
             _buffers[stream] = b''
         return None
-
-    start = 0
-    if _is_eol(lines[0][-1]):
-        do_callback(_buffers[stream] + lines[0])
-        _buffers[stream] = b''
-        start = 1
-
-    for i in range(start, len(lines) - 1):
-        do_callback(lines[i])
-
-    if not _is_eol(lines[-1][-1]):
-        _buffers[stream] += lines[-1]
-
-        if last:
-            do_callback(_buffers[stream])
-            _buffers[stream] = b''
-    elif len(lines) > 1:
-        do_callback(lines[-1])
-
     return did_callback
 
 def _is_buffer_empty(stream: _Stream) -> bool:
-    if stream not in _buffers:
-        return True
-    return len(_buffers[stream]) == 0
+    return stream not in _buffers or len(_buffers[stream]) == 0
 
 def _is_eol(char: int) -> bool:
     # '\n' and '\r'
@@ -155,116 +142,100 @@ def execute(
 
         if tty:
             stdout, stderr = masters
+            proc_stdout, proc_stderr = slaves
             stack.enter_context(_sync_sigwinch(stdout))
             stack.enter_context(_sync_sigwinch(stderr))
-            proc_stdout, proc_stderr = slaves
         else:
             proc_stdout = subprocess.PIPE
             proc_stderr = subprocess.PIPE
 
-        process = subprocess.Popen(
+        with subprocess.Popen(
             cmd,
             stdin=subprocess.PIPE,
             stdout=proc_stdout,
             stderr=proc_stderr
-        )
+        ) as process:
+            if not tty:
+                stdout = process.stdout
+                stderr = process.stderr
 
-        if not tty:
-            stdout = process.stdout
-            stderr = process.stderr
-
-        def read_thread(
-            stream: _Stream,
-            callback: typing.Callable[[str], None],
-            flag: Flag
-        ) -> None:
-            if isinstance(stream, io.IOBase):
-                try:
-                    stream = stream.fileno()
-                except OSError:
-                    pass
-
-            use_os_read = isinstance(stream, int)
-            while True:
-                flag.unset()
-                if use_os_read:
-                    try:
-                        data = os.read(stream, BUFFER_SZ)
-                    except OSError:
-                        break
-                    if len(data) == 0 or _read(stream, callback, data=data) is None:
+            def read_thread(
+                stream: _Stream,
+                callback: typing.Callable[[str], None],
+                flag: Flag
+            ) -> None:
+                while True:
+                    flag.unset()
+                    data = _read_stream(stream)
+                    if data is None or _read(stream, callback, data) is None:
                         break
                     if interactive and not _is_buffer_empty(stream):
                         _read(stream, callback, data=b'', last=True)
-                else:
-                    if _read(stream, callback) is None:
+
+            def write_stdin(flag: Flag) -> None:
+                while True:
+                    flag.unset()
+                    recv = _read_stream(stdin)
+                    if recv is None:
                         break
-                    if interactive and not _is_buffer_empty(stream):
-                        _read(stream, callback, last=True)
 
-        def write_stdin(flag: Flag) -> None:
-            stream = stdin
-            if isinstance(stream, io.IOBase):
-                try:
-                    stream = stream.fileno()
-                except OSError:
-                    pass
+                    process.stdin.write(recv)
+                    process.stdin.flush()
+                process.stdin.close()
 
-            use_os_read = isinstance(stream, int)
-            while True:
-                flag.unset()
-                if use_os_read:
-                    recv = os.read(stream, BUFFER_SZ)
-                    if len(recv) == 0:
-                        break
-                else:
-                    recv = stdin.read()
-                    if recv is None or len(recv) == 0:
-                        break
-                    recv = recv.encode()
+            wait = ThreadWait()
+            thr_stdout = threading.Thread(target=read_thread, args=(
+                stdout,
+                stdout_callback,
+                wait.get_flag(),
+            ), daemon=True)
+            thr_stderr = threading.Thread(target=read_thread, args=(
+                stderr,
+                stderr_callback,
+                wait.get_flag(),
+            ), daemon=True)
+            thr_stdin = threading.Thread(target=write_stdin, args=(
+                wait.get_flag(),
+            ), daemon=True)
 
-                process.stdin.write(recv)
-                process.stdin.flush()
-            process.stdin.close()
+            thr_stdout.start()
+            thr_stderr.start()
+            thr_stdin.start()
 
-        wait = ThreadWait()
-        thr_stdout = threading.Thread(target=read_thread, args=(
-            stdout,
-            stdout_callback,
-            wait.get_flag(),
-        ), daemon=True)
-        thr_stderr = threading.Thread(target=read_thread, args=(
-            stderr,
-            stderr_callback,
-            wait.get_flag(),
-        ), daemon=True)
-        thr_stdin = threading.Thread(target=write_stdin, args=(
-            wait.get_flag(),
-        ), daemon=True)
+            # TODO: this is probably not the best way to wait
+            while process.poll() is None:
+                time.sleep(0.001)
+            wait.wait(timeout=0.075)
 
-        thr_stdout.start()
-        thr_stderr.start()
-        thr_stdin.start()
+            if tty:
+                for fde in slaves:
+                    os.close(fde)
+                for fde in masters:
+                    os.close(fde)
 
-        # TODO: this is probably not the best way to wait
-        while process.poll() is None:
-            time.sleep(0.001)
-        wait.wait(timeout=0.075)
+                _read(stdout, stdout_callback, data=b'', last=True)
+                _read(stderr, stderr_callback, data=b'', last=True)
+            else:
+                _read(stdout, stdout_callback, last=True)
+                _read(stderr, stderr_callback, last=True)
 
-        if tty:
-            for fde in slaves:
-                os.close(fde)
-            for fde in masters:
-                os.close(fde)
-
-            _read(stdout, stdout_callback, data=b'', last=True)
-            _read(stderr, stderr_callback, data=b'', last=True)
-        else:
-            _read(stdout, stdout_callback, last=True)
-            _read(stderr, stderr_callback, last=True)
-
-        return process.poll()
+            return process.poll()
     return None
+
+def _read_stream(stream: _Stream) -> typing.Optional[bytes]:
+    if isinstance(stream, io.IOBase):
+        try:
+            data = os.read(stream.fileno(), BUFFER_SZ)
+        except OSError:
+            data = stream.read()
+            if not isinstance(data, bytes):
+                data = data.encode()
+    else:
+        try:
+            data = os.read(stream, BUFFER_SZ)
+        except OSError:
+            return None
+    return data if data is not None and len(data) > 0 else None
 
 @contextmanager
 def _ignore_sigint():
