@@ -27,10 +27,10 @@ def apply_pattern(pat: Pattern, data: str, context: dict) -> typing.Tuple[bool, 
         field_idxs = pat.get_field_indexes(fields)
         context['fields'] = fields
 
-    if pat.separator_regex is None or all([
+    if pat.separator_regex is None or all((
         pat.field == 0,
         len(field_idxs) != 0
-    ]):
+    )):
         if pat.regex is not None:
             if pat.replace_all is not None:
                 match = pat.regex.search(data)
@@ -57,10 +57,10 @@ def apply_pattern(pat: Pattern, data: str, context: dict) -> typing.Tuple[bool, 
                 update_color_positions(color_positions, colorpos)
                 return True, data
 
-        if 'fields' in context and all([
+        if 'fields' in context and all((
             len(pat.replace_fields) != 0,
             len(field_idxs) != 0,
-        ]):
+        )):
             return _replace_fields(pat, data, fields, color_positions, context)
 
         if len(pat.replace_groups) != 0:
@@ -120,10 +120,10 @@ def apply_pattern(pat: Pattern, data: str, context: dict) -> typing.Tuple[bool, 
                 return False, None
             return True, ''.join(fields)
 
-    if 'fields' in context and all([
+    if 'fields' in context and all((
         len(pat.replace_fields) != 0,
         len(field_idxs) != 0,
-    ]):
+    )):
         return _replace_fields(pat, data, fields, color_positions, context)
 
     if pat.regex is not None:
@@ -348,7 +348,7 @@ def get_replace_group(
         return replace_groups[idx - 1]
     return None
 
-def get_range(number: str, length: int) -> range:
+def _get_range(number: str, length: int) -> range:
     spl = number.split('*')
 
     start = int(spl[0]) if len(spl[0]) != 0 else 1
@@ -377,7 +377,7 @@ def _get_group_range(
     for key, val in obj.items():
         for num in key.split(','):
             try:
-                if idx in get_range(num, len(groups)):
+                if idx in _get_range(num, len(groups)):
                     return val
             except ValueError:
                 pass

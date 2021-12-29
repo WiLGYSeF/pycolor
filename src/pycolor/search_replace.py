@@ -47,10 +47,10 @@ def search_replace(
             igidx += 1
         if igidx < len(ignore_ranges):
             ign = ignore_ranges[igidx]
-            if any([
+            if any((
                 match.start() >= ign[0] and match.start() < ign[1],
                 ign[0] >= match.start() and ign[0] < match.end()
-            ]):
+            )):
                 continue
 
         count += 1

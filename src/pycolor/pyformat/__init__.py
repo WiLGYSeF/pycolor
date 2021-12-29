@@ -322,8 +322,5 @@ def get_formatter(
 def dictcopy(dct: dict) -> dict:
     copy = {}
     for key, val in dct.items():
-        if isinstance(val, dict):
-            copy[key] = dictcopy(val)
-        else:
-            copy[key] = val
+        copy[key] = dictcopy(val) if isinstance(val, dict) else val
     return copy

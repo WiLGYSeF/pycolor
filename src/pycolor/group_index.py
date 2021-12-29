@@ -8,7 +8,7 @@ def get_named_group_index_dict(match: re.Match) -> typing.Dict[int, str]:
         match (Match): The regex match
 
     Returns:
-        dict: A mapping of names to indicies
+        dict: A mapping of indices to names
     """
     group_idx_to_name = {}
     for group in match.groupdict():
@@ -53,7 +53,7 @@ def get_named_group_index(match: re.Match, name: str) -> typing.Optional[int]:
     if name in match.groupdict():
         span = match.span(name)
         for i in range(1, len(match.groups()) + 1):
-            if span == match.span(i):
+            if match.span(i) == span:
                 return i
     return None
 

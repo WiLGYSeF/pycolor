@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import io
 import json
 import os
 import sys
@@ -32,9 +31,9 @@ def main_args() -> None:
 
 def main(
     args: typing.List[str],
-    stdout_stream: io.IOBase = sys.stdout,
-    stderr_stream: io.IOBase = sys.stderr,
-    stdin_stream: io.IOBase = sys.stdin
+    stdout_stream: typing.Union[typing.TextIO] = sys.stdout,
+    stderr_stream: typing.Union[typing.TextIO] = sys.stderr,
+    stdin_stream: typing.Union[typing.TextIO] = sys.stdin
 ) -> None:
     parser, argspace, cmd_args = arguments.get_args(args)
     read_stdin = len(cmd_args) == 0 or argspace.stdin
@@ -70,10 +69,10 @@ def main(
         debug=argspace.verbose,
         debug_log=debug_log,
         debug_log_out=debug_log_out,
-        execv=argspace.execv
+        execv=argspace.execv,
+        stdout=stdout_stream,
+        stderr=stderr_stream
     )
-    pycobj.stdout = stdout_stream
-    pycobj.stderr = stderr_stream
 
     if len(argspace.load_file) == 0:
         if CONFIG_DEFAULT is not None and os.path.isfile(CONFIG_DEFAULT):
@@ -99,7 +98,7 @@ def main(
         if len(argspace.profile) != 0:
             profile = pycobj.get_profile_by_name(argspace.profile)
         else:
-            profile = pycobj.profloader.profile_default
+            profile = pycobj.profile_default
         if profile is None:
             printerr('profile with name "%s" not found' % argspace.profile)
             sys.exit(1)
@@ -112,14 +111,13 @@ def main(
             pycobj.debug_print(1, 'using profile "%s"', profile.get_name())
 
             try:
-                # ensure patterns are loaded here first
-                profile.loaded_patterns
+                profile.load_patterns()
             except config.ConfigError as cex:
                 printerr(cex)
                 sys.exit(1)
 
         pycobj.set_current_profile(profile)
-        if len(cmd_args) == 0 and pycobj.profloader.is_default_profile(pycobj.current_profile):
+        if len(cmd_args) == 0 and pycobj.is_default_profile():
             parser.print_help()
             sys.exit(1)
 
@@ -136,14 +134,11 @@ def main(
         printerr(cex)
         sys.exit(1)
 
-def read_input_stream(pycobj: Pycolor, stream: io.IOBase) -> None:
+def read_input_stream(pycobj: Pycolor, stream: typing.TextIO) -> None:
     while True:
-        data = stream.read()
-        if not isinstance(data, bytes):
-            data = data.encode()
-        if read_stream(stream.buffer, pycobj.stdout_cb, data) is None:
+        if read_stream(stream, pycobj.stdout_cb, stream.read().encode()) is None:
             break
-    read_stream(stream.buffer, pycobj.stdout_cb, b'', last=True)
+    read_stream(stream, pycobj.stdout_cb, b'', last=True)
 
 def override_profile_conf(pycobj: Pycolor, attr: str, val: str) -> None:
     for prof in pycobj.profiles:

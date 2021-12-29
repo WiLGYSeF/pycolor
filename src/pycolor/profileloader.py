@@ -84,15 +84,15 @@ class ProfileLoader:
     def get_profile_by_command(self,
         command: str,
         args: typing.List[str]
-    ) -> typing.Optional[typing.List[Profile]]:
+    ) -> typing.Optional[Profile]:
         matches = []
 
         for prof in self.profiles:
-            if not any([
+            if not any((
                 prof.which,
                 prof.name,
                 prof.name_regex
-            ]):
+            )):
                 continue
             if not prof.enabled:
                 continue
@@ -108,34 +108,32 @@ class ProfileLoader:
                     if result != prof.which:
                         continue
 
-            if any([
+            if any((
                 prof.name is not None and command != prof.name,
                 prof.min_args is not None and prof.min_args > len(args),
-                prof.max_args is not None and prof.max_args < len(args),
-                prof.name_regex is not None and not prof.name_regex.fullmatch(command),
-            ]):
+                prof.max_args is not None and prof.max_args < len(args)
+            )):
                 continue
-
-            if not ProfileLoader.check_arg_patterns(
-                args,
-                prof.arg_patterns
-            ):
+            if prof.name_regex is not None and not prof.name_regex.fullmatch(command):
+                continue
+            if not ProfileLoader.check_arg_patterns(args, prof.arg_patterns):
                 continue
 
             matches.append(prof)
 
-        if len(matches) == 0:
-            return None
-        return matches[-1]
+        return matches[-1] if len(matches) > 0 else None
 
     def is_default_profile(self, profile: Profile) -> bool:
-        return all([
+        return all((
             profile == self.profile_default,
             profile.timestamp is False,
-        ])
+        ))
 
     @staticmethod
-    def check_arg_patterns(args: typing.List[str], arg_patterns: typing.Iterable[ArgPattern]) -> bool:
+    def check_arg_patterns(
+        args: typing.List[str],
+        arg_patterns: typing.Iterable[ArgPattern]
+    ) -> bool:
         default_match = True
         found_match = False
 
