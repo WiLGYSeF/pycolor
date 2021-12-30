@@ -38,7 +38,7 @@ class Pycolor:
 
         self._debug_file: io.TextIOWrapper = None
         if self.debug_log is not None:
-            self._debug_file = self.open_debug_file(self.debug_log)
+            self._debug_file = self._open_debug_file(self.debug_log)
 
         self.current_profile: Profile = None
 
@@ -58,24 +58,66 @@ class Pycolor:
         return self._profloader.profile_default
 
     def load_file(self, fname: str) -> None:
+        """Loads profiles from JSON file
+
+        Args:
+            fname (str): Filename
+        """
         self._profloader.load_file(fname)
 
-    def get_profile_by_name(self, name: str) -> Profile:
+    def get_profile_by_name(self, name: str) -> typing.Optional[Profile]:
+        """Gets loaded profile by name
+
+        Args:
+            name (str): Name of profile
+
+        Returns:
+            Profile: Profile with name, or None if not found
+        """
         return self._profloader.get_profile_by_name(name)
 
-    def get_profile_by_command(self, command: str, args: typing.List[str]) -> Profile:
+    def get_profile_by_command(self,
+        command: str,
+        args: typing.List[str]
+    ) -> typing.Optional[Profile]:
+        """Gets the loaded profile by command and its arguments
+
+        Args:
+            command (str): Command being run
+            args (list): Command arguments
+
+        Returns:
+            Profile: Last matching loaded profile, or null if not found
+        """
         return self._profloader.get_profile_by_command(command, args)
 
     def is_default_profile(self) -> bool:
+        """Checks if the profile is the default profile
+
+        Args:
+            profile (Profile): Profile to check
+
+        Returns:
+            bool: Returns true if the profile is the default profile
+        """
         return self._profloader.is_default_profile(self.current_profile)
 
-    def execute(self, cmd: typing.List[str], profile: Profile = None):
+    def execute(self, cmd: typing.List[str], profile: Profile = None) -> int:
+        """Executes the command
+
+        Args:
+            cmd (list): Command and arguments
+            profile (Profile): Optional profile to use
+
+        Returns:
+            int: Return code of command
+        """
         if profile is None:
             profile = self.get_profile_by_command(cmd[0], cmd[1:])
         profile = self.set_current_profile(profile)
 
         if self._debug_file:
-            self.debug_write_line('running %s' % cmd)
+            self._debug_write_line('running %s' % cmd)
 
         if self._profloader.is_default_profile(profile) and self.debug == 0 and self.execv:
             cmd_path = which(cmd[0])
@@ -83,7 +125,7 @@ class Pycolor:
                 cmd_path = cmd[0]
 
             if self._debug_file:
-                self.debug_write_line('calling os.execv(%s, %s)' % (cmd_path, cmd))
+                self._debug_write_line('calling os.execv(%s, %s)' % (cmd_path, cmd))
 
             try:
                 os.execv(cmd_path, cmd)
@@ -112,7 +154,13 @@ class Pycolor:
 
         return retcode
 
-    def data_callback(self, stream: io.IOBase, data: str) -> None:
+    def _data_callback(self, stream: io.IOBase, data: str) -> None:
+        """Internal data stream callback from executed command
+
+        Args:
+            stream (IOBase): Output stream
+            data (str): Data from stream callback
+        """
         removed_newline = False
         removed_carriagereturn = False
 
@@ -190,7 +238,7 @@ class Pycolor:
         self.debug_print(2, 'writing:  %s', encoded_data)
 
         if self.current_profile.timestamp:
-            self.write_timestamp(stream)
+            self._write_timestamp(stream)
 
         stream.flush()
         stream.buffer.write(encoded_data)
@@ -198,7 +246,12 @@ class Pycolor:
 
         self._color_state.set(data)
 
-    def write_timestamp(self, stream: io.IOBase) -> None:
+    def _write_timestamp(self, stream: io.IOBase) -> None:
+        """Write timestamp to stream
+
+        Args:
+            stream (IOBase): Output stream
+        """
         timestamp = TIMESTAMP_DEFAULT
         if isinstance(self.current_profile.timestamp, str):
             timestamp = self.current_profile.timestamp
@@ -212,10 +265,25 @@ class Pycolor:
         ))
 
     def set_current_profile(self, profile: typing.Optional[Profile]) -> Profile:
+        # TODO: property
+        """Sets the current profile
+
+        Args:
+            profile (Profile): New profile
+
+        Returns:
+            Profile: Current profile
+        """
         self.current_profile = profile if profile is not None else self._profloader.profile_default
         return self.current_profile
 
     def is_color_enabled(self) -> bool:
+        # TODO: optimize
+        """Checks if color is enabled
+
+        Returns:
+            bool: Returns true if color is enabled
+        """
         mode = self.color_mode.lower()
         if mode in ('always', 'on', '1'):
             return True
@@ -224,12 +292,20 @@ class Pycolor:
         return not self.is_being_redirected()
 
     def stdout_cb(self, data: str) -> None:
-        self.data_callback(self.stdout, data)
+        # TODO: private?
+        self._data_callback(self.stdout, data)
 
     def stderr_cb(self, data: str) -> None:
-        self.data_callback(self.stderr, data)
+        # TODO: private?
+        self._data_callback(self.stderr, data)
 
     def debug_print(self, lvl: int, val: str, *args) -> None:
+        """Debug print
+
+        Args:
+            lvl (int): Debug level of print
+            val (str): Debug string format
+        """
         if self.debug < lvl:
             return
 
@@ -245,12 +321,20 @@ class Pycolor:
         msg = val % args
 
         if self._debug_file is not None:
-            self.debug_write_line(msg)
+            self._debug_write_line(msg)
 
         if self._debug_file is None or self.debug_log_out:
             print('%s    DEBUG%d: %s%s' % (reset, lvl, msg, oldstate))
 
-    def open_debug_file(self, fname: str) -> io.TextIOWrapper:
+    def _open_debug_file(self, fname: str) -> io.TextIOWrapper:
+        """Open the debug file for writing
+
+        Args:
+            fname (str): Debug filename
+
+        Returns:
+            TextIOWrapper: debug file
+        """
         if self.debug == 0:
             self.debug = 1
         file_exists = os.path.isfile(fname)
@@ -260,11 +344,21 @@ class Pycolor:
             file.write('\n')
         return file
 
-    def debug_write_line(self, line: str) -> None:
+    def _debug_write_line(self, line: str) -> None:
+        """Write debug line to file
+
+        Args:
+            line (str): Debug string line
+        """
         self._debug_file.write('%s: %s\n' % (
             datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), line
         ))
         self._debug_file.flush()
 
     def is_being_redirected(self) -> bool:
+        """Checks if the output is being sent to a terminal or being redirected/piped
+
+        Returns:
+            bool: Returns true if the output is being redirected/piped
+        """
         return not self.stdout.isatty()

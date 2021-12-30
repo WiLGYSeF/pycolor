@@ -47,20 +47,10 @@ def printmsg(*args, **kwargs) -> None:
     print(string, **kwargs, file=sys.stderr)
 
 def printerr(*args, **kwargs) -> None:
-    printmsg(
-        *args,
-        prefix='error',
-        prefix_color='%Clr',
-        **kwargs
-    )
+    printmsg(*args, prefix='error', prefix_color='%Clr', **kwargs)
 
 def printwarn(*args, **kwargs) -> None:
-    printmsg(
-        *args,
-        prefix='warn',
-        prefix_color='%Cly',
-        **kwargs
-    )
+    printmsg(*args, prefix='warn', prefix_color='%Cly', **kwargs)
 
 def is_color_enabled(color: typing.Union[str, bool, None]) -> bool:
     if color in (True, 'always', 'on', '1'):

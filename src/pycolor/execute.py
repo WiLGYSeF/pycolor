@@ -31,6 +31,14 @@ BUFFER_SZ = 4098
 _Stream = typing.Union[io.IOBase, int]
 
 def _readlines(data: bytes) -> typing.Iterator[bytes]:
+    """Yields data line by line
+
+    Args:
+        data (bytes): Data
+
+    Returns:
+        Iterator: Lines from data
+    """
     datalen = len(data)
     len_m1 = datalen - 1
     last = 0
@@ -56,6 +64,18 @@ def read_stream(
     encoding: str = 'utf-8',
     last: bool = False
 ) -> typing.Optional[bool]:
+    """Handles buffered stream reading
+
+    Args:
+        stream (_Stream): Used only for storing bufferred data, not used for reading
+        callback (function): Callback function called with stream data line by line
+        data (bytes): Stream data
+        encoding (str): Stream data to string encoding for callback, default 'utf-8'
+        last (bool): Indicates if this will be the last call to read_stream for the stream
+
+    Returns:
+        bool: Returns true if the callback function was called, or None if EOF was reached
+    """
     did_callback = False
 
     def do_callback(data: bytes) -> None:
@@ -90,13 +110,41 @@ def read_stream(
     return did_callback
 
 def _is_buffer_empty(stream: _Stream) -> bool:
+    """Checks if the stream buffer is empty
+
+    Args:
+        stream (_Stream): Stream
+
+    Returns:
+        bool: Returns true if the stream buffer is empty
+    """
     return stream not in _buffers or len(_buffers[stream]) == 0
 
 def _is_eol(char: int) -> bool:
+    """Checks if the char is EOL
+
+    Args:
+        char (int): Character
+
+    Returns:
+        bool: Returns true if char is EOL
+    """
     # '\n' and '\r'
     return char == 10 or char == 13 #pylint: disable=consider-using-in
 
 def _is_eol_idx(string: bytes, len_m1: int, idx: int) -> typing.Union[bool, int]:
+    """Checks if the character at string index is EOL
+
+    Will check if the character at index is '\r', '\n', or '\r' and the next char is '\n'.
+
+    Args:
+        string (bytes): String
+        len_m1 (int): Last index of string
+        idx (int): Index of string to check for EOL
+
+    Returns:
+        int: Index of end EOL character, or False if not an EOL
+    """
     char = string[idx]
     if idx < len_m1 and char == 13 and string[idx + 1] == 10:
         return idx + 1
@@ -107,7 +155,22 @@ def execute(
     stdout_callback: typing.Callable[[str], None],
     stderr_callback: typing.Callable[[str], None],
     **kwargs
-) -> typing.Optional[int]:
+) -> int:
+    """Executes the command
+
+    Args:
+        cmd (list): Command and arguments
+        stdout_callback (function): Callback function for stream data from stdout
+        stderr_callback (function): Callback function for stream data from stderr
+
+        tty (bool): Enable TTY mode
+        encoding (str): Stream data to string encoding for callback, default 'utf-8'
+        interactive (bool): Enable interactive mode
+        stdin (_Stream): Stdin stream, defaults to sys.stdin
+
+    Returns:
+        int: Return code of command
+    """
     tty: bool = kwargs.get('tty', False)
     encoding: str = kwargs.get('encoding', 'utf-8')
     interactive: bool = kwargs.get('interactive', False)
@@ -136,6 +199,8 @@ def execute(
     if tty:
         # https://stackoverflow.com/a/31953436
         masters, slaves = zip(pty.openpty(), pty.openpty())
+
+    returncode = 0
 
     with ExitStack() as stack:
         stack.enter_context(_ignore_sigint())
@@ -217,8 +282,8 @@ def execute(
                 for fde in masters:
                     os.close(fde)
 
-            return process.poll()
-    return None
+            returncode = process.poll()
+    return returncode
 
 def _read_stream(stream: _Stream) -> typing.Optional[bytes]:
     if isinstance(stream, io.IOBase):

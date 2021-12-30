@@ -7,16 +7,7 @@ def debug_colors() -> None:
 
     print('styles:')
     for style in [
-        'nor',
-        'bol',
-        'dim',
-        'ita',
-        'und',
-        'bli',
-        'inv',
-        'hid',
-        'str',
-        'ove',
+        'nor', 'bol', 'dim', 'ita', 'und', 'bli', 'inv', 'hid', 'str', 'ove'
     ]:
         print(pyformat.fmt_str('%%C(%s) %s %%Cz' % (style, style)), end='')
     print(reset)
@@ -28,14 +19,7 @@ def debug_colors() -> None:
 
     def color_3bit(light: bool = False) -> None:
         colors = [
-            'black',
-            'red',
-            'green',
-            'yellow',
-            'blue',
-            'magenta',
-            'cyan',
-            'gray'
+            'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'gray'
         ]
 
         for i in range(2):
