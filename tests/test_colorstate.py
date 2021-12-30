@@ -205,8 +205,7 @@ GET_STRING = [
 class ColorStateTest(unittest.TestCase):
     def test_set_state_by_string(self):
         for entry in SET_STATE_BY_STRING:
-            state = colorstate.ColorState()
-            state.set_state_by_string(entry[STRING])
+            state = colorstate.ColorState(entry[STRING])
 
             expected_result = colorstate.DEFAULT_COLOR_STATE.copy()
             expected_result.update(entry[RESULT])
@@ -214,8 +213,7 @@ class ColorStateTest(unittest.TestCase):
 
     def test_set_state_by_codes(self):
         for entry in SET_STATE_BY_CODES:
-            state = colorstate.ColorState()
-            state.set_state_by_codes(entry[CODES])
+            state = colorstate.ColorState(entry[CODES])
 
             expected_result = colorstate.DEFAULT_COLOR_STATE.copy()
             expected_result.update(entry[RESULT])
@@ -235,7 +233,7 @@ class ColorStateTest(unittest.TestCase):
 
     def test_from_str(self):
         for entry in SET_STATE_BY_STRING:
-            state = colorstate.ColorState.from_str(entry[STRING])
+            state = colorstate.ColorState(entry[STRING])
             expected_result = colorstate.DEFAULT_COLOR_STATE.copy()
             expected_result.update(entry[RESULT])
             self.assertDictEqual(state.color_state, expected_result)

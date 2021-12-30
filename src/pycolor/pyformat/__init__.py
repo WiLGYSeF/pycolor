@@ -101,7 +101,7 @@ def _do_format_color(value: str, context: dict, **kwargs) -> str:
         state = ctx_color['state'] if 'state' in ctx_color else ColorState()
 
         if 'string' in context:
-            state.set_state_by_string(
+            state.set(
                 insert_color_data(
                     context['string'],
                     ctx_color.get('positions', {}),
@@ -119,7 +119,7 @@ def _do_format_color(value: str, context: dict, **kwargs) -> str:
 
         curstate = get_state(context)
         if newstring is not None:
-            curstate.set_state_by_string(
+            curstate.set(
                 insert_color_data(newstring, color_positions)
             )
         return ColorState().get_string(

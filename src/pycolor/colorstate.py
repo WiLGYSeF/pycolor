@@ -73,50 +73,52 @@ class ColorState:
             self.set(state)
 
     def reset(self) -> None:
+        """Resets ColorState to default
+        """
         self.color_state = DEFAULT_COLOR_STATE.copy()
         self.state_changed = set()
 
     def copy(self) -> 'ColorState':
+        """Copies the ColorState
+
+        Returns:
+            ColorState: Copied ColorState
+        """
         return ColorState(self.color_state)
 
     def set(self, value: typing.Union['ColorState', dict, str, list, tuple]) -> None:
         if isinstance(value, ColorState):
-            self.set_state_by_state(value)
+            self._set_state_by_state(value)
         elif isinstance(value, dict):
-            self.set_state_by_dict(value)
+            self._set_state_by_dict(value)
         elif isinstance(value, str):
-            self.set_state_by_string(value)
+            self._set_state_by_string(value)
         elif isinstance(value, (list, tuple)):
-            self.set_state_by_codes(value)
+            self._set_state_by_codes(value)
         else:
             raise ValueError()
 
-    def set_state_by_state(self, state: 'ColorState') -> None:
-        for key, val in state.color_state.items():
-            self.color_state[key] = val
-        for val in state.state_changed:
-            self.state_changed.add(val)
+    def _set_state_by_state(self, state: 'ColorState') -> None:
+        self.color_state.update(state.color_state)
+        self.state_changed |= state.state_changed
 
-    def set_state_by_dict(self, dct: dict) -> None:
-        for key, val in dct.items():
-            self.color_state[key] = val
-            self.state_changed.add(key)
+    def _set_state_by_dict(self, dct: dict) -> None:
+        self.color_state.update(dct)
+        self.state_changed.update(*dct.keys())
 
-    def set_state_by_string(self, string: str) -> None:
+    def _set_state_by_string(self, string: str) -> None:
         codelist = []
         for match in ANSI_REGEX.finditer(string):
-            codes = list(map(
+            codelist.extend(self._set_special_color_states(list(map(
                 lambda x: int(x),
                 filter(
                     lambda x: len(x) != 0,
                     match[1].split(';')
                 )
-            ))
-            codelist.extend(self.set_special_color_states(codes))
+            ))))
+        self._set_state_by_codes(codelist)
 
-        self.set_state_by_codes(codelist)
-
-    def set_special_color_states(self, codes: typing.List[int]) -> typing.List[int]:
+    def _set_special_color_states(self, codes: typing.List[int]) -> typing.List[int]:
         newcodes = []
 
         codelen = len(codes)
@@ -127,7 +129,6 @@ class ColorState:
                 newcodes.append(code)
                 i += 1
                 continue
-
             if i + 1 == codelen:
                 break
 
@@ -142,12 +143,7 @@ class ColorState:
             elif codes[i + 1] == 2:
                 if i + 4 < codelen:
                     if codes[i + 2] < 256 and codes[i + 3] < 256 and codes[i + 4] < 256:
-                        color = '%d;2;%d;%d;%d' % (
-                            code,
-                            codes[i + 2],
-                            codes[i + 3],
-                            codes[i + 4]
-                        )
+                        color = '%d;2;%d;%d;%d' % (code, codes[i + 2], codes[i + 3], codes[i + 4])
                     i += 4
                 else:
                     i = codelen
@@ -173,7 +169,7 @@ class ColorState:
 
         return newcodes
 
-    def set_state_by_codes(self, codes: typing.Iterable[int]) -> None:
+    def _set_state_by_codes(self, codes: typing.Iterable[int]) -> None:
         for code in codes:
             if code == 0:
                 self.reset()
@@ -193,13 +189,10 @@ class ColorState:
                 self.state_changed.add(COLOR_BACKGROUND)
 
     def diff_keys(self, state: 'ColorState') -> typing.List[str]:
-        diff_keys = []
-
-        for key, val in self.color_state.items():
-            if val != state.color_state[key]:
-                diff_keys.append(key)
-
-        return diff_keys
+        return list(map(lambda t: t[0], filter(
+            lambda t: t[1] != state.color_state[t[0]],
+            ( t for t in self.color_state.items() )
+        )))
 
     def get_state_by_keys(self, keys: typing.Iterable[str]) -> dict:
         state = {}
@@ -214,26 +207,16 @@ class ColorState:
 
     def get_string(self, compare_state: typing.Optional['ColorState'] = None) -> str:
         state = self.get_changed_state(compare_state)
-        codes = []
-
-        for key, val in pyformat.color.STYLES.items():
-            if key in state:
-                if state[key]:
-                    codes.append(str(val))
-                else:
-                    codes.append(str(val + 20))
+        codes = list(map(
+            lambda t: str(t[1] + 20 * int(not bool(state[t[0]]))),
+            filter(lambda t: t[0] in state, pyformat.color.STYLES.items())
+        ))
 
         if COLOR_FOREGROUND in state:
             codes.append(state[COLOR_FOREGROUND])
         if COLOR_BACKGROUND in state:
             codes.append(state[COLOR_BACKGROUND])
         return '\x1b[%sm' % ';'.join(codes) if len(codes) != 0 else ''
-
-    @staticmethod
-    def from_str(string: str) -> 'ColorState':
-        state = ColorState()
-        state.set_state_by_string(string)
-        return state
 
     def __str__(self) -> str:
         return self.get_string()

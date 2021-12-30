@@ -24,7 +24,7 @@ def apply_pattern(pat: Pattern, data: str, context: dict) -> typing.Tuple[bool, 
 
     if pat.separator_regex is not None:
         fields = re_split(pat.separator_regex, data)
-        field_idxs = pat.get_field_indexes(fields)
+        field_idxs = pat.get_field_indexes(len(fields))
         context['fields'] = fields
 
     if pat.separator_regex is None or all((

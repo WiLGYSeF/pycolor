@@ -4,7 +4,7 @@ from . import (
     BreakableStr,
     ConfigPropertyError,
     compile_re,
-    join_str_list,
+    join_bkstr,
     load_schema,
     mutually_exclusive,
 )
@@ -13,7 +13,7 @@ from .fromprofile import FromProfile
 from .pattern import Pattern
 
 class Profile:
-    def __init__(self, cfg, loader=None):
+    def __init__(self, cfg: dict, loader: 'ProfileLoader' = None):
         self.enabled: bool = True
         self.name: typing.Optional[str] = None
         self.command: typing.Optional[str] = None
@@ -37,9 +37,9 @@ class Profile:
         self._from_profiles: typing.Union[typing.List[dict], dict, str] = []
         self.patterns: typing.List[dict] = []
 
-        self.loader = loader
-        self._loaded_patterns = []
-        self.patterns_loaded = False
+        self._loader: 'ProfileLoader' = loader
+        self._loaded_patterns: typing.List[Pattern] = []
+        self._patterns_loaded: bool = False
 
         self.from_profile_str: typing.Optional[str] = None
 
@@ -47,8 +47,8 @@ class Profile:
         mutually_exclusive(self, ['name', 'command'])
         mutually_exclusive(self, ['_name_expression', '_command_expression'])
 
-        self.name_expression: typing.Optional[str] = join_str_list(self._name_expression)
-        self.command_expression: typing.Optional[str] = join_str_list(self._command_expression)
+        self.name_expression: typing.Optional[str] = join_bkstr(self._name_expression)
+        self.command_expression: typing.Optional[str] = join_bkstr(self._command_expression)
 
         if self.name is None:
             self.name = self.command
@@ -76,11 +76,13 @@ class Profile:
 
     @property
     def loaded_patterns(self) -> typing.List[Pattern]:
-        if not self.patterns_loaded:
+        if not self._patterns_loaded:
             self.load_patterns()
         return self._loaded_patterns
 
     def load_patterns(self) -> None:
+        """Load patterns
+        """
         idx = 0
         for pattern in self.patterns:
             pat = Pattern(pattern)
@@ -88,11 +90,16 @@ class Profile:
             self._loaded_patterns.append(pat)
             idx += 1
 
-        if self.loader is not None:
-            self.loader.include_from_profile(self._loaded_patterns, self.from_profiles)
-        self.patterns_loaded = True
+        if self._loader is not None:
+            self._loader.include_from_profile(self._loaded_patterns, self.from_profiles)
+        self._patterns_loaded = True
 
     def get_name(self) -> typing.Optional[str]:
+        """Gets the profile name
+
+        Returns:
+            str: Profile name
+        """
         for name in [
             self.profile_name,
             self.which,

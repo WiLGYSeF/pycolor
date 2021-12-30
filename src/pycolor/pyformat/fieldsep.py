@@ -7,7 +7,7 @@ def get_field_range(number: str, length: int) -> typing.Tuple[int, int, int]:
 
     if '*' not in number:
         start = int(number)
-        if start < 0:
+        while start < 0:
             start += last_field_num + 1
         start = num_to_idx(start)
         return start, start, 1
@@ -21,7 +21,7 @@ def get_field_range(number: str, length: int) -> typing.Tuple[int, int, int]:
 
     if len(end_str) != 0:
         end = int(end_str)
-        if end < 0:
+        while end < 0:
             end += last_field_num + 1
         end = min(num_to_idx(end), length)
     else:

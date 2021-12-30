@@ -3,7 +3,7 @@ import typing
 
 class Flag:
     def __init__(self):
-        self.value = None # type: typing.Any
+        self.value: typing.Any = None
 
     def set(self, value: typing.Any = 1) -> None:
         self.value = value

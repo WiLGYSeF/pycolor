@@ -196,7 +196,7 @@ class Pycolor:
         stream.buffer.write(encoded_data)
         stream.flush()
 
-        self._color_state.set_state_by_string(data)
+        self._color_state.set(data)
 
     def write_timestamp(self, stream: io.IOBase) -> None:
         timestamp = TIMESTAMP_DEFAULT

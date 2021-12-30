@@ -5,7 +5,7 @@ from . import (
     BreakableStr,
     ConfigPropertyError,
     compile_re,
-    join_str_list,
+    join_bkstr,
     load_schema,
     mutually_exclusive,
 )
@@ -25,7 +25,7 @@ class ArgPattern:
         load_schema('argpattern', cfg, self)
         mutually_exclusive(self, ['_expression', '_subcommand'])
 
-        self.expression: typing.Optional[str] = join_str_list(self._expression)
+        self.expression: typing.Optional[str] = join_bkstr(self._expression)
         self.regex: typing.Optional[re.Pattern] = compile_re(self.expression, 'expression')
 
         self.subcommand: typing.List[str] = []
@@ -41,7 +41,7 @@ class ArgPattern:
         """Returns a range of argument indicies that position matches
 
         Args:
-            arglen (int): The length of the arguments
+            arglen (int): Length of the arguments
 
         Returns:
             range: Range of matching indicies
@@ -63,8 +63,8 @@ class ArgPattern:
             return range(arglen)
 
         idx = int(index)
-        arg_range = range(0)
         modifier = match[1]
+        arg_range = range(0)
 
         if modifier is None:
             arg_range = range(idx - 1, min(idx, arglen))

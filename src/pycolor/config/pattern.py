@@ -5,7 +5,7 @@ from . import (
     BreakableStr,
     ConfigPropertyError,
     compile_re,
-    join_str_list,
+    join_bkstr,
     load_schema,
     mutually_exclusive,
 )
@@ -38,13 +38,13 @@ class Pattern:
         self.stderr_only: bool = False
         self.skip_others: bool = False
 
-        self.activation_line: typing.Union[typing.List[int], int] = -1
-        self.deactivation_line: typing.Union[typing.List[int], int] = -1
+        self._activation_line: typing.Union[typing.List[int], int] = -1
+        self._deactivation_line: typing.Union[typing.List[int], int] = -1
 
         self._activation_expression: BreakableStr = None
         self._deactivation_expression: BreakableStr = None
-        self.activation_expression_line_offset: int = 0
-        self.deactivation_expression_line_offset: int = 0
+        self._activation_expression_line_offset: int = 0
+        self._deactivation_expression_line_offset: int = 0
 
         self.active: bool = True
         self.regex: typing.Optional[re.Pattern] = None
@@ -52,8 +52,8 @@ class Pattern:
         self.separator_regex: typing.Optional[re.Pattern] = None
         self.activation_regex: typing.Optional[re.Pattern] = None
         self.deactivation_regex: typing.Optional[re.Pattern] = None
-        self.activation_exp_line_off: int = 0
-        self.deactivation_exp_line_off: int = 0
+        self._activation_exp_line_off: int = 0
+        self._deactivation_exp_line_off: int = 0
         self.from_profile_str: typing.Optional[str] = None
 
         load_schema('pattern', cfg, self)
@@ -61,20 +61,20 @@ class Pattern:
         mutually_exclusive(self, ['field', 'replace_groups'])
         mutually_exclusive(self, ['stdout_only', 'stderr_only'])
 
-        self.super_expression: typing.Optional[str] = join_str_list(self._super_expression)
-        self.expression: typing.Optional[str] = join_str_list(self._expression)
-        self.separator: typing.Optional[str] = join_str_list(self._separator)
-        self.replace: typing.Optional[str] = join_str_list(self._replace)
-        self.replace_all: typing.Optional[str] = join_str_list(self._replace_all)
-        self.activation_expression: typing.Optional[str] = join_str_list(self._activation_expression)
-        self.deactivation_expression: typing.Optional[str] = join_str_list(self._deactivation_expression)
+        self.super_expression: typing.Optional[str] = join_bkstr(self._super_expression)
+        self.expression: typing.Optional[str] = join_bkstr(self._expression)
+        self.separator: typing.Optional[str] = join_bkstr(self._separator)
+        self.replace: typing.Optional[str] = join_bkstr(self._replace)
+        self.replace_all: typing.Optional[str] = join_bkstr(self._replace_all)
+        self.activation_expression: typing.Optional[str] = join_bkstr(self._activation_expression)
+        self.deactivation_expression: typing.Optional[str] = join_bkstr(self._deactivation_expression)
 
         def as_list(var):
             return var if isinstance(var, list) else [ var ]
 
-        self.activation_ranges = Pattern.get_activation_ranges(
-            as_list(self.activation_line),
-            as_list(self.deactivation_line),
+        self.activation_ranges: typing.List[typing.Tuple[int, bool]] = Pattern.get_activation_ranges(
+            as_list(self._activation_line),
+            as_list(self._deactivation_line),
         )
         if len(self.activation_ranges) != 0:
             self.active = False
@@ -86,10 +86,7 @@ class Pattern:
             self.activation_regex = compile_re(self.activation_expression, 'activation_expression')
             self.active = False
         if self.deactivation_expression is not None:
-            self.deactivation_regex = compile_re(
-                self.deactivation_expression,
-                'deactivation_expression'
-            )
+            self.deactivation_regex = compile_re(self.deactivation_expression, 'deactivation_expression')
 
         if self.separator is not None and len(self.separator) != 0:
             self.separator_regex = compile_re(self.separator, 'separator')
@@ -102,16 +99,16 @@ class Pattern:
         if self.min_fields != -1 and self.max_fields != -1 and self.min_fields > self.max_fields:
             raise ConfigPropertyError('min_fields', 'cannot be larger than max_fields')
 
-    def get_field_indexes(self, fields: typing.List[str]) -> range:
-        """Returns a range of field indicies that field matches
+    def get_field_indexes(self, fields_len: int) -> range:
+        """Returns a range of field indicies that `field` matches
 
         Args:
-            fields (list): Fields
+            fields_len (int): Number of fields
 
         Returns:
             range: The range of fields
         """
-        fieldcount = pyformat.fieldsep.idx_to_num(len(fields))
+        fieldcount = pyformat.fieldsep.idx_to_num(fields_len)
         if self.min_fields > fieldcount or (
             self.max_fields > 0 and self.max_fields < fieldcount
         ):
@@ -122,54 +119,59 @@ class Pattern:
                 return range(0)
             idx = pyformat.fieldsep.num_to_idx(self.field)
             return range(idx, idx + 1)
-        return range(0, len(fields), 2)
+        return range(0, fields_len, 2)
 
     @staticmethod
-    def get_activation_ranges(activations, deactivations):
-        ranges = []
-        if activations is not None and len(activations) != 0 and activations[0] is not None:
-            ranges.extend(map(lambda x: (x, True), activations))
-        if deactivations is not None and len(deactivations) != 0 and deactivations[0] is not None:
-            ranges.extend(map(lambda x: (x, False), deactivations))
+    def get_activation_ranges(
+        activations: typing.List[int],
+        deactivations: typing.List[int]
+    ) -> typing.List[typing.Tuple[int, bool]]:
+        """Takes an activation and deactivation line list and converts it to a list of lines with (de)activations
 
+        Args:
+            activations (list): Activation line list
+            deactivations (list): Deactivation line list
+
+        Returns:
+            list: (De)activation lines
+        """
+        ranges = [
+            *map(lambda x: (x, True), filter(lambda x: x >= 0, activations)),
+            *map(lambda x: (x, False), filter(lambda x: x >= 0, deactivations))
+        ]
         ranges.sort(key=lambda x: x[0])
 
-        idx = 0
-        while idx < len(ranges) and ranges[idx][0] < 0:
-            idx += 1
-        if idx == len(ranges):
+        if len(ranges) == 0:
             return []
-
-        new_ranges = [ ranges[idx] ]
-
-        while idx < len(ranges):
-            if all((
-                ranges[idx][0] >= 0,
-                ranges[idx][0] != new_ranges[-1][0],
-                ranges[idx][1] != new_ranges[-1][1]
-            )):
-                new_ranges.append(ranges[idx])
-            idx += 1
-
+            
+        new_ranges = [ ranges[0] ]
+        for line, active in ranges:
+            if line != new_ranges[-1][0] and active != new_ranges[-1][1]:
+                new_ranges.append((line, active))
         return new_ranges
 
     def is_active(self, linenum: int, data: str) -> bool:
-        def active() -> bool:
-            self.active = True
-            return True
+        """Determines if pattern is active
 
-        def inactive() -> bool:
-            self.active = False
-            return False
+        Args:
+            linenum (int): Current line number
+            data (str): Current line string
 
-        if self.deactivation_exp_line_off > 0:
-            self.deactivation_exp_line_off -= 1
-            if self.deactivation_exp_line_off == 0:
-                return inactive()
-        if self.activation_exp_line_off > 0:
-            self.activation_exp_line_off -= 1
-            if self.activation_exp_line_off == 0:
-                return active()
+        Returns:
+            bool: Returns if the pattern is active
+        """
+        def set_active(val: bool) -> bool:
+            self.active = val
+            return val
+
+        if self._deactivation_exp_line_off > 0:
+            self._deactivation_exp_line_off -= 1
+            if self._deactivation_exp_line_off == 0:
+                return set_active(False)
+        if self._activation_exp_line_off > 0:
+            self._activation_exp_line_off -= 1
+            if self._activation_exp_line_off == 0:
+                return set_active(True)
 
         if len(self.activation_ranges) != 0:
             idx, result = bsearch_closest(
@@ -186,19 +188,18 @@ class Pattern:
             else:
                 is_active = self.activation_ranges[idx][1]
             if is_active != self.active:
-                self.active = is_active
-                return is_active
+                return set_active(is_active)
 
-        if self.active or self.deactivation_expression_line_offset > 0:
+        if self.active or self._deactivation_expression_line_offset > 0:
             if self.deactivation_regex is not None and re.search(self.deactivation_regex, data):
-                if self.deactivation_expression_line_offset == 0:
-                    return inactive()
-                self.deactivation_exp_line_off = self.deactivation_expression_line_offset
-        if not self.active or self.activation_expression_line_offset > 0:
+                if self._deactivation_expression_line_offset == 0:
+                    return set_active(False)
+                self._deactivation_exp_line_off = self._deactivation_expression_line_offset
+        if not self.active or self._activation_expression_line_offset > 0:
             if self.activation_regex is not None and re.search(self.activation_regex, data):
-                if self.activation_expression_line_offset == 0:
-                    return active()
-                self.activation_exp_line_off = self.activation_expression_line_offset
+                if self._activation_expression_line_offset == 0:
+                    return set_active(True)
+                self._activation_exp_line_off = self._activation_expression_line_offset
 
         return self.active
 
@@ -211,11 +212,11 @@ def bsearch_closest(
 
     Args:
         arr (list): Array of values
-        val: Value to search for
-        cmp_fnc (function): The compare function
+        val (Any): Value to search for
+        cmp_fnc (function): Compare function
 
     Returns:
-        int: The index of the matching or closest matching value
+        int: Index of the matching or closest matching value
     """
     low, mid, high = 0, 0, len(arr) - 1
     while low <= high:
