@@ -48,4 +48,9 @@ RE_SPLIT_RESULTS = [
 class SplitTest(unittest.TestCase):
     def test_re_split(self):
         for entry in RE_SPLIT_RESULTS:
-            self.assertListEqual(re_split(entry[SEP], entry[STRING]), entry[RESULT])
+            sep = entry[SEP]
+            regex = re.compile(sep) if isinstance(sep, str) else sep
+            self.assertListEqual(
+                list(re_split(regex, entry[STRING])),
+                entry[RESULT]
+            )

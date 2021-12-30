@@ -23,7 +23,7 @@ def apply_pattern(pat: Pattern, data: str, context: dict) -> typing.Tuple[bool, 
     field_idxs: range = range(0)
 
     if pat.separator_regex is not None:
-        fields = re_split(pat.separator_regex, data)
+        fields = list(re_split(pat.separator_regex, data))
         field_idxs = pat.get_field_indexes(len(fields))
         context['fields'] = fields
 
