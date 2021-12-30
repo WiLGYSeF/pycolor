@@ -5,20 +5,19 @@ import unittest
 
 from src.pycolor import execute
 
-
 class ExecuteTest(unittest.TestCase):
     def test_execute_date(self):
         def stdout_cb(data):
             self.assertEqual(
-                data,
-                datetime.datetime.now().strftime('%Y%m%d%H%M%S\n')
+                datetime.datetime.now().strftime('%Y%m%d%H%M%S\n'),
+                data
             )
 
         def stderr_cb(data):
             self.assertFalse(True)
 
         returncode = execute.execute(['date', '+%Y%m%d%H%M%S'], stdout_cb, stderr_cb)
-        self.assertEqual(returncode, 0)
+        self.assertEqual(0, returncode)
 
     def test_is_buffer_empty(self):
         stream = io.BytesIO()
@@ -32,7 +31,7 @@ class ExecuteTest(unittest.TestCase):
         did_callback = execute.read_stream(stream, lambda x: None, stream.read())
         self.assertFalse(did_callback)
         self.assertFalse(execute._is_buffer_empty(stream))
-        self.assertEqual(execute._buffers[stream], test_data)
+        self.assertEqual(test_data, execute._buffers[stream])
 
         def set_output(data):
             nonlocal output
@@ -43,5 +42,4 @@ class ExecuteTest(unittest.TestCase):
         did_callback = execute.read_stream(stream, set_output, stream.read())
         self.assertTrue(did_callback)
         self.assertTrue(execute._is_buffer_empty(stream))
-        self.assertTrue(len(execute._buffers[stream]) == 0)
-        self.assertEqual(output.encode(), test_data + b'\n')
+        self.assertEqual(test_data + b'\n', output.encode())
