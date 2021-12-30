@@ -12,9 +12,7 @@ from tests.helpers import check_pycolor_main
 from tests.testutils import patch
 from src.pycolor import __main__ as pycolor
 
-
 MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_data')
-
 
 class PycolorTest(unittest.TestCase):
     def test_load_sample_config(self):

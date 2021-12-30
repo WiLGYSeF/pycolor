@@ -2,8 +2,6 @@ import unittest
 
 from src.pycolor.search_replace import search_replace
 
-
-# TODO: more test cases
 class SearchReplaceTest(unittest.TestCase):
     def test_same_length_single(self):
         newstring, replace_ranges = search_replace(
@@ -11,13 +9,13 @@ class SearchReplaceTest(unittest.TestCase):
             'hello world',
             'wwo'
         )
-        self.assertEqual(newstring, 'hewwo world')
-        self.assertListEqual(replace_ranges, [
+        self.assertEqual('hewwo world', newstring)
+        self.assertListEqual([
             (
                 (2, 5),
                 (2, 5)
             )
-        ])
+        ], replace_ranges)
 
     def test_same_length_two(self):
         newstring, replace_ranges = search_replace(
@@ -25,8 +23,8 @@ class SearchReplaceTest(unittest.TestCase):
             'hello world',
             '##'
         )
-        self.assertEqual(newstring, 'h##lo wo##d')
-        self.assertListEqual(replace_ranges, [
+        self.assertEqual('h##lo wo##d', newstring)
+        self.assertListEqual([
             (
                 (1, 3),
                 (1, 3)
@@ -35,7 +33,7 @@ class SearchReplaceTest(unittest.TestCase):
                 (8, 10),
                 (8, 10)
             )
-        ])
+        ], replace_ranges)
 
     def test_same_length_multi(self):
         newstring, replace_ranges = search_replace(
@@ -43,8 +41,8 @@ class SearchReplaceTest(unittest.TestCase):
             'hello world',
             '##'
         )
-        self.assertEqual(newstring, 'he####o wor##d')
-        self.assertListEqual(replace_ranges, [
+        self.assertEqual('he####o wor##d', newstring)
+        self.assertListEqual([
             (
                 (2, 3),
                 (2, 4)
@@ -57,7 +55,7 @@ class SearchReplaceTest(unittest.TestCase):
                 (9, 10),
                 (11, 13)
             )
-        ])
+        ], replace_ranges)
 
     def test_shorter_single(self):
         newstring, replace_ranges = search_replace(
@@ -65,13 +63,13 @@ class SearchReplaceTest(unittest.TestCase):
             'hello world',
             '#'
         )
-        self.assertEqual(newstring, 'h# world')
-        self.assertListEqual(replace_ranges, [
+        self.assertEqual('h# world', newstring)
+        self.assertListEqual([
             (
                 (1, 5),
                 (1, 2)
             )
-        ])
+        ], replace_ranges)
 
     def test_shorter_two(self):
         newstring, replace_ranges = search_replace(
@@ -79,8 +77,8 @@ class SearchReplaceTest(unittest.TestCase):
             'hello world',
             '#'
         )
-        self.assertEqual(newstring, 'he# wor#')
-        self.assertListEqual(replace_ranges, [
+        self.assertEqual('he# wor#', newstring)
+        self.assertListEqual([
             (
                 (2, 5),
                 (2, 3)
@@ -89,7 +87,7 @@ class SearchReplaceTest(unittest.TestCase):
                 (9, 11),
                 (7, 8)
             )
-        ])
+        ], replace_ranges)
 
     def test_longer_single(self):
         newstring, replace_ranges = search_replace(
@@ -97,13 +95,13 @@ class SearchReplaceTest(unittest.TestCase):
             'hello world',
             '####'
         )
-        self.assertEqual(newstring, '####llo world')
-        self.assertListEqual(replace_ranges, [
+        self.assertEqual('####llo world', newstring)
+        self.assertListEqual([
             (
                 (0, 2),
                 (0, 4)
             )
-        ])
+        ], replace_ranges)
 
     def test_longer_two(self):
         newstring, replace_ranges = search_replace(
@@ -111,8 +109,8 @@ class SearchReplaceTest(unittest.TestCase):
             'hello world',
             '1234'
         )
-        self.assertEqual(newstring, '1234ello1234orld')
-        self.assertListEqual(replace_ranges, [
+        self.assertEqual('1234ello1234orld', newstring)
+        self.assertListEqual([
             (
                 (0, 1),
                 (0, 4)
@@ -121,7 +119,7 @@ class SearchReplaceTest(unittest.TestCase):
                 (5, 7),
                 (8, 12)
             )
-        ])
+        ], replace_ranges)
 
     def test_two(self):
         newstring, replace_ranges = search_replace(
@@ -129,8 +127,8 @@ class SearchReplaceTest(unittest.TestCase):
             'hello world',
             '1234'
         )
-        self.assertEqual(newstring, '1234ello1234orld')
-        self.assertListEqual(replace_ranges, [
+        self.assertEqual('1234ello1234orld', newstring)
+        self.assertListEqual([
             (
                 (0, 1),
                 (0, 4)
@@ -139,15 +137,15 @@ class SearchReplaceTest(unittest.TestCase):
                 (5, 7),
                 (8, 12)
             )
-        ])
+        ], replace_ranges)
 
         newstring, replace_ranges = search_replace(
             r'l+[a-z]',
             newstring,
             '#'
         )
-        self.assertEqual(newstring, '1234e#1234or#')
-        self.assertListEqual(replace_ranges, [
+        self.assertEqual('1234e#1234or#', newstring)
+        self.assertListEqual([
             (
                 (5, 8),
                 (5, 6)
@@ -156,7 +154,7 @@ class SearchReplaceTest(unittest.TestCase):
                 (14, 16),
                 (12, 13)
             )
-        ])
+        ], replace_ranges)
 
     def test_longer_two_ignore_first_between(self):
         newstring, replace_ranges = search_replace(
@@ -167,13 +165,13 @@ class SearchReplaceTest(unittest.TestCase):
                 (0, 2)
             ]
         )
-        self.assertEqual(newstring, 'hello1234orld')
-        self.assertListEqual(replace_ranges, [
+        self.assertEqual('hello1234orld', newstring)
+        self.assertListEqual([
             (
                 (5, 7),
                 (5, 9)
             )
-        ])
+        ], replace_ranges)
 
     def test_longer_two_ignore_second_between(self):
         newstring, replace_ranges = search_replace(
@@ -184,13 +182,13 @@ class SearchReplaceTest(unittest.TestCase):
                 (4, 6)
             ]
         )
-        self.assertEqual(newstring, '1234ello world')
-        self.assertListEqual(replace_ranges, [
+        self.assertEqual('1234ello world', newstring)
+        self.assertListEqual([
             (
                 (0, 1),
                 (0, 4)
             )
-        ])
+        ], replace_ranges)
 
     def test_longer_two_ignore_all_between(self):
         newstring, replace_ranges = search_replace(
@@ -202,8 +200,8 @@ class SearchReplaceTest(unittest.TestCase):
                 (4, 6)
             ]
         )
-        self.assertEqual(newstring, 'hello world')
-        self.assertListEqual(replace_ranges, [])
+        self.assertEqual('hello world', newstring)
+        self.assertListEqual([], replace_ranges)
 
     def test_two_start_occurrence_two(self):
         newstring, replace_ranges = search_replace(
@@ -212,13 +210,13 @@ class SearchReplaceTest(unittest.TestCase):
             '#',
             start_occurrence=2
         )
-        self.assertEqual(newstring, 'hello w#rld')
-        self.assertListEqual(replace_ranges, [
+        self.assertEqual('hello w#rld', newstring)
+        self.assertListEqual([
             (
                 (7, 8),
                 (7, 8)
             )
-        ])
+        ], replace_ranges)
 
     def test_two_max_count_one(self):
         newstring, replace_ranges = search_replace(
@@ -227,13 +225,13 @@ class SearchReplaceTest(unittest.TestCase):
             '#',
             max_count=1
         )
-        self.assertEqual(newstring, 'hell# world')
-        self.assertListEqual(replace_ranges, [
+        self.assertEqual('hell# world', newstring)
+        self.assertListEqual([
             (
                 (4, 5),
                 (4, 5)
             )
-        ])
+        ], replace_ranges)
 
     def test_replace_all_ignore_between(self):
         newstring, replace_ranges = search_replace(
@@ -244,5 +242,5 @@ class SearchReplaceTest(unittest.TestCase):
                 (3, 8)
             ]
         )
-        self.assertEqual(newstring, 'hello world')
-        self.assertListEqual(replace_ranges, [])
+        self.assertEqual('hello world', newstring)
+        self.assertListEqual([], replace_ranges)
