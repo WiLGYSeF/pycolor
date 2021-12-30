@@ -116,7 +116,7 @@ def main(
                 printerr(cex)
                 sys.exit(1)
 
-        pycobj.set_current_profile(profile)
+        pycobj.current_profile = profile
         if len(cmd_args) == 0 and pycobj.is_default_profile():
             parser.print_help()
             sys.exit(1)

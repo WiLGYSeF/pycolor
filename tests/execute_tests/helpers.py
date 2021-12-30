@@ -69,7 +69,7 @@ def check_pycolor_stdin(self,
     stdin = io.TextIOWrapper(io.BytesIO(stdin_data if stdin_data is not None else b''))
     output_expected = read_file(filename_prefix + '.out.txt')
 
-    pycobj.set_current_profile(pycobj.get_profile_by_name(profile_name))
+    pycobj.current_profile = pycobj.get_profile_by_name(profile_name)
     pycolor.read_input_stream(pycobj, stdin)
 
     test_stream(self,

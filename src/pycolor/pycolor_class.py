@@ -40,14 +40,17 @@ class Pycolor:
         if self.debug_log is not None:
             self._debug_file = self._open_debug_file(self.debug_log)
 
-        self.current_profile: Profile = None
+        self._profloader: ProfileLoader = ProfileLoader()
+        self._current_profile: Profile = None
 
         self._linenum: int = 0
 
         self._color_state_orig: ColorState = ColorState()
         self._color_state: ColorState = self._color_state_orig.copy()
 
-        self._profloader: ProfileLoader = ProfileLoader()
+    def __del__(self):
+        if self._debug_file is not None:
+            self._debug_file.close()
 
     @property
     def profiles(self):
@@ -56,6 +59,14 @@ class Pycolor:
     @property
     def profile_default(self):
         return self._profloader.profile_default
+
+    @property
+    def current_profile(self):
+        return self._current_profile
+
+    @current_profile.setter
+    def current_profile(self, val: Profile):
+        self._current_profile = val if val is not None else self._profloader.profile_default
 
     def load_file(self, fname: str) -> None:
         """Loads profiles from JSON file
@@ -100,7 +111,7 @@ class Pycolor:
         Returns:
             bool: Returns true if the profile is the default profile
         """
-        return self._profloader.is_default_profile(self.current_profile)
+        return self._profloader.is_default_profile(self._current_profile)
 
     def execute(self, cmd: typing.List[str], profile: Profile = None) -> int:
         """Executes the command
@@ -114,18 +125,16 @@ class Pycolor:
         """
         if profile is None:
             profile = self.get_profile_by_command(cmd[0], cmd[1:])
-        profile = self.set_current_profile(profile)
+        self.current_profile = profile
 
-        if self._debug_file:
-            self._debug_write_line('running %s' % cmd)
+        self._debug_write_line('running %s' % cmd)
 
-        if self._profloader.is_default_profile(profile) and self.debug == 0 and self.execv:
+        if self.is_default_profile() and self.debug == 0 and self.execv:
             cmd_path = which(cmd[0])
             if cmd_path is None:
                 cmd_path = cmd[0]
 
-            if self._debug_file:
-                self._debug_write_line('calling os.execv(%s, %s)' % (cmd_path, cmd))
+            self._debug_write_line('calling os.execv(%s, %s)' % (cmd_path, cmd))
 
             try:
                 os.execv(cmd_path, cmd)
@@ -133,26 +142,21 @@ class Pycolor:
                 printerr("command '%s' not found" % cmd_path)
             sys.exit(1)
 
-        self.debug_print(1, 'using profile "%s"', profile.get_name())
+        self.debug_print(1, 'using profile "%s"', self._current_profile.get_name())
 
-        profile.load_patterns()
+        self._current_profile.load_patterns()
 
         try:
-            retcode = execute.execute(
+            return execute.execute(
                 cmd,
                 self.stdout_cb,
                 self.stderr_cb,
-                tty=profile.tty,
-                interactive=profile.interactive,
+                tty=self._current_profile.tty,
+                interactive=self._current_profile.interactive,
             )
         except FileNotFoundError:
             printerr("command '%s' not found" % cmd[0])
             sys.exit(1)
-
-        if self._debug_file is not None:
-            self._debug_file.close()
-
-        return retcode
 
     def _data_callback(self, stream: io.IOBase, data: str) -> None:
         """Internal data stream callback from executed command
@@ -167,7 +171,7 @@ class Pycolor:
         self.debug_print(4, 'on line %d', self._linenum)
         self.debug_print(1, 'received: %s', data.encode('utf-8'))
 
-        if self.current_profile.remove_input_color:
+        if self._current_profile.remove_input_color:
             data = pyformat.color.remove_ansi_color(data)
 
         if len(data) != 0 and data[-1] == '\n':
@@ -182,13 +186,13 @@ class Pycolor:
         context = {
             'color': {
                 'enabled': self.is_color_enabled(),
-                'aliases': self.current_profile.color_aliases,
+                'aliases': self._current_profile.color_aliases,
                 'positions': color_positions,
             }
         }
         do_filter = False
 
-        for pat in self.current_profile.loaded_patterns:
+        for pat in self._current_profile.loaded_patterns:
             if any((
                 not pat.enabled,
                 pat.stdout_only and stream != self.stdout,
@@ -237,7 +241,7 @@ class Pycolor:
         encoded_data = data.encode('utf-8')
         self.debug_print(2, 'writing:  %s', encoded_data)
 
-        if self.current_profile.timestamp:
+        if self._current_profile.timestamp:
             self._write_timestamp(stream)
 
         stream.flush()
@@ -253,8 +257,8 @@ class Pycolor:
             stream (IOBase): Output stream
         """
         timestamp = TIMESTAMP_DEFAULT
-        if isinstance(self.current_profile.timestamp, str):
-            timestamp = self.current_profile.timestamp
+        if isinstance(self._current_profile.timestamp, str):
+            timestamp = self._current_profile.timestamp
 
         stream.write(self._color_state_orig.get_string(
             compare_state=self._color_state
@@ -263,19 +267,6 @@ class Pycolor:
         stream.write(self._color_state.get_string(
             compare_state=self._color_state_orig
         ))
-
-    def set_current_profile(self, profile: typing.Optional[Profile]) -> Profile:
-        # TODO: property
-        """Sets the current profile
-
-        Args:
-            profile (Profile): New profile
-
-        Returns:
-            Profile: Current profile
-        """
-        self.current_profile = profile if profile is not None else self._profloader.profile_default
-        return self.current_profile
 
     def is_color_enabled(self) -> bool:
         # TODO: optimize
@@ -350,10 +341,11 @@ class Pycolor:
         Args:
             line (str): Debug string line
         """
-        self._debug_file.write('%s: %s\n' % (
-            datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), line
-        ))
-        self._debug_file.flush()
+        if self._debug_file is not None:
+            self._debug_file.write('%s: %s\n' % (
+                datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), line
+            ))
+            self._debug_file.flush()
 
     def is_being_redirected(self) -> bool:
         """Checks if the output is being sent to a terminal or being redirected/piped
