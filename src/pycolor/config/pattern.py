@@ -143,7 +143,7 @@ class Pattern:
 
         if len(ranges) == 0:
             return []
-            
+
         new_ranges = [ ranges[0] ]
         for line, active in ranges:
             if line != new_ranges[-1][0] and active != new_ranges[-1][1]:

@@ -3,7 +3,6 @@ import unittest
 from src.pycolor.config import ConfigPropertyError
 from src.pycolor.config.profile import Profile
 
-
 class ProfileTest(unittest.TestCase):
     def test_profile_name_empty(self):
         prof = Profile({
