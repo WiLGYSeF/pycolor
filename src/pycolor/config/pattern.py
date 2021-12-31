@@ -11,6 +11,8 @@ from . import (
 )
 from .. import pyformat
 
+ReplaceGroup = typing.Dict[typing.Union[str, int], str]
+
 class Pattern:
     def __init__(self, cfg: dict):
         self.enabled: bool = True
@@ -26,11 +28,11 @@ class Pattern:
         self._replace_all: BreakableStr = None
         self.replace_groups: typing.Union[
             typing.List[str],
-            typing.Dict[typing.Union[int, str], str]
+            ReplaceGroup
         ] = {}
         self.replace_fields: typing.Union[
             typing.List[str],
-            typing.Dict[typing.Union[int, str], str]
+            ReplaceGroup
         ] = {}
         self.filter: bool = False
 

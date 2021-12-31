@@ -18,6 +18,15 @@ def format_string(
     string: str,
     context: dict = None
 ) -> typing.Tuple[str, typing.Dict[int, str]]:
+    """Formats string
+
+    Args:
+        string (str): Format string
+        context (dict): Context
+
+    Returns:
+        tuple: Formatted string and color positions dict
+    """
     if context is None:
         context = {}
 
@@ -65,6 +74,15 @@ def fmt_str(
     string: str,
     context: dict = None
 ) -> str:
+    """Format string
+
+    Args:
+        string (str): Format string
+        context (dict): Context
+
+    Returns:
+        str: Formatted string
+    """
     newstring, color_positions = format_string(string, context)
     return insert_color_data(newstring, color_positions)
 
@@ -72,13 +90,9 @@ def _do_format(formatter: str, value: str, context: dict, **kwargs) -> typing.Op
     if formatter == FORMAT_COLOR:
         return _do_format_color(value, context, **kwargs)
     if formatter == FORMAT_FIELD:
-        if 'fields' not in context:
-            return ''
-        return _do_format_field(value, context, **kwargs)
+        return _do_format_field(value, context, **kwargs) if 'fields' in context else ''
     if formatter == FORMAT_GROUP:
-        if 'match' not in context:
-            return ''
-        return _do_format_group(value, context, **kwargs)
+        return _do_format_group(value, context, **kwargs) if 'match' in context else ''
     if formatter == FORMAT_CONTEXT_COLOR:
         if 'match' in context and 'match_cur' in context:
             return _do_format_field_group_color(value, context, '%Gc',**kwargs)
@@ -119,17 +133,10 @@ def _do_format_color(value: str, context: dict, **kwargs) -> str:
 
         curstate = get_state(context)
         if newstring is not None:
-            curstate.set(
-                insert_color_data(newstring, color_positions)
-            )
-        return ColorState().get_string(
-            compare_state=curstate
-        )
+            curstate.set(insert_color_data(newstring, color_positions))
+        return ColorState().get_string(compare_state=curstate)
 
-    colorstr = color.get_color(
-        value,
-        aliases=ctx.get('aliases', {})
-    )
+    colorstr = color.get_color(value, aliases=ctx.get('aliases', {}))
     if colorstr is None:
         colorstr = ''
     return colorstr
@@ -184,7 +191,7 @@ def _do_format_padding(value: str, context: dict, **kwargs) -> str:
     value_sep = value.find(';')
     if value_sep != -1:
         try:
-            spl = value[0:value_sep].split(',')
+            spl = value[:value_sep].split(',')
             padcount = int(spl[0])
             padchar = ' ' if len(spl) == 1 else spl[1][0]
 

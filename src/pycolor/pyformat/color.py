@@ -110,9 +110,9 @@ def get_color(colorstr: str, aliases: typing.Dict[str, str] = None) -> typing.Op
     if match:
         return '\x1b[%sm' % match[1]
 
-    colors = list(filter(
+    colors: typing.List[str] = list(filter(
         lambda x: x is not None,
-        ( _colorval(clr, aliases) for clr in colorstr.split(';') )
+        ( _colorval(clr, aliases) for clr in colorstr.split(';') ) # type: ignore
     ))
 
     return '\x1b[%sm' % ';'.join(colors) if len(colors) != 0 else None

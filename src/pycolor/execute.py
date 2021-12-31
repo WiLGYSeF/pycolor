@@ -28,7 +28,7 @@ from .threadwait import Flag, ThreadWait
 
 BUFFER_SZ = 4098
 
-_Stream = typing.Union[io.IOBase, int]
+_Stream = typing.Union[typing.TextIO, io.IOBase, int]
 
 def _readlines(data: bytes) -> typing.Iterator[bytes]:
     """Yields data line by line
@@ -282,21 +282,24 @@ def execute(
                 for fde in masters:
                     os.close(fde)
 
-            returncode = process.poll()
+            val = process.poll()
+            returncode = val if isinstance(val, int) else 0
     return returncode
 
 def _read_stream(stream: _Stream) -> typing.Optional[bytes]:
-    if isinstance(stream, io.IOBase):
+    if isinstance(stream, (typing.TextIO, io.IOBase)):
         try:
             data = os.read(stream.fileno(), BUFFER_SZ)
         except OSError:
             data = stream.read()
             if not isinstance(data, bytes):
                 data = data.encode()
+        except ValueError:
+            return None
     else:
         try:
             data = os.read(stream, BUFFER_SZ)
-        except OSError:
+        except (OSError, ValueError):
             return None
     return data if data is not None and len(data) > 0 else None
 

@@ -1,5 +1,4 @@
 import datetime
-import io
 import os
 from shutil import which
 import sys
@@ -21,7 +20,6 @@ TIMESTAMP_DEFAULT = '%Y-%m-%d %H:%M:%S: '
 
 class Pycolor:
     def __init__(self, **kwargs):
-        self.color_mode: str = kwargs.get('color_mode', 'auto')
         """
         0 - no debug
         1 - print received data
@@ -36,7 +34,12 @@ class Pycolor:
         self.stdout: typing.TextIO = kwargs.get('stdout', sys.stdout)
         self.stderr: typing.TextIO = kwargs.get('stderr', sys.stderr)
 
-        self._debug_file: io.TextIOWrapper = None
+        self._is_color_enabled: bool = False
+        self.color_mode: str = kwargs.get('color_mode', 'auto')
+
+        self.encoding = 'utf-8'
+
+        self._debug_file: typing.TextIO = None
         if self.debug_log is not None:
             self._debug_file = self._open_debug_file(self.debug_log)
 
@@ -53,19 +56,39 @@ class Pycolor:
             self._debug_file.close()
 
     @property
-    def profiles(self):
+    def profiles(self) -> typing.List[Profile]:
         return self._profloader.profiles
 
     @property
-    def profile_default(self):
+    def profile_default(self) -> Profile:
         return self._profloader.profile_default
 
     @property
-    def current_profile(self):
+    def color_mode(self) -> str:
+        return self._color_mode
+
+    @color_mode.setter
+    def color_mode(self, val: str) -> None:
+        self._color_mode = val
+
+        mode = val.lower()
+        if mode in ('always', 'on', '1'):
+            self._is_color_enabled = True
+        elif mode in ('never', 'off', '0'):
+            self._is_color_enabled = False
+        else:
+            self._is_color_enabled = not self.is_being_redirected()
+
+    @property
+    def is_color_enabled(self) -> bool:
+        return self._is_color_enabled
+
+    @property
+    def current_profile(self) -> typing.Optional[Profile]:
         return self._current_profile
 
     @current_profile.setter
-    def current_profile(self, val: Profile):
+    def current_profile(self, val: typing.Optional[Profile]) -> None:
         self._current_profile = val if val is not None else self._profloader.profile_default
 
     def load_file(self, fname: str) -> None:
@@ -123,9 +146,9 @@ class Pycolor:
         Returns:
             int: Return code of command
         """
-        if profile is None:
-            profile = self.get_profile_by_command(cmd[0], cmd[1:])
-        self.current_profile = profile
+        self.current_profile = (
+            profile if profile is not None else self.get_profile_by_command(cmd[0], cmd[1:])
+        )
 
         self._debug_write_line('running %s' % cmd)
 
@@ -158,7 +181,7 @@ class Pycolor:
             printerr("command '%s' not found" % cmd[0])
             sys.exit(1)
 
-    def _data_callback(self, stream: io.IOBase, data: str) -> None:
+    def _data_callback(self, stream: typing.TextIO, data: str) -> None:
         """Internal data stream callback from executed command
 
         Args:
@@ -169,7 +192,9 @@ class Pycolor:
         removed_carriagereturn = False
 
         self.debug_print(4, 'on line %d', self._linenum)
-        self.debug_print(1, 'received: %s', data.encode('utf-8'))
+        # optimization to avoid encode()
+        if self.debug >= 1:
+            self.debug_print(1, 'received: %s', data.encode(self.encoding))
 
         if self._current_profile.remove_input_color:
             data = pyformat.color.remove_ansi_color(data)
@@ -185,7 +210,7 @@ class Pycolor:
         color_positions: typing.Dict[int, str] = {}
         context = {
             'color': {
-                'enabled': self.is_color_enabled(),
+                'enabled': self._is_color_enabled,
                 'aliases': self._current_profile.color_aliases,
                 'positions': color_positions,
             }
@@ -213,17 +238,21 @@ class Pycolor:
             matched, applied = apply_pattern(pat, data, context)
             if matched:
                 if pat.filter:
-                    self.debug_print(2, 'filtered: %s', data.encode('utf-8'))
+                    # optimization to avoid encode()
+                    if self.debug >= 2:
+                        self.debug_print(2, 'filtered: %s', data.encode(self.encoding))
                     do_filter = True
                     break
 
-                if self.debug >= 3:
-                    self.debug_print(3, 'apply%3s: %s',
-                        pat.from_profile_str,
-                        insert_color_data(applied, color_positions).encode('utf-8')
-                    )
+                if applied is not None:
+                    # optimization to avoid encode() and insert_color_data()
+                    if self.debug >= 3:
+                        self.debug_print(3, 'apply%3s: %s',
+                            pat.from_profile_str,
+                            insert_color_data(applied, color_positions).encode(self.encoding)
+                        )
+                    data = applied
 
-                data = applied
                 if pat.skip_others:
                     break
 
@@ -238,19 +267,20 @@ class Pycolor:
         if removed_newline:
             data += '\n'
 
-        encoded_data = data.encode('utf-8')
-        self.debug_print(2, 'writing:  %s', encoded_data)
+        # optimization to avoid encode()
+        if self.debug >= 2:
+            self.debug_print(2, 'writing:  %s', data.encode(self.encoding))
 
         if self._current_profile.timestamp:
             self._write_timestamp(stream)
 
         stream.flush()
-        stream.buffer.write(encoded_data)
+        stream.write(data)
         stream.flush()
 
         self._color_state.set(data)
 
-    def _write_timestamp(self, stream: io.IOBase) -> None:
+    def _write_timestamp(self, stream: typing.TextIO) -> None:
         """Write timestamp to stream
 
         Args:
@@ -268,26 +298,10 @@ class Pycolor:
             compare_state=self._color_state_orig
         ))
 
-    def is_color_enabled(self) -> bool:
-        # TODO: optimize
-        """Checks if color is enabled
-
-        Returns:
-            bool: Returns true if color is enabled
-        """
-        mode = self.color_mode.lower()
-        if mode in ('always', 'on', '1'):
-            return True
-        if mode in ('never', 'off', '0'):
-            return False
-        return not self.is_being_redirected()
-
     def stdout_cb(self, data: str) -> None:
-        # TODO: private?
         self._data_callback(self.stdout, data)
 
     def stderr_cb(self, data: str) -> None:
-        # TODO: private?
         self._data_callback(self.stderr, data)
 
     def debug_print(self, lvl: int, val: str, *args) -> None:
@@ -300,7 +314,7 @@ class Pycolor:
         if self.debug < lvl:
             return
 
-        if self.is_color_enabled():
+        if self.is_color_enabled:
             reset = FMT_DEBUG
             oldstate = str(self._color_state)
             if len(oldstate) == 0:
@@ -317,7 +331,7 @@ class Pycolor:
         if self._debug_file is None or self.debug_log_out:
             print('%s    DEBUG%d: %s%s' % (reset, lvl, msg, oldstate))
 
-    def _open_debug_file(self, fname: str) -> io.TextIOWrapper:
+    def _open_debug_file(self, fname: str) -> typing.TextIO:
         """Open the debug file for writing
 
         Args:

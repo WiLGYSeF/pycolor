@@ -60,7 +60,7 @@ def compile_re(expression: typing.Optional[str], prop: str) -> typing.Optional[r
     try:
         return re.compile(expression) if len(expression) != 0 else None
     except re.error as rer:
-        raise ConfigRegexError(prop, rer) from rer
+        raise ConfigRegexError(prop, str(rer)) from rer
 
 def mutually_exclusive(obj: typing.Any, attrlist: typing.Iterable[str]) -> None:
     """Checks that at most one attribute is set from the list

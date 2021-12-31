@@ -13,7 +13,7 @@ from .fromprofile import FromProfile
 from .pattern import Pattern
 
 class Profile:
-    def __init__(self, cfg: dict, loader: 'ProfileLoader' = None):
+    def __init__(self, cfg: dict, loader = None):
         self.enabled: bool = True
         self.name: typing.Optional[str] = None
         self.command: typing.Optional[str] = None
@@ -37,7 +37,7 @@ class Profile:
         self._from_profiles: typing.Union[typing.List[dict], dict, str] = []
         self.patterns: typing.List[dict] = []
 
-        self._loader: 'ProfileLoader' = loader
+        self._loader = loader
         self._loaded_patterns: typing.List[Pattern] = []
         self._patterns_loaded: bool = False
 
@@ -70,7 +70,7 @@ class Profile:
 
         self.from_profiles: typing.List[FromProfile] = [
             FromProfile(prof) for prof in (
-                self._from_profiles if isinstance(self._from_profiles, list) else [self._from_profiles]
+                self._from_profiles if isinstance(self._from_profiles, list) else [self._from_profiles] # type: ignore
             )
         ]
 

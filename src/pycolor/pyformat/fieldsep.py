@@ -3,6 +3,15 @@ import typing
 CHAR_SEPARATOR = 's'
 
 def get_field_range(number: str, length: int) -> typing.Tuple[int, int, int]:
+    """Gets the field range
+
+    Args:
+        number (str): Field or field range to get
+        length (int): Length of fields
+
+    Returns:
+        tuple: Start, end, and step range of fields
+    """
     last_field_num = idx_to_num(length)
 
     if '*' not in number:
@@ -30,6 +39,15 @@ def get_field_range(number: str, length: int) -> typing.Tuple[int, int, int]:
     return start, end, step
 
 def get_fields(formatter: str, context: dict) -> str:
+    """Gets the field string from formatter
+
+    Args:
+        formatter (str): Format string
+        context (dict): Context data
+
+    Returns:
+        str: The concatenated fields
+    """
     fields = context['fields']
     if formatter[0] == CHAR_SEPARATOR:
         return get_join_field(int(formatter[1:]), fields)

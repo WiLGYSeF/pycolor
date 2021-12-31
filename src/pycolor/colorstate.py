@@ -1,7 +1,7 @@
 import re
 import typing
 
-from . import pyformat
+from .pyformat.color import STYLES
 
 BOLD = 'bold'
 DIM = 'dim'
@@ -189,27 +189,59 @@ class ColorState:
                 self.state_changed.add(COLOR_BACKGROUND)
 
     def diff_keys(self, state: 'ColorState') -> typing.List[str]:
+        """Gets the keys with different values
+
+        Args:
+            state (ColorState): State to compare
+
+        Returns:
+            list: List of keys with different vales
+        """
         return list(map(lambda t: t[0], filter(
             lambda t: t[1] != state.color_state[t[0]],
-            ( t for t in self.color_state.items() )
+            self.color_state.items()
         )))
 
     def get_state_by_keys(self, keys: typing.Iterable[str]) -> dict:
+        """Get state values by keys
+
+        Args:
+            keys (Iterable): Keys
+
+        Returns:
+            dict: State with key value pairs
+        """
         state = {}
         for k in keys:
             state[k] = self.color_state[k]
         return state
 
     def get_changed_state(self, compare_state: typing.Optional['ColorState'] = None) -> dict:
+        """Gets a state with key value pairs from the difference from compare_state
+
+        Args:
+            compare_state (ColorState): ColorState to compare against
+
+        Returns:
+            dict: State with key value pairs that were different from the compared state
+        """
         if compare_state is None:
             compare_state = ColorState()
         return self.get_state_by_keys(self.diff_keys(compare_state))
 
     def get_string(self, compare_state: typing.Optional['ColorState'] = None) -> str:
+        """Gets the ANSI string from the ColorState
+
+        Args:
+            compare_state (ColorState): Optional state to compare against
+
+        Returns:
+            str: ANSI color string of ColorState
+        """
         state = self.get_changed_state(compare_state)
         codes = list(map(
             lambda t: str(t[1] + 20 * int(not bool(state[t[0]]))),
-            filter(lambda t: t[0] in state, pyformat.color.STYLES.items())
+            filter(lambda t: t[0] in state, STYLES.items())
         ))
 
         if COLOR_FOREGROUND in state:
