@@ -95,7 +95,7 @@ def _do_format(formatter: str, value: str, context: dict, **kwargs) -> typing.Op
         return _do_format_group(value, context, **kwargs) if 'match' in context else ''
     if formatter == FORMAT_CONTEXT_COLOR:
         if 'match' in context and 'match_cur' in context:
-            return _do_format_field_group_color(value, context, '%Gc',**kwargs)
+            return _do_format_field_group_color(value, context, '%Gc', **kwargs)
         if 'field_cur' in context:
             return _do_format_field_group_color(value, context, '%Fc', **kwargs)
         return ''

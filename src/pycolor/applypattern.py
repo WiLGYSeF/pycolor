@@ -402,27 +402,6 @@ def get_replace_group(
         return replace_groups[idx - 1]
     return None
 
-def _get_range(number: str, length: int) -> range:
-    spl = number.split('*')
-
-    start = int(spl[0]) if len(spl[0]) != 0 else 1
-    if start >= length:
-        return range(start, start + 1)
-    while start < 0:
-        start += length
-
-    if len(spl) >= 2:
-        if len(spl[1]) > 0:
-            end = min(int(spl[1]), length)
-        else:
-            end = length
-    else:
-        end = start
-    while end < 0:
-        end += length
-
-    return range(start, end + 1, int(spl[2]) if len(spl) >= 3 else 1)
-
 def _get_group_range(
     groups: typing.Sequence[str],
     obj: ReplaceGroup,
@@ -431,7 +410,8 @@ def _get_group_range(
     for key, val in obj.items():
         for num in str(key).split(','):
             try:
-                if idx in _get_range(num, len(groups)):
+                start, end, step = pyformat.fieldsep.get_range(num, len(groups))
+                if idx in range(start, end + 1, step):
                     return val
             except ValueError:
                 pass
@@ -445,9 +425,10 @@ def _get_field_range(
     for key, val in obj.items():
         for num in str(key).split(','):
             try:
-                start, end, step = pyformat.fieldsep.get_field_range(num, len(fields))
-                start = pyformat.fieldsep.idx_to_num(start)
-                end = pyformat.fieldsep.idx_to_num(end)
+                start, end, step = pyformat.fieldsep.get_range(
+                    num,
+                    pyformat.fieldsep.idx_to_num(len(fields))
+                )
                 if idx in range(start - 1, end, step):
                     return val
             except ValueError:

@@ -2,39 +2,25 @@ import typing
 
 CHAR_SEPARATOR = 's'
 
-def get_field_range(number: str, length: int) -> typing.Tuple[int, int, int]:
-    """Gets the field range
+def get_range(string: str, length: int) -> typing.Tuple[int, int, int]:
+    """Gets the range from string, starting from 1 to length
 
     Args:
-        number (str): Field or field range to get
-        length (int): Length of fields
+        string (str): Range string
+        length (int): Max length
 
     Returns:
-        tuple: Start, end, and step range of fields
+        tuple: Returns start, end, and step
     """
-    last_field_num = idx_to_num(length)
+    spl = string.split('*')
+    start = int(spl[0]) if len(spl[0]) > 0 else 1
+    end = min((int(spl[1]) if len(spl[1]) > 0 else length) if len(spl) >= 2 else start, length)
+    step = (int(spl[2]) if len(spl[2]) > 0 else 1) if len(spl) >= 3 else 1
 
-    if '*' not in number:
-        start = int(number)
-        while start < 0:
-            start += last_field_num + 1
-        start = num_to_idx(start)
-        return start, start, 1
-
-    rangespl = number.split('*')
-    start_str = rangespl[0]
-    end_str = rangespl[1]
-    step = int(rangespl[2]) if len(rangespl) >= 3 else 1
-
-    start = num_to_idx(int(start_str) if len(start_str) != 0 else 1)
-
-    if len(end_str) != 0:
-        end = int(end_str)
-        while end < 0:
-            end += last_field_num + 1
-        end = min(num_to_idx(end), length)
-    else:
-        end = length
+    while start < 0:
+        start += length + 1
+    while end < 0:
+        end += length + 1
 
     return start, end, step
 
@@ -60,7 +46,9 @@ def get_fields(formatter: str, context: dict) -> str:
         number = formatter
         sep = None
 
-    start, end, _ = get_field_range(number, len(fields))
+    start, end, _ = get_range(number, idx_to_num(len(fields)))
+    start = num_to_idx(start)
+    end = num_to_idx(end)
     if start > end or start >= len(fields):
         return ''
 
