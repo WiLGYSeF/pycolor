@@ -370,6 +370,16 @@ def get_replace_field(
         typing.List[str]
     ]
 ) -> typing.Optional[str]:
+    """Gets the replace field value
+
+    Args:
+        fields (list): Fields
+        field_idx (int): Index of field
+        replace_fields (ReplaceGroup): Replace group
+
+    Returns:
+        str: Replace field value that matches
+    """
     if isinstance(replace_fields, dict):
         return _get_field_range(fields, replace_fields, field_idx)
     if isinstance(replace_fields, list) and field_idx < len(replace_fields):
@@ -384,6 +394,16 @@ def get_replace_group(
         typing.List[str]
     ]
 ) -> typing.Optional[str]:
+    """Gets the replace group value
+
+    Args:
+        match (Match): Regex match
+        idx (int): Index of match
+        replace_groups (ReplaceGroup): Replace group
+
+    Returns:
+        str: Replace group value that matches
+    """
     if isinstance(replace_groups, dict):
         val = replace_groups.get(str(idx))
         if val is not None:
@@ -407,6 +427,16 @@ def _get_group_range(
     obj: ReplaceGroup,
     idx: int
 ) -> typing.Optional[str]:
+    """Gets the group range value
+
+    Args:
+        groups (list): Match groups
+        obj (ReplaceGroup): Replace group
+        idx (int): Group index to match
+
+    Returns:
+        str: ReplaceGroup value that the index matches
+    """
     for key, val in obj.items():
         for num in str(key).split(','):
             try:
@@ -422,6 +452,16 @@ def _get_field_range(
     obj: ReplaceGroup,
     idx: int
 ) -> typing.Optional[str]:
+    """Gets the field range value
+
+    Args:
+        fields (list): Fields
+        obj (ReplaceGroup): ReplaceGroup
+        idx (int): Field index to match
+
+    Returns:
+        str: ReplaceGroup value that the index matches
+    """
     for key, val in obj.items():
         for num in str(key).split(','):
             try:

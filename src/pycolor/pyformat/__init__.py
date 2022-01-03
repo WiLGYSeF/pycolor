@@ -137,9 +137,7 @@ def _do_format_color(value: str, context: dict, **kwargs) -> str:
         return ColorState().get_string(compare_state=curstate)
 
     colorstr = color.get_color(value, aliases=ctx.get('aliases', {}))
-    if colorstr is None:
-        colorstr = ''
-    return colorstr
+    return colorstr if colorstr is not None else ''
 
 def _do_format_field(value: str, context: dict, **kwargs) -> str:
     if value == 'c' and 'field_cur' in context:
@@ -198,7 +196,7 @@ def _do_format_padding(value: str, context: dict, **kwargs) -> str:
             value = value[value_sep + 1:]
 
             if 'color' in context:
-                context = dictcopy(context)
+                context = _dictcopy(context)
                 context['color']['enabled'] = False
 
             return padchar * (padcount - len(fmt_str(value, context=context)))
@@ -236,7 +234,7 @@ def _do_format_truncate(value: str, context: dict, **kwargs) -> str:
         raise ValueError('invalid length: %d' % length)
 
     if 'color' in context:
-        context = dictcopy(context)
+        context = _dictcopy(context)
         context['color']['enabled'] = False
     string = fmt_str(string, context=context)
 
@@ -275,6 +273,15 @@ def get_formatter(
     typing.Optional[str],
     int
 ]:
+    """Gets the formatter and value at index
+
+    Args:
+        string (str): Format string
+        idx (int): Start index
+
+    Returns:
+        tuple: Formatter, value, and end index
+    """
     strlen = len(string)
     begin_idx = idx
 
@@ -326,8 +333,16 @@ def get_formatter(
 
     return formatter, value, idx
 
-def dictcopy(dct: dict) -> dict:
+def _dictcopy(dct: dict) -> dict:
+    """Shallow copy dict
+
+    Args:
+        dct (dict): Dict to copy
+
+    Returns:
+        dict: Shallow copy of dict
+    """
     copy = {}
     for key, val in dct.items():
-        copy[key] = dictcopy(val) if isinstance(val, dict) else val
+        copy[key] = _dictcopy(val) if isinstance(val, dict) else val
     return copy
