@@ -1,6 +1,25 @@
 import re
 import typing
 
+def match_group_replace_one(
+    match: re.Match,
+    replace_func: typing.Callable[[re.Match, int, int], str],
+    offset: int
+) -> str:
+    string = match.group(0)
+    result = ''
+    last = 0
+
+    for idx in range(1, len(match.groups()) + 1):
+        if match.start(idx) == -1:
+            continue
+        result += string[last:match.start(idx) - match.start(0)]
+        result += replace_func(match, idx, match.start(idx) - len(result) - offset)
+        last = max(match.end(idx) - match.start(0), last)
+    result += string[last:]
+
+    return result
+
 def match_group_replace(
     regex: typing.Pattern,
     string: str,
@@ -21,16 +40,7 @@ def match_group_replace(
 
     for match in regex.finditer(string):
         result += string[last:match.start(0)]
-        last = max(match.start(0), last)
-
-        for i in range(1, len(match.groups()) + 1):
-            if match.start(i) == -1:
-                continue
-            result += string[last:match.start(i)]
-            result += replace_func(match, i, match.start(i) - len(result))
-            last = max(match.end(i), last)
-
-        result += string[last:match.end(0)]
+        result += match_group_replace_one(match, replace_func, len(result))
         last = max(match.end(0), last)
 
     result += string[last:]
