@@ -6,7 +6,6 @@ import typing
 from .colorpositions import update_color_positions, offset_color_positions
 from .config.pattern import Pattern, ReplaceGroup
 from .group_index import get_named_group_at_index
-from .match_group_replace import match_group_replace
 from . import pyformat
 from .search_replace import search_replace, ReplaceRange
 from .split import re_split
@@ -265,7 +264,7 @@ def _replace_groups(
     if pat.regex is None:
         raise ValueError()
 
-    newdata = match_group_replace(pat.regex, data, replace_group)
+    newdata = _match_group_replace(pat.regex, data, replace_group)
     color_positions.clear()
     color_positions.update(original_color_positions)
 
@@ -274,6 +273,42 @@ def _replace_groups(
         update_color_positions(color_positions, colorpos)
 
     return 'match' in context, newdata
+
+def _match_group_replace(
+    regex: typing.Pattern,
+    string: str,
+    replace_func: typing.Callable[[re.Match, int, int], str]
+) -> str:
+    # TODO: use match_group_replace in match_group_replace.py
+    """Replace groups in regex matches in a string
+
+    Args:
+        regex (Pattern): Regex pattern
+        string (str): String to match with pattern
+        replace_func (function): Replace function to call on each group
+
+    Returns:
+        str: String with replaced values
+    """
+    result = ''
+    last = 0
+
+    for match in regex.finditer(string):
+        result += string[last:match.start(0)]
+        last = max(match.start(0), last)
+
+        for i in range(1, len(match.groups()) + 1):
+            if match.start(i) == -1:
+                continue
+            result += string[last:match.start(i)]
+            result += replace_func(match, i, match.start(i) - len(result))
+            last = max(match.end(i), last)
+
+        result += string[last:match.end(0)]
+        last = max(match.end(0), last)
+
+    result += string[last:]
+    return result
 
 def _pat_schrep(
     pattern: Pattern,
