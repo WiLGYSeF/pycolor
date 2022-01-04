@@ -5,6 +5,15 @@ def match_group_replace_one(
     match: re.Match,
     replace_func: typing.Callable[[re.Match, int], str]
 ) -> str:
+    """Replace groups in match
+
+    Args:
+        match (Match): Regex match
+        replace_func (function): Takes the match and group index, returns replacement string
+
+    Returns:
+        str: Replaced string result
+    """
     string = match.group(0)
     result = ''
     last = 0
