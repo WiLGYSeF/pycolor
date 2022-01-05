@@ -4,6 +4,7 @@ import typing
 from . import (
     BreakableStr,
     ConfigPropertyError,
+    ConfigExclusivePropertyError,
     compile_re,
     join_bkstr,
     load_schema,
@@ -26,14 +27,8 @@ class Pattern:
 
         self._replace: BreakableStr = None
         self._replace_all: BreakableStr = None
-        self.replace_groups: typing.Union[
-            typing.List[str],
-            ReplaceGroup
-        ] = {}
-        self.replace_fields: typing.Union[
-            typing.List[str],
-            ReplaceGroup
-        ] = {}
+        self.replace_groups: typing.Union[ReplaceGroup, typing.List[str]] = {}
+        self.replace_fields: typing.Union[ReplaceGroup, typing.List[str]] = {}
         self.filter: bool = False
 
         self.stdout_only: bool = False
@@ -59,9 +54,16 @@ class Pattern:
         self.from_profile_str: typing.Optional[str] = None
 
         load_schema('pattern', cfg, self)
-        mutually_exclusive(self, ['_replace', '_replace_all'])
-        mutually_exclusive(self, ['field', 'replace_groups'])
+        mutually_exclusive(self, ['_replace', '_replace_all', 'replace_groups', 'replace_fields'])
         mutually_exclusive(self, ['stdout_only', 'stderr_only'])
+
+        if all((
+            isinstance(self.field, int) and self.field > 0,
+            len(self.replace_fields) != 0
+        )):
+            raise ConfigExclusivePropertyError(
+                '"replace_fields" cannot be used with a nonzero "field"'
+            )
 
         self.super_expression: typing.Optional[str] = join_bkstr(self._super_expression)
         self.expression: typing.Optional[str] = join_bkstr(self._expression)

@@ -42,3 +42,7 @@ class DfTest(unittest.TestCase):
 
     def test_table(self):
         check_pycolor_execute(self, ['df', '-h'], MOCKED_DATA, 'truncate')
+
+    def test_field_replace(self):
+        check_pycolor_execute(self, ['df', '-h'], MOCKED_DATA, 'field-replace')
+

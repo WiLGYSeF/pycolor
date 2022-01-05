@@ -1,0 +1,22 @@
+{
+    "profiles": [
+        {
+            "name": "df",
+            "patterns": [
+                {
+                    "activation_line": 2,
+                    "separator": " +",
+                    "expression": "^([0-9]+)[GMK]$",
+                    "replace": "%G(1)X"
+                },
+                {
+                    "activation_line": 2,
+                    "separator": " +",
+                    "field": 2,
+                    "expression": "\\.",
+                    "replace": "#"
+                }
+            ]
+        }
+    ]
+}
