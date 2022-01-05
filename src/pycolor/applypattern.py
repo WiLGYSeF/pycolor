@@ -71,8 +71,12 @@ def apply_pattern(
                 elif len(pat.replace_groups) != 0:
                     changed, result = _replace_groups(pat, data, color_positions, context)
                 else:
-                    result = data
-                    changed = bool(pat.regex.search(data))
+                    def set_changed(data: str):
+                        nonlocal changed
+                        if pat.regex.search(data):
+                            changed = True
+                        return data, [], {}
+                    _, result = _replace_parts(set_changed, fields, field_idxs, {})
         else:
             changed, result = _replace_fields(pat, data, fields, color_positions, context)
 
