@@ -106,7 +106,7 @@ class Pattern:
         if self.min_fields != -1 and self.max_fields != -1 and self.min_fields > self.max_fields:
             raise ConfigPropertyError('min_fields', 'cannot be larger than max_fields')
 
-    def get_field_indexes(self, fields_len: int) -> typing.List[int]:
+    def get_field_indexes(self, fields_len: int) -> typing.Optional[typing.List[int]]:
         """Returns a list of field indicies that `field` matches
 
         Args:
@@ -136,6 +136,8 @@ class Pattern:
                 if self._field > fieldcount:
                     return []
                 return [pyformat.fieldsep.num_to_idx(self._field)]
+            else:
+                return None
         return list(range(0, fields_len, 2))
 
     @staticmethod

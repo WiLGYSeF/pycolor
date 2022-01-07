@@ -35,14 +35,14 @@ def apply_pattern(
             del context[key]
 
     fields: typing.List[str] = []
-    field_idxs: typing.List[int] = []
+    field_idxs: typing.Optional[typing.List[int]] = []
 
     if pat.separator_regex is not None:
         fields = list(re_split(pat.separator_regex, data))
         field_idxs = pat.get_field_indexes(len(fields))
         context['fields'] = fields
 
-        if len(field_idxs) == 0:
+        if field_idxs is not None and len(field_idxs) == 0:
             return False, None
     else:
         fields = [data]
@@ -51,35 +51,42 @@ def apply_pattern(
     changed = False
     result = None
 
-    if pat.regex is not None and pat.replace_all is not None:
-        match = pat.regex.search(data)
-        if match is not None:
-            context['match'] = match
-            context['idx'] = match.start()
+    if len(pat.replace_fields) == 0:
+        if field_idxs is None:
+            fields = [data]
+            field_idxs = [0]
 
-            result, colorpos = pyformat.format_string(pat.replace_all, context=context)
-            color_positions.clear()
-            color_positions.update(colorpos)
-            changed = True
-    else:
-        if len(pat.replace_fields) == 0:
-            if pat.regex is not None:
-                if pat.replace is not None:
-                    def replace_func(data: str, index: int):
-                        context['field_cur'] = fields[index]
-                        return _pat_schrep(pat, data, context)
-                    changed, result = _replace_parts(replace_func, fields, field_idxs, color_positions)
-                elif len(pat.replace_groups) != 0:
-                    changed, result = _replace_groups(pat, data, color_positions, context)
-                else:
-                    def set_changed(data: str, index: int):
-                        nonlocal changed
-                        if pat.regex.search(data): # type: ignore
-                            changed = True
+        if pat.regex is not None:
+            if pat.replace_all is not None:
+                def replace_func(data: str, index: int):
+                    context['field_cur'] = fields[index]
+
+                    match = pat.regex.search(data) # type: ignore
+                    if match is None:
                         return data, [], {}
-                    _, result = _replace_parts(set_changed, fields, field_idxs, {})
-        else:
-            changed, result = _replace_fields(pat, fields, color_positions, context)
+
+                    context['match'] = match
+                    context['idx'] = match.start()
+
+                    result, colorpos = pyformat.format_string(pat.replace_all, context=context) # type: ignore
+                    return result, [((0, len(data)), (0, len(result)))], colorpos
+                changed, result = _replace_parts(replace_func, fields, field_idxs, color_positions)
+            elif pat.replace is not None:
+                def replace_func(data: str, index: int):
+                    context['field_cur'] = fields[index]
+                    return _pat_schrep(pat, data, context)
+                changed, result = _replace_parts(replace_func, fields, field_idxs, color_positions)
+            elif len(pat.replace_groups) != 0:
+                changed, result = _replace_groups(pat, data, color_positions, context)
+            else:
+                def set_changed(data: str, index: int):
+                    nonlocal changed
+                    if pat.regex.search(data): # type: ignore
+                        changed = True
+                    return data, [], {}
+                _, result = _replace_parts(set_changed, fields, field_idxs, {})
+    else:
+        changed, result = _replace_fields(pat, fields, color_positions, context)
 
     return changed, result
 
