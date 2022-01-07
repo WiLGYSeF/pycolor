@@ -70,7 +70,10 @@ def search_replace(
             replace_count += 1
         else:
             newstring += string[last:match.end()]
+
         last = match.end()
+        if last == len(string):
+            break
 
     newstring += string[last:]
     return newstring, replace_ranges

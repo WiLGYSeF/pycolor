@@ -46,7 +46,7 @@ def apply_pattern(
             return False, None
     else:
         fields = [data]
-        field_idxs = [0]
+        field_idxs = range(1)
 
     changed = False
     result = None
@@ -66,6 +66,7 @@ def apply_pattern(
             if pat.regex is not None:
                 if pat.replace is not None:
                     def replace_func(data: str, index: int):
+                        context['field_cur'] = fields[index]
                         return _pat_schrep(pat, data, context)
                     changed, result = _replace_parts(replace_func, fields, field_idxs, color_positions)
                 elif len(pat.replace_groups) != 0:
@@ -73,7 +74,7 @@ def apply_pattern(
                 else:
                     def set_changed(data: str, index: int):
                         nonlocal changed
-                        if pat.regex.search(data):
+                        if pat.regex.search(data): # type: ignore
                             changed = True
                         return data, [], {}
                     _, result = _replace_parts(set_changed, fields, field_idxs, {})

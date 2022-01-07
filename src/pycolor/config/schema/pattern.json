@@ -24,7 +24,7 @@
         },
         "field": {
             "description": "the field that expression should compare against. if it is null, all fields are matched with expression and all matching fields are replaced. if it is zero, the entire line is matched with expression and the match is replaced. if it is a positive number, only that field is matched with expression",
-            "type": ["null", "integer"],
+            "type": ["null", "string", "integer"],
             "default": null,
             "minimum": 0
         },

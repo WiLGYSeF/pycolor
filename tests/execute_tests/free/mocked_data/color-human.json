@@ -15,20 +15,20 @@
                 },
                 {
                     "separator": " +",
-                    "field": 0,
+                    "field": "2*5",
                     "min_fields": 7,
                     "max_fields": 7,
                     "expression": ".*",
-                    "replace_all": "%F1%Fs2%Cb%F2%Cz%Fs3%Cr%F3%Cz%Fs4%Cg%F4%Cz%Fs5%Cb%F5%Cz%Fs6%Cy%F6%Cz%Fs7%Cg%F7%Cz",
+                    "replace": "%Cg%Fc%Cz",
                     "activation_line": 2
                 },
                 {
                     "separator": " +",
-                    "field": 0,
+                    "field": "2*4*2",
                     "min_fields": 4,
                     "max_fields": 4,
                     "expression": ".*",
-                    "replace_all": "%F1%Fs2%Cb%F2%Cz%Fs3%Cr%F3%Cz%Fs4%Cg%F4%Cz",
+                    "replace": "%Cr%Fc%Cz",
                     "activation_line": 2
                 }
             ]

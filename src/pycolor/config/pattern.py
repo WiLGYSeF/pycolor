@@ -21,7 +21,7 @@ class Pattern:
         self._expression: BreakableStr = None
 
         self._separator: BreakableStr = None
-        self.field: typing.Optional[int] = None
+        self._field: typing.Union[str, int, None] = None
         self.min_fields: int = -1
         self.max_fields: int = -1
 
@@ -58,7 +58,10 @@ class Pattern:
         mutually_exclusive(self, ['stdout_only', 'stderr_only'])
 
         if all((
-            isinstance(self.field, int) and self.field > 0,
+            any((
+                isinstance(self._field, str),
+                isinstance(self._field, int) and self._field > 0
+            )),
             len(self.replace_fields) != 0
         )):
             raise ConfigExclusivePropertyError(
@@ -118,11 +121,19 @@ class Pattern:
         ):
             return range(0)
 
-        if self.field is not None and self.field > 0:
-            if self.field > fieldcount:
-                return range(0)
-            idx = pyformat.fieldsep.num_to_idx(self.field)
-            return range(idx, idx + 1)
+        if isinstance(self._field, str):
+            start, stop, step = pyformat.fieldsep.get_range(self._field, fieldcount)
+            return range(
+                pyformat.fieldsep.num_to_idx(start),
+                pyformat.fieldsep.num_to_idx(stop) + 1,
+                step * 2
+            )
+        if isinstance(self._field, int):
+            if self._field > 0:
+                if self._field > fieldcount:
+                    return range(0)
+                idx = pyformat.fieldsep.num_to_idx(self._field)
+                return range(idx, idx + 1)
         return range(0, fields_len, 2)
 
     @staticmethod
