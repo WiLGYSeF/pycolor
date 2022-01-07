@@ -77,7 +77,9 @@ def apply_pattern(
                     return _pat_schrep(pat, data, context)
                 changed, result = _replace_parts(replace_func, fields, field_idxs, color_positions)
             elif len(pat.replace_groups) != 0:
-                changed, result = _replace_groups(pat, data, color_positions, context)
+                def replace_func(data: str, index: int):
+                    return _replace_groups(pat, data, context)
+                changed, result = _replace_parts(replace_func, fields, field_idxs, color_positions)
             else:
                 def set_changed(data: str, index: int):
                     nonlocal changed
@@ -168,10 +170,13 @@ def _replace_fields(
 def _replace_groups(
     pat: Pattern,
     data: str,
-    color_positions: typing.Dict[int, str],
     context: dict
-) -> typing.Tuple[bool, str]:
-    """Replaces fields
+) -> typing.Tuple[
+    str,
+    typing.List[ReplaceRange],
+    typing.Dict[int, str]
+]:
+    """Replaces groups
 
     Args:
         pat (Pattern): Pattern to apply
@@ -184,7 +189,8 @@ def _replace_groups(
     """
     replace_ranges = []
     colorpos_arr = []
-    original_color_positions = color_positions.copy()
+    color_positions: typing.Dict[int, str] = {}
+    orig_color_positions = context.get('color', {}).get('positions', {})
 
     def replace_group(match: re.Match, idx: int, offset: int) -> str:
         replace_val = get_replace_group(match, idx, pat.replace_groups)
@@ -201,7 +207,6 @@ def _replace_groups(
         )
 
         colorpos = offset_color_positions(colorpos, match.start(idx) - offset)
-        colorpos_arr.append(colorpos)
         update_color_positions(color_positions, colorpos)
 
         replace_ranges.append((
@@ -213,15 +218,11 @@ def _replace_groups(
     if pat.regex is None:
         raise ValueError()
 
+    context['color']['positions'] = color_positions
     newdata = _match_group_replace(pat.regex, data, replace_group)
-    color_positions.clear()
-    color_positions.update(original_color_positions)
+    context['color']['positions'] = orig_color_positions
 
-    update_positions(color_positions, replace_ranges)
-    for colorpos in colorpos_arr:
-        update_color_positions(color_positions, colorpos)
-
-    return 'match' in context, newdata
+    return newdata, replace_ranges, color_positions
 
 def _match_group_replace(
     regex: typing.Pattern,
