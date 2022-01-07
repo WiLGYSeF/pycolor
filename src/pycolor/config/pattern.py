@@ -106,35 +106,37 @@ class Pattern:
         if self.min_fields != -1 and self.max_fields != -1 and self.min_fields > self.max_fields:
             raise ConfigPropertyError('min_fields', 'cannot be larger than max_fields')
 
-    def get_field_indexes(self, fields_len: int) -> range:
-        """Returns a range of field indicies that `field` matches
+    def get_field_indexes(self, fields_len: int) -> typing.List[int]:
+        """Returns a list of field indicies that `field` matches
 
         Args:
             fields_len (int): Number of fields
 
         Returns:
-            range: The range of fields
+            list: List of fields
         """
         fieldcount = pyformat.fieldsep.idx_to_num(fields_len)
         if self.min_fields > fieldcount or (
             self.max_fields > 0 and self.max_fields < fieldcount
         ):
-            return range(0)
+            return []
 
         if isinstance(self._field, str):
-            start, stop, step = pyformat.fieldsep.get_range(self._field, fieldcount)
-            return range(
-                pyformat.fieldsep.num_to_idx(start),
-                pyformat.fieldsep.num_to_idx(stop) + 1,
-                step * 2
-            )
+            indicies = []
+            for part in self._field.split(','):
+                start, stop, step = pyformat.fieldsep.get_range(part, fieldcount)
+                indicies.extend(list(range(
+                    pyformat.fieldsep.num_to_idx(start),
+                    pyformat.fieldsep.num_to_idx(stop) + 1,
+                    step * 2
+                )))
+            return indicies
         if isinstance(self._field, int):
             if self._field > 0:
                 if self._field > fieldcount:
-                    return range(0)
-                idx = pyformat.fieldsep.num_to_idx(self._field)
-                return range(idx, idx + 1)
-        return range(0, fields_len, 2)
+                    return []
+                return [pyformat.fieldsep.num_to_idx(self._field)]
+        return list(range(0, fields_len, 2))
 
     @staticmethod
     def get_activation_ranges(

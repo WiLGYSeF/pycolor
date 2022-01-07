@@ -35,7 +35,7 @@ def apply_pattern(
             del context[key]
 
     fields: typing.List[str] = []
-    field_idxs = range(0)
+    field_idxs: typing.List[int] = []
 
     if pat.separator_regex is not None:
         fields = list(re_split(pat.separator_regex, data))
@@ -46,7 +46,7 @@ def apply_pattern(
             return False, None
     else:
         fields = [data]
-        field_idxs = range(1)
+        field_idxs = [0]
 
     changed = False
     result = None

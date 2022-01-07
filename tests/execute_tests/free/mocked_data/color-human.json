@@ -24,7 +24,7 @@
                 },
                 {
                     "separator": " +",
-                    "field": "2*4*2",
+                    "field": "2*4*2,1",
                     "min_fields": 4,
                     "max_fields": 4,
                     "expression": ".*",
