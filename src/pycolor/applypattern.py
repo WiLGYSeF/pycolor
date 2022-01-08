@@ -166,7 +166,7 @@ def _replace_fields(
         tuple: Returns true if a match was found, and the new string
     """
     def replace_field(data: str, index: int, offset: int):
-        result = get_replace_field(fields, pyformat.fieldsep.idx_to_num(index), pat.replace_fields)
+        result = _get_replace_field(fields, pyformat.fieldsep.idx_to_num(index), pat.replace_fields)
         if result is None:
             return data, [], {}
 
@@ -204,7 +204,7 @@ def _replace_groups(
     replace_ranges = []
 
     def replace_group(match: re.Match, idx: int, offset_inner: int) -> str:
-        replace_val = get_replace_group(match, idx, pat.replace_groups)
+        replace_val = _get_replace_group(match, idx, pat.replace_groups)
         if replace_val is None:
             return match.group(idx)
 
@@ -358,7 +358,7 @@ def update_positions(
         else:
             del positions[key]
 
-def get_replace_field(
+def _get_replace_field(
     fields: typing.List[str],
     field_idx: int,
     replace_fields: typing.Union[
@@ -386,7 +386,7 @@ def get_replace_field(
         return replace_fields[field_idx - 1]
     return None
 
-def get_replace_group(
+def _get_replace_group(
     match: re.Match,
     idx: int,
     replace_groups: typing.Union[
