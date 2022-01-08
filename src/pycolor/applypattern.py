@@ -58,7 +58,7 @@ def apply_pattern(
 
         if pat.regex is not None:
             if pat.replace_all is not None:
-                def replace_func(data: str, index: int):
+                def replace_func(data: str, index: int, offset: int):
                     context['field_cur'] = fields[index]
 
                     match = pat.regex.search(data) # type: ignore
@@ -66,22 +66,22 @@ def apply_pattern(
                         return data, [], {}
 
                     context['match'] = match
-                    context['idx'] = match.start()
+                    context['idx'] = offset + match.start()
 
                     result, colorpos = pyformat.format_string(pat.replace_all, context=context) # type: ignore
                     return result, [((0, len(data)), (0, len(result)))], colorpos
                 changed, result = _replace_parts(replace_func, fields, field_idxs, color_positions)
             elif pat.replace is not None:
-                def replace_func(data: str, index: int):
+                def replace_func(data: str, index: int, offset: int):
                     context['field_cur'] = fields[index]
-                    return _pat_schrep(pat, data, context)
+                    return _pat_schrep(pat, data, offset, context)
                 changed, result = _replace_parts(replace_func, fields, field_idxs, color_positions)
             elif len(pat.replace_groups) != 0:
-                def replace_func(data: str, index: int):
-                    return _replace_groups(pat, data, context)
+                def replace_func(data: str, index: int, offset: int):
+                    return _replace_groups(pat, data, offset, color_positions, context)
                 changed, result = _replace_parts(replace_func, fields, field_idxs, color_positions)
             else:
-                def set_changed(data: str, index: int):
+                def set_changed(data: str, index: int, offset: int):
                     nonlocal changed
                     if pat.regex.search(data): # type: ignore
                         changed = True
@@ -94,7 +94,7 @@ def apply_pattern(
 
 def _replace_parts(
     replace_func: typing.Callable[
-        [str, int],
+        [str, int, int],
         typing.Tuple[
             str,
             typing.List[ReplaceRange],
@@ -105,6 +105,17 @@ def _replace_parts(
     part_idxs: typing.Sequence[int],
     color_positions: typing.Dict[int, str]
 ) -> typing.Tuple[bool, str]:
+    """Replaces string by parts
+
+    Args:
+        replace_func (function): Replace function called on each part to be replaced
+        parts (Sequence): List of string parts
+        part_idxs (Sequence): List of part indicies that the replace function will be called on
+        color_positions (dict): Color positions
+
+    Returns:
+        tuple: Returns true if a match was found, and the new string
+    """
     result = ''
     offset = 0
     changed = False
@@ -115,7 +126,7 @@ def _replace_parts(
             offset += len(parts[idx])
             continue
 
-        replaced, replace_ranges, colorpos = replace_func(parts[idx], idx)
+        replaced, replace_ranges, colorpos = replace_func(parts[idx], idx, offset)
         if len(replace_ranges) != 0:
             changed = True
 
@@ -154,13 +165,13 @@ def _replace_fields(
     Returns:
         tuple: Returns true if a match was found, and the new string
     """
-    def replace_field(data: str, index: int):
+    def replace_field(data: str, index: int, offset: int):
         result = get_replace_field(fields, pyformat.fieldsep.idx_to_num(index), pat.replace_fields)
         if result is None:
             return data, [], {}
 
         context['field_cur'] = fields[index]
-        # context['idx'] = len(newdata) # TODO: why
+        context['idx'] = offset
 
         result, colorpos = pyformat.format_string(result, context=context)
         return result, [((0, len(data)), (0, len(result)))], colorpos
@@ -170,6 +181,8 @@ def _replace_fields(
 def _replace_groups(
     pat: Pattern,
     data: str,
+    offset: int,
+    color_positions: typing.Dict[int, str],
     context: dict
 ) -> typing.Tuple[
     str,
@@ -181,6 +194,7 @@ def _replace_groups(
     Args:
         pat (Pattern): Pattern to apply
         data (str): Input data
+        offset (int): Offset this was called from
         color_positions (dict): Color positions
         context (dict): Context
 
@@ -188,17 +202,14 @@ def _replace_groups(
         tuple: Returns true if a match was found, and the new string
     """
     replace_ranges = []
-    colorpos_arr = []
-    color_positions: typing.Dict[int, str] = {}
-    orig_color_positions = context.get('color', {}).get('positions', {})
 
-    def replace_group(match: re.Match, idx: int, offset: int) -> str:
+    def replace_group(match: re.Match, idx: int, offset_inner: int) -> str:
         replace_val = get_replace_group(match, idx, pat.replace_groups)
         if replace_val is None:
             return match.group(idx)
 
         context['match'] = match
-        context['idx'] = match.start(idx)
+        context['idx'] = offset + match.start(idx)
         context['match_cur'] = match.group(idx)
 
         replace_val, colorpos = pyformat.format_string(
@@ -206,21 +217,19 @@ def _replace_groups(
             context=context
         )
 
-        colorpos = offset_color_positions(colorpos, match.start(idx) - offset)
+        colorpos = offset_color_positions(colorpos, match.start(idx) - offset_inner)
         update_color_positions(color_positions, colorpos)
 
         replace_ranges.append((
             match.span(idx),
-            (match.start(idx) - offset, match.start(idx) - offset + len(replace_val))
+            (match.start(idx) - offset_inner, match.start(idx) - offset_inner + len(replace_val))
         ))
         return replace_val
 
     if pat.regex is None:
         raise ValueError()
 
-    context['color']['positions'] = color_positions
     newdata = _match_group_replace(pat.regex, data, replace_group)
-    context['color']['positions'] = orig_color_positions
 
     return newdata, replace_ranges, color_positions
 
@@ -263,6 +272,7 @@ def _match_group_replace(
 def _pat_schrep(
     pattern: Pattern,
     string: str,
+    offset: int,
     context: dict
 ) -> typing.Tuple[
     str,
@@ -274,6 +284,7 @@ def _pat_schrep(
     Args:
         pat (Pattern): Pattern to apply
         string (str): Input string
+        offset (int): Offset this was called from
         context (dict): Context
 
     Returns:
@@ -283,7 +294,7 @@ def _pat_schrep(
 
     def replacer(match: re.Match) -> str:
         context['string'] = string
-        context['idx'] = match.start()
+        context['idx'] = offset + match.start()
         context['match'] = match
 
         if pattern.replace is None:
