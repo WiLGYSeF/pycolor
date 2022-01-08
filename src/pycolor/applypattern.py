@@ -377,7 +377,11 @@ def get_replace_field(
         str: Replace field value that matches
     """
     if isinstance(replace_fields, dict):
-        return _get_field_range(fields, replace_fields, field_idx)
+        return _get_group_value(
+            pyformat.fieldsep.idx_to_num(len(fields)),
+            replace_fields,
+            field_idx
+        )
     if isinstance(replace_fields, list) and field_idx <= len(replace_fields):
         return replace_fields[field_idx - 1]
     return None
@@ -413,59 +417,31 @@ def get_replace_group(
                 if group in str(key).split(','):
                     return replace_groups[key]
 
-        return _get_group_range(match.groups(), replace_groups, idx)
+        return _get_group_value(len(match.groups()), replace_groups, idx)
     if isinstance(replace_groups, list) and idx <= len(replace_groups):
         return replace_groups[idx - 1]
     return None
 
-def _get_group_range(
-    groups: typing.Sequence[str],
+def _get_group_value(
+    grouplen,
     obj: ReplaceGroup,
-    idx: int
+    num: int
 ) -> typing.Optional[str]:
-    """Gets the group range value
+    """Gets the group value by number
 
     Args:
-        groups (list): Match groups
+        grouplen (int): Length of group
         obj (ReplaceGroup): Replace group
-        idx (int): Group index to match
+        num (int): Number to match
 
     Returns:
         str: ReplaceGroup value that the index matches
     """
     for key, val in obj.items():
-        for num in str(key).split(','):
+        for part in str(key).split(','):
             try:
-                start, end, step = pyformat.fieldsep.get_range(num, len(groups))
-                if idx in range(start, end + 1, step):
-                    return val
-            except ValueError:
-                pass
-    return None
-
-def _get_field_range(
-    fields: typing.Sequence[str],
-    obj: ReplaceGroup,
-    idx: int
-) -> typing.Optional[str]:
-    """Gets the field range value
-
-    Args:
-        fields (list): Fields
-        obj (ReplaceGroup): ReplaceGroup
-        idx (int): Field index to match
-
-    Returns:
-        str: ReplaceGroup value that the index matches
-    """
-    for key, val in obj.items():
-        for num in str(key).split(','):
-            try:
-                start, end, step = pyformat.fieldsep.get_range(
-                    num,
-                    pyformat.fieldsep.idx_to_num(len(fields))
-                )
-                if idx in range(start, end + 1, step):
+                start, end, step = pyformat.fieldsep.get_range(part, grouplen)
+                if num in range(start, end + 1, step):
                     return val
             except ValueError:
                 pass
