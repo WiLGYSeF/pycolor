@@ -1,5 +1,3 @@
-# TODO: cleanup
-
 import re
 import typing
 
@@ -78,7 +76,7 @@ def apply_pattern(
                 changed, result = _replace_parts(replace_func, fields, field_idxs, color_positions)
             elif len(pat.replace_groups) != 0:
                 def replace_func(data: str, index: int, offset: int):
-                    return _replace_groups(pat, data, offset, color_positions, context)
+                    return _replace_groups(pat, data, offset, context)
                 changed, result = _replace_parts(replace_func, fields, field_idxs, color_positions)
             else:
                 def set_changed(data: str, index: int, offset: int):
@@ -182,7 +180,6 @@ def _replace_groups(
     pat: Pattern,
     data: str,
     offset: int,
-    color_positions: typing.Dict[int, str],
     context: dict
 ) -> typing.Tuple[
     str,
@@ -195,12 +192,12 @@ def _replace_groups(
         pat (Pattern): Pattern to apply
         data (str): Input data
         offset (int): Offset this was called from
-        color_positions (dict): Color positions
         context (dict): Context
 
     Returns:
         tuple: Returns true if a match was found, and the new string
     """
+    color_positions: typing.Dict[int, str] = {}
     replace_ranges = []
 
     def replace_group(match: re.Match, idx: int, offset_inner: int) -> str:
