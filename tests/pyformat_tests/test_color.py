@@ -1,6 +1,7 @@
 import unittest
 
 from src.pycolor import pyformat
+from src.pycolor.pyformat.context import Context
 
 STRING = 'string'
 RESULT = 'result'
@@ -38,28 +39,24 @@ class ColorTest(unittest.TestCase):
     def test_format_color_string_prev(self):
         entries = [
             {
-                CONTEXT: {
-                    'string': 'a',
-                    'idx': 1,
-                    'color': {
-                        'positions': {
-                            0: '\x1b[31m'
-                        }
+                CONTEXT: Context(
+                    string = 'a',
+                    string_idx = 1,
+                    color_positions = {
+                        0: '\x1b[31m'
                     }
-                },
+                ),
                 STRING: '%C(green)b%C(prev)c',
                 RESULT: '\x1b[32mb\x1b[31mc',
             },
             {
-                CONTEXT: {
-                    'string': '',
-                    'idx': 0,
-                    'color': {
-                        'positions': {
-                            0: '\x1b[31m'
-                        }
+                CONTEXT: Context(
+                    string = '',
+                    string_idx = 0,
+                    color_positions = {
+                        0: '\x1b[31m'
                     }
-                },
+                ),
                 STRING: '%C(green)b%C(prev)c',
                 RESULT: '\x1b[32mb\x1b[31mc',
             },
@@ -88,11 +85,7 @@ class ColorTest(unittest.TestCase):
         self.assertEqual('test',
             pyformat.fmt_str(
                 '%C(red)test',
-                context={
-                    'color': {
-                        'enabled': False
-                    }
-                }
+                context=Context(color_enabled=False)
             )
         )
 
@@ -115,11 +108,7 @@ class ColorTest(unittest.TestCase):
                     entry[RESULT],
                     pyformat.fmt_str(
                         string,
-                        context={
-                            'color': {
-                                'aliases': aliases
-                            }
-                        }
+                        context=Context(color_aliases=aliases)
                     )
                 )
 

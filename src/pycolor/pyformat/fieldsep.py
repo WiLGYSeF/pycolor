@@ -1,5 +1,7 @@
 import typing
 
+from .context import Context
+
 CHAR_SEPARATOR = 's'
 
 def get_range(string: str, length: int) -> typing.Tuple[int, int, int]:
@@ -24,7 +26,7 @@ def get_range(string: str, length: int) -> typing.Tuple[int, int, int]:
 
     return start, end, step
 
-def get_fields(formatter: str, context: dict) -> str:
+def get_fields(formatter: str, context: Context) -> str:
     """Gets the field string from formatter
 
     Args:
@@ -34,7 +36,7 @@ def get_fields(formatter: str, context: dict) -> str:
     Returns:
         str: The concatenated fields
     """
-    fields = context['fields']
+    fields = context.fields
     if formatter[0] == CHAR_SEPARATOR:
         return get_join_field(int(formatter[1:]), fields)
 
