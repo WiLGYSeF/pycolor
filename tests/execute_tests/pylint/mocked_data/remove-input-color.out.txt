@@ -1,13 +1,13 @@
-[7;33m************* Module execute[0m
-execute.py:[32m18[0m[90m:5[0m: W0511: TODO: not compatible with windows [97m([33mfix-me[0m[0m[97m)[0m
-execute.py:[32m136[0m[90m:13[0m: W0511: TODO: not compatible with windows [97m([33mfix-me[0m[0m[97m)[0m
-execute.py:[32m179[0m[90m:5[0m: W0511: TODO: not compatible with windows [97m([33mfix-me[0m[0m[97m)[0m
-execute.py:[32m93[0m[90m:0[0m: [1;33mR0914: Too many local variables (18/15) [97m([1;33mtoo-many-locals[97m)[1;33m[0m
-execute.py:[32m115[0m[90m:12[0m: [1;33mR1732: Consider using 'with' for resource-allocating operations [97m([1;33mconsider-using-with[97m)[1;33m[0m
-execute.py:[32m119[0m[90m:12[0m: [1;33mR1732: Consider using 'with' for resource-allocating operations [97m([1;33mconsider-using-with[97m)[1;33m[0m
-execute.py:[32m93[0m[90m:0[0m: [1;33mR0912: Too many branches (17/12) [97m([1;33mtoo-many-branches[97m)[1;33m[0m
-execute.py:[32m180[0m[90m:24[0m: W0613: Unused argument '[97msig[0m' [97m([0munused-argument[97m)[0m[0m
-execute.py:[32m180[0m[90m:29[0m: W0613: Unused argument '[97mframe[0m' [97m([0munused-argument[97m)[0m[0m
+************* Module execute
+execute.py:18:5: W0511: TODO: not compatible with windows (fixme)
+execute.py:136:13: W0511: TODO: not compatible with windows (fixme)
+execute.py:179:5: W0511: TODO: not compatible with windows (fixme)
+execute.py:93:0: R0914: Too many local variables (18/15) (too-many-locals)
+execute.py:115:12: R1732: Consider using 'with' for resource-allocating operations (consider-using-with)
+execute.py:119:12: R1732: Consider using 'with' for resource-allocating operations (consider-using-with)
+execute.py:93:0: R0912: Too many branches (17/12) (too-many-branches)
+execute.py:180:24: W0613: Unused argument 'sig' (unused-argument)
+execute.py:180:29: W0613: Unused argument 'frame' (unused-argument)
 
 ------------------------------------------------------------------
-Your code has been rated at [1;36m9.32/10[0m (previous run: 9.32/10, [1;32m+0.00[0m)
+Your code has been rated at 9.32/10 (previous run: 9.32/10, +0.00)

@@ -1,6 +1,7 @@
 import typing
 
 from . import ColorPositions
+from .color import ANSI_REGEX
 
 def update_color_positions(
     color_positions: ColorPositions,
@@ -42,6 +43,32 @@ def insert_color_data(
         last = key
 
     return colored_data + data[last:]
+
+def extract_color_data(data: str) -> typing.Tuple[str, ColorPositions]:
+    """Extracts ANSI color data from string
+
+    Args:
+        data (str): String with ANSI colors
+
+    Returns:
+        tuple: String without ANSI colors, and extracted colors
+    """
+    result = ''
+    color_positions: ColorPositions = {}
+    last = 0
+
+    for match in ANSI_REGEX.finditer(data):
+        result += data[last:match.start()]
+
+        length = len(result)
+        if length not in color_positions:
+            color_positions[length] = ''
+        color_positions[length] += match.group(0)
+
+        last = match.end()
+    result += data[last:]
+
+    return result, color_positions
 
 def offset_color_positions(
     color_positions: ColorPositions,

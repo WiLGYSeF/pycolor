@@ -48,3 +48,44 @@ class ColorPositionsTest(unittest.TestCase):
                     entry[RESULT],
                     colorpositions.insert_color_data(data, colorpos)
                 )
+
+    def test_extract_color_data(self):
+        entries = [
+            {
+                DATA: 'this is a test',
+                RESULT: (
+                    'this is a test',
+                    {}
+                )
+            },
+            {
+                DATA: 'this \x1b[31mis\x1b[0m a \x1b[33;1mtest',
+                RESULT: (
+                    'this is a test',
+                    {
+                        5: '\x1b[31m',
+                        7: '\x1b[0m',
+                        10: '\x1b[33;1m'
+                    }
+                )
+            },
+            {
+                DATA: 'this \x1b[31m\x1b[36mis\x1b[0m a \x1b[33;1mtest',
+                RESULT: (
+                    'this is a test',
+                    {
+                        5: '\x1b[31m\x1b[36m',
+                        7: '\x1b[0m',
+                        10: '\x1b[33;1m'
+                    }
+                )
+            },
+        ]
+
+        for entry in entries:
+            data = entry[DATA]
+            with self.subTest(data=data):
+                self.assertEqual(
+                    entry[RESULT],
+                    colorpositions.extract_color_data(data)
+                )
