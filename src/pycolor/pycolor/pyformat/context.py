@@ -2,14 +2,12 @@ import re
 import typing
 
 from .coloring import ColorPositions
-from .coloring.colorstate import ColorState
 
 class Context:
     def __init__(self, **kwargs):
         self.color_enabled: bool = kwargs.get('color_enabled', True)
         self.color_positions: ColorPositions = kwargs.get('color_positions', {})
         self.color_aliases: typing.Dict[str, str] = kwargs.get('color_aliases', {})
-        self.color_state: typing.Optional[ColorState] = kwargs.get('color_state')
 
         self.fields: typing.List[str] = kwargs.get('fields', [])
         self.field_cur: typing.Optional[str] = kwargs.get('field_cur')
