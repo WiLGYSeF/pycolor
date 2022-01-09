@@ -3,6 +3,7 @@ import typing
 from ..colorpositions import insert_color_data
 from ..colorstate import ColorState
 from . import color
+from .context import Context
 from . import fieldsep
 
 FORMAT_CHAR_VALID = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
@@ -16,19 +17,19 @@ FORMAT_TRUNCATE = 'T'
 
 def format_string(
     string: str,
-    context: dict = None
+    context: Context = None
 ) -> typing.Tuple[str, typing.Dict[int, str]]:
     """Formats string
 
     Args:
         string (str): Format string
-        context (dict): Context
+        context (Context): Context
 
     Returns:
         tuple: Formatted string and color positions dict
     """
     if context is None:
-        context = {}
+        context = Context()
 
     newstring = ''
     color_positions: typing.Dict[int, str] = {}
@@ -72,13 +73,13 @@ def format_string(
 
 def fmt_str(
     string: str,
-    context: dict = None
+    context: Context = None
 ) -> str:
     """Format string
 
     Args:
         string (str): Format string
-        context (dict): Context
+        context (Context): Context
 
     Returns:
         str: Formatted string
@@ -86,17 +87,17 @@ def fmt_str(
     newstring, color_positions = format_string(string, context)
     return insert_color_data(newstring, color_positions)
 
-def _do_format(formatter: str, value: str, context: dict, **kwargs) -> typing.Optional[str]:
+def _do_format(formatter: str, value: str, context: Context, **kwargs) -> typing.Optional[str]:
     if formatter == FORMAT_COLOR:
         return _do_format_color(value, context, **kwargs)
     if formatter == FORMAT_FIELD:
-        return _do_format_field(value, context, **kwargs) if 'fields' in context else ''
+        return _do_format_field(value, context, **kwargs) if context.fields is not None else ''
     if formatter == FORMAT_GROUP:
-        return _do_format_group(value, context, **kwargs) if 'match' in context else ''
+        return _do_format_group(value, context, **kwargs) if context.match is not None else ''
     if formatter == FORMAT_CONTEXT_COLOR:
-        if 'match' in context and 'match_cur' in context:
+        if context.match is not None and context.match_cur is not None:
             return _do_format_field_group_color(value, context, '%Gc', **kwargs)
-        if 'field_cur' in context:
+        if context.field_cur is not None:
             return _do_format_field_group_color(value, context, '%Fc', **kwargs)
         return ''
     if formatter == FORMAT_PADDING:
@@ -105,21 +106,19 @@ def _do_format(formatter: str, value: str, context: dict, **kwargs) -> typing.Op
         return _do_format_truncate(value, context, **kwargs)
     return None
 
-def _do_format_color(value: str, context: dict, **kwargs) -> str:
-    ctx = context.get('color', {})
-    if not ctx.get('enabled', True):
+def _do_format_color(value: str, context: Context, **kwargs) -> str:
+    if not context.color_enabled:
         return ''
 
-    def get_state(context: dict) -> ColorState:
-        ctx_color = context.get('color', {})
-        state = ctx_color['state'] if 'state' in ctx_color else ColorState()
+    def get_state(context: Context) -> ColorState:
+        state = context.color_state if context.color_state else ColorState()
 
-        if 'string' in context:
+        if context.string is not None and context.string_idx is not None:
             state.set(
                 insert_color_data(
-                    context['string'],
-                    ctx_color.get('positions', {}),
-                    context['idx']
+                    context.string,
+                    context.color_positions,
+                    context.string_idx
                 )
             )
         return state
@@ -136,43 +135,46 @@ def _do_format_color(value: str, context: dict, **kwargs) -> str:
             curstate.set(insert_color_data(newstring, color_positions))
         return ColorState().get_string(compare_state=curstate)
 
-    colorstr = color.get_color(value, aliases=ctx.get('aliases', {}))
+    colorstr = color.get_color(value, aliases=context.color_aliases)
     return colorstr if colorstr is not None else ''
 
-def _do_format_field(value: str, context: dict, **kwargs) -> str:
-    if value == 'c' and 'field_cur' in context:
-        return context['field_cur']
+def _do_format_field(value: str, context: Context, **kwargs) -> str:
+    if value == 'c' and context.field_cur is not None:
+        return context.field_cur
     return fieldsep.get_fields(value, context)
 
-def _do_format_group(value: str, context: dict, **kwargs) -> str:
+def _do_format_group(value: str, context: Context, **kwargs) -> str:
     group: typing.Union[str, int] = -1
 
     try:
         group = int(value)
-        context['match_incr'] = group + 1
+        context.match_incr = group + 1
     except ValueError:
         group = value
 
-    try:
-        matchgroup = context['match'][group]
-        return matchgroup if matchgroup else ''
-    except IndexError:
-        pass
-
-    if 'match_cur' in context and group == 'c':
-        return context['match_cur']
-    if group == 'n':
-        if 'match_incr' not in context:
-            context['match_incr'] = 1
+    if context.match is not None:
         try:
-            matchgroup = context['match'][context['match_incr']]
-            context['match_incr'] += 1
+            matchgroup = context.match[group]
+            return matchgroup if matchgroup else ''
+        except IndexError:
+            pass
+
+    if context.match_cur is not None and group == 'c':
+        return context.match_cur
+    if context.match is not None and group == 'n':
+        try:
+            if context.match_incr is not None:
+                matchgroup = context.match[context.match_incr]
+                context.match_incr += 1
+            else:
+                matchgroup = context.match[1]
+                context.match_incr = 2
             return matchgroup if matchgroup else ''
         except IndexError:
             pass
     return ''
 
-def _do_format_field_group_color(value: str, context: dict, format_type: str, **kwargs) -> str:
+def _do_format_field_group_color(value: str, context: Context, format_type: str, **kwargs) -> str:
     result, color_pos = format_string(
         '%C(' + value + ')' + format_type + '%Cz',
         context=context
@@ -185,7 +187,7 @@ def _do_format_field_group_color(value: str, context: dict, format_type: str, **
         return result
     return insert_color_data(result, color_pos)
 
-def _do_format_padding(value: str, context: dict, **kwargs) -> str:
+def _do_format_padding(value: str, context: Context, **kwargs) -> str:
     value_sep = value.find(';')
     if value_sep != -1:
         try:
@@ -195,16 +197,15 @@ def _do_format_padding(value: str, context: dict, **kwargs) -> str:
 
             value = value[value_sep + 1:]
 
-            if 'color' in context:
-                context = _dictcopy(context)
-                context['color']['enabled'] = False
+            context = context.copy()
+            context.color_enabled = False
 
             return padchar * (padcount - len(fmt_str(value, context=context)))
         except ValueError:
             pass
     return ''
 
-def _do_format_truncate(value: str, context: dict, **kwargs) -> str:
+def _do_format_truncate(value: str, context: Context, **kwargs) -> str:
     str_loc_sep = value.rfind(';')
     string_repl = value[:str_loc_sep]
     location, length_str = value[str_loc_sep + 1:].split(',')
@@ -233,9 +234,8 @@ def _do_format_truncate(value: str, context: dict, **kwargs) -> str:
     if length <= 0:
         raise ValueError('invalid length: %d' % length)
 
-    if 'color' in context:
-        context = _dictcopy(context)
-        context['color']['enabled'] = False
+    context = context.copy()
+    context.color_enabled = False
     string = fmt_str(string, context=context)
 
     if location in ('start', 's'):
@@ -332,17 +332,3 @@ def get_formatter(
         formatter = formatter[:1]
 
     return formatter, value, idx
-
-def _dictcopy(dct: dict) -> dict:
-    """Shallow copy dict
-
-    Args:
-        dct (dict): Dict to copy
-
-    Returns:
-        dict: Shallow copy of dict
-    """
-    copy = {}
-    for key, val in dct.items():
-        copy[key] = _dictcopy(val) if isinstance(val, dict) else val
-    return copy
