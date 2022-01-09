@@ -30,7 +30,6 @@ def apply_pattern(
 
     color_positions = context.color_positions
     context.string = data
-    context.fields = []
     context.field_cur = None
     context.match = None
     context.match_cur = None
@@ -43,9 +42,6 @@ def apply_pattern(
         fields = list(re_split(pat.separator_regex, data))
         field_idxs = pat.get_field_indexes(len(fields))
         context.fields = fields
-
-        if field_idxs is not None and len(field_idxs) == 0:
-            return False, None
     else:
         fields = [data]
         field_idxs = [0]
@@ -90,7 +86,10 @@ def apply_pattern(
                     return data, [], {}
                 _, result = _replace_parts(set_changed, fields, field_idxs, {})
     else:
-        changed, result = _replace_fields(pat, fields, color_positions, context)
+        if field_idxs is None or len(field_idxs) != 0:
+            changed, result = _replace_fields(pat, fields, color_positions, context)
+
+    context.fields = []
 
     return changed, result
 
