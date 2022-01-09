@@ -2,6 +2,7 @@ import re
 import typing
 
 from ..config.pattern import Pattern, ReplaceGroup
+from ..strman.match_group_replace import match_group_replace
 from ..strman.search_replace import search_replace, ReplaceRange
 from ..strman.split import re_split
 from ..utils.group_index import get_named_group_at_index
@@ -229,16 +230,15 @@ def _replace_groups(
     if pat.regex is None:
         raise ValueError()
 
-    newdata = _match_group_replace(pat.regex, data, replace_group)
+    newdata = _match_all_group_replace(pat.regex, data, replace_group)
 
     return newdata, replace_ranges, color_positions
 
-def _match_group_replace(
+def _match_all_group_replace(
     regex: typing.Pattern,
     string: str,
     replace_func: typing.Callable[[re.Match, int, int], str]
 ) -> str:
-    # TODO: use match_group_replace in match_group_replace.py
     """Replace groups in regex matches in a string
 
     Args:
@@ -252,19 +252,13 @@ def _match_group_replace(
     result = ''
     last = 0
 
+    def inner_replace_func(match: re.Match, index: int, offset: int) -> str:
+        return replace_func(match, index, offset - len(result))
+
     for match in regex.finditer(string):
-        result += string[last:match.start(0)]
-        last = max(match.start(0), last)
-
-        for i in range(1, len(match.groups()) + 1):
-            if match.start(i) == -1:
-                continue
-            result += string[last:match.start(i)]
-            result += replace_func(match, i, match.start(i) - len(result))
-            last = max(match.end(i), last)
-
-        result += string[last:match.end(0)]
-        last = max(match.end(0), last)
+        result += string[last:match.start()]
+        result += match_group_replace(match, inner_replace_func)
+        last = max(match.end(), last)
 
     result += string[last:]
     return result
