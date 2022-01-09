@@ -3,7 +3,7 @@ import os
 import typing
 import unittest
 
-from src.pycolor.execute import read_stream
+from src.pycolor.execute.execute import read_stream
 
 class ReadStreamTest(unittest.TestCase):
     def test_empty(self):

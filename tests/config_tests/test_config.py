@@ -2,7 +2,7 @@ import os
 import unittest
 
 from src.pycolor.config import ConfigRegexError, ConfigExclusivePropertyError
-from src.pycolor.pycolor_class import Pycolor
+from src.pycolor.pycolor.pycolor_class import Pycolor
 
 MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_data')
 

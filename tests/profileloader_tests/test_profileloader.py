@@ -4,9 +4,9 @@ import unittest
 
 from src.pycolor.config import ConfigPropertyError
 from src.pycolor.config.argpattern import ArgPattern
-from src.pycolor import printmsg
-from src.pycolor import profileloader
-from src.pycolor.profileloader import ProfileLoader
+from src.pycolor.pycolor import profileloader
+from src.pycolor.pycolor.profileloader import ProfileLoader
+from src.pycolor.utils import printmsg
 from tests.execute_tests.helpers import textstream
 from tests.testutils import patch
 

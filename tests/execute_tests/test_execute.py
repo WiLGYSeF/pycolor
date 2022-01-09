@@ -3,7 +3,7 @@ import io
 import os
 import unittest
 
-from src.pycolor import execute
+from src.pycolor.execute import execute
 
 class ExecuteTest(unittest.TestCase):
     def test_execute_date(self):
