@@ -1,6 +1,7 @@
 import re
 import typing
 
+from ..pycolor.pyformat import fieldsep
 from . import (
     BreakableStr,
     ConfigPropertyError,
@@ -10,7 +11,6 @@ from . import (
     load_schema,
     mutually_exclusive,
 )
-from .. import pyformat
 
 ReplaceGroup = typing.Dict[typing.Union[str, int], str]
 
@@ -115,7 +115,7 @@ class Pattern:
         Returns:
             list: List of fields
         """
-        fieldcount = pyformat.fieldsep.idx_to_num(fields_len)
+        fieldcount = fieldsep.idx_to_num(fields_len)
         if self.min_fields > fieldcount or (
             self.max_fields > 0 and self.max_fields < fieldcount
         ):
@@ -124,10 +124,10 @@ class Pattern:
         if isinstance(self._field, str):
             indicies = []
             for part in self._field.split(','):
-                start, stop, step = pyformat.fieldsep.get_range(part, fieldcount)
+                start, stop, step = fieldsep.get_range(part, fieldcount)
                 indicies.extend(list(range(
-                    pyformat.fieldsep.num_to_idx(start),
-                    pyformat.fieldsep.num_to_idx(stop) + 1,
+                    fieldsep.num_to_idx(start),
+                    fieldsep.num_to_idx(stop) + 1,
                     step * 2
                 )))
             return indicies
@@ -135,7 +135,7 @@ class Pattern:
             if self._field > 0:
                 if self._field > fieldcount:
                     return []
-                return [pyformat.fieldsep.num_to_idx(self._field)]
+                return [fieldsep.num_to_idx(self._field)]
             else:
                 return None
         return list(range(0, fields_len, 2))

@@ -5,15 +5,15 @@ import os
 import sys
 import typing
 
+from . import __version__
 from . import arguments
 from . import config
-from . import debug_colors
-from .execute import read_stream
-from .printmsg import printerr, is_color_enabled
-from .pycolor_class import Pycolor
-from . import pyformat
-from .pyformat.context import Context
-from . import __version__
+from .execute.execute import read_stream
+from .pycolor import pyformat
+from .pycolor.pycolor_class import Pycolor
+from .pycolor.pyformat.context import Context
+from .utils import debug_colors
+from .utils.printmsg import printerr, is_color_enabled
 
 if os.name == 'nt':
     HOME = os.getenv('USERPROFILE')

@@ -4,8 +4,8 @@ import os
 import typing
 
 from src.pycolor import __main__ as pycolor
-from src.pycolor import pycolor_class
-from src.pycolor.pycolor_class import Pycolor
+from src.pycolor.pycolor import pycolor_class
+from src.pycolor.pycolor.pycolor_class import Pycolor
 from tests.testutils import patch
 
 def check_pycolor_execute(self,

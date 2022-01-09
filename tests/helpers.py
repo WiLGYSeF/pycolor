@@ -6,9 +6,8 @@ from tests.execute_tests.helpers import (
     execute_patch, open_fstream, read_file, test_stream, textstream
 )
 from tests.testutils import patch
-from src.pycolor import pycolor_class
+from src.pycolor.pycolor import pycolor_class
 from src.pycolor import __main__ as pycolor
-
 
 def check_pycolor_main(self,
     args,
