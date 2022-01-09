@@ -1,11 +1,14 @@
-def get_named_group_index_dict(match):
+import re
+import typing
+
+def get_named_group_index_dict(match: re.Match) -> typing.Dict[int, str]:
     """Get the name/index map of the groups
 
     Args:
         match (Match): The regex match
 
     Returns:
-        dict: A mapping of names to indicies
+        dict: A mapping of indices to names
     """
     group_idx_to_name = {}
     for group in match.groupdict():
@@ -17,7 +20,7 @@ def get_named_group_index_dict(match):
 
     return group_idx_to_name
 
-def get_named_group_index_list(match):
+def get_named_group_index_list(match: re.Match) -> typing.List[typing.Optional[str]]:
     """Get the names of the groups
 
     Args:
@@ -26,7 +29,7 @@ def get_named_group_index_list(match):
     Returns:
         list: The names of the groups by index
     """
-    group_names = [None] * (len(match.groups()) + 1)
+    group_names: typing.List[typing.Optional[str]] = [None] * (len(match.groups()) + 1)
 
     for i in range(1, len(match.groups()) + 1):
         span = match.span(i)
@@ -37,7 +40,7 @@ def get_named_group_index_list(match):
 
     return group_names
 
-def get_named_group_index(match, name):
+def get_named_group_index(match: re.Match, name: str) -> typing.Optional[int]:
     """Get the index of the named group
 
     Args:
@@ -50,11 +53,11 @@ def get_named_group_index(match, name):
     if name in match.groupdict():
         span = match.span(name)
         for i in range(1, len(match.groups()) + 1):
-            if span == match.span(i):
+            if match.span(i) == span:
                 return i
     return None
 
-def get_named_group_at_index(match, idx):
+def get_named_group_at_index(match: re.Match, idx: int) -> typing.Optional[str]:
     """Get the name of the group
 
     Args:

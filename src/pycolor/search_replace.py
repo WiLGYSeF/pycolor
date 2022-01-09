@@ -1,30 +1,37 @@
 import re
-from typing import Pattern
+import typing
 
+Span = typing.Tuple[int, int]
+ReplaceRange = typing.Tuple[Span, Span]
 
-def search_replace(pattern, string, replace, **kwargs):
+def search_replace(
+    pattern: typing.Union[re.Pattern, str],
+    string: typing.AnyStr,
+    replace: typing.Union[typing.Callable[[re.Match], typing.AnyStr], typing.AnyStr],
+    **kwargs
+) -> typing.Tuple[typing.AnyStr, typing.List[ReplaceRange]]:
     """Search and replace in string
 
     Args:
-        pattern (Pattern): The search pattern
-        string (str): The string to search and replace in
-        replace: The value to replace with
+        pattern (Pattern): Search pattern
+        string (str): String to search and replace in
+        replace: Value to replace with
 
         ignore_ranges (list): Do not replace matches in these ranges
         start_occurrence (int): Start replacing when finding the nth occurrence
         max_count (int): Replace at most this many occurrences (-1 is all)
 
     Returns:
-        tuple: The new string and the ranges replaced
+        tuple: New string and the ranges replaced
     """
-    ignore_ranges = kwargs.get('ignore_ranges', [])
-    start_occurrence = kwargs.get('start_occurrence', 1)
-    max_count = kwargs.get('max_count', -1)
+    ignore_ranges: typing.List[Span] = kwargs.get('ignore_ranges', [])
+    start_occurrence: int = max(kwargs.get('start_occurrence', 1), 1)
+    max_count: int = kwargs.get('max_count', -1)
 
-    start_occurrence = max(1, start_occurrence)
-
-    regex = pattern if isinstance(pattern, Pattern) else re.compile(pattern)
-    replf = replace if callable(replace) else lambda x: replace
+    regex = pattern if isinstance(pattern, re.Pattern) else re.compile(pattern)
+    replf: typing.Callable[[re.Match], typing.AnyStr] = (
+        replace if callable(replace) else lambda x: replace # type: ignore
+    )
 
     newstring = string[:0] #str or bytes
     count = 0
@@ -40,10 +47,10 @@ def search_replace(pattern, string, replace, **kwargs):
             igidx += 1
         if igidx < len(ignore_ranges):
             ign = ignore_ranges[igidx]
-            if any([
+            if any((
                 match.start() >= ign[0] and match.start() < ign[1],
                 ign[0] >= match.start() and ign[0] < match.end()
-            ]):
+            )):
                 continue
 
         count += 1

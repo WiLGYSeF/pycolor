@@ -1,5 +1,5 @@
 import re
-
+import typing
 
 RAW_REGEX = re.compile(r'r(?:aw)?([0-9;]+)')
 ANSI_REGEX = re.compile(r'\x1b\[([0-9;]+)m')
@@ -96,22 +96,28 @@ STYLES = {
 # STYLES are considered colors
 COLORS.update(STYLES)
 
+def get_color(colorstr: str, aliases: typing.Dict[str, str] = None) -> typing.Optional[str]:
+    """Converts color string to ANSI color string
 
-def get_color(colorstr, aliases=None):
+    Args:
+        colorstr (str): Color string
+        aliases (dict): Optional color alias map
+
+    Returns:
+        str: ANSI color string
+    """
     match = RAW_REGEX.fullmatch(colorstr)
     if match:
         return '\x1b[%sm' % match[1]
 
-    colors = []
-
-    for clr in colorstr.split(';'):
-        val = _colorval(clr, aliases)
-        if val is not None:
-            colors.append(val)
+    colors: typing.List[str] = list(filter(
+        lambda x: x is not None,
+        ( _colorval(clr, aliases) for clr in colorstr.split(';') ) # type: ignore
+    ))
 
     return '\x1b[%sm' % ';'.join(colors) if len(colors) != 0 else None
 
-def _colorval(color, aliases=None):
+def _colorval(color: str, aliases: typing.Dict[str, str] = None) -> typing.Optional[str]:
     if aliases is not None and color in aliases:
         color = aliases[color]
 
@@ -156,20 +162,40 @@ def _colorval(color, aliases=None):
 
     return None
 
-def remove_ansi_color(string):
+def remove_ansi_color(string: str) -> str:
+    """Removes ANSI colors from string
+
+    Args:
+        string (str): String
+
+    Returns:
+        str: String without ANSI colors
+    """
     return ANSI_REGEX.sub('', string)
 
-def is_ansi_reset(string):
+def is_ansi_reset(string: str) -> bool:
+    """Checks if the color string ends with a reset
+
+    Args:
+        string (str): ANSI color string
+
+    Returns:
+        bool: Returnss true if the color string ends with reset
+    """
     match = ANSI_REGEX.fullmatch(string)
     if match is None:
         return False
+    return not any((char not in '0;' for char in match[1].split(';')[-1]))
 
-    for char in match[1].split(';')[-1]:
-        if char not in '0;':
-            return False
-    return True
+def hex_to_rgb(string: str) -> typing.Tuple[int, int, int]:
+    """Converts color string to rgb
 
-def hex_to_rgb(string):
+    Args:
+        string (str): Hex color string
+
+    Returns:
+        tuple: RGB colors
+    """
     match = HEX_REGEX.fullmatch(string)
     if match is None:
         raise ValueError()

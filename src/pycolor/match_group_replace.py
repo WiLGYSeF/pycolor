@@ -1,22 +1,23 @@
 import re
-from typing import Pattern
+import typing
 
-
-def match_group_replace(pattern, string, replace_func):
+def match_group_replace(
+    regex: typing.Pattern,
+    string: str,
+    replace_func: typing.Callable[[re.Match, int, int], str]
+) -> str:
     """Replace groups in regex matches in a string
 
     Args:
-        pattern (Pattern): Regex pattern
-        string (str): The string to match with pattern
-        replace_func (function): The replace function to call on each group
+        regex (Pattern): Regex pattern
+        string (str): String to match with pattern
+        replace_func (function): Replace function to call on each group
 
     Returns:
-        str: The string with replaced values
+        str: String with replaced values
     """
     result = ''
     last = 0
-
-    regex = pattern if isinstance(pattern, Pattern) else re.compile(pattern)
 
     for match in regex.finditer(string):
         result += string[last:match.start(0)]

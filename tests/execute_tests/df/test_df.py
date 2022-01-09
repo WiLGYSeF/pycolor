@@ -5,9 +5,7 @@ from freezegun import freeze_time
 
 from tests.execute_tests.helpers import check_pycolor_execute, check_pycolor_stdin
 
-
 MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_data')
-
 
 class DfTest(unittest.TestCase):
     def test_normal(self):

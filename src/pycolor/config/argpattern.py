@@ -1,46 +1,47 @@
 import re
+import typing
 
 from . import (
+    BreakableStr,
     ConfigPropertyError,
     compile_re,
-    join_str_list,
+    join_bkstr,
     load_schema,
     mutually_exclusive,
 )
 
-
 ARGRANGE_REGEX = re.compile(r'([<>+-])?(\*|[0-9]+)')
 
-
 class ArgPattern:
-    def __init__(self, cfg):
-        self.expression = None
-        self.position = None
-        self.subcommand = []
+    def __init__(self, cfg: dict):
+        self.enabled: bool = True
+        self._expression: BreakableStr = None
+        self._subcommand: typing.Union[typing.List[str], str] = []
+        self.position: typing.Union[int, str, None] = None
+
+        self.match_not: bool = False
+        self.optional: bool = False
 
         load_schema('argpattern', cfg, self)
+        mutually_exclusive(self, ['_expression', '_subcommand'])
 
-        mutually_exclusive(self, ['expression', 'subcommand'])
+        self.expression: typing.Optional[str] = join_bkstr(self._expression)
+        self.regex: typing.Optional[re.Pattern] = compile_re(self.expression, 'expression')
 
-        for attr in [
-            'expression',
-        ]:
-            if hasattr(self, attr):
-                setattr(self, attr, join_str_list(getattr(self, attr)))
-
-        self.regex = compile_re(self.expression, 'expression')
-
-        if not isinstance(self.subcommand, list):
-            self.subcommand = [ self.subcommand ]
+        self.subcommand: typing.List[str] = []
+        if isinstance(self._subcommand, str):
+            self.subcommand = [ self._subcommand ]
+        else:
+            self.subcommand = self._subcommand
 
         if isinstance(self.position, str) and not ARGRANGE_REGEX.match(self.position):
             raise ConfigPropertyError('position', 'is not a valid argument position')
 
-    def get_arg_range(self, arglen):
+    def get_arg_range(self, arglen: int) -> range:
         """Returns a range of argument indicies that position matches
 
         Args:
-            arglen (int): The length of the arguments
+            arglen (int): Length of the arguments
 
         Returns:
             range: Range of matching indicies
@@ -60,15 +61,15 @@ class ArgPattern:
         index = match[2]
         if index == '*':
             return range(arglen)
-        index = int(index)
 
-        arg_range = None
+        idx = int(index)
         modifier = match[1]
+        arg_range = range(0)
 
         if modifier is None:
-            arg_range = range(index - 1, min(index, arglen))
+            arg_range = range(idx - 1, min(idx, arglen))
         elif modifier in ('>', '+'):
-            arg_range = range(index - 1, arglen)
+            arg_range = range(idx - 1, arglen)
         elif modifier in ('<', '-'):
-            arg_range = range(0, min(index, arglen))
+            arg_range = range(0, min(idx, arglen))
         return arg_range

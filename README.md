@@ -7,14 +7,14 @@
 2. [Example Usage](#example-usage).
 3. [Configuration](#configuration).
 4. [Formatting Strings](#formatting-strings).
-	- [Color Formatting](#colors).
-	- [Field Formatting](#fields).
-	- [Group Formatting](#groups).
-	- [Padding](#padding).
-	- [Truncate](#truncate).
+    - [Color Formatting](#colors).
+    - [Field Formatting](#fields).
+    - [Group Formatting](#groups).
+    - [Padding](#padding).
+    - [Truncate](#truncate).
 5. [Debugging and Creating Profiles](#debugging-and-creating-profiles).
-	- [Debug Colors](#debug-colors).
-	- [Creating Profiles](#creating-profiles).
+    - [Debug Colors](#debug-colors).
+    - [Creating Profiles](#creating-profiles).
 6. [Limitations](#limitations).
 
 A Python program that executes commands to perform real-time terminal output coloring using ANSI color codes.
@@ -227,8 +227,8 @@ Keys may be comma-separated numbers, or even ranges (`"<start>*<end>"`).
 ...
 
 'replace_fields': {
-	"1,3": "%Cg%Fc%Cz",
-	"2": "%Cr%Fc%Cz"
+    "1,3": "%Cg%Fc%Cz",
+    "2": "%Cr%Fc%Cz"
 },
 
 ...
@@ -239,11 +239,11 @@ Keys may be comma-separated numbers, or even ranges (`"<start>*<end>"`).
 Regex groups can be referenced with the format: `%G<group number or name>`.
 `%G0` is the entire matching text from `expression`. `%G1` is the first matching group, `%G2` is the second, etc. If the regex group is named, it can also be referenced (e.g. `%G(myregexgroup)`).
 
-### Group Incrementer
+### Group Incrementor
 
-Instead of using groups explicitly in order (e.g. `%G1, %G2: %G3`), using the special incrementer instead of numbers, `%Gn, %Gn: %Gn`, will result in the same format output.
+Instead of using groups explicitly in order (e.g. `%G1, %G2: %G3`), using the special incrementor instead of numbers, `%Gn, %Gn: %Gn`, will result in the same format output.
 
-Note that if a named group `n` is defined in the expression, then the special incrementer will be overridden.
+Note that if a named group `n` is defined in the expression, then the special incrementor will be overridden.
 
 ### `replace-groups`
 
@@ -268,8 +268,8 @@ Keys may be comma-separated numbers, or even ranges (`"<start>*<end>"`).
 ...
 
 'replace_groups': {
-	"1,3": "%Cg%Gc%Cz",
-	"2": "%Cr%Gc%Cz"
+    "1,3": "%Cg%Gc%Cz",
+    "2": "%Cr%Gc%Cz"
 },
 
 ...
@@ -277,7 +277,7 @@ Keys may be comma-separated numbers, or even ranges (`"<start>*<end>"`).
 
 ## Context-Aware Color Alias Format
 
-You may find yourself coloring groups or fields often using `%Cg%Gc%Cz` or `%Cg%Fc%Cz`, which is why a context-aware color alias format was added: `%H(<color value>)` is an alias for `%C(<color value>)%Gc%Cz`.
+You may find yourself coloring groups or fields often using `%Cg%Gc%Cz` or `%Cg%Fc%Cz`, which is why a context-aware color alias format was added: `%H(<color value>)` is an alias for `%C(<color value>)%Gc%Cz` or `%C(<color value>)%Gc%Cz`.
 
 Now `%Cg%Gc%Cz` can be replaced with the shorter alias `%Hg`.
 If `%H` is used in `replace_groups`, it will be an alias for coloring `%Gc`, and if `%H` is used in `replace_fields`, it will be an alias for coloring `%Fc`.

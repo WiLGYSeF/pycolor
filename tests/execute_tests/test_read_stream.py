@@ -1,40 +1,40 @@
 from io import BytesIO
 import os
+import typing
 import unittest
 
 from src.pycolor.execute import read_stream
 
-
 class ReadStreamTest(unittest.TestCase):
     def test_empty(self):
         stream = StreamObj(b'')
-        self.assertEqual(stream.read_stream(), [])
-        self.assertEqual(stream.read_stream(last=True), [])
+        self.assertEqual([], stream.read_stream())
+        self.assertEqual([], stream.read_stream(last=True))
 
     def test_oneline_last(self):
         stream = StreamObj(b'abc\n')
         self.assertEqual(
-            stream.read_stream(last=True),
-            ['abc\n']
+            ['abc\n'],
+            stream.read_stream(last=True)
         )
 
     def test_oneline(self):
         stream = StreamObj(b'abc\n')
         self.assertEqual(
-            stream.read_stream(),
-            ['abc\n']
+            ['abc\n'],
+            stream.read_stream()
         )
 
     def test_oneline_last_nolf(self):
         stream = StreamObj(b'abc')
         self.assertEqual(
-            stream.read_stream(last=True),
-            ['abc']
+            ['abc'],
+            stream.read_stream(last=True)
         )
 
     def test_oneline_nolf(self):
         stream = StreamObj(b'abc')
-        self.assertEqual(stream.read_stream(), [])
+        self.assertEqual([], stream.read_stream())
 
     def test_twoline_last(self):
         stream = StreamObj([
@@ -43,14 +43,8 @@ class ReadStreamTest(unittest.TestCase):
         ])
 
         callback_data = stream.read_stream(last=True)
-        self.assertEqual(
-            callback_data[0],
-            'abc\n'
-        )
-        self.assertEqual(
-            callback_data[1],
-            '123\n'
-        )
+        self.assertEqual('abc\n', callback_data[0])
+        self.assertEqual('123\n', callback_data[1])
 
     def test_twoline(self):
         stream = StreamObj([
@@ -58,14 +52,8 @@ class ReadStreamTest(unittest.TestCase):
         ])
 
         callback_data = stream.read_stream()
-        self.assertEqual(
-            callback_data[0],
-            'abc\n'
-        )
-        self.assertEqual(
-            callback_data[1],
-            '123\n'
-        )
+        self.assertEqual('abc\n', callback_data[0])
+        self.assertEqual('123\n', callback_data[1])
 
     def test_twoline_late_lf_one(self):
         stream = StreamObj([
@@ -73,16 +61,10 @@ class ReadStreamTest(unittest.TestCase):
             b'\n123\n'
         ])
 
-        self.assertEqual(stream.read_stream(), [])
+        self.assertEqual([], stream.read_stream())
         callback_data = stream.read_stream()
-        self.assertEqual(
-            callback_data[0],
-            'abc\n'
-        )
-        self.assertEqual(
-            callback_data[1],
-            '123\n'
-        )
+        self.assertEqual('abc\n', callback_data[0])
+        self.assertEqual('123\n', callback_data[1])
 
     def test_twoline_late_lf_multi(self):
         stream = StreamObj([
@@ -94,17 +76,17 @@ class ReadStreamTest(unittest.TestCase):
             b'\n'
         ])
 
-        self.assertEqual(stream.read_stream(), [])
-        self.assertEqual(stream.read_stream(), [])
+        self.assertEqual([], stream.read_stream())
+        self.assertEqual([], stream.read_stream())
         self.assertEqual(
-            stream.read_stream(),
-            ['abc\n']
+            ['abc\n'],
+            stream.read_stream()
         )
-        self.assertEqual(stream.read_stream(), [])
-        self.assertEqual(stream.read_stream(), [])
+        self.assertEqual([], stream.read_stream())
+        self.assertEqual([], stream.read_stream())
         self.assertEqual(
-            stream.read_stream(),
-            ['123\n']
+            ['123\n'],
+            stream.read_stream()
         )
 
     def test_twoline_last_nolf(self):
@@ -114,59 +96,66 @@ class ReadStreamTest(unittest.TestCase):
             b'\n123'
         ])
 
-        self.assertEqual(stream.read_stream(), [])
-        self.assertEqual(stream.read_stream(), [])
+        self.assertEqual([], stream.read_stream())
+        self.assertEqual([], stream.read_stream())
         self.assertEqual(
-            stream.read_stream(),
-            ['abc\n']
+            ['abc\n'],
+            stream.read_stream()
         )
         self.assertEqual(
-            stream.read_stream(last=True),
-            ['123']
+            ['123'],
+            stream.read_stream(last=True)
         )
-
 
 class StreamObj:
-    def __init__(self, data, callback=None):
+    def __init__(self,
+        data: typing.Union[typing.List[bytes], bytes],
+        callback: typing.Optional[typing.Callable[[str], None]] = None
+    ):
+        self._stream: BytesIO
+        self._data: typing.Union[typing.List[bytes], bytes]
+        self._data_idx: typing.Optional[int] = None
         self.set_stream(data)
-        self.callback_func = callback
 
-        self.callback_data = ''
-        self.last_callback_data = None
+        self._callback_func: typing.Optional[typing.Callable[[str], None]] = callback
 
-    def set_stream(self, data):
-        self.stream = BytesIO()
-        self.data = data
-        self.data_idx = None
+        self._callback_data: str = ''
+        self._last_callback_data: typing.List[str] = []
+
+    def set_stream(self, data: typing.Union[typing.List[bytes], bytes]) -> None:
+        self._stream = BytesIO()
+        self._data = data
+        self._data_idx = None
 
         if isinstance(data, list):
-            self.stream.write(data[0])
-            self.data_idx = 1
+            self._stream.write(data[0])
+            self._data_idx = 1
         else:
-            self.stream.write(data)
+            self._stream.write(data)
+        self._stream.seek(0)
 
-        self.stream.seek(0)
+    def callback(self, data: str) -> None:
+        self._callback_data += data
+        self._last_callback_data.append(data)
 
-    def callback(self, data):
-        self.callback_data += data
-        self.last_callback_data.append(data)
+        if callable(self._callback_func):
+            self._callback_func(data)
 
-        if callable(self.callback_func):
-            self.callback_func(data)
-
-    def read_stream(self, encoding='utf-8', last=False):
-        self.last_callback_data = []
+    def read_stream(self, encoding: str = 'utf-8', last: bool = False) -> typing.List[str]:
+        self._last_callback_data = []
 
         read_stream(
-            self.stream,
+            self._stream,
             self.callback,
+            self._stream.read(),
             encoding=encoding,
             last=last
         )
 
-        if self.data_idx is not None and self.data_idx < len(self.data):
-            self.stream.write(self.data[self.data_idx])
-            self.stream.seek(-len(self.data[self.data_idx]), os.SEEK_CUR)
-            self.data_idx += 1
+        if isinstance(self._data, list) and self._data_idx is not None:
+            if self._data_idx < len(self._data):
+                self._stream.write(self._data[self._data_idx])
+                self._stream.seek(-len(self._data[self._data_idx]), os.SEEK_CUR)
+                self._data_idx += 1
 
-        return self.last_callback_data
+        return self._last_callback_data

@@ -1,57 +1,82 @@
 import re
+import typing
 
 from . import (
+    BreakableStr,
     ConfigPropertyError,
     compile_re,
-    join_str_list,
+    join_bkstr,
     load_schema,
     mutually_exclusive,
 )
 from .. import pyformat
 
+ReplaceGroup = typing.Dict[typing.Union[str, int], str]
 
 class Pattern:
-    def __init__(self, cfg):
-        self.active = True
+    def __init__(self, cfg: dict):
+        self.enabled: bool = True
+        self._super_expression: BreakableStr = None
+        self._expression: BreakableStr = None
 
-        self.super_expression = None
-        self.expression = None
-        self.separator = None
-        self.activation_line = None
-        self.deactivation_line = None
-        self.activation_expression = None
-        self.deactivation_expression = None
-        self.activation_expression_line_offset = 0
-        self.deactivation_expression_line_offset = 0
+        self._separator: BreakableStr = None
+        self.field: typing.Optional[int] = None
+        self.min_fields: int = -1
+        self.max_fields: int = -1
 
-        self.activation_exp_line_off = 0
-        self.deactivation_exp_line_off = 0
+        self._replace: BreakableStr = None
+        self._replace_all: BreakableStr = None
+        self.replace_groups: typing.Union[
+            typing.List[str],
+            ReplaceGroup
+        ] = {}
+        self.replace_fields: typing.Union[
+            typing.List[str],
+            ReplaceGroup
+        ] = {}
+        self.filter: bool = False
 
-        self.from_profile_str = None
+        self.stdout_only: bool = False
+        self.stderr_only: bool = False
+        self.skip_others: bool = False
+
+        self._activation_line: typing.Union[typing.List[int], int] = -1
+        self._deactivation_line: typing.Union[typing.List[int], int] = -1
+
+        self._activation_expression: BreakableStr = None
+        self._deactivation_expression: BreakableStr = None
+        self._activation_expression_line_offset: int = 0
+        self._deactivation_expression_line_offset: int = 0
+
+        self.active: bool = True
+        self.regex: typing.Optional[re.Pattern] = None
+        self.super_regex: typing.Optional[re.Pattern] = None
+        self.separator_regex: typing.Optional[re.Pattern] = None
+        self.activation_regex: typing.Optional[re.Pattern] = None
+        self.deactivation_regex: typing.Optional[re.Pattern] = None
+        self._activation_exp_line_off: int = 0
+        self._deactivation_exp_line_off: int = 0
+        self.from_profile_str: typing.Optional[str] = None
 
         load_schema('pattern', cfg, self)
-
-        mutually_exclusive(self, ['replace', 'replace_all'])
+        mutually_exclusive(self, ['_replace', '_replace_all'])
         mutually_exclusive(self, ['field', 'replace_groups'])
         mutually_exclusive(self, ['stdout_only', 'stderr_only'])
 
-        for attr in [
-            'expression',
-            'separator',
-            'replace',
-            'replace_all',
-            'activation_expression',
-            'deactivation_expression'
-        ]:
-            if hasattr(self, attr):
-                setattr(self, attr, join_str_list(getattr(self, attr)))
+        self.super_expression: typing.Optional[str] = join_bkstr(self._super_expression)
+        self.expression: typing.Optional[str] = join_bkstr(self._expression)
+        self.separator: typing.Optional[str] = join_bkstr(self._separator)
+        self.replace: typing.Optional[str] = join_bkstr(self._replace)
+        self.replace_all: typing.Optional[str] = join_bkstr(self._replace_all)
+        self.activation_expression: typing.Optional[str] = join_bkstr(self._activation_expression)
+        self.deactivation_expression: typing.Optional[str] = join_bkstr(self._deactivation_expression)
 
         def as_list(var):
             return var if isinstance(var, list) else [ var ]
 
-        self.activation_ranges = Pattern.get_activation_ranges(
-            as_list(self.activation_line),
-            as_list(self.deactivation_line),
+        self.activation_ranges: typing.List[typing.Tuple[int, bool]] = Pattern.get_activation_ranges(
+            as_list(self._activation_line),
+            as_list(self._deactivation_line),
         )
         if len(self.activation_ranges) != 0:
             self.active = False
@@ -59,17 +84,11 @@ class Pattern:
         self.regex = compile_re(self.expression, 'expression')
         self.super_regex = compile_re(self.super_expression, 'super_expression')
 
-        self.activation_regex = None
-        self.deactivation_regex = None
-
         if self.activation_expression is not None:
             self.activation_regex = compile_re(self.activation_expression, 'activation_expression')
             self.active = False
         if self.deactivation_expression is not None:
-            self.deactivation_regex = compile_re(
-                self.deactivation_expression,
-                'deactivation_expression'
-            )
+            self.deactivation_regex = compile_re(self.deactivation_expression, 'deactivation_expression')
 
         if self.separator is not None and len(self.separator) != 0:
             self.separator_regex = compile_re(self.separator, 'separator')
@@ -82,16 +101,16 @@ class Pattern:
         if self.min_fields != -1 and self.max_fields != -1 and self.min_fields > self.max_fields:
             raise ConfigPropertyError('min_fields', 'cannot be larger than max_fields')
 
-    def get_field_indexes(self, fields):
-        """Returns a range of field indicies that field matches
+    def get_field_indexes(self, fields_len: int) -> range:
+        """Returns a range of field indicies that `field` matches
 
         Args:
-            fields (list): Fields
+            fields_len (int): Number of fields
 
         Returns:
             range: The range of fields
         """
-        fieldcount = pyformat.fieldsep.idx_to_num(len(fields))
+        fieldcount = pyformat.fieldsep.idx_to_num(fields_len)
         if self.min_fields > fieldcount or (
             self.max_fields > 0 and self.max_fields < fieldcount
         ):
@@ -102,54 +121,59 @@ class Pattern:
                 return range(0)
             idx = pyformat.fieldsep.num_to_idx(self.field)
             return range(idx, idx + 1)
-        return range(0, len(fields), 2)
+        return range(0, fields_len, 2)
 
     @staticmethod
-    def get_activation_ranges(activations, deactivations):
-        ranges = []
-        if activations is not None and len(activations) != 0 and activations[0] is not None:
-            ranges.extend(map(lambda x: (x, True), activations))
-        if deactivations is not None and len(deactivations) != 0 and deactivations[0] is not None:
-            ranges.extend(map(lambda x: (x, False), deactivations))
+    def get_activation_ranges(
+        activations: typing.List[int],
+        deactivations: typing.List[int]
+    ) -> typing.List[typing.Tuple[int, bool]]:
+        """Takes an activation and deactivation line list and converts it to a list of lines with (de)activations
 
+        Args:
+            activations (list): Activation line list
+            deactivations (list): Deactivation line list
+
+        Returns:
+            list: (De)activation lines
+        """
+        ranges = [
+            *map(lambda x: (x, True), filter(lambda x: x >= 0, activations)),
+            *map(lambda x: (x, False), filter(lambda x: x >= 0, deactivations))
+        ]
         ranges.sort(key=lambda x: x[0])
 
-        idx = 0
-        while idx < len(ranges) and ranges[idx][0] < 0:
-            idx += 1
-        if idx == len(ranges):
+        if len(ranges) == 0:
             return []
 
-        new_ranges = [ ranges[idx] ]
-
-        while idx < len(ranges):
-            if all([
-                ranges[idx][0] >= 0,
-                ranges[idx][0] != new_ranges[-1][0],
-                ranges[idx][1] != new_ranges[-1][1]
-            ]):
-                new_ranges.append(ranges[idx])
-            idx += 1
-
+        new_ranges = [ ranges[0] ]
+        for line, active in ranges:
+            if line != new_ranges[-1][0] and active != new_ranges[-1][1]:
+                new_ranges.append((line, active))
         return new_ranges
 
-    def is_active(self, linenum, data):
-        def active():
-            self.active = True
-            return True
+    def is_active(self, linenum: int, data: str) -> bool:
+        """Determines if pattern is active
 
-        def inactive():
-            self.active = False
-            return False
+        Args:
+            linenum (int): Current line number
+            data (str): Current line string
 
-        if self.deactivation_exp_line_off > 0:
-            self.deactivation_exp_line_off -= 1
-            if self.deactivation_exp_line_off == 0:
-                return inactive()
-        if self.activation_exp_line_off > 0:
-            self.activation_exp_line_off -= 1
-            if self.activation_exp_line_off == 0:
-                return active()
+        Returns:
+            bool: Returns if the pattern is active
+        """
+        def set_active(val: bool) -> bool:
+            self.active = val
+            return val
+
+        if self._deactivation_exp_line_off > 0:
+            self._deactivation_exp_line_off -= 1
+            if self._deactivation_exp_line_off == 0:
+                return set_active(False)
+        if self._activation_exp_line_off > 0:
+            self._activation_exp_line_off -= 1
+            if self._activation_exp_line_off == 0:
+                return set_active(True)
 
         if len(self.activation_ranges) != 0:
             idx, result = bsearch_closest(
@@ -162,36 +186,39 @@ class Pattern:
                 if idx != 0:
                     idx -= 1
             if idx == 0 and self.activation_ranges[0][0] > linenum:
-                active = not self.activation_ranges[0][1]
+                is_active = not self.activation_ranges[0][1]
             else:
-                active = self.activation_ranges[idx][1]
-            if active != self.active:
-                self.active = active
-                return active
+                is_active = self.activation_ranges[idx][1]
+            if is_active != self.active:
+                return set_active(is_active)
 
-        if self.active or self.deactivation_expression_line_offset > 0:
+        if self.active or self._deactivation_expression_line_offset > 0:
             if self.deactivation_regex is not None and re.search(self.deactivation_regex, data):
-                if self.deactivation_expression_line_offset == 0:
-                    return inactive()
-                self.deactivation_exp_line_off = self.deactivation_expression_line_offset
-        if not self.active or self.activation_expression_line_offset > 0:
+                if self._deactivation_expression_line_offset == 0:
+                    return set_active(False)
+                self._deactivation_exp_line_off = self._deactivation_expression_line_offset
+        if not self.active or self._activation_expression_line_offset > 0:
             if self.activation_regex is not None and re.search(self.activation_regex, data):
-                if self.activation_expression_line_offset == 0:
-                    return active()
-                self.activation_exp_line_off = self.activation_expression_line_offset
+                if self._activation_expression_line_offset == 0:
+                    return set_active(True)
+                self._activation_exp_line_off = self._activation_expression_line_offset
 
         return self.active
 
-def bsearch_closest(arr, val, cmp_fnc=lambda x, y: x - y):
+def bsearch_closest(
+    arr: typing.List[typing.Any],
+    val: typing.Any,
+    cmp_fnc: typing.Callable[[typing.Any, typing.Any], int] = lambda x, y: x - y
+) -> typing.Tuple[int, bool]:
     """Binary search that returns the closest value if not found
 
     Args:
         arr (list): Array of values
-        val: Value to search for
-        cmp_fnc (function): The compare function
+        val (Any): Value to search for
+        cmp_fnc (function): Compare function
 
     Returns:
-        int: The index of the matching or closest matching value
+        int: Index of the matching or closest matching value
     """
     low, mid, high = 0, 0, len(arr) - 1
     while low <= high:

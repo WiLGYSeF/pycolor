@@ -7,7 +7,6 @@
                     "subcommand": "blame"
                 }
             ],
-            "less_output": true,
             "patterns": [
                 {
                     "expression": [

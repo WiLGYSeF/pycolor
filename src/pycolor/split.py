@@ -1,29 +1,23 @@
-import re
-from typing import Pattern
+import typing
 
-
-def re_split(sep, string):
+def re_split(sep_regex: typing.Optional[typing.Pattern], string: str) -> typing.Iterable[str]:
     """Split a string with a regex separator
 
     Args:
-        sep (Pattern): The separator pattern
+        sep_regex (Pattern): The separator pattern
         string (str): The string to split
 
     Returns:
         list: The list of split parts
     """
-    if sep is None:
-        return [ string ]
+    if sep_regex is None:
+        yield string
+        return
 
-    regex = sep if isinstance(sep, Pattern) else re.compile(sep)
-
-    result = []
     last = 0
-
-    for match in regex.finditer(string):
-        result.append(string[last:match.start()])
-        result.append(string[match.start():match.end()])
+    for match in sep_regex.finditer(string):
+        yield string[last:match.start()]
+        yield string[match.start():match.end()]
         last = match.end()
 
-    result.append(string[last:])
-    return result
+    yield string[last:]

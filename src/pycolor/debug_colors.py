@@ -2,46 +2,29 @@ import os
 
 from . import pyformat
 
-
-def debug_colors():
-    reset = pyformat.format_string('%Cz')
+def debug_colors() -> None:
+    reset = pyformat.fmt_str('%Cz')
 
     print('styles:')
     for style in [
-        'nor',
-        'bol',
-        'dim',
-        'ita',
-        'und',
-        'bli',
-        'inv',
-        'hid',
-        'str',
-        'ove',
+        'nor', 'bol', 'dim', 'ita', 'und', 'bli', 'inv', 'hid', 'str', 'ove'
     ]:
-        print(pyformat.format_string('%%C(%s) %s %%Cz' % (style, style)), end='')
+        print(pyformat.fmt_str('%%C(%s) %s %%Cz' % (style, style)), end='')
     print(reset)
 
     print('\nbold on and off:')
-    print(pyformat.format_string('%C(bol) on '), end='')
-    print(pyformat.format_string('%C(^bol) off '), end='')
+    print(pyformat.fmt_str('%C(bol) on '), end='')
+    print(pyformat.fmt_str('%C(^bol) off '), end='')
     print(reset)
 
-    def color_3bit(light=False):
+    def color_3bit(light: bool = False) -> None:
         colors = [
-            'black',
-            'red',
-            'green',
-            'yellow',
-            'blue',
-            'magenta',
-            'cyan',
-            'gray'
+            'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'gray'
         ]
 
         for i in range(2):
             for color in colors:
-                print(pyformat.format_string('%%C(%s%s%s) %s %%Cz' % (
+                print(pyformat.fmt_str('%%C(%s%s%s) %s %%Cz' % (
                     '^' if i == 1 else '',
                     'light' if light else '',
                     color,
@@ -53,12 +36,12 @@ def debug_colors():
     color_3bit()
     color_3bit(light=True)
 
-    def color_8bit():
+    def color_8bit() -> None:
         for row in range(32):
             for i in range(2):
                 for col in range(8):
                     val = row * 8 + col
-                    print(pyformat.format_string('%%C(%s%d) %3d ' % (
+                    print(pyformat.fmt_str('%%C(%s%d) %3d ' % (
                         '^' if i == 1 else '',
                         val,
                         val
@@ -69,7 +52,7 @@ def debug_colors():
     print('\n8-bit color palette:')
     color_8bit()
 
-    def color_24bit(step, background=False, col_limit=10):
+    def color_24bit(step: int, background: bool = False, col_limit: int = 10) -> None:
         range24 = range(0, 16, step)
         col = 0
 
@@ -82,7 +65,7 @@ def debug_colors():
                 for b in range24:
                     bh = _hex(b + (b << 4))
                     rgb = rh + gh + bh
-                    print(pyformat.format_string('%%C(%s0x%s) %s ' % (
+                    print(pyformat.fmt_str('%%C(%s0x%s) %s ' % (
                         '^' if background else '',
                         rgb,
                         rgb
@@ -103,6 +86,6 @@ def debug_colors():
     color_24bit(2, col_limit=col_limit)
     color_24bit(2, background=True, col_limit=col_limit)
 
-def _hex(val):
+def _hex(val: int) -> str:
     charset = '0123456789abcdef'
     return charset[val >> 4] + charset[val & 15]

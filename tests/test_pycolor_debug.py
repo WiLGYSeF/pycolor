@@ -10,9 +10,7 @@ from tests.helpers import check_pycolor_main
 from tests.testutils import patch
 from src.pycolor import __main__ as pycolor
 
-
 MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_data')
-
 
 class PycolorTest(unittest.TestCase):
     def test_debug_color(self):
@@ -131,7 +129,7 @@ class PycolorTest(unittest.TestCase):
                         debugfile.write(filedata)
                 else:
                     with open(debug_fname, 'r') as debugfile:
-                        self.assertEqual(filedata, debugfile.read())
+                        self.assertEqual(debugfile.read(), filedata)
         finally:
             os.remove(fname)
 
