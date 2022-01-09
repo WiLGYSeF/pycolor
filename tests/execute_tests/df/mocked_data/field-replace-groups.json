@@ -1,0 +1,16 @@
+{
+    "profiles": [
+        {
+            "name": "df",
+            "patterns": [
+                {
+                    "activation_line": 2,
+                    "separator": " +",
+                    "field": 1,
+                    "expression": "/([a-z]+)/([a-z0-9]+)",
+                    "replace_groups": ["%Hg", "%Hy"]
+                }
+            ]
+        }
+    ]
+}

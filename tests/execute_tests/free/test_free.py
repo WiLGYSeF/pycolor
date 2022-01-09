@@ -12,8 +12,8 @@ class FreeTest(unittest.TestCase):
     def test_color_human(self):
         check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'color-human')
 
-    def test_color_count(self):
-        check_pycolor_execute(self, ['free', '-c4'], MOCKED_DATA, 'color-count')
+    def test_color_fields_replace_all(self):
+        check_pycolor_execute(self, ['free'], MOCKED_DATA, 'color-fields-replace-all')
 
     def test_color_replace_fields(self):
         check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'color-replace-fields')

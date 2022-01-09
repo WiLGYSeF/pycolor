@@ -1,7 +1,7 @@
 import re
 import unittest
 
-from src.pycolor import match_group_replace
+from src.pycolor.match_group_replace import match_group_replace
 
 STRING = 'string'
 REGEX = 'regex'
@@ -37,9 +37,8 @@ class MatchGroupReplaceTest(unittest.TestCase):
             with self.subTest(string=string, regex=regex):
                 self.assertEqual(
                     entry[RESULT],
-                    match_group_replace.match_group_replace(
-                        regex,
-                        string,
+                    match_group_replace(
+                        regex.search(string),
                         entry[REPLACE]
                     )
                 )

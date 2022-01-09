@@ -1,6 +1,7 @@
 import unittest
 
 from src.pycolor import pyformat
+from src.pycolor.pyformat.context import Context
 
 STRING = 'string'
 CONTEXT = 'context'
@@ -13,37 +14,37 @@ class PaddingTest(unittest.TestCase):
         entries = [
             {
                 STRING: '%P%F1',
-                CONTEXT: { 'fields': FIELDS_THIS_IS_A_TEST },
+                CONTEXT: Context(fields=FIELDS_THIS_IS_A_TEST),
                 RESULT: 'this'
             },
             {
                 STRING: '%P(%F1)',
-                CONTEXT: { 'fields': FIELDS_THIS_IS_A_TEST },
+                CONTEXT: Context(fields=FIELDS_THIS_IS_A_TEST),
                 RESULT: ''
             },
             {
                 STRING: '%P(2;%F1)%F1',
-                CONTEXT: { 'fields': FIELDS_THIS_IS_A_TEST },
+                CONTEXT: Context(fields=FIELDS_THIS_IS_A_TEST),
                 RESULT: 'this'
             },
             {
                 STRING: '%P(6;%F1)%F1',
-                CONTEXT: { 'fields': FIELDS_THIS_IS_A_TEST },
+                CONTEXT: Context(fields=FIELDS_THIS_IS_A_TEST),
                 RESULT: '  this'
             },
             {
                 STRING: '%P(-6;%F1)%F1',
-                CONTEXT: { 'fields': FIELDS_THIS_IS_A_TEST },
+                CONTEXT: Context(fields=FIELDS_THIS_IS_A_TEST),
                 RESULT: 'this'
             },
             {
                 STRING: '%P(z;%F1)%F1',
-                CONTEXT: { 'fields': FIELDS_THIS_IS_A_TEST },
+                CONTEXT: Context(fields=FIELDS_THIS_IS_A_TEST),
                 RESULT: 'this'
             },
             {
                 STRING: '%P(8,0;12345)12345',
-                CONTEXT: { 'fields': FIELDS_THIS_IS_A_TEST },
+                CONTEXT: Context(fields=FIELDS_THIS_IS_A_TEST),
                 RESULT: '00012345'
             },
         ]

@@ -1,6 +1,7 @@
+import re
 import typing
 
-def re_split(sep_regex: typing.Optional[typing.Pattern], string: str) -> typing.Iterable[str]:
+def re_split(sep_regex: typing.Optional[re.Pattern], string: str) -> typing.Iterable[str]:
     """Split a string with a regex separator
 
     Args:

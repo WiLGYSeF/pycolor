@@ -12,6 +12,7 @@ from . import execute
 from .printmsg import printerr
 from .profileloader import ProfileLoader
 from . import pyformat
+from .pyformat.context import Context
 
 FMT_DEBUG = pyformat.fmt_str('%Cz%Cde')
 FMT_RESET = pyformat.fmt_str('%Cz')
@@ -207,14 +208,9 @@ class Pycolor:
             data = data[:-1]
             removed_carriagereturn = True
 
-        color_positions: typing.Dict[int, str] = {}
-        context = {
-            'color': {
-                'enabled': self._is_color_enabled,
-                'aliases': self._current_profile.color_aliases,
-                'positions': color_positions,
-            }
-        }
+        context = Context()
+        context.color_enabled = self._is_color_enabled
+        context.color_aliases = self._current_profile.color_aliases
         do_filter = False
 
         for pat in self._current_profile.loaded_patterns:
@@ -249,7 +245,9 @@ class Pycolor:
                     if self.debug >= 3:
                         self.debug_print(3, 'apply%3s: %s',
                             pat.from_profile_str,
-                            insert_color_data(applied, color_positions).encode(self.encoding)
+                            insert_color_data(
+                                applied, context.color_positions
+                            ).encode(self.encoding)
                         )
                     data = applied
 
@@ -259,8 +257,8 @@ class Pycolor:
         if do_filter:
             return
 
-        if len(color_positions) != 0:
-            data = insert_color_data(data, color_positions)
+        if len(context.color_positions) != 0:
+            data = insert_color_data(data, context.color_positions)
 
         if removed_carriagereturn:
             data += '\r'

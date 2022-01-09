@@ -12,6 +12,7 @@ from .execute import read_stream
 from .printmsg import printerr, is_color_enabled
 from .pycolor_class import Pycolor
 from . import pyformat
+from .pyformat.context import Context
 from . import __version__
 
 if os.name == 'nt':
@@ -47,12 +48,10 @@ def main(
         sys.exit(0)
 
     if argspace.debug_format:
-        fmt = argspace.debug_format + ('%Cz' if argspace.debug_format_reset else '')
-        print(pyformat.fmt_str(fmt, context={
-            'color': {
-                'enabled': is_color_enabled(argspace.color)
-            }
-        }))
+        print(pyformat.fmt_str(
+            argspace.debug_format + ('%Cz' if argspace.debug_format_reset else ''),
+            Context(color_enabled=is_color_enabled(argspace.color)
+        )))
         sys.exit(0)
 
     debug_log = None

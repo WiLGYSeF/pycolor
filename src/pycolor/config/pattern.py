@@ -4,6 +4,7 @@ import typing
 from . import (
     BreakableStr,
     ConfigPropertyError,
+    ConfigExclusivePropertyError,
     compile_re,
     join_bkstr,
     load_schema,
@@ -20,20 +21,14 @@ class Pattern:
         self._expression: BreakableStr = None
 
         self._separator: BreakableStr = None
-        self.field: typing.Optional[int] = None
+        self._field: typing.Union[str, int, None] = None
         self.min_fields: int = -1
         self.max_fields: int = -1
 
         self._replace: BreakableStr = None
         self._replace_all: BreakableStr = None
-        self.replace_groups: typing.Union[
-            typing.List[str],
-            ReplaceGroup
-        ] = {}
-        self.replace_fields: typing.Union[
-            typing.List[str],
-            ReplaceGroup
-        ] = {}
+        self.replace_groups: typing.Union[ReplaceGroup, typing.List[str]] = {}
+        self.replace_fields: typing.Union[ReplaceGroup, typing.List[str]] = {}
         self.filter: bool = False
 
         self.stdout_only: bool = False
@@ -59,9 +54,19 @@ class Pattern:
         self.from_profile_str: typing.Optional[str] = None
 
         load_schema('pattern', cfg, self)
-        mutually_exclusive(self, ['_replace', '_replace_all'])
-        mutually_exclusive(self, ['field', 'replace_groups'])
+        mutually_exclusive(self, ['_replace', '_replace_all', 'replace_groups', 'replace_fields'])
         mutually_exclusive(self, ['stdout_only', 'stderr_only'])
+
+        if all((
+            any((
+                isinstance(self._field, str),
+                isinstance(self._field, int) and self._field > 0
+            )),
+            len(self.replace_fields) != 0
+        )):
+            raise ConfigExclusivePropertyError(
+                '"replace_fields" cannot be used with a nonzero "field"'
+            )
 
         self.super_expression: typing.Optional[str] = join_bkstr(self._super_expression)
         self.expression: typing.Optional[str] = join_bkstr(self._expression)
@@ -101,27 +106,39 @@ class Pattern:
         if self.min_fields != -1 and self.max_fields != -1 and self.min_fields > self.max_fields:
             raise ConfigPropertyError('min_fields', 'cannot be larger than max_fields')
 
-    def get_field_indexes(self, fields_len: int) -> range:
-        """Returns a range of field indicies that `field` matches
+    def get_field_indexes(self, fields_len: int) -> typing.Optional[typing.List[int]]:
+        """Returns a list of field indicies that `field` matches
 
         Args:
             fields_len (int): Number of fields
 
         Returns:
-            range: The range of fields
+            list: List of fields
         """
         fieldcount = pyformat.fieldsep.idx_to_num(fields_len)
         if self.min_fields > fieldcount or (
             self.max_fields > 0 and self.max_fields < fieldcount
         ):
-            return range(0)
+            return []
 
-        if self.field is not None and self.field > 0:
-            if self.field > fieldcount:
-                return range(0)
-            idx = pyformat.fieldsep.num_to_idx(self.field)
-            return range(idx, idx + 1)
-        return range(0, fields_len, 2)
+        if isinstance(self._field, str):
+            indicies = []
+            for part in self._field.split(','):
+                start, stop, step = pyformat.fieldsep.get_range(part, fieldcount)
+                indicies.extend(list(range(
+                    pyformat.fieldsep.num_to_idx(start),
+                    pyformat.fieldsep.num_to_idx(stop) + 1,
+                    step * 2
+                )))
+            return indicies
+        if isinstance(self._field, int):
+            if self._field > 0:
+                if self._field > fieldcount:
+                    return []
+                return [pyformat.fieldsep.num_to_idx(self._field)]
+            else:
+                return None
+        return list(range(0, fields_len, 2))
 
     @staticmethod
     def get_activation_ranges(

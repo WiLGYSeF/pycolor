@@ -1,6 +1,11 @@
 import typing
 
-def update_color_positions(color_positions: typing.Dict[int, str], pos: typing.Dict[int, str]) -> None:
+from .pyformat.context import ColorPositions
+
+def update_color_positions(
+    color_positions: ColorPositions,
+    pos: typing.Dict[int, str]
+) -> None:
     """Combine the color data with ones from pos
 
     Args:
@@ -12,7 +17,11 @@ def update_color_positions(color_positions: typing.Dict[int, str], pos: typing.D
             color_positions[key] = ''
         color_positions[key] += val
 
-def insert_color_data(data: str, color_positions: typing.Dict[int, str], end: int = -1) -> str:
+def insert_color_data(
+    data: str,
+    color_positions: ColorPositions,
+    end: int = -1
+) -> str:
     """Insert colors into the data
 
     Args:
@@ -34,7 +43,10 @@ def insert_color_data(data: str, color_positions: typing.Dict[int, str], end: in
 
     return colored_data + data[last:]
 
-def offset_color_positions(color_positions: typing.Dict[int, str], offset: int) -> typing.Dict[int, str]:
+def offset_color_positions(
+    color_positions: ColorPositions,
+    offset: int
+) -> ColorPositions:
     """Offset all the color data indicies
 
     Args:
