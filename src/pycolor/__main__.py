@@ -15,13 +15,10 @@ from .pycolor.pyformat.context import Context
 from .utils import debug_colors
 from .utils.printmsg import printerr, is_color_enabled
 
-if os.name == 'nt':
-    HOME = os.getenv('USERPROFILE')
-else:
-    HOME = os.getenv('HOME')
-
 CONFIG_DIR: typing.Optional[str] = None
 CONFIG_DEFAULT: typing.Optional[str] = None
+
+HOME = os.getenv('USERPROFILE' if os.name == 'nt' else 'HOME')
 
 if HOME is not None:
     CONFIG_DIR = os.path.join(HOME, '.pycolor.d')
@@ -32,9 +29,9 @@ def main_args() -> None:
 
 def main(
     args: typing.List[str],
-    stdout_stream: typing.Union[typing.TextIO] = sys.stdout,
-    stderr_stream: typing.Union[typing.TextIO] = sys.stderr,
-    stdin_stream: typing.Union[typing.TextIO] = sys.stdin
+    stdout_stream: typing.TextIO = sys.stdout,
+    stderr_stream: typing.TextIO = sys.stderr,
+    stdin_stream: typing.TextIO = sys.stdin
 ) -> None:
     parser, argspace, cmd_args = arguments.get_args(args)
     read_stdin = len(cmd_args) == 0 or argspace.stdin
@@ -161,6 +158,8 @@ def try_load_file(pycobj: Pycolor, fname: str) -> bool:
         printerr(jde, filename=fname)
     except config.ConfigError as cex:
         printerr(cex, filename=fname)
+    except Exception as err:
+        printerr(err, filename=fname)
     return False
 
 if __name__ == '__main__': #pragma: no cover

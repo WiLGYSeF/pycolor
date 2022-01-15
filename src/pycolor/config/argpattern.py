@@ -28,11 +28,7 @@ class ArgPattern:
         self.expression: typing.Optional[str] = join_bkstr(self._expression)
         self.regex: typing.Optional[re.Pattern] = compile_re(self.expression, 'expression')
 
-        self.subcommand: typing.List[str] = []
-        if isinstance(self._subcommand, str):
-            self.subcommand = [ self._subcommand ]
-        else:
-            self.subcommand = self._subcommand
+        self.subcommand: typing.List[str] = [ self._subcommand ] if isinstance(self._subcommand, str) else self._subcommand
 
         if isinstance(self.position, str) and not ARGRANGE_REGEX.match(self.position):
             raise ConfigPropertyError('position', 'is not a valid argument position')
