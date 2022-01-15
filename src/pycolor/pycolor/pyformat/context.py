@@ -6,8 +6,9 @@ from .coloring import ColorPositions
 class Context:
     def __init__(self, **kwargs):
         self.color_enabled: bool = kwargs.get('color_enabled', True)
-        self.color_positions: ColorPositions = kwargs.get('color_positions', {})
         self.color_aliases: typing.Dict[str, str] = kwargs.get('color_aliases', {})
+        self.color_positions: ColorPositions = kwargs.get('color_positions', {})
+        self.color_positions_end_idx: int = kwargs.get('color_positions_end_idx', -1)
 
         self.fields: typing.List[str] = kwargs.get('fields', [])
         self.field_cur: typing.Optional[str] = kwargs.get('field_cur')
@@ -16,8 +17,11 @@ class Context:
         self.match_cur: typing.Optional[str] = kwargs.get('match_cur')
         self.match_incr: typing.Optional[int] = kwargs.get('match_incr')
 
-        self.string: typing.Optional[str] = kwargs.get('string')
-        self.string_idx: typing.Optional[int] = kwargs.get('string_idx')
+    def copy_color_positions(self):
+        colorpos = {}
+        for key, val in self.color_positions.items():
+            colorpos[key] = val
+        return colorpos
 
     def copy(self) -> 'Context':
         """Copies the context
@@ -37,8 +41,5 @@ class Context:
         ctx.match = self.match
         ctx.match_cur = self.match_cur
         ctx.match_incr = self.match_incr
-
-        ctx.string = self.string
-        ctx.string_idx = self.string_idx
 
         return ctx

@@ -4,9 +4,36 @@ from src.pycolor.pycolor.pyformat.coloring import colorpositions
 
 DATA = 'data'
 COLOR_POS = 'color_pos'
+OFFSET = 'offset'
 RESULT = 'result'
 
 class ColorPositionsTest(unittest.TestCase):
+    def test_update_color_positions(self):
+        entries = [
+            {
+                COLOR_POS: {
+                    5: '\x1b[31m',
+                    8: '\x1b[0m'
+                },
+                DATA: {
+                    6: '\x1b[32m',
+                    8: '\x1b[1;5m'
+                },
+                RESULT: {
+                    5: '\x1b[31m',
+                    6: '\x1b[32m',
+                    8: '\x1b[0m\x1b[1;5m'
+                }
+            }
+        ]
+
+        for entry in entries:
+            colorpos = entry[COLOR_POS]
+            data = entry[DATA]
+            with self.subTest(colorpos=colorpos, data=data):
+                colorpositions.update_color_positions(colorpos, data)
+                self.assertDictEqual(entry[RESULT], colorpos)
+
     def test_insert_color_data(self):
         entries = [
             {
@@ -88,4 +115,28 @@ class ColorPositionsTest(unittest.TestCase):
                 self.assertEqual(
                     entry[RESULT],
                     colorpositions.extract_color_data(data)
+                )
+
+    def test_offset_color_positions(self):
+        entries = [
+            {
+                COLOR_POS: {
+                    5: '\x1b[31m',
+                    8: '\x1b[0m'
+                },
+                OFFSET: 6,
+                RESULT: {
+                    11: '\x1b[31m',
+                    14: '\x1b[0m'
+                }
+            }
+        ]
+
+        for entry in entries:
+            colorpos = entry[COLOR_POS]
+            offset = entry[OFFSET]
+            with self.subTest(colorpos=colorpos, offset=offset):
+                self.assertDictEqual(
+                    entry[RESULT],
+                    colorpositions.offset_color_positions(colorpos, offset)
                 )

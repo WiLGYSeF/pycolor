@@ -74,16 +74,19 @@ def offset_color_positions(
     color_positions: ColorPositions,
     offset: int
 ) -> ColorPositions:
-    """Offset all the color data indicies
+    """Offset all the color data indicies inplace
 
     Args:
         color_positions (dict): The color data
         offset (int): The offset to add to the color data
 
     Returns:
-        dict: The offsetted color data
+        dict: color_positions
     """
-    newpos = {}
-    for key, val in color_positions.items():
-        newpos[key + offset] = val
-    return newpos
+    if offset == 0:
+        return color_positions
+
+    for key in sorted(color_positions.keys(), reverse=True):
+        color_positions[key + offset] = color_positions[key]
+        del color_positions[key]
+    return color_positions
