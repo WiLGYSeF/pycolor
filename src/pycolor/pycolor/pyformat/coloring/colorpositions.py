@@ -1,5 +1,6 @@
 import typing
 
+from ....strman.search_replace import ReplaceRange
 from . import ColorPositions
 from .color import ANSI_REGEX
 
@@ -69,6 +70,41 @@ def extract_color_data(data: str) -> typing.Tuple[str, ColorPositions]:
     result += data[last:]
 
     return result, color_positions
+
+def update_color_positions_replace_ranges(
+    color_positions: ColorPositions,
+    replace_ranges: typing.List[ReplaceRange]
+) -> ColorPositions:
+    """Update color positions based on replace ranges
+
+    Args:
+        color_positions (dict): Color positions
+        replace_ranges (list): Replace ranges
+
+    Returns:
+        dict: Color positions with updated positions
+    """
+    positions: ColorPositions = {}
+    offset = 0
+    replace_idx = 0
+
+    replace_ranges.sort(key=lambda x: x[0][0])
+
+    for key, val in color_positions.items():
+        set_val = True
+        while replace_idx < len(replace_ranges):
+            oldrange, newrange = replace_ranges[replace_idx]
+            if key > oldrange[1]:
+                offset += newrange[1] - oldrange[1] - (newrange[0] - oldrange[0])
+                replace_idx += 1
+            elif oldrange[0] < key and key <= oldrange[1]:
+                set_val = False
+                break
+            else:
+                break
+        if set_val:
+            positions[key + offset] = val
+    return positions
 
 def offset_color_positions(
     color_positions: ColorPositions,

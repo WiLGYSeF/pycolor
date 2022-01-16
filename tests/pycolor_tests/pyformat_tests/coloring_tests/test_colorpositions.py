@@ -5,6 +5,7 @@ from src.pycolor.pycolor.pyformat.coloring import colorpositions
 DATA = 'data'
 COLOR_POS = 'color_pos'
 OFFSET = 'offset'
+REPLACE_RANGES = 'replace_ranges'
 RESULT = 'result'
 
 class ColorPositionsTest(unittest.TestCase):
@@ -115,6 +116,242 @@ class ColorPositionsTest(unittest.TestCase):
                 self.assertEqual(
                     entry[RESULT],
                     colorpositions.extract_color_data(data)
+                )
+
+    def test_update_color_positions_replace_ranges(self):
+        add_tests = [
+            {
+                COLOR_POS: {
+                    4: '\x1b[31m',
+                    8: '\x1b[32m',
+                    12: '\x1b[1;35m',
+                },
+                REPLACE_RANGES: [
+                    (
+                        (5, 7),
+                        (5, 10)
+                    )
+                ],
+                RESULT: {
+                    4: '\x1b[31m',
+                    11: '\x1b[32m',
+                    15: '\x1b[1;35m',
+                }
+            },
+            {
+                COLOR_POS: {
+                    4: '\x1b[31m',
+                    8: '\x1b[32m',
+                    12: '\x1b[1;35m',
+                },
+                REPLACE_RANGES: [
+                    (
+                        (5, 9),
+                        (5, 14)
+                    )
+                ],
+                RESULT: {
+                    4: '\x1b[31m',
+                    17: '\x1b[1;35m',
+                }
+            },
+            {
+                COLOR_POS: {
+                    4: '\x1b[31m',
+                    8: '\x1b[32m',
+                    12: '\x1b[1;35m',
+                },
+                REPLACE_RANGES: [
+                    (
+                        (4, 6),
+                        (4, 8)
+                    )
+                ],
+                RESULT: {
+                    4: '\x1b[31m',
+                    10: '\x1b[32m',
+                    14: '\x1b[1;35m',
+                }
+            },
+            {
+                COLOR_POS: {
+                    4: '\x1b[31m',
+                    8: '\x1b[32m',
+                    12: '\x1b[1;35m',
+                },
+                REPLACE_RANGES: [
+                    (
+                        (6, 8),
+                        (6, 10)
+                    )
+                ],
+                RESULT: {
+                    4: '\x1b[31m',
+                    14: '\x1b[1;35m',
+                }
+            },
+            {
+                COLOR_POS: {
+                    4: '\x1b[31m',
+                    8: '\x1b[32m',
+                    14: '\x1b[1;35m',
+                    19: '\x1b[31m',
+                },
+                REPLACE_RANGES: [
+                    (
+                        (5, 9),
+                        (5, 14)
+                    ),
+                    (
+                        (12, 15),
+                        (17, 20)
+                    )
+                ],
+                RESULT: {
+                    4: '\x1b[31m',
+                    24: '\x1b[31m'
+                }
+            },
+            {
+                COLOR_POS: {
+                    4: '\x1b[31m',
+                    8: '\x1b[32m',
+                    14: '\x1b[1;35m',
+                    19: '\x1b[31m',
+                },
+                REPLACE_RANGES: [
+                    (
+                        (5, 7),
+                        (5, 9)
+                    ),
+                    (
+                        (7, 15),
+                        (9, 22)
+                    )
+                ],
+                RESULT: {
+                    4: '\x1b[31m',
+                    26: '\x1b[31m'
+                }
+            },
+        ]
+
+        remove_tests = [
+            {
+                COLOR_POS: {
+                    4: '\x1b[31m',
+                    8: '\x1b[32m',
+                    12: '\x1b[1;35m',
+                    13: '\x1b[0m',
+                    18: '\x1b[1m',
+                },
+                REPLACE_RANGES: [
+                    (
+                        (6, 10),
+                        (6, 7)
+                    )
+                ],
+                RESULT: {
+                    4: '\x1b[31m',
+                    9: '\x1b[1;35m',
+                    10: '\x1b[0m',
+                    15: '\x1b[1m',
+                }
+            },
+            {
+                COLOR_POS: {
+                    4: '\x1b[31m',
+                    8: '\x1b[32m',
+                    12: '\x1b[1;35m',
+                },
+                REPLACE_RANGES: [
+                    (
+                        (4, 6),
+                        (4, 4)
+                    )
+                ],
+                RESULT: {
+                    4: '\x1b[31m',
+                    6: '\x1b[32m',
+                    10: '\x1b[1;35m',
+                }
+            },
+            {
+                COLOR_POS: {
+                    4: '\x1b[31m',
+                    8: '\x1b[32m',
+                    12: '\x1b[1;35m',
+                },
+                REPLACE_RANGES: [
+                    (
+                        (6, 8),
+                        (6, 7)
+                    )
+                ],
+                RESULT: {
+                    4: '\x1b[31m',
+                    11: '\x1b[1;35m',
+                }
+            },
+            {
+                COLOR_POS: {
+                    4: '\x1b[31m',
+                    8: '\x1b[32m',
+                    12: '\x1b[1;35m',
+                    13: '\x1b[0m',
+                    18: '\x1b[1m',
+                },
+                REPLACE_RANGES: [
+                    (
+                        (6, 10),
+                        (6, 7)
+                    ),
+                    (
+                        (11, 13),
+                        (8, 8),
+                    )
+                ],
+                RESULT: {
+                    4: '\x1b[31m',
+                    13: '\x1b[1m',
+                }
+            },
+            {
+                COLOR_POS: {
+                    4: '\x1b[31m',
+                    8: '\x1b[32m',
+                    14: '\x1b[1;35m',
+                    19: '\x1b[31m',
+                },
+                REPLACE_RANGES: [
+                    (
+                        (5, 7),
+                        (5, 9)
+                    ),
+                    (
+                        (7, 15),
+                        (9, 15)
+                    )
+                ],
+                RESULT: {
+                    4: '\x1b[31m',
+                    19: '\x1b[31m'
+                }
+            },
+        ]
+
+        entries = [*add_tests, *remove_tests]
+
+        for entry in entries:
+            colorpos = entry[COLOR_POS]
+            replace_ranges = entry[REPLACE_RANGES]
+            with self.subTest(colorpos=colorpos, replace_ranges=replace_ranges):
+                self.assertDictEqual(
+                    entry[RESULT],
+                    colorpositions.update_color_positions_replace_ranges(
+                        colorpos,
+                        replace_ranges
+                    )
                 )
 
     def test_offset_color_positions(self):

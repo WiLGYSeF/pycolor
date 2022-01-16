@@ -7,7 +7,11 @@ from ..strman.search_replace import search_replace, ReplaceRange
 from ..strman.split import re_split
 from ..utils.group_index import get_named_group_at_index
 from . import pyformat
-from .pyformat.coloring.colorpositions import update_color_positions, offset_color_positions
+from .pyformat.coloring.colorpositions import (
+    update_color_positions,
+    update_color_positions_replace_ranges,
+    offset_color_positions
+)
 from .pyformat.context import Context, ColorPositions
 
 def apply_pattern(
@@ -137,11 +141,16 @@ def _replace_parts(
         if len(replace_ranges) != 0:
             changed = True
 
-        if offset > 0:
-            _offset_replace_ranges(replace_ranges, offset)
-            offset_color_positions(colorpos, offset)
+        _offset_replace_ranges(replace_ranges, offset)
+        offset_color_positions(colorpos, offset)
 
-        update_positions(context.color_positions, replace_ranges)
+        newcolorpos = update_color_positions_replace_ranges(
+            context.color_positions,
+            replace_ranges
+        )
+        context.color_positions.clear()
+        context.color_positions.update(newcolorpos)
+
         update_color_positions(context.color_positions, colorpos)
         result += replaced
         #offset += len(parts[idx])
@@ -305,7 +314,10 @@ def _pat_search_replace(
     newstring, replace_ranges = search_replace(pattern.regex, string, replacer)
     return newstring, replace_ranges, color_positions
 
-def _offset_replace_ranges(replace_ranges: ReplaceRange, offset: int) -> ReplaceRange:
+def _offset_replace_ranges(
+    replace_ranges: typing.List[ReplaceRange],
+    offset: int
+) -> typing.List[ReplaceRange]:
     if offset == 0:
         return replace_ranges
 
@@ -316,41 +328,6 @@ def _offset_replace_ranges(replace_ranges: ReplaceRange, offset: int) -> Replace
             (new_range[0] + offset, new_range[1] + offset),
         )
     return replace_ranges
-
-def update_positions(
-    positions: ColorPositions,
-    replace_ranges: typing.List[ReplaceRange]
-) -> None:
-    """Update color positions based on replace ranges
-
-    Args:
-        positions (dict): Color positions
-        replace_ranges (list): Replace ranges
-    """
-    replace_ranges.sort(key=lambda x: x[0][0], reverse=True)
-
-    for key in sorted(positions.keys(), reverse=True):
-        newkey = key
-        skip = False
-        for old_range, new_range in replace_ranges:
-            if old_range[1] < key:
-                newkey += new_range[1] - old_range[1]
-                break
-            if old_range[0] < key and key < old_range[1]:
-                if key - old_range[0] > new_range[1] - new_range[0]:
-                    skip = True
-                else:
-                    # FIXME not sure how to handle this
-                    # newkey += new_range[1] - old_range[1] - (new_range[0] - old_range[0])
-                    skip = True
-                break
-
-        if not skip:
-            if newkey != key:
-                positions[newkey] = positions[key]
-                del positions[key]
-        else:
-            del positions[key]
 
 def _get_replace_field(
     fields: typing.List[str],

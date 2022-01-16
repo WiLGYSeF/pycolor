@@ -4,9 +4,9 @@ pycolor_class.py:[32m90[0m[90m:12[0m: [1;35mR1732: Consider using 'with' fo
 pycolor_class.py:[32m118[0m[90m:4[0m: [1;35mR0912: Too many branches (14/12) [97m([1;35mtoo-many-branches[97m)[1;35m[0m
 pycolor_class.py:[32m256[0m[90m:8[0m: [1;35mR1732: Consider using 'with' for resource-allocating operations [97m([1;35mconsider-using-with[97m)[1;35m[0m
 [7;33m************* Module execute[0m
-execute.py:[32m18[0m[90m:5[0m: [35mW0511: TODO: not compatible with windows [97m([33mfix-me[35m[0m[97m)[0m
-execute.py:[32m136[0m[90m:13[0m: [35mW0511: TODO: not compatible with windows [97m([33mfix-me[35m[0m[97m)[0m
-execute.py:[32m179[0m[90m:5[0m: [35mW0511: TODO: not compatible with windows [97m([33mfix-me[35m[0m[97m)[0m
+execute.py:[32m18[0m[90m:5[0m: [35mW0511: TODO: not compatible with windows [97m([33mfix-me[97m)[0m
+execute.py:[32m136[0m[90m:13[0m: [35mW0511: TODO: not compatible with windows [97m([33mfix-me[97m)[0m
+execute.py:[32m179[0m[90m:5[0m: [35mW0511: TODO: not compatible with windows [97m([33mfix-me[97m)[0m
 execute.py:[32m93[0m[90m:0[0m: [1;35mR0914: Too many local variables (18/15) [97m([1;35mtoo-many-locals[97m)[1;35m[0m
 execute.py:[32m115[0m[90m:12[0m: [1;35mR1732: Consider using 'with' for resource-allocating operations [97m([1;35mconsider-using-with[97m)[1;35m[0m
 execute.py:[32m119[0m[90m:12[0m: [1;35mR1732: Consider using 'with' for resource-allocating operations [97m([1;35mconsider-using-with[97m)[1;35m[0m
