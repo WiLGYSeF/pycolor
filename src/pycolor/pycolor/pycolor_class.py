@@ -10,7 +10,7 @@ from ..utils.printmsg import printerr
 from . import pyformat
 from .applypattern import apply_pattern
 from .profileloader import ProfileLoader
-from .pyformat.coloring.colorpositions import insert_color_data
+from .pyformat.coloring.colorpositions import insert_color_data, extract_color_data
 from .pyformat.coloring.colorstate import ColorState
 from .pyformat.context import Context
 
@@ -197,8 +197,9 @@ class Pycolor:
         if self.debug >= 1:
             self.debug_print(1, 'received: %s', data.encode(self.encoding))
 
+        data, color_positions = extract_color_data(data)
         if self._current_profile.remove_input_color:
-            data = pyformat.color.remove_ansi_color(data)
+            color_positions = {}
 
         if len(data) != 0 and data[-1] == '\n':
             self._linenum += 1
@@ -208,9 +209,11 @@ class Pycolor:
             data = data[:-1]
             removed_carriagereturn = True
 
-        context = Context()
-        context.color_enabled = self._is_color_enabled
-        context.color_aliases = self._current_profile.color_aliases
+        context = Context(
+            color_enabled = self._is_color_enabled,
+            color_aliases = self._current_profile.color_aliases,
+            color_positions = color_positions
+        )
         do_filter = False
 
         for pat in self._current_profile.loaded_patterns:

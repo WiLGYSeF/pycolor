@@ -14,15 +14,7 @@ class PylintTest(unittest.TestCase):
         )
 
     def test_input_color(self):
-        check_pycolor_execute(self,
-            ['pylint', 'execute.py'],
-            MOCKED_DATA,
-            'input-color'
-        )
+        check_pycolor_execute(self, ['pylint', 'execute.py'], MOCKED_DATA, 'input-color')
 
     def test_remove_input_color(self):
-        check_pycolor_execute(self,
-            ['pylint', 'execute.py'],
-            MOCKED_DATA,
-            'remove-input-color'
-        )
+        check_pycolor_execute(self, ['pylint', 'execute.py'], MOCKED_DATA, 'remove-input-color')

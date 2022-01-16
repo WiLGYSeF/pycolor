@@ -21,9 +21,9 @@ def match_group_replace(
     for idx in range(1, len(match.groups()) + 1):
         if match.start(idx) == -1:
             continue
-        result += string[last:match.start(idx) - match.start(0)]
+        result += string[last:match.start(idx) - match.start()]
         result += replace_func(match, idx, match.start(idx) - len(result))
-        last = max(match.end(idx) - match.start(0), last)
+        last = max(match.end(idx) - match.start(), last)
     result += string[last:]
 
     return result

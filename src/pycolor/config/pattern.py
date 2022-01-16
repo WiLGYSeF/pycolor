@@ -136,8 +136,7 @@ class Pattern:
                 if self._field > fieldcount:
                     return []
                 return [fieldsep.num_to_idx(self._field)]
-            else:
-                return None
+            return None
         return list(range(0, fields_len, 2))
 
     @staticmethod

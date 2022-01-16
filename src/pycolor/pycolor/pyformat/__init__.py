@@ -111,17 +111,11 @@ def _do_format_color(value: str, context: Context, **kwargs) -> str:
         return ''
 
     def get_state(context: Context) -> ColorState:
-        state = context.color_state if context.color_state else ColorState()
-
-        if context.string is not None and context.string_idx is not None:
-            state.set(
-                insert_color_data(
-                    context.string,
-                    context.color_positions,
-                    context.string_idx
-                )
-            )
-        return state
+        return ColorState(insert_color_data(
+            '',
+            context.color_positions,
+            context.color_positions_end_idx + 1
+        ))
 
     if value == 'prev':
         prev = str(get_state(context))

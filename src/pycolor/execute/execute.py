@@ -291,9 +291,11 @@ def _read_stream(stream: _Stream) -> typing.Optional[bytes]:
         try:
             data = os.read(stream.fileno(), BUFFER_SZ)
         except OSError:
-            data = stream.read()
-            if not isinstance(data, bytes):
-                data = data.encode()
+            result = stream.read()
+            if not isinstance(result, bytes):
+                data = result.encode()
+            else:
+                data = result
         except ValueError:
             return None
     else:

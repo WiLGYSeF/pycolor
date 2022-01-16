@@ -32,10 +32,6 @@
                     "replace_groups": ["%Cw%Gc%Cprev"]
                 },
                 {
-                    "expression": "\\(fixme\\)",
-                    "replace": "(%C(y)fix-me%Cw)%Cz"
-                },
-                {
                     "expression": [
                         "^",
                         "Your code has been rated at ",
