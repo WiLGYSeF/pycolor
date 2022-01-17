@@ -36,6 +36,7 @@ def check_pycolor_main(self,
             stack.enter_context(patch(sys, 'stdout', stdout))
         if patch_stderr:
             stack.enter_context(patch(sys, 'stderr', stderr))
+        stack.enter_context(patch(pycolor, 'SAMPLE_CONFIG_DIR', None))
 
         try:
             pycolor.main(args, stdout_stream=stdout, stderr_stream=stderr, stdin_stream=stdin)
