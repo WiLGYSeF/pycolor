@@ -1,0 +1,10 @@
+Filesystem            Used
+udev                     0
+tmpfs                 1.8M
+/dev/nvme0n1p3         78G
+tmpfs                  25M
+tmpfs                 4.0K
+tmpfs                    0
+/dev/nvme0n1p2         86M
+/dev/nvme0n1p1        5.9M
+tmpfs                  97K

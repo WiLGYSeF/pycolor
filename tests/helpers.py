@@ -1,6 +1,7 @@
 from contextlib import ExitStack
 import os
 import sys
+import typing
 
 from tests.execute_tests.helpers import (
     execute_patch, open_fstream, read_file, test_stream, textstream
@@ -10,17 +11,17 @@ from src.pycolor.pycolor import pycolor_class
 from src.pycolor import __main__ as pycolor
 
 def check_pycolor_main(self,
-    args,
-    mocked_data_dir,
-    test_name,
+    args: typing.List[str],
+    mocked_data_dir: str,
+    test_name: str,
     **kwargs
 ):
-    stdin = kwargs.get('stdin', sys.stdin)
-    patch_stdout = kwargs.get('patch_stdout', False)
-    patch_stderr = kwargs.get('patch_stderr', False)
-    print_output = kwargs.get('print_output', False)
-    write_output = kwargs.get('write_output', False)
-    no_load_args = kwargs.get('no_load_args', False)
+    stdin: typing.TextIO = kwargs.get('stdin', sys.stdin)
+    patch_stdout: bool = kwargs.get('patch_stdout', False)
+    patch_stderr: bool = kwargs.get('patch_stderr', False)
+    print_output: bool = kwargs.get('print_output', False)
+    write_output: bool = kwargs.get('write_output', False)
+    no_load_args: bool = kwargs.get('no_load_args', False)
 
     filename_prefix = os.path.join(mocked_data_dir, test_name)
     stdout = textstream()
@@ -38,7 +39,7 @@ def check_pycolor_main(self,
             stack.enter_context(patch(sys, 'stdout', stdout))
         if patch_stderr:
             stack.enter_context(patch(sys, 'stderr', stderr))
-        stack.enter_context(patch(pycolor, 'SAMPLE_CONFIG_DIR', None))
+        stack.enter_context(patch(pycolor.config, 'SAMPLE_CONFIG_DIR', None))
 
         try:
             pycolor.main(args, stdout_stream=stdout, stderr_stream=stderr, stdin_stream=stdin)

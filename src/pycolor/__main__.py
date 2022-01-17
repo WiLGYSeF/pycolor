@@ -19,11 +19,6 @@ from .utils.printmsg import printerr, is_color_enabled
 CONFIG_DIR: typing.Optional[str] = None
 CONFIG_DEFAULT: typing.Optional[str] = None
 
-SAMPLE_CONFIG_DIR = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)),
-    'config/sample-config'
-)
-
 HOME = os.getenv('USERPROFILE' if os.name == 'nt' else 'HOME')
 
 if HOME is not None:
@@ -66,11 +61,12 @@ def main(
         debug_log = argspace.debug_log_out
         debug_log_out = True
 
-    if all((
-        SAMPLE_CONFIG_DIR is not None,
-        CONFIG_DIR is not None and not os.path.exists(CONFIG_DIR)
-    )):
-        shutil.copytree(SAMPLE_CONFIG_DIR, CONFIG_DIR)
+    if (
+        config.SAMPLE_CONFIG_DIR is not None
+        and CONFIG_DIR is not None
+        and not os.path.exists(CONFIG_DIR)
+    ):
+        shutil.copytree(config.SAMPLE_CONFIG_DIR, CONFIG_DIR)
 
     pycobj = Pycolor(
         color_mode=argspace.color,
