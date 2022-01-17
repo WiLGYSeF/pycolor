@@ -20,12 +20,14 @@ def check_pycolor_main(self,
     patch_stderr = kwargs.get('patch_stderr', False)
     print_output = kwargs.get('print_output', False)
     write_output = kwargs.get('write_output', False)
+    no_load_args = kwargs.get('no_load_args', False)
 
     filename_prefix = os.path.join(mocked_data_dir, test_name)
     stdout = textstream()
     stderr = textstream()
 
-    args = ['--load-file', filename_prefix + '.json', '--color', 'always'] + args
+    if not no_load_args:
+        args = ['--load-file', filename_prefix + '.json', '--color', 'always'] + args
 
     stdout_in = open_fstream(filename_prefix + '.txt')
     stderr_in = open_fstream(filename_prefix + '.err.txt')
