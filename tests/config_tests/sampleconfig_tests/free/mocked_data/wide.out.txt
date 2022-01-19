@@ -1,0 +1,3 @@
+              total        used        free      shared     buffers       cache   available
+Mem:        [34m5392268[0m      [31m120856[0m     [32m4752100[0m          [34m72[0m       [33m30808[0m      [33m188204[0m     [32m7443826[0m
+Swap:       [34m2097152[0m           [31m0[0m     [32m2097152[0m
