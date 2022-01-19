@@ -15,6 +15,7 @@ def check_pycolor_execute(self,
     **kwargs
 ):
     config_file: typing.Optional[str] = kwargs.get('config_file')
+    profile_name: typing.Optional[str] = kwargs.get('profile_name')
     print_output: bool = kwargs.get('print_output', False)
     write_output: bool = kwargs.get('write_output', False)
     debug: int = kwargs.get('debug', 0)
@@ -33,7 +34,10 @@ def check_pycolor_execute(self,
     output_expected_err = read_file(filename_prefix + '.out.err.txt')
 
     with execute_patch(pycolor_class.execute, stdout, stderr):
-        pycobj.execute(cmd)
+        pycobj.execute(
+            cmd,
+            profile=pycobj.get_profile_by_name(profile_name) if profile_name is not None else None
+        )
 
     if stdout is not None:
         stdout.close()

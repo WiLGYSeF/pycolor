@@ -1,0 +1,8 @@
+PING www.google.com (142.251.40.196) 56(84) bytes of data.
+[1642565764.206206] 64 bytes from lga34s38-in-f4.1e100.net (142.251.40.196): icmp_seq=1 ttl=115 time=7.68 ms
+[1642565765.210142] 64 bytes from lga34s38-in-f4.1e100.net (142.251.40.196): icmp_seq=2 ttl=115 time=11.3 ms
+[1642565766.209028] 64 bytes from lga34s38-in-f4.1e100.net (142.251.40.196): icmp_seq=3 ttl=115 time=8.21 ms
+
+--- www.google.com ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2004ms
+rtt min/avg/max/mdev = 7.679/9.050/11.261/1.578 ms

@@ -1,0 +1,11 @@
+
+Pinging [93mwww.google.com[0m [[33m142.251.40.196[0m] with 32 bytes of data:
+Reply from [33m142.251.40.196[0m: bytes=[32m32[0m time=[34m9[0mms TTL=[94m116[0m
+Reply from [33m142.251.40.196[0m: bytes=[32m32[0m time=[34m8[0mms TTL=[94m116[0m
+Reply from [33m142.251.40.196[0m: bytes=[32m32[0m time=[34m9[0mms TTL=[94m116[0m
+Reply from [33m142.251.40.196[0m: bytes=[32m32[0m time=[34m7[0mms TTL=[94m116[0m
+
+Ping statistics for [33m142.251.40.196[0m:
+    Packets: Sent = [32m4[0m, Received = [32m4[0m, Lost = [31m0[0m ([31m0[0m% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = [32m7[0mms, Maximum = [92m9[0mms, Average = [36m8[0mms

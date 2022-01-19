@@ -1,0 +1,8 @@
+PING [93mwww.google.com[0m ([33m142.251.40.196[0m) 56(84) bytes of data.
+[1642565764.206206] 64 bytes from [93mlga34s38-in-f4.1e100.net[0m ([33m142.251.40.196[0m): icmp_seq=[32m1[0m ttl=[32m115[0m time=[34m7.68 ms[0m
+[1642565765.210142] 64 bytes from [93mlga34s38-in-f4.1e100.net[0m ([33m142.251.40.196[0m): icmp_seq=[32m2[0m ttl=[32m115[0m time=[34m11.3 ms[0m
+[1642565766.209028] 64 bytes from [93mlga34s38-in-f4.1e100.net[0m ([33m142.251.40.196[0m): icmp_seq=[32m3[0m ttl=[32m115[0m time=[34m8.21 ms[0m
+
+--- [93mwww.google.com[0m ping statistics ---
+[32m3[0m packets transmitted, [32m3[0m received, 0% packet loss, time [34m2004ms[0m
+rtt [32mmin[0m/[36mavg[0m/[92mmax[0m/[33mmdev[0m = [32m7.679[0m/[36m9.050[0m/[92m11.261[0m/[33m1.578[0m ms
