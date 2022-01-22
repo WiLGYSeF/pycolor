@@ -17,12 +17,16 @@ FORMAT_REGEX = re.compile(''.join([
     ')'
 ]))
 
+FORMAT_ALIGN = ('align', )
 FORMAT_COLOR = ('color', 'C')
 FORMAT_FIELD = ('field', 'F')
 FORMAT_GROUP = ('group', 'G')
 FORMAT_CONTEXT_COLOR = ('colorctx', 'H')
-FORMAT_PADDING = ('pad', 'P')
 FORMAT_TRUNCATE = ('trunc', 'T')
+
+ALIGN_LEFT = 'left'
+ALIGN_MIDDLE = 'middle'
+ALIGN_RIGHT = 'right'
 
 def format_string(
     string: str,
@@ -112,6 +116,8 @@ def fmt_str(
     return insert_color_data(newstring, color_positions)
 
 def _do_format(formatter: str, value: str, context: Context, **kwargs) -> typing.Optional[str]:
+    if formatter in FORMAT_ALIGN:
+        return _do_format_align(value, context, **kwargs)
     if formatter in FORMAT_COLOR:
         return _do_format_color(value, context, **kwargs)
     if formatter in FORMAT_FIELD:
@@ -124,11 +130,21 @@ def _do_format(formatter: str, value: str, context: Context, **kwargs) -> typing
         if context.field_cur is not None:
             return _do_format_field_group_color(value, context, '%Fc', **kwargs)
         return ''
-    if formatter in FORMAT_PADDING:
-        return _do_format_padding(value, context, **kwargs)
     if formatter in FORMAT_TRUNCATE:
         return _do_format_truncate(value, context, **kwargs)
     return None
+
+def _do_format_align(value: str, context: Context, **kwargs) -> str:
+    spl = value.find(',')
+    try:
+        width = int(spl[0])
+        position = spl[1].lower() if len(spl) > 1 else ALIGN_LEFT
+        padchar = spl[2] if len(spl) > 2 else ' '
+
+        context
+    except ValueError:
+        pass
+    return ''
 
 def _do_format_color(value: str, context: Context, **kwargs) -> str:
     if not context.color_enabled:
@@ -204,24 +220,6 @@ def _do_format_field_group_color(value: str, context: Context, format_type: str,
             color_positions[pos + offset] = val
         return result
     return insert_color_data(result, color_pos)
-
-def _do_format_padding(value: str, context: Context, **kwargs) -> str:
-    value_sep = value.find(';')
-    if value_sep != -1:
-        try:
-            spl = value[:value_sep].split(',')
-            padcount = int(spl[0])
-            padchar = ' ' if len(spl) == 1 else spl[1][0]
-
-            value = value[value_sep + 1:]
-
-            context = context.copy()
-            context.color_enabled = False
-
-            return padchar * (padcount - len(fmt_str(value, context=context)))
-        except ValueError:
-            pass
-    return ''
 
 def _do_format_truncate(value: str, context: Context, **kwargs) -> str:
     str_loc_sep = value.rfind(';')
