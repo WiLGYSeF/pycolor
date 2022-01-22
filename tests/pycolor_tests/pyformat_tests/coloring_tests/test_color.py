@@ -17,7 +17,7 @@ class ColorTest(unittest.TestCase):
             '%C': '',
             '%Cred%Cblue': '\x1b[31m\x1b[34m',
             '%C(red)%C(blue)': '\x1b[31m\x1b[34m',
-            '%(Cred)%(Cblue)': '%(Cred)%(Cblue)',
+            '%(color:red)%(color:blue)': '\x1b[31m\x1b[34m',
             '%C(red;^blue)': '\x1b[31;44m',
             '%C(red)abc': '\x1b[31mabc',
             '%C(123)abc': '\x1b[38;5;123mabc',
@@ -27,8 +27,8 @@ class ColorTest(unittest.TestCase):
             '%C(raw1;4;38;5;40)abc': '\x1b[1;4;38;5;40mabc',
             '%C(overline)abc': '\x1b[53mabc',
             '%C(^overline)abc': '\x1b[55mabc',
-            '%C(red': '%C(red',
-            '%CC(red)': '%CC(red)',
+            '%C(red': '(red',
+            '%CC(red)': '\x1b[36m(red)',
             '%Cr)w': '\x1b[31m)w'
         }
 

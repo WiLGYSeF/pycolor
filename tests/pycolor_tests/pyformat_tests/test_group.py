@@ -32,7 +32,7 @@ class GroupTest(unittest.TestCase):
             {
                 STRING: '%ZZZ',
                 CONTEXT: None,
-                RESULT: '%ZZZ'
+                RESULT: ''
             },
             {
                 STRING: '%Gname abc %Gname',

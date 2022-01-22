@@ -1,3 +1,4 @@
+import re
 import typing
 
 from . import fieldsep
@@ -6,14 +7,22 @@ from .coloring.colorstate import ColorState
 from .coloring import color
 from .context import Context
 
-FORMAT_CHAR_VALID = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+FORMAT_REGEX = re.compile(''.join([
+    '(?<!%)%(?:',
+        r'\((?P<format0>[A-Za-z0-9]+)(?::(?P<param0>[^()]*))?\)',
+        '|',
+        r'(?P<format1>[A-Za-z])\((?P<param1>[^()]+)\)',
+        '|',
+        r'(?P<format2>[A-Za-z])(?P<param2>[A-Za-z0-9]+)?'
+    ')'
+]))
 
-FORMAT_COLOR = 'C'
-FORMAT_FIELD = 'F'
-FORMAT_GROUP = 'G'
-FORMAT_CONTEXT_COLOR = 'H'
-FORMAT_PADDING = 'P'
-FORMAT_TRUNCATE = 'T'
+FORMAT_COLOR = ('color', 'C')
+FORMAT_FIELD = ('field', 'F')
+FORMAT_GROUP = ('group', 'G')
+FORMAT_CONTEXT_COLOR = ('colorctx', 'H')
+FORMAT_PADDING = ('pad', 'P')
+FORMAT_TRUNCATE = ('trunc', 'T')
 
 def format_string(
     string: str,
@@ -33,43 +42,58 @@ def format_string(
 
     newstring = ''
     color_positions: typing.Dict[int, str] = {}
-    idx = 0
+    last = 0
 
-    strlen = len(string)
-    while idx < strlen:
-        if string[idx] == '%':
-            if idx + 1 < strlen and string[idx + 1] == '%':
-                newstring += '%'
-                idx += 2
-                continue
+    def parse(string: str) -> str:
+        return string.replace('%%', '%')
 
-            formatter, value, newidx = get_formatter(string, idx)
-            if formatter is not None and value is not None:
-                result = _do_format(
-                    formatter,
-                    value,
-                    context,
-                    newstring=newstring,
-                    color_positions=color_positions,
-                )
-                if result is None:
-                    result = string[idx:newidx]
+    for match in FORMAT_REGEX.finditer(string):
+        newstring += parse(string[last:match.start()])
 
-                if formatter == FORMAT_COLOR:
+        formatter, param = get_format_param(match)
+        if formatter is not None and param is not None:
+            result = _do_format(
+                formatter,
+                param,
+                context,
+                newstring=newstring,
+                color_positions=color_positions,
+            )
+
+            if result is not None:
+                if formatter in FORMAT_COLOR:
                     newstrlen = len(newstring)
                     if newstrlen not in color_positions:
                         color_positions[newstrlen] = ''
                     color_positions[newstrlen] += result
                 else:
                     newstring += result
-
-                idx = newidx
-                continue
-
-        newstring += string[idx]
-        idx += 1
+        last = match.end()
+    newstring += parse(string[last:])
 
     return newstring, color_positions
+
+def get_format_param(match: re.Match) -> typing.Tuple[
+    typing.Optional[str],
+    typing.Optional[str]
+]:
+    return (
+        _get_numbered_group(match, 'format'),
+        _get_numbered_group(match, 'param')
+    )
+
+def _get_numbered_group(match: re.Match, name: str, start: int = 0) -> typing.Optional[str]:
+    groups = match.groupdict()
+    idx = start
+
+    while True:
+        key = f'{name}{idx}'
+        if key not in groups:
+            return None
+        if groups[key] is not None:
+            return groups[key]
+        idx += 1
+    return None
 
 def fmt_str(
     string: str,
@@ -88,21 +112,21 @@ def fmt_str(
     return insert_color_data(newstring, color_positions)
 
 def _do_format(formatter: str, value: str, context: Context, **kwargs) -> typing.Optional[str]:
-    if formatter == FORMAT_COLOR:
+    if formatter in FORMAT_COLOR:
         return _do_format_color(value, context, **kwargs)
-    if formatter == FORMAT_FIELD:
+    if formatter in FORMAT_FIELD:
         return _do_format_field(value, context, **kwargs) if context.fields is not None else ''
-    if formatter == FORMAT_GROUP:
+    if formatter in FORMAT_GROUP:
         return _do_format_group(value, context, **kwargs) if context.match is not None else ''
-    if formatter == FORMAT_CONTEXT_COLOR:
+    if formatter in FORMAT_CONTEXT_COLOR:
         if context.match is not None and context.match_cur is not None:
             return _do_format_field_group_color(value, context, '%Gc', **kwargs)
         if context.field_cur is not None:
             return _do_format_field_group_color(value, context, '%Fc', **kwargs)
         return ''
-    if formatter == FORMAT_PADDING:
+    if formatter in FORMAT_PADDING:
         return _do_format_padding(value, context, **kwargs)
-    if formatter == FORMAT_TRUNCATE:
+    if formatter in FORMAT_TRUNCATE:
         return _do_format_truncate(value, context, **kwargs)
     return None
 
@@ -258,71 +282,3 @@ def _do_format_truncate(value: str, context: Context, **kwargs) -> str:
     else:
         raise ValueError('invalid truncate location: %s' % location)
     return string
-
-def get_formatter(
-    string: str,
-    idx: int
-) -> typing.Tuple[
-    typing.Optional[str],
-    typing.Optional[str],
-    int
-]:
-    """Gets the formatter and value at index
-
-    Args:
-        string (str): Format string
-        idx (int): Start index
-
-    Returns:
-        tuple: Formatter, value, and end index
-    """
-    strlen = len(string)
-    begin_idx = idx
-
-    if idx >= strlen - 1 or string[idx] != '%':
-        return None, None, begin_idx
-    idx += 1
-
-    formatter = None
-    startidx = idx
-    paren = -1
-
-    while idx < strlen:
-        if string[idx] not in FORMAT_CHAR_VALID:
-            break
-        idx += 1
-
-    formatter = string[startidx:idx]
-    if len(formatter) == 0:
-        return None, None, begin_idx
-
-    if idx != strlen and string[idx] == '(':
-        paren = 1
-        idx += 1
-
-        startidx = idx
-        while idx < strlen:
-            char = string[idx]
-            if paren == 0:
-                break
-            if char == '\\':
-                idx += 2
-                continue
-
-            if char == '(':
-                paren += 1
-            elif char == ')':
-                paren -= 1
-
-            idx += 1
-
-        if paren > 0:
-            return None, None, begin_idx
-
-        value = string[startidx:idx - 1]
-        formatter = formatter[:startidx]
-    else:
-        value = formatter[1:idx - 1]
-        formatter = formatter[:1]
-
-    return formatter, value, idx
