@@ -74,19 +74,23 @@ Sample config files can be found in [`/docs/sample-config/`](https://github.com/
 
 # Formatting Strings
 
-Use formatting strings to color/manipulate the program output in real-time: `%<format code>(<format value>)`.
+Use formatting strings to color/manipulate the program output in real-time.
+These are valid formats:
+- `%(<name>:<value>)`
+- `%<code>(<value>)`
+- `%<code><value>`
 
-| Format Code | Description |
-|---|---|
-| [C](#colors) | Color formatter |
-| [F](#fields) | Field (separator) formatter |
-| [G](#groups) | Regex group formatter |
-| [H](#context-aware-color-alias-format) | Context-aware field/group color alias |
-| [P](#padding) | Padding formatter |
-| [T](#truncate) | Truncation formatter |
+| Code | Name | Description |
+|---|---|---|
+| [C](#colors) | color | Color formatter |
+| [F](#fields) | field |Field (separator) formatter |
+| [G](#groups) | group | Regex group formatter |
+| [H](#context-aware-color-alias-format) | colorctx | Context-aware field/group color alias |
+| [P](#padding) | pad | Padding formatter |
+| [T](#truncate) | trunc | Truncation formatter |
 
-Formatting strings can written like `%C(red)` (or its short form, `%Cr`) where the first letter is used as the format type and the rest is the argument.
-`%C(red)hello` formats the string `hello` in red
+Formatting strings can written like `%(color:red)`, `%C(red)`, or `%Cr`.
+`%C(red)hello` formats the string `hello` in red.
 
 A literal `%` can be used in a format string by using `%%`.
 E.g. the format string `The total is %C(red)15%%` will become `The total is 15%`, with the `15%` part in red.
@@ -97,7 +101,7 @@ Check [`/docs/sample-config/`](https://github.com/WiLGYSeF/pycolor/blob/master/d
 
 ## Colors
 
-To colorize output through a replace pattern use `%C<color value>`.
+To colorize output through a replace pattern use `%(color:<color value>)`, `%C(<color value>)` or `%C<color value>`.
 
 ### Recognized Attributes and Colors:
 | Color Value | Aliases | ANSI Code | Description |
@@ -152,7 +156,7 @@ This also works for background colors as well (e.g. `%C(^130)` produces `\e[48;5
 [Click here to see the 8-bit color table](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit).
 
 #### 24-bit Color
-24-bit color is also supported by using hex codes (`%C0xffaa00` or `%C0xfa0` will produce orange: `\e[38;2;255;170;0m`).
+24-bit color is also supported by using hex codes (`%C(0xffaa00)` or `%C(0xfa0)` will produce orange: `\e[38;2;255;170;0m`).
 
 ### Raw ANSI Codes
 If for some reason you would like to use raw color codes, `%C(raw1;3;36)` will produce bold, italic, cyan (`\e[1;3;36m`).
@@ -277,7 +281,7 @@ Keys may be comma-separated numbers, or even ranges (`"<start>*<end>"`).
 
 ## Context-Aware Color Alias Format
 
-You may find yourself coloring groups or fields often using `%Cg%Gc%Cz` or `%Cg%Fc%Cz`, which is why a context-aware color alias format was added: `%H(<color value>)` is an alias for `%C(<color value>)%Gc%Cz` or `%C(<color value>)%Gc%Cz`.
+You may find yourself coloring groups or fields often using `%Cg%Fc%Cz` or `%Cg%Gc%Cz`, which is why a context-aware color alias format is available: `%H(<color value>)` is an alias for `%C(<color value>)%Fc%Cz` or `%C(<color value>)%Gc%Cz`.
 
 Now `%Cg%Gc%Cz` can be replaced with the shorter alias `%Hg`.
 If `%H` is used in `replace_groups`, it will be an alias for coloring `%Gc`, and if `%H` is used in `replace_fields`, it will be an alias for coloring `%Fc`.
