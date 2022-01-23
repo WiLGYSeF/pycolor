@@ -13,37 +13,52 @@ class PaddingTest(unittest.TestCase):
     def test_format_context_padding_string(self):
         entries = [
             {
-                STRING: '%P%F1',
+                STRING: '%(align)%F1',
                 CONTEXT: Context(fields=FIELDS_THIS_IS_A_TEST),
                 RESULT: 'this'
             },
             {
-                STRING: '%P(%F1)',
-                CONTEXT: Context(fields=FIELDS_THIS_IS_A_TEST),
-                RESULT: ''
-            },
-            {
-                STRING: '%P(2;%F1)%F1',
+                STRING: '%(align)%F1%(end)',
                 CONTEXT: Context(fields=FIELDS_THIS_IS_A_TEST),
                 RESULT: 'this'
             },
             {
-                STRING: '%P(6;%F1)%F1',
-                CONTEXT: Context(fields=FIELDS_THIS_IS_A_TEST),
-                RESULT: '  this'
-            },
-            {
-                STRING: '%P(-6;%F1)%F1',
+                STRING: '%(align:2)%F1%(end)',
                 CONTEXT: Context(fields=FIELDS_THIS_IS_A_TEST),
                 RESULT: 'this'
             },
             {
-                STRING: '%P(z;%F1)%F1',
+                STRING: '%(align:6)%F1',
+                CONTEXT: Context(fields=FIELDS_THIS_IS_A_TEST),
+                RESULT: 'this  '
+            },
+            {
+                STRING: '%(align:-6)%F1%(end)',
                 CONTEXT: Context(fields=FIELDS_THIS_IS_A_TEST),
                 RESULT: 'this'
             },
             {
-                STRING: '%P(8,0;12345)12345',
+                STRING: '%(align:6:z)%F1',
+                CONTEXT: Context(fields=FIELDS_THIS_IS_A_TEST),
+                RESULT: 'this'
+            },
+            {
+                STRING: '%(align:6,z)%F1%(end)',
+                CONTEXT: Context(fields=FIELDS_THIS_IS_A_TEST),
+                RESULT: 'this  '
+            },
+            {
+                STRING: '=%(align:8,left,0)12345%(end)=',
+                CONTEXT: Context(fields=FIELDS_THIS_IS_A_TEST),
+                RESULT: '=12345000='
+            },
+            {
+                STRING: '%(align:8,middle,0)12345%(end)',
+                CONTEXT: Context(fields=FIELDS_THIS_IS_A_TEST),
+                RESULT: '01234500'
+            },
+            {
+                STRING: '%(align:8,right,0)12345%(end)',
                 CONTEXT: Context(fields=FIELDS_THIS_IS_A_TEST),
                 RESULT: '00012345'
             },
