@@ -1,6 +1,7 @@
 import unittest
 
 from src.pycolor.pycolor import pyformat
+from src.pycolor.pycolor.pyformat import Formatter
 from src.pycolor.pycolor.pyformat.context import Context
 
 STRING = 'string'
@@ -66,7 +67,8 @@ class ColorTest(unittest.TestCase):
             string = entry[STRING]
             context = entry[CONTEXT]
             with self.subTest(string=string, context=context):
-                self.assertEqual(entry[RESULT], pyformat.fmt_str(string, context=context))
+                formatter = Formatter(context=context)
+                self.assertEqual(entry[RESULT], formatter.fmt_str(string))
 
     def test_format_color_string_soft_reset(self):
         entries = [
@@ -83,10 +85,7 @@ class ColorTest(unittest.TestCase):
 
     def test_format_color_string_color_disabled(self):
         self.assertEqual('test',
-            pyformat.fmt_str(
-                '%C(red)test',
-                context=Context(color_enabled=False)
-            )
+            pyformat.fmt_str('%C(red)test', color_enabled=False)
         )
 
     def test_format_color_string_aliases(self):
@@ -104,13 +103,8 @@ class ColorTest(unittest.TestCase):
             aliases = entry[ALIASES]
             string = entry[STRING]
             with self.subTest(aliases=aliases, string=string):
-                self.assertEqual(
-                    entry[RESULT],
-                    pyformat.fmt_str(
-                        string,
-                        context=Context(color_aliases=aliases)
-                    )
-                )
+                formatter = Formatter(context=Context(color_aliases=aliases))
+                self.assertEqual(entry[RESULT], formatter.fmt_str(string))
 
     def test_remove_ansi_color(self):
         entries = {

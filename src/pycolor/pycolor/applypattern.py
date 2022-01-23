@@ -7,6 +7,7 @@ from ..strman.search_replace import search_replace, ReplaceRange
 from ..strman.split import re_split
 from ..utils.group_index import get_named_group_at_index
 from . import pyformat
+from .pyformat import Formatter
 from .pyformat.coloring.colorpositions import (
     update_color_positions,
     update_color_positions_replace_ranges,
@@ -59,7 +60,7 @@ def apply_pattern(
                         return data, [], {}
 
                     context.match = match
-                    result, colorpos = pyformat.format_string(pat.replace_all, context=context) # type: ignore
+                    result, colorpos = Formatter(context=context).format_string(pat.replace_all) # type: ignore
                     context.match = None
 
                     return result, [((0, len(data)), (0, len(result)))], colorpos
@@ -178,7 +179,8 @@ def _replace_fields(
         if result is None:
             return data, [], {}
 
-        result, colorpos = pyformat.format_string(result, context=context)
+        formatter = Formatter(context=context)
+        result, colorpos = formatter.format_string(result)
         return result, [((0, len(data)), (0, len(result)))], colorpos
 
     return _replace_parts(replace_field, fields, range(0, len(fields), 2), context)
@@ -217,7 +219,8 @@ def _replace_groups(
         context.match_cur = match.group(idx)
         context.color_positions_end_idx = offset + match.start(idx)
 
-        replace_val, colorpos = pyformat.format_string(replace_val, context=context)
+        formatter = Formatter(context=context)
+        replace_val, colorpos = formatter.format_string(replace_val)
 
         context.match = None
         context.match_cur = None
@@ -300,7 +303,8 @@ def _pat_search_replace(
             context.match = None
             raise ValueError()
 
-        newstring, colorpos = pyformat.format_string(pattern.replace, context=context)
+        formatter = Formatter(context=context)
+        newstring, colorpos = formatter.format_string(pattern.replace)
 
         context.match = None
 
