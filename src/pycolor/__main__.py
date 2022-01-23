@@ -47,8 +47,8 @@ def main(
     if argspace.debug_format:
         print(pyformat.fmt_str(
             argspace.debug_format + ('%Cz' if argspace.debug_format_reset else ''),
-            Context(color_enabled=is_color_enabled(argspace.color)
-        )))
+            color_enabled=is_color_enabled(argspace.color)
+        ))
         sys.exit(0)
 
     debug_log = None

@@ -1,6 +1,6 @@
 import unittest
 
-from src.pycolor.pycolor import pyformat
+from src.pycolor.pycolor.pyformat import Formatter
 from src.pycolor.pycolor.pyformat.context import Context
 
 STRING = 'string'
@@ -53,7 +53,5 @@ class PaddingTest(unittest.TestCase):
             string = entry[STRING]
             context = entry[CONTEXT]
             with self.subTest(string=string, context=context):
-                self.assertEqual(
-                    entry[RESULT],
-                    pyformat.fmt_str(string, context=context),
-                )
+                formatter = Formatter(context=context)
+                self.assertEqual(entry[RESULT], formatter.fmt_str(string))

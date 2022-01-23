@@ -26,17 +26,16 @@ def get_range(string: str, length: int) -> typing.Tuple[int, int, int]:
 
     return start, end, step
 
-def get_fields(formatter: str, context: Context) -> str:
+def get_fields(formatter: str, fields: typing.List[str]) -> str:
     """Gets the field string from formatter
 
     Args:
         formatter (str): Format string
-        context (dict): Context data
+        fields (list): Fields
 
     Returns:
         str: The concatenated fields
     """
-    fields = context.fields
     if formatter[0] == CHAR_SEPARATOR:
         return get_join_field(int(formatter[1:]), fields)
 
@@ -70,11 +69,9 @@ def get_join_field(num: int, fields: typing.List[str]) -> str:
     """
     if num < 0:
         num += idx_to_num(len(fields)) + 1
-    if num <= 1:
-        return ''
 
     num = num_to_idx(num - 1) + 1
-    return fields[num] if num < len(fields) else ''
+    return fields[num] if num >= 0 and num < len(fields) else ''
 
 def idx_to_num(idx: int) -> int:
     return idx // 2 + 1

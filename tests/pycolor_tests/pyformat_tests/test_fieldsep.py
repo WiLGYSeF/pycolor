@@ -1,6 +1,7 @@
 import unittest
 
 from src.pycolor.pycolor import pyformat
+from src.pycolor.pycolor.pyformat import Formatter
 from src.pycolor.pycolor.pyformat.context import Context
 
 STRING = 'string'
@@ -103,10 +104,8 @@ class FieldsepTest(unittest.TestCase):
             string = entry[STRING]
             context = entry[CONTEXT]
             with self.subTest(string=string, context=context):
-                self.assertEqual(
-                    entry[RESULT],
-                    pyformat.fmt_str(string, context=context)
-                )
+                formatter = Formatter(context=context)
+                self.assertEqual(entry[RESULT], formatter.fmt_str(string))
 
     def test_format_context_fieldsep_string_range(self):
         entries = [
@@ -151,10 +150,8 @@ class FieldsepTest(unittest.TestCase):
             string = entry[STRING]
             context = entry[CONTEXT]
             with self.subTest(string=string, context=context):
-                self.assertEqual(
-                    entry[RESULT],
-                    pyformat.fmt_str(string, context=context)
-                )
+                formatter = Formatter(context=context)
+                self.assertEqual(entry[RESULT], formatter.fmt_str(string))
 
     def test_format_context_fieldsep_string_range_replace(self):
         entries = [
@@ -179,16 +176,15 @@ class FieldsepTest(unittest.TestCase):
             string = entry[STRING]
             context = entry[CONTEXT]
             with self.subTest(string=string, context=context):
-                self.assertEqual(
-                    entry[RESULT],
-                    pyformat.fmt_str(string, context=context)
-                )
+                formatter = Formatter(context=context)
+                self.assertEqual(entry[RESULT], formatter.fmt_str(string))
 
     def test_format_context_fieldsep_color(self):
         entries = [
             {
                 STRING: '%F1 %Hb',
                 CONTEXT: Context(
+                    color_enabled = True,
                     fields = FIELDS_THIS_IS_A_TEST,
                     field_cur = 'test'
                 ),
@@ -200,10 +196,8 @@ class FieldsepTest(unittest.TestCase):
             string = entry[STRING]
             context = entry[CONTEXT]
             with self.subTest(string=string, context=context):
-                self.assertEqual(
-                    entry[RESULT],
-                    pyformat.fmt_str(string, context=context)
-                )
+                formatter = Formatter(context=context)
+                self.assertEqual(entry[RESULT], formatter.fmt_str(string))
 
     def test_get_join_field(self):
         entries = [
