@@ -22,12 +22,17 @@ FORMAT_REGEX = re.compile(''.join([
     ')'
 ]))
 
+FORMAT_ALIGN = ('align', )
+FORMAT_END = ('end', )
 FORMAT_COLOR = ('color', 'C')
 FORMAT_FIELD = ('field', 'F')
 FORMAT_GROUP = ('group', 'G')
 FORMAT_CONTEXT_COLOR = ('colorctx', 'H')
-FORMAT_PADDING = ('pad', 'P')
 FORMAT_TRUNCATE = ('trunc', 'T')
+
+ALIGN_LEFT = 'left'
+ALIGN_MIDDLE = 'middle'
+ALIGN_RIGHT = 'right'
 
 class Formatter:
     def __init__(self, context: typing.Optional[Context] = None):
@@ -35,6 +40,7 @@ class Formatter:
 
         self._cur_newstring: str = ''
         self._cur_color_positions: ColorPositions = {}
+        self._cur_nested_state: dict = {}
 
     def format_string(self, string: str) -> typing.Tuple[str, ColorPositions]:
         """Formats string
@@ -53,10 +59,19 @@ class Formatter:
             return string.replace('%%', '%')
 
         for match in FORMAT_REGEX.finditer(string):
+            if match.end() <= last:
+                # was already handled by recursive format
+                continue
+
             self._cur_newstring += parse(string[last:match.start()])
 
             formatter, param = get_format_param(match)
             if formatter is not None:
+                if formatter in FORMAT_END and len(self._cur_nested_state) != 0:
+                    # end of the recursive format
+                    last = match.end()
+                    break
+
                 result = self._do_format(
                     formatter,
                     param if param is not None else ''
@@ -69,11 +84,25 @@ class Formatter:
                         self._cur_color_positions[newstrlen] += result
                     else:
                         self._cur_newstring += result
+                else:
+                    if len(self._cur_nested_state) != 0:
+                        # do a recursive format with the state passed
+                        copy, result = self._recursive_format(string[match.end():])
+                        self._cur_newstring += result
+                        self._cur_nested_state = {}
+                        # jump to the end of the recursive format
+                        last = match.end() + copy._cur_nested_state['last_index']
+                        continue
 
             last = match.end()
-        self._cur_newstring += parse(string[last:])
 
-        return self._cur_newstring, self._cur_color_positions
+        if len(self._cur_nested_state) != 0:
+            self._cur_newstring = self._do_state_format()
+            self._cur_nested_state['last_index'] = last
+        else:
+            self._cur_newstring += parse(string[last:])
+
+        return self._cur_newstring, self._cur_color_positions.copy()
 
     def fmt_str(self, string: str) -> str:
         """Format string
@@ -87,15 +116,30 @@ class Formatter:
         newstring, color_positions = self.format_string(string)
         return insert_color_data(newstring, color_positions)
 
-    def copy(self) -> 'Formatter':
+    def copy(self, copy_state: bool = False) -> 'Formatter':
         """Copies the formatter
 
         Returns:
             Formatter: Copied formatter
         """
-        return Formatter(context=self._context.copy())
+        copy = Formatter(context=self._context.copy())
+        if copy_state:
+            copy._cur_nested_state = self._cur_nested_state.copy()
+        return copy
+
+    def _recursive_format(self, string: str) -> typing.Tuple['Formatter', str]:
+        copy = self.copy(copy_state=True)
+        newstring, colorpos = copy.format_string(string)
+        update_color_positions(
+            self._cur_color_positions,
+            offset_color_positions(colorpos, len(self._cur_newstring))
+        )
+        return copy, newstring
 
     def _do_format(self, formatter: str, value: str) -> typing.Optional[str]:
+        if formatter in FORMAT_ALIGN:
+            self._prepare_format_align(value)
+            return None
         if formatter in FORMAT_COLOR:
             return self._do_format_color(value)
         if formatter in FORMAT_FIELD:
@@ -108,11 +152,54 @@ class Formatter:
             if self._context.field_cur is not None:
                 return self._do_format_field_group_color(value, '%Fc')
             return ''
-        if formatter in FORMAT_PADDING:
-            return self._do_format_padding(value)
         if formatter in FORMAT_TRUNCATE:
             return self._do_format_truncate(value)
         return None
+
+    def _do_state_format(self) -> str:
+        format_type = self._cur_nested_state['type']
+        if format_type in FORMAT_ALIGN:
+            return self._do_format_align(
+                self._cur_newstring,
+                self._cur_nested_state['width'],
+                self._cur_nested_state['position'],
+                self._cur_nested_state['padchar']
+            )
+        return ''
+
+    def _prepare_format_align(self, value: str) -> None:
+        try:
+            spl = value.split(',')
+            width = int(spl[0])
+            position = spl[1].lower() if len(spl) > 1 else ALIGN_LEFT
+            padchar = spl[2][0] if len(spl) > 2 else ' '
+
+            if position not in [ALIGN_LEFT, ALIGN_MIDDLE, ALIGN_RIGHT]:
+                position = ALIGN_LEFT
+
+            self._cur_nested_state = {
+                'type': 'align',
+                'width': width,
+                'position': position,
+                'padchar': padchar
+            }
+        except ValueError:
+            pass
+
+    def _do_format_align(self, value: str, width: int, position: str, padchar: str) -> str:
+        diff = width - len(value)
+        if diff <= 0:
+            return value
+
+        result = ''
+        if position == ALIGN_LEFT:
+            result = value + (padchar * diff)
+        elif position == ALIGN_MIDDLE:
+            half = diff // 2
+            result = (padchar * half) + value + (padchar * (diff - half))
+        elif position == ALIGN_RIGHT:
+            result = (padchar * diff) + value
+        return result
 
     def _do_format_color(self, value: str) -> str:
         if not self._context.color_enabled:
@@ -173,32 +260,8 @@ class Formatter:
         return ''
 
     def _do_format_field_group_color(self, value: str, format_type: str) -> str:
-        copy = self.copy()
-        result, color_pos = copy.format_string(f'%C({value}){format_type}%Cz')
-        update_color_positions(
-            self._cur_color_positions,
-            offset_color_positions(color_pos, len(self._cur_newstring))
-        )
+        _, result = self._recursive_format(f'%C({value}){format_type}%Cz')
         return result
-
-    def _do_format_padding(self, value: str) -> str:
-        value_sep = value.find(';')
-        if value_sep != -1:
-            try:
-                spl = value[:value_sep].split(',')
-                padcount = int(spl[0])
-                padchar = ' ' if len(spl) == 1 else spl[1][0]
-
-                value = value[value_sep + 1:]
-
-                copy = self.copy()
-                copy._context.color_enabled = False
-                newstring, _ = copy.format_string(value)
-                result = padchar * (padcount - len(newstring))
-                return result
-            except ValueError:
-                pass
-        return ''
 
     def _do_format_truncate(self, value: str) -> str:
         str_loc_sep = value.rfind(';')

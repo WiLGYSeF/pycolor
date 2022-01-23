@@ -10,7 +10,7 @@
     - [Color Formatting](#colors).
     - [Field Formatting](#fields).
     - [Group Formatting](#groups).
-    - [Padding](#padding).
+    - [Alignment](#alignment).
     - [Truncate](#truncate).
 5. [Debugging and Creating Profiles](#debugging-and-creating-profiles).
     - [Debug Colors](#debug-colors).
@@ -83,10 +83,10 @@ These are valid formats:
 | Code | Name | Description |
 |---|---|---|
 | [C](#colors) | color | Color formatter |
-| [F](#fields) | field |Field (separator) formatter |
+| [F](#fields) | field | Field (separator) formatter |
 | [G](#groups) | group | Regex group formatter |
 | [H](#context-aware-color-alias-format) | colorctx | Context-aware field/group color alias |
-| [P](#padding) | pad | Padding formatter |
+|  | [align](#alignment) | Alignment formatter |
 | [T](#truncate) | trunc | Truncation formatter |
 
 Formatting strings can written like `%(color:red)`, `%C(red)`, or `%Cr`.
@@ -286,14 +286,19 @@ You may find yourself coloring groups or fields often using `%Cg%Fc%Cz` or `%Cg%
 Now `%Cg%Gc%Cz` can be replaced with the shorter alias `%Hg`.
 If `%H` is used in `replace_groups`, it will be an alias for coloring `%Gc`, and if `%H` is used in `replace_fields`, it will be an alias for coloring `%Fc`.
 
-## Padding
+## Alignment
 
-Formatting a string with padding can be done with `%P(<pad count>;<value>)` or `%P(<pad count>,<pad char>;<value>)`.
+Formatting an aligned string can be done with `%(align:<width>,<position>,<pad character>)<text>%(end)`.
 
-For example, left-padding group 1 to 12 characters can be done with the format string `%P(12;%G1)%G1`.
-The pad formatter will take the length of `value`, which can contain string formats or a normal string, and will format to the necessary number of pad characters if `value` is not long enough.
+The text will be padded to the width specified. If the width is shorter than the text, then no padding or alignment is done.
 
-Right-padding is simply done by moving the pad formatter to the right of the group: `%G1%P(12;%G1)`.
+The position parameter is optional and can be either `left`, `middle`, or `right`.
+If not specified, position defaults to `left`.
+
+The pad character parameter is optional and is used to pad the text to `width`.
+If not specified, pad character defaults to ` ` (a space).
+
+For example, right-padding group 1 to 12 characters can be done with the format string `%(align:12,right)%G1%(end)`.
 
 ## Truncate
 
