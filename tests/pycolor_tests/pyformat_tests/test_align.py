@@ -9,8 +9,8 @@ RESULT = 'result'
 
 FIELDS_THIS_IS_A_TEST = ['this', '   ', 'is', '    ', 'a', ' ', 'test']
 
-class PaddingTest(unittest.TestCase):
-    def test_format_context_padding_string(self):
+class AlignTest(unittest.TestCase):
+    def test_format_context_align_string(self):
         entries = [
             {
                 STRING: '%(align)%F1',
