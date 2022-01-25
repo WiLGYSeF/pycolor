@@ -23,16 +23,17 @@ FORMAT_REGEX = re.compile(''.join([
 ]))
 
 FORMAT_ALIGN = ('align', )
+FORMAT_TRUNCATE = ('trunc', )
 FORMAT_END = ('end', )
+
 FORMAT_COLOR = ('color', 'C')
 FORMAT_FIELD = ('field', 'F')
 FORMAT_GROUP = ('group', 'G')
 FORMAT_CONTEXT_COLOR = ('colorctx', 'H')
-FORMAT_TRUNCATE = ('trunc', 'T')
 
-ALIGN_LEFT = 'left'
-ALIGN_MIDDLE = 'middle'
-ALIGN_RIGHT = 'right'
+LEFT = 'left'
+MIDDLE = 'middle'
+RIGHT = 'right'
 
 class Formatter:
     def __init__(self, context: typing.Optional[Context] = None):
@@ -41,6 +42,7 @@ class Formatter:
         self._cur_newstring: str = ''
         self._cur_color_positions: ColorPositions = {}
         self._cur_nested_state: dict = {}
+        self._next_nested_state: dict = {}
 
     def format_string(self, string: str) -> typing.Tuple[str, ColorPositions]:
         """Formats string
@@ -85,11 +87,10 @@ class Formatter:
                     else:
                         self._cur_newstring += result
                 else:
-                    if len(self._cur_nested_state) != 0:
+                    if len(self._next_nested_state) != 0:
                         # do a recursive format with the state passed
                         copy, result = self._recursive_format(string[match.end():])
                         self._cur_newstring += result
-                        self._cur_nested_state = {}
                         # jump to the end of the recursive format
                         last = match.end() + copy._cur_nested_state['last_index']
                         continue
@@ -116,19 +117,18 @@ class Formatter:
         newstring, color_positions = self.format_string(string)
         return insert_color_data(newstring, color_positions)
 
-    def copy(self, copy_state: bool = False) -> 'Formatter':
+    def copy(self) -> 'Formatter':
         """Copies the formatter
 
         Returns:
             Formatter: Copied formatter
         """
         copy = Formatter(context=self._context.copy())
-        if copy_state:
-            copy._cur_nested_state = self._cur_nested_state.copy()
+        copy._cur_nested_state = self._next_nested_state.copy()
         return copy
 
     def _recursive_format(self, string: str) -> typing.Tuple['Formatter', str]:
-        copy = self.copy(copy_state=True)
+        copy = self.copy()
         newstring, colorpos = copy.format_string(string)
         update_color_positions(
             self._cur_color_positions,
@@ -153,7 +153,8 @@ class Formatter:
                 return self._do_format_field_group_color(value, '%Fc')
             return ''
         if formatter in FORMAT_TRUNCATE:
-            return self._do_format_truncate(value)
+            self._prepare_format_truncate(value)
+            return None
         return None
 
     def _do_state_format(self) -> str:
@@ -165,23 +166,53 @@ class Formatter:
                 self._cur_nested_state['position'],
                 self._cur_nested_state['padchar']
             )
+        if format_type in FORMAT_TRUNCATE:
+            return self._do_format_truncate(
+                self._cur_newstring,
+                self._cur_nested_state['length'],
+                self._cur_nested_state['location'],
+                self._cur_nested_state['replace'],
+                self._cur_nested_state['hard_length'],
+            )
         return ''
 
     def _prepare_format_align(self, value: str) -> None:
         try:
             spl = value.split(',')
             width = int(spl[0])
-            position = spl[1].lower() if len(spl) > 1 else ALIGN_LEFT
+            position = spl[1].lower() if len(spl) > 1 else LEFT
             padchar = spl[2][0] if len(spl) > 2 else ' '
 
-            if position not in [ALIGN_LEFT, ALIGN_MIDDLE, ALIGN_RIGHT]:
-                position = ALIGN_LEFT
+            if position not in [LEFT, MIDDLE, RIGHT]:
+                position = LEFT
 
-            self._cur_nested_state = {
+            self._next_nested_state = {
                 'type': 'align',
                 'width': width,
                 'position': position,
                 'padchar': padchar
+            }
+        except ValueError:
+            pass
+
+    def _prepare_format_truncate(self, value: str) -> None:
+        try:
+            # split by comma, but allow escaping commas for replace string
+            spl = re.split(r'(?<!\\),', value)
+            length = int(spl[0])
+            location = spl[1].lower()
+            replace = spl[2] if len(spl) > 2 else ''
+            hard_length = spl[3].lower() if len(spl) > 3 else 'yes'
+
+            if location not in [LEFT, MIDDLE, RIGHT]:
+                location = LEFT
+
+            self._next_nested_state = {
+                'type': 'trunc',
+                'length': length,
+                'location': location,
+                'replace': replace,
+                'hard_length': hard_length == 'yes'
             }
         except ValueError:
             pass
@@ -192,12 +223,12 @@ class Formatter:
             return value
 
         result = ''
-        if position == ALIGN_LEFT:
+        if position == LEFT:
             result = value + (padchar * diff)
-        elif position == ALIGN_MIDDLE:
+        elif position == MIDDLE:
             half = diff // 2
             result = (padchar * half) + value + (padchar * (diff - half))
-        elif position == ALIGN_RIGHT:
+        elif position == RIGHT:
             result = (padchar * diff) + value
         return result
 
@@ -263,65 +294,26 @@ class Formatter:
         _, result = self._recursive_format(f'%C({value}){format_type}%Cz')
         return result
 
-    def _do_format_truncate(self, value: str) -> str:
-        str_loc_sep = value.rfind(';')
-        string_repl = value[:str_loc_sep]
-        location, length_str = value[str_loc_sep + 1:].split(',')
+    def _do_format_truncate(self,
+        value: str,
+        length: int,
+        location: str,
+        replace: str,
+        hard_length: bool
+    ) -> str:
+        if len(value) < length:
+            return value
 
-        rev_string_repl = ''
-        string_repl_sep = len(string_repl)
-        i = len(string_repl) - 1
-        while i >= 0:
-            if i > 0 and string_repl[i - 1] == '\\':
-                rev_string_repl += string_repl[i]
-                i -= 2
-                continue
-            if string_repl[i] == ';':
-                string_repl_sep = i
-                rev_string_repl += string_repl[:i + 1][::-1]
-                break
-            rev_string_repl += string_repl[i]
-            i -= 1
-
-        string_repl = rev_string_repl[::-1]
-        string = string_repl[:string_repl_sep]
-        repl = string_repl[string_repl_sep + 1:]
-
-        location = location.lower()
-        length = int(length_str)
-        if length <= 0:
-            raise ValueError('invalid length: %d' % length)
-
-        copy = self.copy()
-        copy._context.color_enabled = False
-        string = copy.fmt_str(string)
-
-        if location in ('start', 's'):
-            if len(string) > length:
-                length -= len(repl)
-                string = repl + string[-length:]
-        elif location in ('start-add', 'sa'):
-            if len(string) > length:
-                string = repl + string[-length:]
-        elif location in ('mid', 'm'):
-            if len(string) > length:
-                length -= len(repl)
-                half = length // 2
-                string = string[:half] + repl + string[-(length - half):]
-        elif location in ('mid-add', 'ma'):
-            if len(string) > length:
-                half = length // 2
-                string = string[:half] + repl + string[-(length - half):]
-        elif location in ('end', 'e'):
-            if len(string) > length:
-                length -= len(repl)
-                string = string[:length] + repl
-        elif location in ('end-add', 'ea'):
-            if len(string) > length:
-                string = string[:length] + repl
-        else:
-            raise ValueError('invalid truncate location: %s' % location)
-        return string
+        trunclen = length - len(replace) if hard_length else length
+        truncval = ''
+        if location == LEFT:
+            truncval = replace + value[len(value) - trunclen:]
+        elif location == MIDDLE:
+            half = trunclen // 2
+            truncval = value[:half] + replace + value[len(value) - (trunclen - half):]
+        elif location == RIGHT:
+            truncval = value[:trunclen] + replace
+        return truncval
 
 def fmt_str(string: str, color_enabled: bool = True) -> str:
     formatter = Formatter(

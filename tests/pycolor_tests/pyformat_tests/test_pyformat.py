@@ -2,48 +2,48 @@ import unittest
 
 from src.pycolor.pycolor import pyformat
 
-ARGS = 'args'
-VALUE = 'value'
+STRING = 'string'
+RESULT = 'result'
 
 class PyformatTest(unittest.TestCase):
     def test_get_formatter(self):
         entries = [
             {
-                ARGS: '%C',
-                VALUE: ('C', None)
+                STRING: '%C',
+                RESULT: ('C', None)
             },
             {
-                ARGS: '%Cred',
-                VALUE: ('C', 'red')
+                STRING: '%Cred',
+                RESULT: ('C', 'red')
             },
             {
-                ARGS: '%Cred-orange',
-                VALUE: ('C', 'red')
+                STRING: '%Cred-orange',
+                RESULT: ('C', 'red')
             },
             {
-                ARGS: 'abc%C(red-orange)abc',
-                VALUE: ('C', 'red-orange')
+                STRING: 'abc%C(red-orange)abc',
+                RESULT: ('C', 'red-orange')
             },
             {
-                ARGS: '%C(ab(c)d)e',
-                VALUE: ('C', None)
+                STRING: '%C(ab(c)d)e',
+                RESULT: ('C', None)
             },
             {
-                ARGS: r'%C(ab\(c)d)e',
-                VALUE: ('C', None)
+                STRING: r'%C(ab\(c)d)e',
+                RESULT: ('C', None)
             },
             {
-                ARGS: '%(color:red-orange)',
-                VALUE: ('color', 'red-orange')
+                STRING: '%(color:red-orange)',
+                RESULT: ('color', 'red-orange')
             },
         ]
 
         for entry in entries:
-            args = entry[ARGS]
-            with self.subTest(args=args):
+            string = entry[STRING]
+            with self.subTest(string=string):
                 self.assertTupleEqual(
-                    entry[VALUE],
-                    pyformat.get_format_param(pyformat.FORMAT_REGEX.search(args))
+                    entry[RESULT],
+                    pyformat.get_format_param(pyformat.FORMAT_REGEX.search(string))
                 )
 
     def test_format_string(self):
@@ -57,4 +57,17 @@ class PyformatTest(unittest.TestCase):
 
         for key, val in entries.items():
             with self.subTest(string=key):
-                self.assertEqual(pyformat.fmt_str(key), val)
+                self.assertEqual(val, pyformat.fmt_str(key))
+
+    def test_format_nested_formats(self):
+        entries = [
+            {
+                STRING: '|%(align:12,right)=%(trunc:7,middle,##)0123456789%(end)=%(end)|',
+                RESULT: '|   =01##789=|'
+            }
+        ]
+
+        for entry in entries:
+            string = entry[STRING]
+            with self.subTest(string=string):
+                self.assertEqual(entry[RESULT], pyformat.fmt_str(string))

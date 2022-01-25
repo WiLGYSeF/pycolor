@@ -288,59 +288,47 @@ If `%H` is used in `replace_groups`, it will be an alias for coloring `%Gc`, and
 
 ## Alignment
 
-Formatting an aligned string can be done with `%(align:<width>,<position>,<pad character>)<text>%(end)`.
-
-The text will be padded to the width specified. If the width is shorter than the text, then no padding or alignment is done.
-
-The position parameter is optional and can be either `left`, `middle`, or `right`.
-If not specified, position defaults to `left`.
-
-The pad character parameter is optional and is used to pad the text to `width`.
-If not specified, pad character defaults to ` ` (a space).
-
-For example, right-padding group 1 to 12 characters can be done with the format string `%(align:12,right)%G1%(end)`.
-
-## Truncate
-
-Truncate strings to a certain length using `%T(<string>;<replace>;<location>,<length>)`, where:
+Align strings to a certain width with `%(align:<width>,<position>,<pad character>)<string>%(end)`.
 
 | Value | Description |
 |---|---|
-| `string` | the string to be truncated |
-| `replace` | insert this string at the truncation (e.g `...`) |
-| `location` | where to truncate `string`, see below for more |
-| `length` | truncate `string` to this length |
+| `width` | align `string` to this width |
+| `position` | alignment position: `left`, `middle`, or `right` (default `left`) |
+| `pad character` | pad character used to pad the string to `width` (default ` `) |
 
-`replace` can also be empty: `%T(<string>;;<location>,<length>)`.
+The text will be padded to the width specified.
+If the width is shorter than the text, then no padding or alignment is done.
 
-Possible `location` values:
+For example, left-aligning group 1 with a 12 character width can be done with the format string `%(align:12)%G1%(end)`.
 
-| Location | Description |
+Right-aligning can be done with `%(align:12,right)%G1%(end)`.
+
+## Truncate
+
+Truncate strings to a certain length using `%(trunc:<length>,<location>,<replace>,<hard length>)<string>%(end)`, where:
+
+| Value | Description |
 |---|---|
-| start | truncate the *start* of the string, replacement string length **is** counted as part of `length` |
-| start-add | truncate the *start* of the string, replacement string length **is not** counted as part of `length` |
-| mid | truncate the *middle* of the string, replacement string length **is** counted as part of `length` |
-| mid-add | truncate the *middle* of the string, replacement string length **is not** counted as part of `length` |
-| end | truncate the *end* of the string, replacement string length **is** counted as part of `length` |
-| end-add | truncate the *end* of the string, replacement string length **is not** counted as part of `length` |
+| `length` | truncate `string` to this length |
+| `location` | where to truncate `string`: `left`, `middle`, or `right` |
+| `replace` | insert this string at the truncation (e.g `...`) (default empty) |
+| `hard length` | indicates if length of `replace` is counted as part of `length`: `yes` or `no` (default `yes`) |
 
 ### Truncate Samples
 
-Truncate the value of group 1 to 8 chars, adding `...` if necessary: `%T(%G1;...;end-add,8)`.
+Truncate the value of group 1 to 8 chars, adding `...` if necessary: `%(trunc:8,right,...,no)%G1%(end)`.
 
 | String | Result |
 |---|---|
 | `Testing` | `Testing` |
 | `LongString` | `LongStri...` |
 
-Truncate the value of a path in field 1 to 16 chars, inserting `...` if necessary: `%T(%F1;...;mid,16)`.
+Truncate the value of a path in field 1 to 16 chars, inserting `...` if necessary: `%(trunc:16,middle,...)%F1%(end)`.
 
 | String | Result |
 |---|---|
 | `/root/` | `/root/` |
 | `/path/to/a/certain/file` | `/path/...in/file` |
-
-Truncate above with right padding (all results will always have a length of 16): `%T(%F1;...;mid,16)%P(16,%F1)`.
 
 # Debugging and Creating Profiles
 

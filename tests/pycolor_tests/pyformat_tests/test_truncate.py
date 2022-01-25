@@ -6,14 +6,18 @@ STRING = 'string'
 RESULT = 'result'
 
 class TruncateTest(unittest.TestCase):
-    def test_truncate_start(self):
+    def test_truncate_left(self):
         entries = [
             {
-                STRING: '%T(this is a test;...;start,8)',
+                STRING: '%(trunc:100,left,...)this is a test%(end)',
+                RESULT: 'this is a test'
+            },
+            {
+                STRING: '%(trunc:8,left,...)this is a test%(end)',
                 RESULT: '... test'
             },
             {
-                STRING: '%T(this is a test;...;start-add,8)',
+                STRING: '%(trunc:8,left,...,no)this is a test%(end)',
                 RESULT: '...s a test'
             },
         ]
@@ -23,18 +27,22 @@ class TruncateTest(unittest.TestCase):
             with self.subTest(string=string):
                 self.assertEqual(entry[RESULT], pyformat.fmt_str(string))
 
-    def test_truncate_mid(self):
+    def test_truncate_middle(self):
         entries = [
             {
-                STRING: '%T(this is a test;...;mid,8)',
+                STRING: '%(trunc:100,middle,...)this is a test%(end)',
+                RESULT: 'this is a test'
+            },
+            {
+                STRING: '%(trunc:8,middle,...)this is a test%(end)',
                 RESULT: 'th...est'
             },
             {
-                STRING: '%T(this is a test;\x1b[2\\;33m...\x1b[0m;mid-add,8)',
-                RESULT: 'this\x1b[2;33m...\x1b[0mtest'
+                STRING: '%(trunc:8,middle,\x1b[1;32m...\x1b[0m,no)this is a test%(end)',
+                RESULT: 'this\x1b[1;32m...\x1b[0mtest'
             },
             {
-                STRING: '%T(this is an uneven test;...;mid-add,13)',
+                STRING: '%(trunc:13,middle,...,no)this is an uneven test%(end)',
                 RESULT: 'this i...en test'
             },
         ]
@@ -44,61 +52,27 @@ class TruncateTest(unittest.TestCase):
             with self.subTest(string=string):
                 self.assertEqual(entry[RESULT], pyformat.fmt_str(string))
 
-    def test_truncate_end(self):
+    def test_truncate_right(self):
         entries = [
             {
-                STRING: '%T(this is a test;...;end,100)',
+                STRING: '%(trunc:100,right,...)this is a test%(end)',
                 RESULT: 'this is a test'
             },
             {
-                STRING: '%T(this is a test;...;end,8)',
+                STRING: '%(trunc:8,right,...)this is a test%(end)',
                 RESULT: 'this ...'
             },
             {
-                STRING: '%T(this is a test;...;end-add,8)',
+                STRING: '%(trunc:8,right,...,no)this is a test%(end)',
                 RESULT: 'this is ...'
             },
             {
-                STRING: '%T(this is a test;;end,8)',
+                STRING: '%(trunc:8,right)this is a test%(end)',
                 RESULT: 'this is '
-            },
-            {
-                STRING: '%T(this is a test;end,8)',
-                RESULT: 'this is '
-            },
-            {
-                STRING: '%T(;...;end-add,8)',
-                RESULT: ''
-            },
+            }
         ]
 
         for entry in entries:
             string = entry[STRING]
             with self.subTest(string=string):
                 self.assertEqual(entry[RESULT], pyformat.fmt_str(string))
-
-    def test_truncate_fail(self):
-        entries = [
-            {
-                STRING: '%T(this is a test;...;invalid,8)',
-                RESULT: ValueError()
-            },
-            {
-                STRING: '%T(this is a test;...;end-add,-8)',
-                RESULT: ValueError()
-            },
-            {
-                STRING: '%T(this is a test;...;-8)',
-                RESULT: ValueError()
-            },
-            {
-                STRING: '%T(this is a test;...;end)',
-                RESULT: ValueError()
-            },
-        ]
-
-        for entry in entries:
-            string = entry[STRING]
-            with self.subTest(string=string):
-                with self.assertRaises(type(entry[RESULT])):
-                    pyformat.fmt_str(string)
