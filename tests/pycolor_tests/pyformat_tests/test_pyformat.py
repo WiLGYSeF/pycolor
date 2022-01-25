@@ -30,7 +30,11 @@ class PyformatTest(unittest.TestCase):
             },
             {
                 STRING: r'%C(ab\(c)d)e',
-                RESULT: ('C', None)
+                RESULT: ('C', r'ab(c')
+            },
+            {
+                STRING: r'%C(ab\\(c)d)e',
+                RESULT: ('C', r'ab\(c')
             },
             {
                 STRING: '%(color:red-orange)',

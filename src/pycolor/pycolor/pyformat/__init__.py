@@ -14,9 +14,9 @@ from .context import Context
 
 FORMAT_REGEX = re.compile(''.join([
     '(?<!%)%(?:',
-        r'\((?P<format0>[A-Za-z0-9]+)(?::(?P<param0>[^()]*))?\)',
+        r'\((?P<format0>[A-Za-z0-9]+)(?::(?P<param0>(?:[^()]|\\\(|\\\))*))?\)',
         '|',
-        r'(?P<format1>[A-Za-z])\((?P<param1>[^()]+)\)',
+        r'(?P<format1>[A-Za-z])\((?P<param1>(?:[^()]|\\\(|\\\))+)\)',
         '|',
         r'(?P<format2>[A-Za-z])(?P<param2>[A-Za-z0-9]+)?'
     ')'
@@ -201,7 +201,7 @@ class Formatter:
             spl = re.split(r'(?<!\\),', value)
             length = int(spl[0])
             location = spl[1].lower()
-            replace = spl[2] if len(spl) > 2 else ''
+            replace = spl[2].replace(r'\,', ',') if len(spl) > 2 else ''
             hard_length = spl[3].lower() if len(spl) > 3 else 'yes'
 
             if location not in [LEFT, MIDDLE, RIGHT]:
@@ -327,10 +327,13 @@ def get_format_param(match: re.Match) -> typing.Tuple[
     typing.Optional[str],
     typing.Optional[str]
 ]:
-    return (
-        _get_numbered_group(match, 'format'),
-        _get_numbered_group(match, 'param')
-    )
+    formatter = _get_numbered_group(match, 'format')
+    param = _get_numbered_group(match, 'param')
+
+    if param is not None:
+        param = param.replace(r'\(', '(').replace(r'\)', ')')
+
+    return formatter, param
 
 def _get_numbered_group(match: re.Match, name: str, start: int = 0) -> typing.Optional[str]:
     groups = match.groupdict()
