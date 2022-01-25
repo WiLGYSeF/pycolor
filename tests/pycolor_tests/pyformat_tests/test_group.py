@@ -1,6 +1,6 @@
 import unittest
 
-from src.pycolor.pycolor import pyformat
+from src.pycolor.pycolor.pyformat import Formatter
 from src.pycolor.pycolor.pyformat.context import Context
 
 class Match:
@@ -32,7 +32,7 @@ class GroupTest(unittest.TestCase):
             {
                 STRING: '%ZZZ',
                 CONTEXT: None,
-                RESULT: '%ZZZ'
+                RESULT: ''
             },
             {
                 STRING: '%Gname abc %Gname',
@@ -111,10 +111,8 @@ class GroupTest(unittest.TestCase):
             string = entry[STRING]
             context = entry[CONTEXT]
             with self.subTest(string=string, context=context):
-                self.assertEqual(
-                    entry[RESULT],
-                    pyformat.fmt_str(string, context=context)
-                )
+                formatter = Formatter(context=context)
+                self.assertEqual(entry[RESULT], formatter.fmt_str(string))
 
     def test_format_context_group_color(self):
         entries = [
@@ -141,10 +139,7 @@ class GroupTest(unittest.TestCase):
         for entry in entries:
             string = entry[STRING]
             context = entry[CONTEXT]
-
             with self.subTest(string=string, context=context):
                 context.match_cur = context.match[1]
-                self.assertEqual(
-                    entry[RESULT],
-                    pyformat.fmt_str(string, context=context)
-                )
+                formatter = Formatter(context=context)
+                self.assertEqual(entry[RESULT], formatter.fmt_str(string))

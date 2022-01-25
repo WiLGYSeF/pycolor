@@ -6,7 +6,7 @@ from .color import ANSI_REGEX
 
 def update_color_positions(
     color_positions: ColorPositions,
-    pos: typing.Dict[int, str]
+    pos: ColorPositions
 ) -> None:
     """Combine the color data with ones from pos
 
