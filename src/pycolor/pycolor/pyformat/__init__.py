@@ -301,7 +301,7 @@ class Formatter:
         replace: str,
         hard_length: bool
     ) -> str:
-        if len(value) < length:
+        if len(value) <= length:
             return value
 
         trunclen = length - len(replace) if hard_length else length
