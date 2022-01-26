@@ -10,7 +10,7 @@
     - [Color Formatting](#colors).
     - [Field Formatting](#fields).
     - [Group Formatting](#groups).
-    - [Padding](#padding).
+    - [Alignment](#alignment).
     - [Truncate](#truncate).
 5. [Debugging and Creating Profiles](#debugging-and-creating-profiles).
     - [Debug Colors](#debug-colors).
@@ -74,19 +74,23 @@ Sample config files can be found in [`the sample config`](https://github.com/WiL
 
 # Formatting Strings
 
-Use formatting strings to color/manipulate the program output in real-time: `%<format code>(<format value>)`.
+Use formatting strings to color/manipulate the program output in real-time.
+These are valid formats:
+- `%(<name>:<value>)`
+- `%<code>(<value>)`
+- `%<code><value>`
 
-| Format Code | Description |
-|---|---|
-| [C](#colors) | Color formatter |
-| [F](#fields) | Field (separator) formatter |
-| [G](#groups) | Regex group formatter |
-| [H](#context-aware-color-alias-format) | Context-aware field/group color alias |
-| [P](#padding) | Padding formatter |
-| [T](#truncate) | Truncation formatter |
+| Code | Name | Description |
+|---|---|---|
+| [C](#colors) | color | Color formatter |
+| [F](#fields) | field | Field (separator) formatter |
+| [G](#groups) | group | Regex group formatter |
+| [H](#context-aware-color-alias-format) | colorctx | Context-aware field/group color alias |
+|  | [align](#alignment) | Alignment formatter |
+| [T](#truncate) | trunc | Truncation formatter |
 
-Formatting strings can written like `%C(red)` (or its short form, `%Cr`) where the first letter is used as the format type and the rest is the argument.
-`%C(red)hello` formats the string `hello` in red
+Formatting strings can written like `%(color:red)`, `%C(red)`, or `%Cr`.
+`%C(red)hello` formats the string `hello` in red.
 
 A literal `%` can be used in a format string by using `%%`.
 E.g. the format string `The total is %C(red)15%%` will become `The total is 15%`, with the `15%` part in red.
@@ -97,7 +101,7 @@ Check [`the sample config`](https://github.com/WiLGYSeF/pycolor/blob/master/src/
 
 ## Colors
 
-To colorize output through a replace pattern use `%C<color value>`.
+To colorize output through a replace pattern use `%(color:<color value>)`, `%C(<color value>)` or `%C<color value>`.
 
 ### Recognized Attributes and Colors:
 | Color Value | Aliases | ANSI Code | Description |
@@ -152,7 +156,7 @@ This also works for background colors as well (e.g. `%C(^130)` produces `\e[48;5
 [Click here to see the 8-bit color table](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit).
 
 #### 24-bit Color
-24-bit color is also supported by using hex codes (`%C0xffaa00` or `%C0xfa0` will produce orange: `\e[38;2;255;170;0m`).
+24-bit color is also supported by using hex codes (`%C(0xffaa00)` or `%C(0xfa0)` will produce orange: `\e[38;2;255;170;0m`).
 
 ### Raw ANSI Codes
 If for some reason you would like to use raw color codes, `%C(raw1;3;36)` will produce bold, italic, cyan (`\e[1;3;36m`).
@@ -277,61 +281,54 @@ Keys may be comma-separated numbers, or even ranges (`"<start>*<end>"`).
 
 ## Context-Aware Color Alias Format
 
-You may find yourself coloring groups or fields often using `%Cg%Gc%Cz` or `%Cg%Fc%Cz`, which is why a context-aware color alias format was added: `%H(<color value>)` is an alias for `%C(<color value>)%Gc%Cz` or `%C(<color value>)%Gc%Cz`.
+You may find yourself coloring groups or fields often using `%Cg%Fc%Cz` or `%Cg%Gc%Cz`, which is why a context-aware color alias format is available: `%H(<color value>)` is an alias for `%C(<color value>)%Fc%Cz` or `%C(<color value>)%Gc%Cz`.
 
 Now `%Cg%Gc%Cz` can be replaced with the shorter alias `%Hg`.
 If `%H` is used in `replace_groups`, it will be an alias for coloring `%Gc`, and if `%H` is used in `replace_fields`, it will be an alias for coloring `%Fc`.
 
-## Padding
+## Alignment
 
-Formatting a string with padding can be done with `%P(<pad count>;<value>)` or `%P(<pad count>,<pad char>;<value>)`.
-
-For example, left-padding group 1 to 12 characters can be done with the format string `%P(12;%G1)%G1`.
-The pad formatter will take the length of `value`, which can contain string formats or a normal string, and will format to the necessary number of pad characters if `value` is not long enough.
-
-Right-padding is simply done by moving the pad formatter to the right of the group: `%G1%P(12;%G1)`.
-
-## Truncate
-
-Truncate strings to a certain length using `%T(<string>;<replace>;<location>,<length>)`, where:
+Align strings to a certain width with `%(align:<width>,<position>,<pad character>)<string>%(end)`.
 
 | Value | Description |
 |---|---|
-| `string` | the string to be truncated |
-| `replace` | insert this string at the truncation (e.g `...`) |
-| `location` | where to truncate `string`, see below for more |
-| `length` | truncate `string` to this length |
+| `width` | align `string` to this width |
+| `position` | alignment position: `left`, `middle`, or `right` (default `left`) |
+| `pad character` | pad character used to pad the string to `width` (default ` `) |
 
-`replace` can also be empty: `%T(<string>;;<location>,<length>)`.
+The text will be padded to the width specified.
+If the width is shorter than the text, then no padding or alignment is done.
 
-Possible `location` values:
+For example, left-aligning group 1 with a 12 character width can be done with the format string `%(align:12)%G1%(end)`.
 
-| Location | Description |
+Right-aligning can be done with `%(align:12,right)%G1%(end)`.
+
+## Truncate
+
+Truncate strings to a certain length using `%(trunc:<length>,<location>,<replace>,<hard length>)<string>%(end)`, where:
+
+| Value | Description |
 |---|---|
-| start | truncate the *start* of the string, replacement string length **is** counted as part of `length` |
-| start-add | truncate the *start* of the string, replacement string length **is not** counted as part of `length` |
-| mid | truncate the *middle* of the string, replacement string length **is** counted as part of `length` |
-| mid-add | truncate the *middle* of the string, replacement string length **is not** counted as part of `length` |
-| end | truncate the *end* of the string, replacement string length **is** counted as part of `length` |
-| end-add | truncate the *end* of the string, replacement string length **is not** counted as part of `length` |
+| `length` | truncate `string` to this length |
+| `location` | where to truncate `string`: `left`, `middle`, or `right` |
+| `replace` | insert this string at the truncation (e.g `...`) (default empty) |
+| `hard length` | indicates if length of `replace` is counted as part of `length`: `yes` or `no` (default `yes`) |
 
 ### Truncate Samples
 
-Truncate the value of group 1 to 8 chars, adding `...` if necessary: `%T(%G1;...;end-add,8)`.
+Truncate the value of group 1 to 8 chars, adding `...` if necessary: `%(trunc:8,right,...,no)%G1%(end)`.
 
 | String | Result |
 |---|---|
 | `Testing` | `Testing` |
 | `LongString` | `LongStri...` |
 
-Truncate the value of a path in field 1 to 16 chars, inserting `...` if necessary: `%T(%F1;...;mid,16)`.
+Truncate the value of a path in field 1 to 16 chars, inserting `...` if necessary: `%(trunc:16,middle,...)%F1%(end)`.
 
 | String | Result |
 |---|---|
 | `/root/` | `/root/` |
 | `/path/to/a/certain/file` | `/path/...in/file` |
-
-Truncate above with right padding (all results will always have a length of 16): `%T(%F1;...;mid,16)%P(16,%F1)`.
 
 # Debugging and Creating Profiles
 

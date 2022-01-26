@@ -4,11 +4,10 @@
             "name": "df",
             "patterns": [
                 {
-                    "activation_line": 2,
                     "separator": " +",
                     "replace_fields": {
-                        "1": " %P(8, ;%Fc)%T(%Fc;*;start,8)",
-                        "s1": ""
+                        "1": "%(align:10,right, )%(trunc:10,left,*)%Fc%(end)%(end)",
+                        "s2": " "
                     }
                 }
             ]

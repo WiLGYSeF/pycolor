@@ -1,6 +1,7 @@
 import unittest
 
 from src.pycolor.pycolor import pyformat
+from src.pycolor.pycolor.pyformat import Formatter
 from src.pycolor.pycolor.pyformat.context import Context
 
 STRING = 'string'
@@ -17,7 +18,7 @@ class ColorTest(unittest.TestCase):
             '%C': '',
             '%Cred%Cblue': '\x1b[31m\x1b[34m',
             '%C(red)%C(blue)': '\x1b[31m\x1b[34m',
-            '%(Cred)%(Cblue)': '%(Cred)%(Cblue)',
+            '%(color:red)%(color:blue)': '\x1b[31m\x1b[34m',
             '%C(red;^blue)': '\x1b[31;44m',
             '%C(red)abc': '\x1b[31mabc',
             '%C(123)abc': '\x1b[38;5;123mabc',
@@ -27,8 +28,8 @@ class ColorTest(unittest.TestCase):
             '%C(raw1;4;38;5;40)abc': '\x1b[1;4;38;5;40mabc',
             '%C(overline)abc': '\x1b[53mabc',
             '%C(^overline)abc': '\x1b[55mabc',
-            '%C(red': '%C(red',
-            '%CC(red)': '%CC(red)',
+            '%C(red': '(red',
+            '%CC(red)': '\x1b[36m(red)',
             '%Cr)w': '\x1b[31m)w'
         }
 
@@ -66,7 +67,8 @@ class ColorTest(unittest.TestCase):
             string = entry[STRING]
             context = entry[CONTEXT]
             with self.subTest(string=string, context=context):
-                self.assertEqual(entry[RESULT], pyformat.fmt_str(string, context=context))
+                formatter = Formatter(context=context)
+                self.assertEqual(entry[RESULT], formatter.fmt_str(string))
 
     def test_format_color_string_soft_reset(self):
         entries = [
@@ -83,10 +85,7 @@ class ColorTest(unittest.TestCase):
 
     def test_format_color_string_color_disabled(self):
         self.assertEqual('test',
-            pyformat.fmt_str(
-                '%C(red)test',
-                context=Context(color_enabled=False)
-            )
+            pyformat.fmt_str('%C(red)test', color_enabled=False)
         )
 
     def test_format_color_string_aliases(self):
@@ -104,13 +103,8 @@ class ColorTest(unittest.TestCase):
             aliases = entry[ALIASES]
             string = entry[STRING]
             with self.subTest(aliases=aliases, string=string):
-                self.assertEqual(
-                    entry[RESULT],
-                    pyformat.fmt_str(
-                        string,
-                        context=Context(color_aliases=aliases)
-                    )
-                )
+                formatter = Formatter(context=Context(color_aliases=aliases))
+                self.assertEqual(entry[RESULT], formatter.fmt_str(string))
 
     def test_remove_ansi_color(self):
         entries = {
