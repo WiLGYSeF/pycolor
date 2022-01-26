@@ -7,7 +7,7 @@
                     "separator": " +",
                     "replace_fields": {
                         "1": "%(align:10,right, )%(trunc:10,left,*)%Fc%(end)%(end)",
-                        "s2": ""
+                        "s2": " "
                     }
                 }
             ]

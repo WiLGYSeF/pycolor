@@ -154,7 +154,6 @@ def _replace_parts(
 
         update_color_positions(context.color_positions, colorpos)
         result += replaced
-        #offset += len(parts[idx])
         offset += len(replaced)
 
     return changed, result
@@ -175,7 +174,24 @@ def _replace_fields(
         tuple: Returns true if a match was found, and the new string
     """
     def replace_field(data: str, index: int, offset: int):
-        result = _get_replace_field(fields, pyformat.fieldsep.idx_to_num(index), pat.replace_fields)
+        def idx_to_sep(x):
+            return x * 2 - (3 * (x // 2))
+
+        if (index & 1) == 0:
+            result = _get_replace_field(
+                fields,
+                pyformat.fieldsep.idx_to_num(index),
+                pat.replace_fields
+            )
+        else:
+            if isinstance(pat.replace_fields, dict):
+                result = _get_replace_field_separator(
+                    fields,
+                    idx_to_sep(index),
+                    pat.replace_fields
+                )
+            else:
+                result = None
         if result is None:
             return data, [], {}
 
@@ -183,7 +199,7 @@ def _replace_fields(
         result, colorpos = formatter.format_string(result)
         return result, [((0, len(data)), (0, len(result)))], colorpos
 
-    return _replace_parts(replace_field, fields, range(0, len(fields), 2), context)
+    return _replace_parts(replace_field, fields, range(0, len(fields)), context)
 
 def _replace_groups(
     pat: Pattern,
@@ -359,6 +375,30 @@ def _get_replace_field(
         )
     if isinstance(replace_fields, list) and field_idx <= len(replace_fields):
         return replace_fields[field_idx - 1]
+    return None
+
+def _get_replace_field_separator(
+    fields: typing.List[str],
+    field_sep_idx: int,
+    replace_fields: ReplaceGroup
+) -> typing.Optional[str]:
+    """Gets the replace field separator value
+
+    Args:
+        fields (list): Fields
+        field_sep_idx (int): Index of field separator
+        replace_fields (ReplaceGroup): Replace group
+
+    Returns:
+        str: Replace field value that matches
+    """
+    for key, val in replace_fields.items():
+        for part in str(key).split(','):
+            try:
+                if part[0] == 's' and int(part[1:]) == field_sep_idx:
+                    return val
+            except ValueError:
+                pass
     return None
 
 def _get_replace_group(
