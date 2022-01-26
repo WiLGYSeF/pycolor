@@ -11,24 +11,16 @@ from src.pycolor import __main__ as pycolor
 
 CURPATH = os.path.dirname(os.path.realpath(__file__))
 MOCKED_DATA = os.path.join(CURPATH, 'mocked_data')
-SAMPLE_CONFIG_DIR = os.path.join(CURPATH, '../src/pycolor/config/sample-config')
+SAMPLE_CONFIG_DIR = os.path.join(CURPATH, '../../src/pycolor/config/sample-config')
 
 class PycolorTest(unittest.TestCase):
-    # TODO: fix test
-    @unittest.skip('fix this test')
     def test_load_sample_config(self):
-        stdout = textstream()
-        with patch(
-            sys, 'stdout', stdout
-        ), patch(
-            pycolor, 'CONFIG_DIR', SAMPLE_CONFIG_DIR
-        ), patch(
-            pycolor, 'CONFIG_DEFAULT', os.path.join(SAMPLE_CONFIG_DIR, 'rsync.json')
-        ):
+        self.assertTrue(os.path.isdir(SAMPLE_CONFIG_DIR))
+
+        with patch(pycolor, 'CONFIG_DIR', SAMPLE_CONFIG_DIR),\
+        patch(pycolor, 'CONFIG_DEFAULT', os.path.join(SAMPLE_CONFIG_DIR, 'rsync.json')):
             stdin = textstream()
-            with open(
-                os.path.join(CURPATH, '../execute_tests/rsync/mocked_data/groups-nums.txt'), 'r'
-            ) as file:
+            with open(os.path.join(MOCKED_DATA, 'load_sample_config.txt'), 'r') as file:
                 stdin.write(file.read())
                 stdin.seek(0)
 

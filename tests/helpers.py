@@ -28,7 +28,8 @@ def check_pycolor_main(self,
     stderr = textstream()
 
     if not no_load_args:
-        args = ['--load-file', filename_prefix + '.json', '--color', 'always'] + args
+        args = ['--load-file', filename_prefix + '.json'] + args
+    args = ['--color', 'always'] + args
 
     stdout_in = open_fstream(filename_prefix + '.txt')
     stderr_in = open_fstream(filename_prefix + '.err.txt')
