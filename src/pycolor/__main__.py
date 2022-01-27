@@ -2,6 +2,7 @@
 
 import json
 import os
+import shutil
 import sys
 import typing
 
@@ -59,6 +60,13 @@ def main(
     if argspace.debug_log_out:
         debug_log = argspace.debug_log_out
         debug_log_out = True
+
+    if (
+        config.SAMPLE_CONFIG_DIR is not None
+        and CONFIG_DIR is not None
+        and not os.path.exists(CONFIG_DIR)
+    ):
+        shutil.copytree(config.SAMPLE_CONFIG_DIR, CONFIG_DIR)
 
     pycobj = Pycolor(
         color_mode=argspace.color,

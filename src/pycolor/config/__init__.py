@@ -6,6 +6,7 @@ import typing
 import fastjsonschema
 
 DIRNAME = os.path.dirname(os.path.realpath(__file__))
+SAMPLE_CONFIG_DIR = os.path.join(DIRNAME, 'sample-config')
 SCHEMA_DIR = os.path.join(DIRNAME, 'schema')
 
 BreakableStr = typing.Union[typing.List[str], str, None]

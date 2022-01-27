@@ -32,24 +32,6 @@
                     }
                 },
                 {
-                    "expression": [
-                        "^",
-                        "From ",
-                        "(?:",
-                            "(?P<source>.+) \\((?P<ip>.+)\\) ",
-                            "|",
-                            "(?P<s_only>.+) ",
-                        ")",
-                        "icmp_seq=(?P<seq>\\d+) .+",
-                        "$"
-                    ],
-                    "replace_groups": {
-                        "source": "%Hlm",
-                        "ip,s_only": "%Hm",
-                        "seq": "%Hg"
-                    }
-                },
-                {
                     "expression": "^--- (.+) ping statistics ---$",
                     "replace_groups": ["%Hly"]
                 },

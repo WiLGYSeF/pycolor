@@ -1,0 +1,10 @@
+PING [93m127.0.0.1[0m ([33m127.0.0.1[0m) 56(84) bytes of data.
+64 bytes from [33m127.0.0.1[0m: icmp_seq=[32m1[0m ttl=[32m64[0m time=[34m0.175 ms[0m
+64 bytes from [33m127.0.0.1[0m: icmp_seq=[32m2[0m ttl=[32m64[0m time=[34m0.028 ms[0m
+64 bytes from [33m127.0.0.1[0m: icmp_seq=[32m3[0m ttl=[32m64[0m time=[34m0.027 ms[0m
+64 bytes from [33m127.0.0.1[0m: icmp_seq=[32m4[0m ttl=[32m64[0m time=[34m0.026 ms[0m
+64 bytes from [33m127.0.0.1[0m: icmp_seq=[32m5[0m ttl=[32m64[0m time=[34m0.027 ms[0m
+
+--- [93m127.0.0.1[0m ping statistics ---
+[32m5[0m packets transmitted, [32m5[0m received, 0% packet loss, time [34m4156ms[0m
+rtt [32mmin[0m/[36mavg[0m/[92mmax[0m/[33mmdev[0m = [32m0.026[0m/[36m0.056[0m/[92m0.175[0m/[33m0.059[0m ms

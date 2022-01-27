@@ -9,20 +9,28 @@ from tests.helpers import check_pycolor_main
 from tests.testutils import patch
 from src.pycolor import __main__ as pycolor
 
-MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_data')
+CURPATH = os.path.dirname(os.path.realpath(__file__))
+MOCKED_DATA = os.path.join(CURPATH, 'mocked_data')
+SAMPLE_CONFIG_DIR = os.path.join(CURPATH, '../../src/pycolor/config/sample-config')
 
 class PycolorTest(unittest.TestCase):
     def test_load_sample_config(self):
-        curpath = os.path.dirname(os.path.realpath(__file__))
-        with patch(
-            pycolor, 'CONFIG_DIR', os.path.join(curpath, '../docs/sample-config')
-        ), patch(
-            pycolor, 'CONFIG_DEFAULT', os.path.join(curpath, '../docs/sample-config/rsync.json')
-        ):
-            try:
-                pycolor.main(['--stdin', 'rsync'], stdin_stream=textstream())
-            except SystemExit as sexc:
-                self.assertEqual(sexc.code, 0)
+        self.assertTrue(os.path.isdir(SAMPLE_CONFIG_DIR))
+
+        with patch(pycolor, 'CONFIG_DIR', SAMPLE_CONFIG_DIR),\
+        patch(pycolor, 'CONFIG_DEFAULT', os.path.join(SAMPLE_CONFIG_DIR, 'rsync.json')):
+            stdin = textstream()
+            with open(os.path.join(MOCKED_DATA, 'load_sample_config.txt'), 'r') as file:
+                stdin.write(file.read())
+                stdin.seek(0)
+
+            check_pycolor_main(self,
+                ['--stdin', 'rsync'],
+                MOCKED_DATA,
+                'load_sample_config',
+                stdin=stdin,
+                no_load_args=True
+            )
 
     def test_version(self):
         stdout = textstream()

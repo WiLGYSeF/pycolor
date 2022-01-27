@@ -40,7 +40,7 @@ Pycolor can be used explicitly on the command line:
 
 ![sample colored df output](https://raw.githubusercontent.com/WiLGYSeF/pycolor/master/docs/images/sample-df-output-colored.png)
 
-[Sample df configuration file.](https://raw.githubusercontent.com/WiLGYSeF/pycolor/master/docs/sample-config/df.json)
+[Sample df configuration file.](https://raw.githubusercontent.com/WiLGYSeF/pycolor/master/src/pycolor/config/sample-config/df.json)
 
 ----
 
@@ -58,7 +58,7 @@ alias rsync='pycolor rsync'
 
 ![sample colored rsync output](https://raw.githubusercontent.com/WiLGYSeF/pycolor/master/docs/images/sample-rsync-output-colored.png)
 
-[Sample rsync configuration file.](https://github.com/WiLGYSeF/pycolor/blob/master/docs/sample-config/rsync.json)
+[Sample rsync configuration file.](https://github.com/WiLGYSeF/pycolor/blob/master/src/pycolor/config/sample-config/rsync.json)
 
 # Configuration
 
@@ -70,7 +70,7 @@ Matching patterns are applied first-to-last for each profile.
 
 JSON schema files that describe the config format can be found in [`/config/schema/`](https://github.com/WiLGYSeF/pycolor/blob/master/src/pycolor/config/schema/profile.json).
 
-Sample config files can be found in [`/docs/sample-config/`](https://github.com/WiLGYSeF/pycolor/blob/master/docs/sample-config/).
+Sample config files can be found in [`the sample config`](https://github.com/WiLGYSeF/pycolor/blob/master/src/pycolor/config/sample-config/).
 
 # Formatting Strings
 
@@ -97,7 +97,7 @@ E.g. the format string `The total is %C(red)15%%` will become `The total is 15%`
 
 Valid format value characters are upper/lowercase letters and numbers, unless the argument is encapsulated in parentheses, then everything in the parenthesis pair is used.
 
-Check [`/docs/sample-config/`](https://github.com/WiLGYSeF/pycolor/blob/master/docs/sample-config/) for examples of formatting strings being used for actual programs.
+Check [`the sample config`](https://github.com/WiLGYSeF/pycolor/blob/master/src/pycolor/config/sample-config/) for examples of formatting strings being used for actual programs.
 
 ## Colors
 

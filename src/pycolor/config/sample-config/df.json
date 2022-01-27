@@ -75,7 +75,7 @@
                     "separator": " +",
                     "field": 1,
                     "expression": "^[^/]+$",
-                    "replace": "%Ce%G0%Cz",
+                    "replace": "%Cde%G0%Cz",
                     "activation_line": 2
                 }
             ]

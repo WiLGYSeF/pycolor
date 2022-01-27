@@ -106,6 +106,7 @@
                     "optional": true
                 }
             ],
+            "from_profiles": [ "git_status_concise" ],
             "patterns": [
                 {
                     "expression": "^(?:Switched to(?: a new| and reset)? branch|Already on) '(.*)'$",

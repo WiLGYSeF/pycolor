@@ -14,13 +14,18 @@ def check_pycolor_execute(self,
     test_name: str,
     **kwargs
 ):
+    config_file: typing.Optional[str] = kwargs.get('config_file')
+    profile_name: typing.Optional[str] = kwargs.get('profile_name')
     print_output: bool = kwargs.get('print_output', False)
     write_output: bool = kwargs.get('write_output', False)
     debug: int = kwargs.get('debug', 0)
 
     pycobj = create_pycolor_object(debug=debug)
     filename_prefix = os.path.join(mocked_data_dir, test_name)
-    pycobj.load_file(filename_prefix + '.json')
+
+    if config_file is None:
+        config_file = filename_prefix + '.json'
+    pycobj.load_file(config_file)
 
     stdout = open_fstream(filename_prefix + '.txt')
     stderr = open_fstream(filename_prefix + '.err.txt')
@@ -29,7 +34,10 @@ def check_pycolor_execute(self,
     output_expected_err = read_file(filename_prefix + '.out.err.txt')
 
     with execute_patch(pycolor_class.execute, stdout, stderr):
-        pycobj.execute(cmd)
+        pycobj.execute(
+            cmd,
+            profile=pycobj.get_profile_by_name(profile_name) if profile_name is not None else None
+        )
 
     if stdout is not None:
         stdout.close()
