@@ -186,7 +186,6 @@ def _replace_fields(
         else:
             if isinstance(pat.replace_fields, dict):
                 result = _get_replace_field_separator(
-                    fields,
                     idx_to_sep(index),
                     pat.replace_fields
                 )
@@ -378,14 +377,12 @@ def _get_replace_field(
     return None
 
 def _get_replace_field_separator(
-    fields: typing.List[str],
     field_sep_idx: int,
     replace_fields: ReplaceGroup
 ) -> typing.Optional[str]:
     """Gets the replace field separator value
 
     Args:
-        fields (list): Fields
         field_sep_idx (int): Index of field separator
         replace_fields (ReplaceGroup): Replace group
 
