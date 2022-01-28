@@ -8,6 +8,7 @@ import subprocess
 import sys
 import time
 import threading
+import traceback
 import typing
 
 try:
@@ -23,12 +24,12 @@ try:
 except ModuleNotFoundError:
     HAS_PTY = False
 
-from ..utils.printmsg import printwarn
+from ..utils.printmsg import printerr, printwarn
 from .threadwait import Flag, ThreadWait
 
 BUFFER_SZ = 4098
 
-_Stream = typing.Union[typing.TextIO, io.IOBase, int]
+Stream = typing.Union[typing.TextIO, io.IOBase, int]
 
 def _readlines(data: bytes) -> typing.Iterator[bytes]:
     """Yields data line by line
@@ -55,10 +56,10 @@ def _readlines(data: bytes) -> typing.Iterator[bytes]:
     if last < datalen:
         yield data[last:]
 
-_buffers: typing.Dict[_Stream, bytes] = {}
+_buffers: typing.Dict[Stream, bytes] = {}
 
 def read_stream(
-    stream: _Stream,
+    stream: Stream,
     callback: typing.Callable[[str], None],
     data: bytes,
     encoding: str = 'utf-8',
@@ -67,7 +68,7 @@ def read_stream(
     """Handles buffered stream reading
 
     Args:
-        stream (_Stream): Used only for storing bufferred data, not used for reading
+        stream (Stream): Used only for storing bufferred data, not used for reading
         callback (function): Callback function called with stream data line by line
         data (bytes): Stream data
         encoding (str): Stream data to string encoding for callback, default 'utf-8'
@@ -109,11 +110,11 @@ def read_stream(
         return None
     return did_callback
 
-def _is_buffer_empty(stream: _Stream) -> bool:
+def _is_buffer_empty(stream: Stream) -> bool:
     """Checks if the stream buffer is empty
 
     Args:
-        stream (_Stream): Stream
+        stream (Stream): Stream
 
     Returns:
         bool: Returns true if the stream buffer is empty
@@ -166,7 +167,7 @@ def execute(
         tty (bool): Enable TTY mode
         encoding (str): Stream data to string encoding for callback, default 'utf-8'
         interactive (bool): Enable interactive mode
-        stdin (_Stream): Stdin stream, defaults to sys.stdin
+        stdin (Stream): Stdin stream, defaults to sys.stdin
 
     Returns:
         int: Return code of command
@@ -174,16 +175,16 @@ def execute(
     tty: bool = kwargs.get('tty', False)
     encoding: str = kwargs.get('encoding', 'utf-8')
     interactive: bool = kwargs.get('interactive', False)
-    stdout: _Stream
-    stderr: _Stream
-    stdin: _Stream = kwargs.get('stdin', sys.stdin)
+    stdout: Stream
+    stderr: Stream
+    stdin: Stream = kwargs.get('stdin', sys.stdin)
 
     if tty and not HAS_PTY:
         printwarn('tty is not supported on this system')
         tty = False
 
     def _read(
-        stream: _Stream,
+        stream: Stream,
         callback: typing.Callable[[str], None],
         data: bytes,
         last: bool = False
@@ -225,17 +226,20 @@ def execute(
                 stderr = process.stderr
 
             def read_thread(
-                stream: _Stream,
+                stream: Stream,
                 callback: typing.Callable[[str], None],
                 flag: Flag
             ) -> None:
                 while True:
                     flag.unset()
                     data = _read_stream(stream)
-                    if data is None or _read(stream, callback, data) is None:
-                        break
-                    if interactive and not _is_buffer_empty(stream):
-                        _read(stream, callback, b'', last=True)
+                    try:
+                        if data is None or _read(stream, callback, data) is None:
+                            break
+                        if interactive and not _is_buffer_empty(stream):
+                            _read(stream, callback, b'', last=True)
+                    except Exception:
+                        printerr('pycolor error, continuing...', traceback.format_exc(), sep='\n')
                 _read(stream, callback, b'', last=True)
 
             def write_stdin(flag: Flag) -> None:
@@ -286,7 +290,7 @@ def execute(
             returncode = val if isinstance(val, int) else 0
     return returncode
 
-def _read_stream(stream: _Stream) -> typing.Optional[bytes]:
+def _read_stream(stream: Stream) -> typing.Optional[bytes]:
     if isinstance(stream, (typing.TextIO, io.IOBase)):
         try:
             data = os.read(stream.fileno(), BUFFER_SZ)
