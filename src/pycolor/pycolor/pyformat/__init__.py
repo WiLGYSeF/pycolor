@@ -236,20 +236,17 @@ class Formatter:
         if not self._context.color_enabled:
             return ''
 
-        def get_state(context: Context) -> ColorState:
-            return ColorState(insert_color_data(
+        if value in ('prev', 's', 'soft'):
+            state = ColorState(insert_color_data(
                 '',
-                context.color_positions,
-                context.color_positions_end_idx + 1
+                self._context.color_positions,
+                self._context.color_positions_end_idx + 1
             ))
-
-        if value == 'prev':
-            prev = str(get_state(self._context))
-            return prev if len(prev) != 0 else '\x1b[0m'
-        if value in ('s', 'soft'):
-            curstate = get_state(self._context)
-            curstate.set(insert_color_data(self._cur_newstring, self._cur_color_positions))
-            return ColorState().get_string(compare_state=curstate)
+            if value == 'prev':
+                prev = str(state)
+                return prev if len(prev) != 0 else '\x1b[0m'
+            state.set(insert_color_data(self._cur_newstring, self._cur_color_positions))
+            return ColorState().get_string(compare_state=state)
 
         colorstr = color.get_color(value, aliases=self._context.color_aliases)
         return colorstr if colorstr is not None else ''
