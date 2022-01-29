@@ -12,7 +12,6 @@ from . import config
 from .execute.execute import read_stream
 from .pycolor import pyformat
 from .pycolor.pycolor_class import Pycolor
-from .pycolor.pyformat.context import Context
 from .utils import debug_colors
 from .utils.printmsg import printerr, is_color_enabled
 
@@ -37,6 +36,13 @@ def main(
     parser, argspace, cmd_args = arguments.get_args(args)
     read_stdin = len(cmd_args) == 0 or argspace.stdin
 
+    if (
+        config.SAMPLE_CONFIG_DIR is not None
+        and CONFIG_DIR is not None
+        and not os.path.exists(CONFIG_DIR)
+    ):
+        shutil.copytree(config.SAMPLE_CONFIG_DIR, CONFIG_DIR)
+
     if argspace.version:
         print(__version__)
         sys.exit(0)
@@ -60,13 +66,6 @@ def main(
     if argspace.debug_log_out:
         debug_log = argspace.debug_log_out
         debug_log_out = True
-
-    if (
-        config.SAMPLE_CONFIG_DIR is not None
-        and CONFIG_DIR is not None
-        and not os.path.exists(CONFIG_DIR)
-    ):
-        shutil.copytree(config.SAMPLE_CONFIG_DIR, CONFIG_DIR)
 
     pycobj = Pycolor(
         color_mode=argspace.color,

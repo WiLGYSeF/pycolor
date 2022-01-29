@@ -1,5 +1,6 @@
 import os
 import sys
+import tempfile
 import unittest
 
 from freezegun import freeze_time
@@ -32,10 +33,27 @@ class PycolorTest(unittest.TestCase):
                 no_load_args=True
             )
 
+    def test_copy_sample_config(self):
+        self.assertTrue(os.path.isdir(SAMPLE_CONFIG_DIR))
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpconfig = os.path.join(tmpdir, 'config')
+            with patch(sys, 'stdout', textstream()), patch(pycolor, 'CONFIG_DIR', tmpconfig):
+                check_pycolor_main(self,
+                    ['--version'],
+                    MOCKED_DATA,
+                    'empty',
+                    patch_sample_config_dir=False
+                )
+                self.assertListEqual(
+                    sorted(os.listdir(SAMPLE_CONFIG_DIR)),
+                    sorted(os.listdir(tmpconfig))
+                )
+
     def test_version(self):
         stdout = textstream()
         with patch(sys, 'stdout', stdout):
-            check_pycolor_main(self, ['--version'], MOCKED_DATA, 'version')
+            check_pycolor_main(self, ['--version'], MOCKED_DATA, 'empty')
 
         stdout.seek(0)
         self.assertEqual(stdout.read(), pycolor.__version__ + '\n')
