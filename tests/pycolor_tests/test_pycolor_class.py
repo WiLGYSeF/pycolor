@@ -1,10 +1,10 @@
-import os
 import sys
-import tempfile
 import unittest
 
 from src.pycolor.config.profile import Profile
 from src.pycolor.pycolor.pycolor_class import Pycolor
+from tests.execute_tests.helpers import textstream
+from tests.testutils import patch
 
 class PycolorClassTest(unittest.TestCase):
     def test_color_mode_auto(self):
@@ -19,3 +19,11 @@ class PycolorClassTest(unittest.TestCase):
         prof = Profile({})
         pycobj.current_profile = prof
         self.assertEqual(prof, pycobj.current_profile)
+
+    def test_execute_file_not_found(self):
+        pycobj = Pycolor()
+
+        with patch(sys, 'stderr', textstream()),\
+        self.assertRaises(SystemExit),\
+        self.assertRaises(FileNotFoundError):
+            pycobj.execute(['test_command_does_not_exist'])

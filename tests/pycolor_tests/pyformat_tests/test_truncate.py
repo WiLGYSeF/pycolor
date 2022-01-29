@@ -20,6 +20,14 @@ class TruncateTest(unittest.TestCase):
                 STRING: '%(trunc:8,left,...,no)this is a test%(end)',
                 RESULT: '...s a test'
             },
+            {
+                STRING: '%(trunc:-8,left,...,no)this is a test%(end)',
+                RESULT: 'this is a test'
+            },
+            {
+                STRING: '%(trunc:8,zzz,...,no)this is a test%(end)',
+                RESULT: '...s a test'
+            },
         ]
 
         for entry in entries:
