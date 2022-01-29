@@ -55,9 +55,9 @@ def _build_parser() -> argparse.ArgumentParser:
         dest='tty', action='store_false',
         help='do not run the command in a pseudo-terminal (default)'
     )
-    group.add_argument('-i', '--interactive',
+    group.add_argument('-B', '--nobuffer',
         action='store_true', default=False,
-        help='force enable "interactive" for all profiles'
+        help='force enable "nobuffer" for all profiles'
     )
 
     group = parser.add_argument_group('debug options')

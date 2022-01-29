@@ -93,8 +93,8 @@ def main(
 
     if argspace.tty:
         override_profile_conf(pycobj, 'tty', argspace.tty)
-    if argspace.interactive:
-        override_profile_conf(pycobj, 'interactive', argspace.interactive)
+    if argspace.nobuffer:
+        override_profile_conf(pycobj, 'nobuffer', argspace.nobuffer)
 
     profile = None
     if argspace.profile is not None:

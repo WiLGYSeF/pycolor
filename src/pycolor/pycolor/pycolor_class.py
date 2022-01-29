@@ -176,7 +176,7 @@ class Pycolor:
                 self.stdout_cb,
                 self.stderr_cb,
                 tty=self._current_profile.tty,
-                interactive=self._current_profile.interactive,
+                nobuffer=self._current_profile.nobuffer,
             )
         except FileNotFoundError:
             printerr("command '%s' not found" % cmd[0])

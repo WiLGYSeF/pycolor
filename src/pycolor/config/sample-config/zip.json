@@ -2,7 +2,7 @@
     "profiles": [
         {
             "name": "zip",
-            "interactive": true,
+            "nobuffer": true,
             "patterns": [
                 {
                     "expression": [
