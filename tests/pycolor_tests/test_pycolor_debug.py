@@ -15,7 +15,7 @@ MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_
 class PycolorTest(unittest.TestCase):
     def test_debug_color(self):
         #pylint: disable=invalid-name
-        def get_terminal_size(fd=None):
+        def get_terminal_size(_=None):
             TerminalSize = namedtuple('terminal_size', ['columns', 'lines'])
             return TerminalSize(80, 24)
 
@@ -110,13 +110,13 @@ class PycolorTest(unittest.TestCase):
 
     @contextmanager
     def check_debug_log(self, mocked_data_dir, test_name, **kwargs):
-        print_output = kwargs.get('print_output', False)
-        write_output = kwargs.get('write_output', False)
-
-        fname = random_tmp_filename()
-        yield fname
+        print_output: bool = kwargs.get('print_output', False)
+        write_output: bool = kwargs.get('write_output', False)
 
         try:
+            fname = random_tmp_filename()
+            yield fname
+
             debug_fname = os.path.join(mocked_data_dir, test_name) + '.out.debug.txt'
 
             with open(fname, 'r') as file:
@@ -133,7 +133,7 @@ class PycolorTest(unittest.TestCase):
         finally:
             os.remove(fname)
 
-def random_tmp_filename():
+def random_tmp_filename() -> str:
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     length = 8
 
