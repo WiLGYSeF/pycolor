@@ -18,15 +18,13 @@ class PycolorTest(unittest.TestCase):
         stdout.seek(0)
         self.assertEqual(stdout.read(), pycolor.__version__ + '\n')
 
-    def test_ls_numbers(self):
-        check_pycolor_main(self, ['ls', '-l'], MOCKED_DATA, 'ls_numbers')
-
-    def test_ls_numbers_known_arg_parse(self):
-        check_pycolor_main(self, ['ls', '-l', '--color', 'off'], MOCKED_DATA, 'ls_numbers')
-
     @freeze_time('2000-01-02 03:45:56')
     def test_ls_timestamp_arg(self):
-        check_pycolor_main(self, ['--timestamp', '--', 'ls', '-l'], MOCKED_DATA, 'ls_timestamp_arg')
+        check_pycolor_main(self,
+            ['--timestamp', '--', 'ls', '-l'],
+            MOCKED_DATA,
+            'ls_timestamp_arg'
+        )
 
     @freeze_time('2000-01-02 03:45:56')
     def test_ls_timestamp_arg_default_profile(self):
@@ -59,13 +57,6 @@ class PycolorTest(unittest.TestCase):
                 name,
                 stdin=stdin
             )
-
-    def test_df_color_alias(self):
-        check_pycolor_main(self,
-            ['df', '-h'],
-            MOCKED_DATA,
-            'df_color_alias'
-        )
 
     def test_ls_profile_fail(self):
         with self.assertRaises(SystemExit), patch(pycolor, 'printerr', lambda x: None):
