@@ -4,9 +4,9 @@ import sys
 import typing
 
 from tests.execute_tests.helpers import (
-    execute_patch, open_fstream, read_file, test_stream, textstream
+    execute_patch, open_fstream, read_file, test_stream
 )
-from tests.testutils import patch
+from tests.testutils import patch, textstream
 from src.pycolor.pycolor import pycolor_class
 from src.pycolor import __main__ as pycolor
 
