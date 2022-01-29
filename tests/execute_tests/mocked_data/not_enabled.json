@@ -1,0 +1,19 @@
+{
+    "profiles": [
+        {
+            "name": "free",
+            "patterns": [
+                {
+                    "enabled": false,
+                    "activation_line": 2,
+                    "separator": " +",
+                    "min_fields": 7,
+                    "max_fields": 7,
+                    "replace_fields": [
+                        "%Fc", "%Hb", "%Hr", "%Hg", "%Hb", "%Hy", "%Hg"
+                    ]
+                }
+            ]
+        }
+    ]
+}

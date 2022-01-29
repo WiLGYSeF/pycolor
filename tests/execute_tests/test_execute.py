@@ -77,6 +77,15 @@ class ExecuteTest(unittest.TestCase):
         self.assertTrue(execute._is_buffer_empty(stream))
         self.assertEqual(test_data + b'\n', output.encode())
 
+    def test_not_enabled(self):
+        check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'not_enabled')
+
+    def test_input_color(self):
+        check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'free_color_input')
+
+    def test_remove_input_color(self):
+        check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'free_color_input_remove')
+
     def test_replace_all(self):
         check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'free_replace_all')
 

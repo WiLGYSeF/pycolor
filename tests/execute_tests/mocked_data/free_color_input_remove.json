@@ -1,0 +1,8 @@
+{
+    "profiles": [
+        {
+            "name": "free",
+            "remove_input_color": true
+        }
+    ]
+}
