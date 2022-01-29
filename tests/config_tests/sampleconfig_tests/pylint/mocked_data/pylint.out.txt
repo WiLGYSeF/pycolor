@@ -1,0 +1,81 @@
+[7;33m************* Module pycolor.arguments[0m
+src/pycolor/arguments.py:[32m101[0m[90m:5[0m: [35mW0511: TODO: using parser._actions is somewhat of a hack [37m([33mfix-me[35m)
+src/pycolor/arguments.py:[32m145[0m[90m:13[0m: [35mW0511: TODO: this depends on the action, but is usually 1 [37m([33mfix-me[35m)
+src/pycolor/arguments.py:[32m93[0m[90m:0[0m: [1;31mC0301: Line too long (116/100) [37m([1;31mline-too-long[37m)[1;31m[0m
+src/pycolor/arguments.py:[32m102[0m[90m:38[0m: [35mW0212: Access to a protected member _actions of a client class [37m([35mprotected-access[37m)[35m[0m
+src/pycolor/arguments.py:[32m106[0m[90m:0[0m: [1;35mR0912: Too many branches (17/12) [37m([1;35mtoo-many-branches[37m)[1;35m[0m
+[7;33m************* Module pycolor.config.argpattern[0m
+src/pycolor/config/argpattern.py:[32m15[0m[90m:0[0m: [1;35mR0902: Too many instance attributes (9/7) [37m([1;35mtoo-many-instance-attributes[37m)[1;35m[0m
+[7;33m************* Module pycolor.config.pattern[0m
+src/pycolor/config/pattern.py:[32m77[0m[90m:0[0m: [1;31mC0301: Line too long (102/100) [37m([1;31mline-too-long[37m)[1;31m[0m
+src/pycolor/config/pattern.py:[32m82[0m[90m:0[0m: [1;31mC0301: Line too long (101/100) [37m([1;31mline-too-long[37m)[1;31m[0m
+src/pycolor/config/pattern.py:[32m96[0m[90m:0[0m: [1;31mC0301: Line too long (105/100) [37m([1;31mline-too-long[37m)[1;31m[0m
+src/pycolor/config/pattern.py:[32m147[0m[90m:0[0m: [1;31mC0301: Line too long (113/100) [37m([1;31mline-too-long[37m)[1;31m[0m
+src/pycolor/config/pattern.py:[32m17[0m[90m:0[0m: [1;35mR0902: Too many instance attributes (39/7) [37m([1;35mtoo-many-instance-attributes[37m)[1;35m[0m
+src/pycolor/config/pattern.py:[32m18[0m[90m:4[0m: [1;35mR0915: Too many statements (62/50) [37m([1;35mtoo-many-statements[37m)[1;35m[0m
+src/pycolor/config/pattern.py:[32m171[0m[90m:4[0m: [1;35mR0912: Too many branches (16/12) [37m([1;35mtoo-many-branches[37m)[1;35m[0m
+[7;33m************* Module pycolor.config.profile[0m
+src/pycolor/config/profile.py:[32m73[0m[90m:0[0m: [1;31mC0301: Line too long (118/100) [37m([1;31mline-too-long[37m)[1;31m[0m
+src/pycolor/config/profile.py:[32m15[0m[90m:0[0m: [1;35mR0902: Too many instance attributes (27/7) [37m([1;35mtoo-many-instance-attributes[37m)[1;35m[0m
+[7;33m************* Module pycolor.config.__init__[0m
+src/pycolor/config/__init__.py:[32m83[0m[90m:49[0m: [35mW0511: TODO: replace with something more concrete [37m([33mfix-me[35m)
+[7;33m************* Module pycolor.execute.execute[0m
+src/pycolor/execute/execute.py:[32m278[0m[90m:13[0m: [35mW0511: TODO: this is probably not the best way to wait [37m([33mfix-me[35m)
+src/pycolor/execute/execute.py:[32m154[0m[90m:0[0m: [1;35mR0914: Too many local variables (26/15) [37m([1;35mtoo-many-locals[37m)[1;35m[0m
+src/pycolor/execute/execute.py:[32m241[0m[90m:27[0m: [35mW0703: Catching too general exception Exception [37m([35mbroad-except[37m)[35m[0m
+src/pycolor/execute/execute.py:[32m154[0m[90m:0[0m: [1;35mR0915: Too many statements (59/50) [37m([1;35mtoo-many-statements[37m)[1;35m[0m
+[7;33m************* Module pycolor.pycolor.applypattern[0m
+src/pycolor/pycolor/applypattern.py:[32m63[0m[90m:0[0m: [1;31mC0301: Line too long (111/100) [37m([1;31mline-too-long[37m)[1;31m[0m
+src/pycolor/pycolor/applypattern.py:[32m57[0m[90m:44[0m: [35mW0613: Unused argument '[37mindex[35m' [37m([35munused-argument[37m)[35m[0m
+src/pycolor/pycolor/applypattern.py:[32m57[0m[90m:56[0m: [35mW0613: Unused argument '[37moffset[35m' [37m([35munused-argument[37m)[35m[0m
+src/pycolor/pycolor/applypattern.py:[32m71[0m[90m:44[0m: [35mW0613: Unused argument '[37mindex[35m' [37m([35munused-argument[37m)[35m[0m
+src/pycolor/pycolor/applypattern.py:[32m77[0m[90m:44[0m: [35mW0613: Unused argument '[37mindex[35m' [37m([35munused-argument[37m)[35m[0m
+src/pycolor/pycolor/applypattern.py:[32m83[0m[90m:43[0m: [35mW0613: Unused argument '[37mindex[35m' [37m([35munused-argument[37m)[35m[0m
+src/pycolor/pycolor/applypattern.py:[32m83[0m[90m:55[0m: [35mW0613: Unused argument '[37moffset[35m' [37m([35munused-argument[37m)[35m[0m
+src/pycolor/pycolor/applypattern.py:[32m177[0m[90m:8[0m: [1;31mC0103: Argument name "x" doesn't conform to snake_case naming style [37m([1;31minvalid-name[37m)[1;31m[0m
+src/pycolor/pycolor/applypattern.py:[32m176[0m[90m:45[0m: [35mW0613: Unused argument '[37moffset[35m' [37m([35munused-argument[37m)[35m[0m
+[7;33m************* Module pycolor.pycolor.profileloader[0m
+src/pycolor/pycolor/profileloader.py:[32m172[0m[90m:4[0m: [1;35mR0912: Too many branches (14/12) [37m([1;35mtoo-many-branches[37m)[1;35m[0m
+[7;33m************* Module pycolor.pycolor.pycolor_class[0m
+src/pycolor/pycolor/pycolor_class.py:[32m22[0m[90m:0[0m: [1;35mR0902: Too many instance attributes (17/7) [37m([1;35mtoo-many-instance-attributes[37m)[1;35m[0m
+src/pycolor/pycolor/pycolor_class.py:[32m185[0m[90m:4[0m: [1;35mR0912: Too many branches (20/12) [37m([1;35mtoo-many-branches[37m)[1;35m[0m
+src/pycolor/pycolor/pycolor_class.py:[32m185[0m[90m:4[0m: [1;35mR0915: Too many statements (54/50) [37m([1;35mtoo-many-statements[37m)[1;35m[0m
+src/pycolor/pycolor/pycolor_class.py:[32m348[0m[90m:15[0m: [1;35mR1732: Consider using 'with' for resource-allocating operations [37m([1;35mconsider-using-with[37m)[1;35m[0m
+[7;33m************* Module pycolor.pycolor.pyformat.coloring.colorstate[0m
+src/pycolor/pycolor/pyformat/coloring/colorstate.py:[32m121[0m[90m:4[0m: [1;35mR0912: Too many branches (14/12) [37m([1;35mtoo-many-branches[37m)[1;35m[0m
+[7;33m************* Module pycolor.pycolor.pyformat.context[0m
+src/pycolor/pycolor/pyformat/context.py:[32m6[0m[90m:0[0m: [1;35mR0902: Too many instance attributes (9/7) [37m([1;35mtoo-many-instance-attributes[37m)[1;35m[0m
+[7;33m************* Module pycolor.pycolor.pyformat.fieldsep[0m
+src/pycolor/pycolor/pyformat/fieldsep.py:[32m3[0m[90m:0[0m: [35mW0611: Unused Context imported from context [37m([35munused-import[37m)[35m[0m
+[7;33m************* Module pycolor.pycolor.pyformat[0m
+src/pycolor/pycolor/pyformat/__init__.py:[32m95[0m[90m:45[0m: [35mW0212: Access to a protected member _cur_nested_state of a client class [37m([35mprotected-access[37m)[35m[0m
+src/pycolor/pycolor/pyformat/__init__.py:[32m127[0m[90m:8[0m: [35mW0212: Access to a protected member _cur_nested_state of a client class [37m([35mprotected-access[37m)[35m[0m
+src/pycolor/pycolor/pyformat/__init__.py:[32m139[0m[90m:4[0m: [1;35mR0911: Too many return statements (9/6) [37m([1;35mtoo-many-return-statements[37m)[1;35m[0m
+src/pycolor/pycolor/pyformat/__init__.py:[32m220[0m[90m:4[0m: [1;35mR0201: Method could be a function [37m([1;35mno-self-use[37m)[1;35m[0m
+src/pycolor/pycolor/pyformat/__init__.py:[32m294[0m[90m:4[0m: [1;35mR0913: Too many arguments (6/5) [37m([1;35mtoo-many-arguments[37m)[1;35m[0m
+src/pycolor/pycolor/pyformat/__init__.py:[32m294[0m[90m:4[0m: [1;35mR0201: Method could be a function [37m([1;35mno-self-use[37m)[1;35m[0m
+[7;33m************* Module pycolor.strman.match_group_replace[0m
+src/pycolor/strman/match_group_replace.py:[32m12[0m[90m:0[0m: [1;31mC0301: Line too long (109/100) [37m([1;31mline-too-long[37m)[1;31m[0m
+[7;33m************* Module pycolor.strman.search_replace[0m
+src/pycolor/strman/search_replace.py:[32m7[0m[90m:0[0m: [1;35mR0914: Too many local variables (21/15) [37m([1;35mtoo-many-locals[37m)[1;35m[0m
+[7;33m************* Module pycolor.__main__[0m
+src/pycolor/__main__.py:[32m30[0m[90m:0[0m: [1;35mR0912: Too many branches (26/12) [37m([1;35mtoo-many-branches[37m)[1;35m[0m
+src/pycolor/__main__.py:[32m30[0m[90m:0[0m: [1;35mR0915: Too many statements (71/50) [37m([1;35mtoo-many-statements[37m)[1;35m[0m
+src/pycolor/__main__.py:[32m168[0m[90m:11[0m: [35mW0703: Catching too general exception Exception [37m([35mbroad-except[37m)[35m[0m
+src/pycolor/__main__.py:1:0: R0801: Similar lines in 2 files
+==pycolor.config.argpattern:1
+==pycolor.config.profile:0
+import typing
+
+from . import (
+    BreakableStr,
+    ConfigPropertyError,
+    compile_re,
+    join_bkstr,
+    load_schema,
+    mutually_exclusive,
+) (duplicate-code)
+
+------------------------------------------------------------------
+Your code has been rated at [1;36m9.75/10[0m (previous run: 9.75/10, [1;32m+0.00[0m)
+

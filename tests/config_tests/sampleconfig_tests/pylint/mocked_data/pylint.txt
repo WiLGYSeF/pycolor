@@ -1,0 +1,81 @@
+************* Module pycolor.arguments
+src/pycolor/arguments.py:101:5: W0511: TODO: using parser._actions is somewhat of a hack (fixme)
+src/pycolor/arguments.py:145:13: W0511: TODO: this depends on the action, but is usually 1 (fixme)
+src/pycolor/arguments.py:93:0: C0301: Line too long (116/100) (line-too-long)
+src/pycolor/arguments.py:102:38: W0212: Access to a protected member _actions of a client class (protected-access)
+src/pycolor/arguments.py:106:0: R0912: Too many branches (17/12) (too-many-branches)
+************* Module pycolor.config.argpattern
+src/pycolor/config/argpattern.py:15:0: R0902: Too many instance attributes (9/7) (too-many-instance-attributes)
+************* Module pycolor.config.pattern
+src/pycolor/config/pattern.py:77:0: C0301: Line too long (102/100) (line-too-long)
+src/pycolor/config/pattern.py:82:0: C0301: Line too long (101/100) (line-too-long)
+src/pycolor/config/pattern.py:96:0: C0301: Line too long (105/100) (line-too-long)
+src/pycolor/config/pattern.py:147:0: C0301: Line too long (113/100) (line-too-long)
+src/pycolor/config/pattern.py:17:0: R0902: Too many instance attributes (39/7) (too-many-instance-attributes)
+src/pycolor/config/pattern.py:18:4: R0915: Too many statements (62/50) (too-many-statements)
+src/pycolor/config/pattern.py:171:4: R0912: Too many branches (16/12) (too-many-branches)
+************* Module pycolor.config.profile
+src/pycolor/config/profile.py:73:0: C0301: Line too long (118/100) (line-too-long)
+src/pycolor/config/profile.py:15:0: R0902: Too many instance attributes (27/7) (too-many-instance-attributes)
+************* Module pycolor.config.__init__
+src/pycolor/config/__init__.py:83:49: W0511: TODO: replace with something more concrete (fixme)
+************* Module pycolor.execute.execute
+src/pycolor/execute/execute.py:278:13: W0511: TODO: this is probably not the best way to wait (fixme)
+src/pycolor/execute/execute.py:154:0: R0914: Too many local variables (26/15) (too-many-locals)
+src/pycolor/execute/execute.py:241:27: W0703: Catching too general exception Exception (broad-except)
+src/pycolor/execute/execute.py:154:0: R0915: Too many statements (59/50) (too-many-statements)
+************* Module pycolor.pycolor.applypattern
+src/pycolor/pycolor/applypattern.py:63:0: C0301: Line too long (111/100) (line-too-long)
+src/pycolor/pycolor/applypattern.py:57:44: W0613: Unused argument 'index' (unused-argument)
+src/pycolor/pycolor/applypattern.py:57:56: W0613: Unused argument 'offset' (unused-argument)
+src/pycolor/pycolor/applypattern.py:71:44: W0613: Unused argument 'index' (unused-argument)
+src/pycolor/pycolor/applypattern.py:77:44: W0613: Unused argument 'index' (unused-argument)
+src/pycolor/pycolor/applypattern.py:83:43: W0613: Unused argument 'index' (unused-argument)
+src/pycolor/pycolor/applypattern.py:83:55: W0613: Unused argument 'offset' (unused-argument)
+src/pycolor/pycolor/applypattern.py:177:8: C0103: Argument name "x" doesn't conform to snake_case naming style (invalid-name)
+src/pycolor/pycolor/applypattern.py:176:45: W0613: Unused argument 'offset' (unused-argument)
+************* Module pycolor.pycolor.profileloader
+src/pycolor/pycolor/profileloader.py:172:4: R0912: Too many branches (14/12) (too-many-branches)
+************* Module pycolor.pycolor.pycolor_class
+src/pycolor/pycolor/pycolor_class.py:22:0: R0902: Too many instance attributes (17/7) (too-many-instance-attributes)
+src/pycolor/pycolor/pycolor_class.py:185:4: R0912: Too many branches (20/12) (too-many-branches)
+src/pycolor/pycolor/pycolor_class.py:185:4: R0915: Too many statements (54/50) (too-many-statements)
+src/pycolor/pycolor/pycolor_class.py:348:15: R1732: Consider using 'with' for resource-allocating operations (consider-using-with)
+************* Module pycolor.pycolor.pyformat.coloring.colorstate
+src/pycolor/pycolor/pyformat/coloring/colorstate.py:121:4: R0912: Too many branches (14/12) (too-many-branches)
+************* Module pycolor.pycolor.pyformat.context
+src/pycolor/pycolor/pyformat/context.py:6:0: R0902: Too many instance attributes (9/7) (too-many-instance-attributes)
+************* Module pycolor.pycolor.pyformat.fieldsep
+src/pycolor/pycolor/pyformat/fieldsep.py:3:0: W0611: Unused Context imported from context (unused-import)
+************* Module pycolor.pycolor.pyformat
+src/pycolor/pycolor/pyformat/__init__.py:95:45: W0212: Access to a protected member _cur_nested_state of a client class (protected-access)
+src/pycolor/pycolor/pyformat/__init__.py:127:8: W0212: Access to a protected member _cur_nested_state of a client class (protected-access)
+src/pycolor/pycolor/pyformat/__init__.py:139:4: R0911: Too many return statements (9/6) (too-many-return-statements)
+src/pycolor/pycolor/pyformat/__init__.py:220:4: R0201: Method could be a function (no-self-use)
+src/pycolor/pycolor/pyformat/__init__.py:294:4: R0913: Too many arguments (6/5) (too-many-arguments)
+src/pycolor/pycolor/pyformat/__init__.py:294:4: R0201: Method could be a function (no-self-use)
+************* Module pycolor.strman.match_group_replace
+src/pycolor/strman/match_group_replace.py:12:0: C0301: Line too long (109/100) (line-too-long)
+************* Module pycolor.strman.search_replace
+src/pycolor/strman/search_replace.py:7:0: R0914: Too many local variables (21/15) (too-many-locals)
+************* Module pycolor.__main__
+src/pycolor/__main__.py:30:0: R0912: Too many branches (26/12) (too-many-branches)
+src/pycolor/__main__.py:30:0: R0915: Too many statements (71/50) (too-many-statements)
+src/pycolor/__main__.py:168:11: W0703: Catching too general exception Exception (broad-except)
+src/pycolor/__main__.py:1:0: R0801: Similar lines in 2 files
+==pycolor.config.argpattern:1
+==pycolor.config.profile:0
+import typing
+
+from . import (
+    BreakableStr,
+    ConfigPropertyError,
+    compile_re,
+    join_bkstr,
+    load_schema,
+    mutually_exclusive,
+) (duplicate-code)
+
+------------------------------------------------------------------
+Your code has been rated at 9.75/10 (previous run: 9.75/10, +0.00)
+
