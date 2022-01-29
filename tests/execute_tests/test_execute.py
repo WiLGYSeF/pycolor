@@ -4,20 +4,48 @@ import os
 import unittest
 
 from src.pycolor.execute import execute
+from tests.testutils import textstream
 
 class ExecuteTest(unittest.TestCase):
-    def test_execute_date(self):
+    def test_execute_cat(self):
+        stdin = textstream()
+        expected = 'this is a test'
+        output = ''
+        received_err = False
+
+        stdin.write(expected)
+        stdin.seek(0)
+
         def stdout_cb(data):
-            self.assertEqual(
-                datetime.datetime.now().strftime('%Y%m%d%H%M%S\n'),
-                data
-            )
+            nonlocal output
+            output += data
 
         def stderr_cb(data):
-            self.assertFalse(True)
+            nonlocal received_err
+            received_err = True
 
-        returncode = execute.execute(['date', '+%Y%m%d%H%M%S'], stdout_cb, stderr_cb)
+        returncode = execute.execute(['cat'], stdout_cb, stderr_cb, stdin=stdin)
         self.assertEqual(0, returncode)
+        self.assertEqual(expected, output)
+        self.assertFalse(received_err)
+
+    def test_execute_date(self):
+        expected = datetime.datetime.now().strftime('%Y%m%d%H%M\n')
+        output = ''
+        received_err = False
+
+        def stdout_cb(data):
+            nonlocal output
+            output += data
+
+        def stderr_cb(data):
+            nonlocal received_err
+            received_err = True
+
+        returncode = execute.execute(['date', '+%Y%m%d%H%M'], stdout_cb, stderr_cb)
+        self.assertEqual(0, returncode)
+        self.assertEqual(expected, output)
+        self.assertFalse(received_err)
 
     def test_is_buffer_empty(self):
         stream = io.BytesIO()
