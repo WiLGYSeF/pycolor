@@ -1,0 +1,14 @@
+{
+    "profiles": [
+        {
+            "name": "git",
+            "patterns": [
+                {
+                    "expression": "^(fatal): ",
+                    "replace_groups": ["%H(bol;r)"],
+                    "stderr_only": true
+                }
+            ]
+        }
+    ]
+}

@@ -95,6 +95,9 @@ class ExecuteTest(unittest.TestCase):
     def test_fields(self):
         check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'free_fields')
 
+    def test_git_branch_list_fail(self):
+        check_pycolor_execute(self, ['git', 'branch', '-l'], MOCKED_DATA, 'git_branch_list_fail')
+
     @freeze_time('1997-01-31 12:34:56')
     def test_df_timestamp(self):
         check_pycolor_execute(self, ['df', '-h'], MOCKED_DATA, 'df_timestamp')
