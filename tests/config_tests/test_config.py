@@ -17,5 +17,12 @@ class ConfigTest(unittest.TestCase):
         with self.assertRaises(ConfigExclusivePropertyError):
             _load_file(pycobj, 'mutual-exclusion-exception')
 
+    def test_replace_fields_nonzero_field(self):
+        pycobj = Pycolor()
+        with self.assertRaises(ConfigExclusivePropertyError):
+            _load_file(pycobj, 'replace-fields-nonzero-field')
+
 def _load_file(pycobj, name):
     pycobj.load_file(os.path.join(MOCKED_DATA, name + '.json'))
+    for prof in pycobj.profiles:
+        prof.load_patterns()
