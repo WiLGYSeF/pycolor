@@ -1,0 +1,266 @@
+sending incremental file list
+deleting tests/config_tests/mocked_data/replace-fields-nonzero-field.json
+deleting tests/config_tests/sampleconfig_tests/pylint/mocked_data/pylint.txt
+deleting tests/config_tests/sampleconfig_tests/pylint/mocked_data/pylint.out.txt
+deleting tests/config_tests/sampleconfig_tests/pylint/mocked_data/
+deleting tests/config_tests/sampleconfig_tests/pylint/test_pylint.py
+deleting tests/config_tests/sampleconfig_tests/pylint/__init__.py
+deleting tests/execute_tests/mocked_data/git_status.txt
+deleting tests/execute_tests/mocked_data/git_status.out.txt
+deleting tests/execute_tests/mocked_data/git_status.json
+deleting tests/execute_tests/mocked_data/free_replace_fields_list.txt
+deleting tests/execute_tests/mocked_data/free_replace_fields_list.out.txt
+deleting tests/execute_tests/mocked_data/free_replace_fields_list.json
+deleting tests/execute_tests/mocked_data/free_replace_all.txt
+deleting tests/execute_tests/mocked_data/free_replace_all.out.txt
+deleting tests/execute_tests/mocked_data/free_replace_all.json
+deleting tests/execute_tests/mocked_data/df_timestamp.txt
+deleting tests/execute_tests/mocked_data/df_timestamp.out.txt
+deleting tests/execute_tests/mocked_data/df_timestamp.json
+deleting tests/execute_tests/mocked_data/df_table.txt
+deleting tests/execute_tests/mocked_data/df_table.out.txt
+deleting tests/execute_tests/mocked_data/df_table.json
+deleting tests/execute_tests/mocked_data/activation_line_list.txt
+deleting tests/execute_tests/mocked_data/activation_line_list.out.txt
+deleting tests/execute_tests/mocked_data/activation_line_list.json
+deleting tests/execute_tests/mocked_data/activation_line.txt
+deleting tests/execute_tests/mocked_data/activation_line.out.txt
+deleting tests/execute_tests/mocked_data/activation_line.json
+deleting tests/execute_tests/mocked_data/activation_expression.txt
+deleting tests/execute_tests/mocked_data/activation_expression.out.txt
+deleting tests/execute_tests/mocked_data/activation_expression.json
+deleting tests/execute_tests/mocked_data/
+deleting tests/execute_tests/test_activation_lines.py
+deleting tests/pycolor_tests/test_pycolor_config.py
+deleting tests/pycolor_tests/test_pycolor_class.py
+deleting tests/pycolor_tests/mocked_data/invalid_profile.json
+deleting tests/pycolor_tests/mocked_data/invalid_pattern.json
+deleting tests/pycolor_tests/mocked_data/invalid_json.json
+deleting tests/pycolor_tests/mocked_data/empty.json
+deleting tests/pycolor_tests/pyformat_tests/coloring_tests/mocked_data/df_color_alias.txt
+deleting tests/pycolor_tests/pyformat_tests/coloring_tests/mocked_data/df_color_alias.out.txt
+deleting tests/pycolor_tests/pyformat_tests/coloring_tests/mocked_data/df_color_alias.json
+deleting tests/pycolor_tests/pyformat_tests/coloring_tests/mocked_data/
+deleting tests/pycolor_tests/pyformat_tests/coloring_tests/test_color_alias.py
+deleting tests/utils_tests/test_printmsg.py
+pycolor/
+pycolor/__main__.py
+pycolor/arguments.py
+pycolor/config/
+pycolor/config/profile.py
+pycolor/config/sample-config/
+pycolor/config/sample-config/blkid.json
+pycolor/config/sample-config/coverage.json
+pycolor/config/sample-config/git.json
+pycolor/config/sample-config/iwconfig.json
+pycolor/config/sample-config/lsusb.json
+pycolor/config/sample-config/pylint.json
+pycolor/config/sample-config/zip.json
+pycolor/config/schema/
+pycolor/config/schema/profile.json
+pycolor/execute/
+pycolor/execute/execute.py
+pycolor/pycolor/
+pycolor/pycolor/pycolor_class.py
+pycolor/pycolor/pyformat/
+pycolor/pycolor/pyformat/__init__.py
+pycolor/pycolor/pyformat/fieldsep.py
+tests/
+tests/helpers.py
+tests/testutils.py
+tests/config_tests/
+tests/config_tests/test_config.py
+tests/config_tests/test_profile.py
+tests/config_tests/mocked_data/
+tests/config_tests/sampleconfig_tests/
+tests/config_tests/sampleconfig_tests/pylint/
+tests/config_tests/sampleconfig_tests/rsync/
+tests/config_tests/sampleconfig_tests/rsync/__init__.py
+tests/config_tests/sampleconfig_tests/rsync/test_rsync.py
+tests/config_tests/sampleconfig_tests/rsync/__pycache__/
+tests/config_tests/sampleconfig_tests/rsync/__pycache__/__init__.cpython-38.pyc
+tests/config_tests/sampleconfig_tests/rsync/__pycache__/test_free.cpython-38.pyc
+tests/config_tests/sampleconfig_tests/rsync/__pycache__/test_pylint.cpython-38.pyc
+tests/config_tests/sampleconfig_tests/rsync/mocked_data/
+tests/config_tests/sampleconfig_tests/rsync/mocked_data/rsync.txt
+tests/execute_tests/
+tests/execute_tests/helpers.py
+tests/execute_tests/test_execute.py
+tests/execute_tests/blkid/
+tests/execute_tests/blkid/__init__.py
+tests/execute_tests/blkid/test_blkid.py
+tests/execute_tests/blkid/mocked_data/
+tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-after-prev.json
+tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-after-prev.out.txt
+tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-after-prev.txt
+tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-after.json
+tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-after.out.txt
+tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-after.txt
+tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-before-prev.json
+tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-before-prev.out.txt
+tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-before-prev.txt
+tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-before.json
+tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-before.out.txt
+tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-before.txt
+tests/execute_tests/blkid/mocked_data/replace-groups-list.json
+tests/execute_tests/blkid/mocked_data/replace-groups-list.out.txt
+tests/execute_tests/blkid/mocked_data/replace-groups-list.txt
+tests/execute_tests/df/
+tests/execute_tests/df/__init__.py
+tests/execute_tests/df/test_df.py
+tests/execute_tests/df/mocked_data/
+tests/execute_tests/df/mocked_data/color-fields-activation-line-list.json
+tests/execute_tests/df/mocked_data/color-fields-activation-line-list.out.txt
+tests/execute_tests/df/mocked_data/color-fields-activation-line-list.txt
+tests/execute_tests/df/mocked_data/color-fields-activation-line.json
+tests/execute_tests/df/mocked_data/color-fields-activation-line.out.txt
+tests/execute_tests/df/mocked_data/color-fields-activation-line.txt
+tests/execute_tests/df/mocked_data/color-fields-list.json
+tests/execute_tests/df/mocked_data/color-fields-list.out.txt
+tests/execute_tests/df/mocked_data/color-fields-list.txt
+tests/execute_tests/df/mocked_data/color-fields-pad.json
+tests/execute_tests/df/mocked_data/color-fields-pad.out.txt
+tests/execute_tests/df/mocked_data/color-fields-pad.txt
+tests/execute_tests/df/mocked_data/color-fields.json
+tests/execute_tests/df/mocked_data/color-fields.out.txt
+tests/execute_tests/df/mocked_data/color-fields.txt
+tests/execute_tests/df/mocked_data/field-replace-groups.json
+tests/execute_tests/df/mocked_data/field-replace-groups.out.txt
+tests/execute_tests/df/mocked_data/field-replace-groups.txt
+tests/execute_tests/df/mocked_data/field-replace.json
+tests/execute_tests/df/mocked_data/field-replace.out.txt
+tests/execute_tests/df/mocked_data/field-replace.txt
+tests/execute_tests/df/mocked_data/no-color-fields-T.json
+tests/execute_tests/df/mocked_data/no-color-fields-T.out.txt
+tests/execute_tests/df/mocked_data/no-color-fields-T.txt
+tests/execute_tests/df/mocked_data/normal.json
+tests/execute_tests/df/mocked_data/normal.out.txt
+tests/execute_tests/df/mocked_data/normal.txt
+tests/execute_tests/df/mocked_data/numbers-field.json
+tests/execute_tests/df/mocked_data/numbers-field.out.txt
+tests/execute_tests/df/mocked_data/numbers-field.txt
+tests/execute_tests/df/mocked_data/table.json
+tests/execute_tests/df/mocked_data/table.out.txt
+tests/execute_tests/df/mocked_data/table.txt
+tests/execute_tests/df/mocked_data/timestamp.json
+tests/execute_tests/df/mocked_data/timestamp.out.txt
+tests/execute_tests/df/mocked_data/timestamp.txt
+tests/execute_tests/free/
+tests/execute_tests/free/__init__.py
+tests/execute_tests/free/test_free.py
+tests/execute_tests/free/mocked_data/
+tests/execute_tests/free/mocked_data/color-fields-replace-all.json
+tests/execute_tests/free/mocked_data/color-fields-replace-all.out.txt
+tests/execute_tests/free/mocked_data/color-fields-replace-all.txt
+tests/execute_tests/free/mocked_data/color-human.json
+tests/execute_tests/free/mocked_data/color-human.out.txt
+tests/execute_tests/free/mocked_data/color-human.txt
+tests/execute_tests/free/mocked_data/color-replace-fields-list.json
+tests/execute_tests/free/mocked_data/color-replace-fields-list.out.txt
+tests/execute_tests/free/mocked_data/color-replace-fields-list.txt
+tests/execute_tests/free/mocked_data/color-replace-fields.json
+tests/execute_tests/free/mocked_data/color-replace-fields.out.txt
+tests/execute_tests/free/mocked_data/color-replace-fields.txt
+tests/execute_tests/free/mocked_data/color.json
+tests/execute_tests/free/mocked_data/color.out.txt
+tests/execute_tests/free/mocked_data/color.txt
+tests/execute_tests/free/mocked_data/invalid-option.json
+tests/execute_tests/free/mocked_data/invalid-option.out.txt
+tests/execute_tests/free/mocked_data/invalid-option.txt
+tests/execute_tests/free/mocked_data/replace-fields-all.json
+tests/execute_tests/free/mocked_data/replace-fields-all.out.txt
+tests/execute_tests/free/mocked_data/replace-fields-all.txt
+tests/execute_tests/free/mocked_data/replace-groups-all.json
+tests/execute_tests/free/mocked_data/replace-groups-all.out.txt
+tests/execute_tests/free/mocked_data/replace-groups-all.txt
+tests/execute_tests/git/
+tests/execute_tests/git/__init__.py
+tests/execute_tests/git/test_git.py
+tests/execute_tests/git/mocked_data/
+tests/execute_tests/git/mocked_data/push.json
+tests/execute_tests/git/mocked_data/push.out.txt
+tests/execute_tests/git/mocked_data/push.txt
+tests/execute_tests/git/mocked_data/status-deactivation-line-offset.json
+tests/execute_tests/git/mocked_data/status-deactivation-line-offset.out.txt
+tests/execute_tests/git/mocked_data/status-deactivation-line-offset.txt
+tests/execute_tests/git/mocked_data/status.json
+tests/execute_tests/git/mocked_data/status.out.txt
+tests/execute_tests/git/mocked_data/status.txt
+tests/execute_tests/ls/
+tests/execute_tests/ls/__init__.py
+tests/execute_tests/ls/test_ls.py
+tests/execute_tests/ls/mocked_data/
+tests/execute_tests/ls/mocked_data/filter-field-py.json
+tests/execute_tests/ls/mocked_data/filter-field-py.out.txt
+tests/execute_tests/ls/mocked_data/filter-field-py.txt
+tests/execute_tests/ls/mocked_data/filter-py.json
+tests/execute_tests/ls/mocked_data/filter-py.out.txt
+tests/execute_tests/ls/mocked_data/filter-py.txt
+tests/execute_tests/ls/mocked_data/normal-color.json
+tests/execute_tests/ls/mocked_data/normal-color.out.txt
+tests/execute_tests/ls/mocked_data/normal-color.txt
+tests/execute_tests/ls/mocked_data/normal.json
+tests/execute_tests/ls/mocked_data/normal.out.txt
+tests/execute_tests/ls/mocked_data/normal.txt
+tests/execute_tests/ls/mocked_data/numbers-from-profile-list-str.json
+tests/execute_tests/ls/mocked_data/numbers-from-profile-list-str.out.txt
+tests/execute_tests/ls/mocked_data/numbers-from-profile-list-str.txt
+tests/execute_tests/ls/mocked_data/numbers-from-profile-str.json
+tests/execute_tests/ls/mocked_data/numbers-from-profile-str.out.txt
+tests/execute_tests/ls/mocked_data/numbers-from-profile-str.txt
+tests/execute_tests/ls/mocked_data/numbers-from-profile.json
+tests/execute_tests/ls/mocked_data/numbers-from-profile.out.txt
+tests/execute_tests/ls/mocked_data/numbers-from-profile.txt
+tests/execute_tests/ls/mocked_data/yellow-executable-replace-groups-list.json
+tests/execute_tests/ls/mocked_data/yellow-executable-replace-groups-list.out.txt
+tests/execute_tests/ls/mocked_data/yellow-executable-replace-groups-list.txt
+tests/execute_tests/ls/mocked_data/yellow-executable-replace-groups.json
+tests/execute_tests/ls/mocked_data/yellow-executable-replace-groups.out.txt
+tests/execute_tests/ls/mocked_data/yellow-executable-replace-groups.txt
+tests/execute_tests/ls/mocked_data/yellow-executable.json
+tests/execute_tests/ls/mocked_data/yellow-executable.out.txt
+tests/execute_tests/ls/mocked_data/yellow-executable.txt
+tests/execute_tests/pylint/
+tests/execute_tests/pylint/__init__.py
+tests/execute_tests/pylint/test_pylint.py
+tests/execute_tests/pylint/mocked_data/
+tests/execute_tests/pylint/mocked_data/input-color.json
+tests/execute_tests/pylint/mocked_data/input-color.out.txt
+tests/execute_tests/pylint/mocked_data/input-color.txt
+tests/execute_tests/pylint/mocked_data/pylint.json
+tests/execute_tests/pylint/mocked_data/pylint.out.txt
+tests/execute_tests/pylint/mocked_data/pylint.txt
+tests/execute_tests/pylint/mocked_data/remove-input-color.json
+tests/execute_tests/pylint/mocked_data/remove-input-color.out.txt
+tests/execute_tests/pylint/mocked_data/remove-input-color.txt
+tests/execute_tests/rsync/
+tests/execute_tests/rsync/__init__.py
+tests/execute_tests/rsync/test_rsync.py
+tests/execute_tests/rsync/mocked_data/
+tests/execute_tests/rsync/mocked_data/groups-nums.json
+tests/execute_tests/rsync/mocked_data/groups-nums.out.txt
+tests/execute_tests/rsync/mocked_data/groups-nums.txt
+tests/execute_tests/rsync/mocked_data/groups-star.json
+tests/execute_tests/rsync/mocked_data/groups-star.out.txt
+tests/execute_tests/rsync/mocked_data/groups-star.txt
+tests/profileloader_tests/
+tests/profileloader_tests/test_profileloader.py
+tests/pycolor_tests/
+tests/pycolor_tests/test_pycolor.py
+tests/pycolor_tests/test_pycolor_debug.py
+tests/pycolor_tests/mocked_data/
+tests/pycolor_tests/mocked_data/df_color_alias.json
+tests/pycolor_tests/mocked_data/df_color_alias.out.txt
+tests/pycolor_tests/mocked_data/df_color_alias.txt
+tests/pycolor_tests/mocked_data/ls_numbers.json
+tests/pycolor_tests/mocked_data/ls_numbers.out.txt
+tests/pycolor_tests/mocked_data/ls_numbers.txt
+tests/pycolor_tests/mocked_data/version.json
+tests/pycolor_tests/pyformat_tests/
+tests/pycolor_tests/pyformat_tests/test_truncate.py
+tests/pycolor_tests/pyformat_tests/coloring_tests/
+tests/pycolor_tests/pyformat_tests/coloring_tests/test_colorstate.py
+tests/utils_tests/
+
+sent 17,956 bytes  received 3,341 bytes  14,198.00 bytes/sec
+total size is 1,011,941  speedup is 47.52 (DRY RUN)
