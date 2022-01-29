@@ -14,7 +14,7 @@
             "patterns": [
                 {
                     "expression": "^On branch (.*)$",
-                    "replace_groups": ["%C(bol;c)%Gc%Cz"]
+                    "replace_groups": ["%H(bol;c)"]
                 },
                 {
                     "activation_expression": "^Changes to be committed:$",
@@ -31,9 +31,10 @@
                         ")$"
                     ],
                     "replace_groups": {
-                        "new,mod": "%Cg%Gc%Cz",
-                        "del": "%Clr%Gc%Cz",
-                        "ren": "%Cly%Gc%Cz"
+                        "new": "%Hlg",
+                        "del": "%Hlr",
+                        "mod": "%Hg",
+                        "ren": "%Hly"
                     }
                 },
                 {
@@ -52,15 +53,15 @@
                         ")$"
                     ],
                     "replace_groups": {
-                        "new,del,mod,ren": "%Cr%Gc%Cz"
+                        "new,del,mod,ren": "%Hr"
                     }
                 },
                 {
                     "activation_expression": "^Untracked files:$",
                     "activation_expression_line_offset": 2,
                     "deactivation_expression": "^\\s*$",
-                    "expression": "^\\s+([^(].*)$",
-                    "replace_groups": ["%Cr%Gc%Cz"]
+                    "expression": ".*",
+                    "replace_groups": ["%Hr"]
                 }
             ]
         }

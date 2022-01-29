@@ -1,14 +1,15 @@
 {
     "profiles": [
         {
-            "name": "df",
+            "name": "free",
             "patterns": [
                 {
                     "activation_line": 2,
                     "separator": " +",
-                    "field": 1,
-                    "expression": "/([a-z]+)/([a-z0-9]+)",
-                    "replace_groups": ["%Hg", "%Hy"]
+                    "min_fields": 7,
+                    "max_fields": 7,
+                    "expression": "^[02468][0-9]*$",
+                    "replace_all": "%Hy"
                 }
             ]
         }

@@ -115,16 +115,25 @@ class ColorStateTest(unittest.TestCase):
                     colorstate.COLOR_FOREGROUND: '31',
                 }
             },
+            {
+                STRING: 4,
+                RESULT: ValueError()
+            }
         ]
 
         for entry in entries:
             string = entry[STRING]
+            result = entry[RESULT]
             with self.subTest(string=string):
-                state = colorstate.ColorState(string)
+                if not isinstance(result, Exception):
+                    state = colorstate.ColorState(string)
 
-                expected_result = colorstate.DEFAULT_COLOR_STATE.copy()
-                expected_result.update(entry[RESULT])
-                self.assertDictEqual(expected_result, state.color_state)
+                    expected_result = colorstate.DEFAULT_COLOR_STATE.copy()
+                    expected_result.update(entry[RESULT])
+                    self.assertDictEqual(expected_result, state.color_state)
+                else:
+                    with self.assertRaises(type(result)):
+                        colorstate.ColorState(string)
 
     def test_set_state_by_codes(self):
         entries = [

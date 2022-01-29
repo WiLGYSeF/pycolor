@@ -3,8 +3,13 @@ import io
 import os
 import unittest
 
+from freezegun import freeze_time
+
 from src.pycolor.execute import execute
+from tests.execute_tests.helpers import check_pycolor_execute
 from tests.testutils import textstream
+
+MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_data')
 
 class ExecuteTest(unittest.TestCase):
     def test_execute_cat(self):
@@ -71,3 +76,16 @@ class ExecuteTest(unittest.TestCase):
         self.assertTrue(did_callback)
         self.assertTrue(execute._is_buffer_empty(stream))
         self.assertEqual(test_data + b'\n', output.encode())
+
+    def test_replace_all(self):
+        check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'free_replace_all')
+
+    def test_replace_fields_list(self):
+        check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'free_replace_fields_list')
+
+    @freeze_time('1997-01-31 12:34:56')
+    def test_df_timestamp(self):
+        check_pycolor_execute(self, ['df', '-h'], MOCKED_DATA, 'df_timestamp')
+
+    def test_df_table(self):
+        check_pycolor_execute(self, ['df', '-h'], MOCKED_DATA, 'df_table')

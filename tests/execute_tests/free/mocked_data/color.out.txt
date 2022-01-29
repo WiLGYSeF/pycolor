@@ -1,3 +1,0 @@
-              total        used        free      shared  buff/cache   available
-Mem:        [34m8035480[0m     [31m2829472[0m     [32m1204284[0m       [34m93544[0m     [33m4001724[0m     [32m4893992[0m
-Swap:       [34m2097148[0m           [31m0[0m     [32m2097148[0m

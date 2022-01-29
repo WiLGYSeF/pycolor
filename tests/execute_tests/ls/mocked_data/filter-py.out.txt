@@ -1,7 +1,0 @@
-total 76
-drwxr-xr-x 2 wilgysef wilgysef  4096 Jan 26 17:34 __pycache__
-drwxr-xr-x 2 wilgysef wilgysef  4096 Jan 26 17:18 htmlcov
-drwxrwxr-x 3 wilgysef wilgysef  4096 Jan 26 16:40 pyformat
-drwxrwxr-x 2 wilgysef wilgysef  4096 Jan 20 14:50 test_scripts
-drwxrwxr-x 6 wilgysef wilgysef  4096 Jan 26 16:52 tests
--rw-rw-r-- 1 wilgysef wilgysef   186 Jan 26 14:44 todo.txt

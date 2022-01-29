@@ -5,6 +5,7 @@ Changes to be committed:
 	modified:   config/pattern.py
 	modified:   config/schema/pattern.json
 	deleted:    def.txt
+	renamed:    123.txt -> 456.txt
 
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)

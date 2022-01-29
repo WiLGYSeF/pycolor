@@ -4,7 +4,7 @@ import unittest
 from freezegun import freeze_time
 
 from tests.helpers import check_pycolor_main
-from tests.testutils import patch, patch_stdout
+from tests.testutils import patch_stdout, patch_stderr
 from src.pycolor import __main__ as pycolor
 
 CURPATH = os.path.dirname(os.path.realpath(__file__))
@@ -59,7 +59,7 @@ class PycolorTest(unittest.TestCase):
             )
 
     def test_ls_profile_fail(self):
-        with self.assertRaises(SystemExit), patch(pycolor, 'printerr', lambda x: None):
+        with self.assertRaises(SystemExit), patch_stderr():
             check_pycolor_main(self,
                 ['--profile', 'invalid', '--', 'ls', '-l'],
                 MOCKED_DATA,

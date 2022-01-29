@@ -1,10 +1,11 @@
 On branch [1;36mmaster[0m
 Changes to be committed:
   (use "git restore --staged <file>..." to unstage)
-	[32mnew file:   abc.txt[0m
+	[92mnew file:   abc.txt[0m
 	[32mmodified:   config/pattern.py[0m
 	[32mmodified:   config/schema/pattern.json[0m
 	[91mdeleted:    def.txt[0m
+	[93mrenamed:    123.txt -> 456.txt[0m
 
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
@@ -18,5 +19,5 @@ Changes not staged for commit:
 
 Untracked files:
   (use "git add <file>..." to include in what will be committed)
-	[31mtests/execute_tests/git/[0m
-	[31mtodo.txt[0m
+	tests/execute_tests/git/
+	todo.txt
