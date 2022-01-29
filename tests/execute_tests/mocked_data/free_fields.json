@@ -1,0 +1,27 @@
+{
+    "profiles": [
+        {
+            "name": "free",
+            "patterns": [
+                {
+                    "activation_line": 2,
+                    "separator": " +",
+                    "min_fields": 7,
+                    "max_fields": 7,
+                    "field": "2*4*2",
+                    "expression": "^[0-9.]+[GMK]$",
+                    "replace_all": "%Hg"
+                },
+                {
+                    "activation_line": 2,
+                    "separator": " +",
+                    "min_fields": 7,
+                    "max_fields": 7,
+                    "field": 10,
+                    "expression": "^[0-9.]+[GMK]$",
+                    "replace_all": "%Hb"
+                }
+            ]
+        }
+    ]
+}

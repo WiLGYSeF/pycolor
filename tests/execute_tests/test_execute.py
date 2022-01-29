@@ -83,6 +83,9 @@ class ExecuteTest(unittest.TestCase):
     def test_replace_fields_list(self):
         check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'free_replace_fields_list')
 
+    def test_fields(self):
+        check_pycolor_execute(self, ['free', '-h'], MOCKED_DATA, 'free_fields')
+
     @freeze_time('1997-01-31 12:34:56')
     def test_df_timestamp(self):
         check_pycolor_execute(self, ['df', '-h'], MOCKED_DATA, 'df_timestamp')
