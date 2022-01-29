@@ -7,7 +7,7 @@ from freezegun import freeze_time
 
 from tests.execute_tests.helpers import textstream
 from tests.helpers import check_pycolor_main
-from tests.testutils import patch
+from tests.testutils import patch, patch_stdout
 from src.pycolor import __main__ as pycolor
 
 CURPATH = os.path.dirname(os.path.realpath(__file__))
@@ -51,8 +51,7 @@ class PycolorTest(unittest.TestCase):
                 )
 
     def test_version(self):
-        stdout = textstream()
-        with patch(sys, 'stdout', stdout):
+        with patch_stdout() as stdout:
             check_pycolor_main(self, ['--version'], MOCKED_DATA, 'empty')
 
         stdout.seek(0)

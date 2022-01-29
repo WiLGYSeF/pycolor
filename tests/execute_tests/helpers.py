@@ -6,7 +6,7 @@ import typing
 from src.pycolor import __main__ as pycolor
 from src.pycolor.pycolor import pycolor_class
 from src.pycolor.pycolor.pycolor_class import Pycolor
-from tests.testutils import patch
+from tests.testutils import patch, textstream
 
 def check_pycolor_execute(self,
     cmd: typing.List[str],
@@ -155,9 +155,6 @@ def execute_patch(obj, stdout_stream, stderr_stream):
 
     with patch(getattr(obj, 'subprocess'), 'Popen', popen):
         yield
-
-def textstream() -> io.TextIOWrapper:
-    return io.TextIOWrapper(io.BytesIO())
 
 def open_fstream(fname: str) -> typing.Optional[typing.BinaryIO]:
     try:
