@@ -16,7 +16,7 @@
     - [Debug Colors](#debug-colors).
     - [Creating Profiles](#creating-profiles).
 6. [Limitations](#limitations).
-6. [Known Issues](#known-issues).
+7. [Known Issues](#known-issues).
 
 A Python program that executes commands to perform real-time terminal output coloring using ANSI color codes.
 Color formatting can be added to program output using JSON configuration files and regular expressions to improve readability of the output.
