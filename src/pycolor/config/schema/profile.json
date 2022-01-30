@@ -43,7 +43,7 @@
         },
 
         "arg_patterns": {
-            "description": "a list of patterns that must match command arguments",
+            "description": "a list of `argpattern`s that must match command arguments",
             "type": "array",
             "default": []
         },
@@ -97,7 +97,7 @@
         },
 
         "from_profiles": {
-            "description": "include the patterns from these named profiles",
+            "description": "include the patterns from these named profiles, see `fromprofile`",
             "type": ["array", "object", "string"],
             "examples": [
                 "other_profile",
@@ -113,7 +113,7 @@
         },
 
         "patterns": {
-            "description": "a list of patterns",
+            "description": "a list of `pattern`s",
             "type": "array",
             "default": []
         }
