@@ -3,4 +3,3 @@ dist/
 htmlcov/
 *.egg-info/
 .coverage
-run-tests
