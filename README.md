@@ -16,6 +16,7 @@
     - [Debug Colors](#debug-colors).
     - [Creating Profiles](#creating-profiles).
 6. [Limitations](#limitations).
+6. [Known Issues](#known-issues).
 
 A Python program that executes commands to perform real-time terminal output coloring using ANSI color codes.
 Color formatting can be added to program output using JSON configuration files and regular expressions to improve readability of the output.
@@ -60,6 +61,18 @@ alias rsync='pycolor rsync'
 
 [Sample rsync configuration file.](https://github.com/WiLGYSeF/pycolor/blob/master/src/pycolor/config/sample-config/rsync.json)
 
+----
+
+Sample rclone copy output:
+
+**Before:**
+
+![sample rclone output](https://raw.githubusercontent.com/WiLGYSeF/pycolor/master/docs/images/sample-rclone-output.png)
+
+**After:**
+
+![sample colored rclone output](https://raw.githubusercontent.com/WiLGYSeF/pycolor/master/docs/images/sample-rclone-output-colored.png)
+
 # Configuration
 
 Pycolor will first try to load configuration from `~/.pycolor.json` before loading files found in `~/.pycolor.d/` in filename order.
@@ -70,7 +83,7 @@ Matching patterns are applied first-to-last for each profile.
 
 JSON schema files that describe the config format can be found in [`/config/schema/`](https://github.com/WiLGYSeF/pycolor/blob/master/src/pycolor/config/schema/profile.json).
 
-Sample config files can be found in [`the sample config`](https://github.com/WiLGYSeF/pycolor/blob/master/src/pycolor/config/sample-config/).
+Sample config files can be found [`here`](https://github.com/WiLGYSeF/pycolor/blob/master/src/pycolor/config/sample-config/) and will be automatically copied to `~/.pycolor.d/` when run, if it does not exist.
 
 # Formatting Strings
 
@@ -87,7 +100,7 @@ These are valid formats:
 | [G](#groups) | group | Regex group formatter |
 | [H](#context-aware-color-alias-format) | colorctx | Context-aware field/group color alias |
 |  | [align](#alignment) | Alignment formatter |
-| [T](#truncate) | trunc | Truncation formatter |
+|  | [trunc](#truncate) | Truncation formatter |
 
 Formatting strings can written like `%(color:red)`, `%C(red)`, or `%Cr`.
 `%C(red)hello` formats the string `hello` in red.
@@ -112,7 +125,7 @@ To colorize output through a replace pattern use `%(color:<color value>)`, `%C(<
 | italic | ita | `\e[3m` | Italicize characters |
 | underline | underlined, ul, und | `\e[4m` | Underline characters |
 | blink | bli | `\e[5m` | Blink characters |
-| invert | reverse, inv, rev | `\e[7m` | Invert characters |
+| invert | reverse, inv, rev | `\e[7m` | Invert background and foreground colors |
 | hidden | conceal, hid, con | `\e[8m` | Hide characters |
 | strikethrough | strike, str, crossedout, crossed, cro | `\e[9m` | Strikethrough characters |
 | black | k | `\e[30m` | Black color |
@@ -132,20 +145,20 @@ To colorize output through a replace pattern use `%(color:<color value>)`, `%C(<
 | lightblue | lb | `\e[94m` | Light blue color |
 | lightmagenta | lm | `\e[95m` | Light magenta color |
 | lightcyan | lc | `\e[96m` | Light cyan color |
-| white | lightgrey,  le, w | `\e[97m` | White color |
+| white | lightgrey, le, w | `\e[97m` | White color |
 
 [Click here for a list of all attributes and color codes](https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_%28Select_Graphic_Rendition%29_parameters).
 
 ### Modifier Characters
 
-You can select multiple color values by separating them with `;` (must be wrapped in parentheses). e.g. `%C(bold;red)`.
+You can select multiple color values by separating them with `;` (must be wrapped in parentheses). e.g. `%(color:bold;red)` or `%C(bold;red)`.
 
-If a `^` is added before a color (e.g. `%C(^red)`), then it is used to set the background color instead.
-The color formatting for bold, red-on-yellow text can be written as `%C(bold;red;^yellow)hello`, or `%C(bol;r;^y)hello`, which will produce `\e[1;31;43mhello`.
+If `^` is added before a color (e.g. `%C(^red)`), then it is used to set the background color instead.
+The color formatting for bold, red-on-yellow text can be written as `%C(bold;red;^yellow)hello%C(z)`, or `%C(bol;r;^y)hello%Cz`, which will produce `\e[1;31;43mhello\e[0m`.
 
-If a `^` is added before a style (e.g. `%C(^italic)` produces `\e[23m`), then the style is turned off.
+If `^` is added before a style (e.g. `%C(^italic)` produces `\e[23m`), then the style is turned off.
 
-Note that turning off bold (`%C(^bold)` i.e. `\e[21m`) instead turns on double underline for some terminals.
+*Note that turning off bold (`%C(^bold)` i.e. `\e[21m`) instead turns on double underline for some terminals.*
 
 ### Special Colors
 
@@ -166,7 +179,6 @@ If for some reason you would like to use raw color codes, `%C(raw1;3;36)` will p
 If the pattern's `separator` property is set, then the fields and their separators can be referenced in the format string.
 
 To get a field's text, use `%F<field number>`.
-If an output line is `this is a test`, and the pattern `separator` property is ` ` (a space), then the format string `%F2 %F1 %F3 %F4` will format to `is this a test` for that line.
 
 To get the field separator string, use `%Fs<field number>`. This will return the field separator string that precedes that field number.
 (e.g. `%Fs3` will get the field separator string that comes before the third field `%F3`).
@@ -193,7 +205,8 @@ Field formats support negative indexing, so `%F(-1)_%F(-2)` will format to `f_e`
 
 ### Field Ranges
 
-Giving a range of fields is possible using the `*` character, where `%F(<start range>*<end range>)`.
+Giving a range of fields is possible using the `*` character, in the format `%F(<start range>*<end range>)`.
+
 Using the same example as above:
 
 | Field Format | Value |
@@ -214,34 +227,30 @@ Using the previous input as an example, `%F(*4,_)` formats to  `a_b_c_d`.
 Changing only the matched fields is possible using pattern's `replace-fields` property.
 Any fields not explicitly set will be left alone.
 
+Use `%Fc` to specify the current field that applies to the index/string.
+
 It can be a list of format strings, where the format string at index `i` is applied to field number `i + 1`.
 
 ```
-...
-
-'replace_fields': ["%Cg%Fc%Cz", "%Cr%Fc%Cz", "%Cg%Fc%Cz"],
-
-...
+'replace_fields': ["%Cg%Fc%Cz", "%Cr%Fc%Cz", "%Cg%Fc%Cz"]
 ```
 
 It can also be an object with the keys as field numbers and the value as the format value.
-Keys may be comma-separated numbers, or even ranges (`"<start>*<end>"`).
+Keys may be comma-separated numbers, or even ranges (`"<start>*<end>"` or `"<start>*<end>*<step>"`).
 
 ```
-...
-
 'replace_fields': {
     "1,3": "%Cg%Fc%Cz",
-    "2": "%Cr%Fc%Cz"
-},
-
-...
+    "2": "%Cr%Fc%Cz",
+    "4*6": "%Cb%Fc%Cz"
+}
 ```
 
 ## Groups
 
 Regex groups can be referenced with the format: `%G<group number or name>`.
-`%G0` is the entire matching text from `expression`. `%G1` is the first matching group, `%G2` is the second, etc. If the regex group is named, it can also be referenced (e.g. `%G(myregexgroup)`).
+`%G0` is the entire matching text from `expression`. `%G1` is the first matching group, `%G2` is the second, etc.
+If the regex group is named, it can also be referenced by name (e.g. `%G(myregexgroup)`).
 
 ### Group Incrementor
 
@@ -254,29 +263,23 @@ Note that if a named group `n` is defined in the expression, then the special in
 Changing only the matched regex groups is possible using pattern's `replace-groups` property.
 Any groups not explicitly set will be left alone.
 
+Use `%Gc` to specify the current group that applies to the index/strin.
+
 It can be a list of format strings, where the format string at index `i` is applied to group number `i + 1`.
 
 ```
-...
-
-'replace_groups': ["%Cg%Gc%Cz", "%Cr%Gc%Cz", "%Cg%Gc%Cz"],
-
-...
+'replace_groups': ["%Cg%Gc%Cz", "%Cr%Gc%Cz", "%Cg%Gc%Cz"]
 ```
-
 
 It can also be an object with the keys as group numbers and the value as the format value.
-Keys may be comma-separated numbers, or even ranges (`"<start>*<end>"`).
+Keys may be comma-separated numbers, or even ranges (`"<start>*<end>"` or `"<start>*<end>*<step>"`).
 
 ```
-...
-
 'replace_groups': {
     "1,3": "%Cg%Gc%Cz",
-    "2": "%Cr%Gc%Cz"
-},
-
-...
+    "2": "%Cr%Gc%Cz",
+    "4*6": "%Cb%Fc%Cz"
+}
 ```
 
 ## Context-Aware Color Alias Format
@@ -334,7 +337,7 @@ Truncate the value of a path in field 1 to 16 chars, inserting `...` if necessar
 
 ## Debug Colors
 
-To check the supported color codes of your terminal, run `pycolor --debug-color` to print all the labelled ANSI color codes.
+To check the supported color codes of your terminal, run `pycolor --debug-color` to print all the available ANSI color codes.
 Using `--debug-color` will show the results of the text styles, 16-color output, 8-bit color support, and 24-bit color support.
 
 Output of `pycolor --debug-color` run on Windows PowerShell (24-bit colors are not shown in this image for brevity):
@@ -345,7 +348,7 @@ Output of `pycolor --debug-color` run on Windows PowerShell (24-bit colors are n
 
 ## Creating Profiles
 
-To create profiles quickly and efficiently, pycolor has a debug mode when running commands that shows the raw output of the command.
+Pycolor has a debug mode when running commands that shows the raw output of the command.
 Debug mode is turned on using `-v` or `--verbose` and can be used multiple times to increase the debug level.
 
 Debug levels (previous levels are applied to the current):
@@ -364,4 +367,9 @@ Using debug level 3 on `free -h` with a profile loaded:
 # Limitations
 
 - Programs that expect interactive standard input may not work properly.
-- Interactive programs that rewrite parts of the screen may cause unexpected behavior.
+- Programs that rewrite parts of the screen may cause unexpected behavior.
+
+# Known Issues
+
+- A fatal Python error can occur when attempting to acquire a lock for stdout at interpreter shutdown, caused when the command pycolor is running terminates, but output has not yet fully been written to the screen.
+  - It has only been observed when running pycolor inside of tmux while in copy-mode.
