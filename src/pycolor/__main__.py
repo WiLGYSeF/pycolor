@@ -36,13 +36,16 @@ def main(
     parser, argspace, cmd_args = arguments.get_args(args)
     read_stdin = len(cmd_args) == 0 or argspace.stdin
 
-    if (
-        config.SAMPLE_CONFIG_DIR is not None
-        and CONFIG_DIR is not None
-        and os.path.isdir(config.SAMPLE_CONFIG_DIR)
-        and not os.path.exists(CONFIG_DIR)
-    ):
-        shutil.copytree(config.SAMPLE_CONFIG_DIR, CONFIG_DIR)
+    try:
+        if (
+            config.SAMPLE_CONFIG_DIR is not None
+            and CONFIG_DIR is not None
+            and os.path.isdir(config.SAMPLE_CONFIG_DIR)
+            and not os.path.exists(CONFIG_DIR)
+        ):
+            shutil.copytree(config.SAMPLE_CONFIG_DIR, CONFIG_DIR)
+    except:
+        pass
 
     if argspace.version:
         print(__version__)
