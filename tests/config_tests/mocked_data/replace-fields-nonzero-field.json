@@ -1,0 +1,14 @@
+{
+    "profiles": [
+        {
+            "name": "my_command",
+            "patterns": [
+                {
+                    "separator": " ",
+                    "field": 3,
+                    "replace_fields": [""]
+                }
+            ]
+        }
+    ]
+}

@@ -2,6 +2,7 @@
     "profiles": [
         {
             "name": "pylint",
+            "tty": true,
             "patterns": [
                 {
                     "expression": "^(\\*+ Module) (.*)$",
@@ -34,7 +35,7 @@
                 },
                 {
                     "expression": "\\(fixme\\)",
-                    "replace": "(%C(y)fix-me%Ce)%Cz"
+                    "replace": "(%C(y)fix-me%Cprev)"
                 },
                 {
                     "expression": [

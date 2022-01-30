@@ -1,3 +1,0 @@
-[33m/dev/nvme0n1p1[0m: [37mUUID[0m="[36ma52f-7e68[0m" [37mTYPE[0m="[36mvfat[0m" [37mPARTLABEL[0m="[36mEFI System Partition[0m" [37mPARTUUID[0m="[36m248a1be8-754c-494d-bfb7-7dfcf993a832[0m"
-[33m/dev/nvme0n1p2[0m: [37mUUID[0m="[36me7a425a9-3def-46b9-8caf-3606ac28df15[0m" [37mTYPE[0m="[36mext4[0m" [37mPARTUUID[0m="[36m2f669b33-41e8-4955-a37d-cd9b4270ecef[0m"
-[33m/dev/nvme0n1p3[0m: [37mUUID[0m="[36mda8faa69-4efd-4b0b-afd2-e55f101ed7f6[0m" [37mTYPE[0m="[36mext4[0m" [37mPARTUUID[0m="[36m1189bedc-2c8d-44f5-ac18-f96433249ad9[0m"

@@ -1,0 +1,17 @@
+{
+    "profiles": [
+        {
+            "name": "free",
+            "patterns": [
+                {
+                    "activation_line": 2,
+                    "separator": " +",
+                    "min_fields": 7,
+                    "max_fields": 7,
+                    "expression": "^[02468][0-9]*$",
+                    "replace_all": "%Hy"
+                }
+            ]
+        }
+    ]
+}

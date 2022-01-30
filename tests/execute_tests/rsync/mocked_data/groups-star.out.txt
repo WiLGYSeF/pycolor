@@ -1,6 +1,0 @@
-sending incremental file list
-video.mp4
-        [32m62.56M[0m [96m100%[0m  [94m5.51MB/s[0m    [34m0:00:13[0m (xfr#1, to-chk=1/4)
-
-sent [32m62.56M[0m bytes  received [32m28.5K[0m bytes  [32m4.57M[0m bytes/sec
-total size is [32m283M[0m  speedup is [32m2.01[0m

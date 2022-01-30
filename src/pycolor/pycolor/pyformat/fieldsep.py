@@ -1,7 +1,5 @@
 import typing
 
-from .context import Context
-
 CHAR_SEPARATOR = 's'
 
 def get_range(string: str, length: int) -> typing.Tuple[int, int, int]:

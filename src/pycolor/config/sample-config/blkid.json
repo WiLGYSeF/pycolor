@@ -15,10 +15,7 @@
                 },
                 {
                     "expression": "([A-Z_]+)=\"([^\"]+)\"",
-                    "replace_groups": [
-                        "%Hw",
-                        "%Hc"
-                    ]
+                    "replace_groups": ["%Hw", "%Hc"]
                 }
             ]
         }

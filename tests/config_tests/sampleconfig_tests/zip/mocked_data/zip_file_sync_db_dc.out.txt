@@ -1,0 +1,330 @@
+[32m  0/543 [0m[36m[   0/987K] [0mupdating: [1;32msrc/pycolor/[0m (stored [96m0%[0m)
+[32m  1/542 [0m[36m[   0/987K] [0mupdating: [1;32mtests/[0m (stored [96m0%[0m)
+[32m  2/541 [0m[36m[   0/987K] [0mupdating: [1;32msrc/pycolor/arguments.py[0m (deflated [96m71%[0m)
+[32m  3/540 [0m[36m[5.7K/981K] [0mupdating: [1;32msrc/pycolor/config/[0m (stored [96m0%[0m)
+[32m  7/536 [0m[36m[ 17K/969K] [0mupdating: [1;32msrc/pycolor/config/profile.py[0m (deflated [96m74%[0m)
+[32m  8/535 [0m[36m[ 21K/966K] [0mupdating: [1;32msrc/pycolor/config/sample-config/[0m (stored [96m0%[0m)
+[32m 10/533 [0m[36m[ 21K/965K] [0mupdating: [1;32msrc/pycolor/config/sample-config/blkid.json[0m (deflated [96m66%[0m)
+[32m 17/526 [0m[36m[ 33K/953K] [0mupdating: [1;32msrc/pycolor/config/sample-config/pylint.json[0m (deflated [96m74%[0m)
+[32m 20/523 [0m[36m[ 39K/947K] [0mupdating: [1;32msrc/pycolor/config/sample-config/zip.json[0m (deflated [96m73%[0m)
+[32m 21/522 [0m[36m[ 41K/946K] [0mupdating: [1;32msrc/pycolor/config/schema/[0m (stored [96m0%[0m)
+[32m 25/518 [0m[36m[ 47K/939K] [0mupdating: [1;32msrc/pycolor/config/schema/profile.json[0m (deflated [96m79%[0m)
+[32m 27/516 [0m[36m[ 54K/932K] [0mupdating: [1;32msrc/pycolor/config/__pycache__/[0m (stored [96m0%[0m)
+[32m 38/505 [0m[36m[ 77K/909K] [0mupdating: [1;32msrc/pycolor/config/__pycache__/profile.cpython-38.pyc[0m (deflated [96m46%[0m)
+[32m 43/500 [0m[36m[ 90K/896K] [0mupdating: [1;32msrc/pycolor/execute/[0m (stored [96m0%[0m)
+[32m 44/499 [0m[36m[ 90K/896K] [0mupdating: [1;32msrc/pycolor/execute/execute.py[0m (deflated [96m71%[0m)
+[32m 47/496 [0m[36m[101K/886K] [0mupdating: [1;32msrc/pycolor/execute/__pycache__/[0m (stored [96m0%[0m)
+[32m 48/495 [0m[36m[101K/886K] [0mupdating: [1;32msrc/pycolor/execute/__pycache__/execute.cpython-38.pyc[0m (deflated [96m50%[0m)
+[32m 51/492 [0m[36m[111K/875K] [0mupdating: [1;32msrc/pycolor/pycolor/[0m (stored [96m0%[0m)
+[32m 54/489 [0m[36m[132K/854K] [0mupdating: [1;32msrc/pycolor/pycolor/pycolor_class.py[0m (deflated [96m75%[0m)
+[32m 55/488 [0m[36m[143K/843K] [0mupdating: [1;32msrc/pycolor/pycolor/pyformat/[0m (stored [96m0%[0m)
+[32m 67/476 [0m[36m[175K/812K] [0mupdating: [1;32msrc/pycolor/pycolor/pyformat/fieldsep.py[0m (deflated [96m64%[0m)
+[32m 68/475 [0m[36m[177K/810K] [0mupdating: [1;32msrc/pycolor/pycolor/pyformat/__init__.py[0m (deflated [96m77%[0m)
+[32m 69/474 [0m[36m[188K/798K] [0mupdating: [1;32msrc/pycolor/pycolor/pyformat/__pycache__/[0m (stored [96m0%[0m)
+[32m 75/468 [0m[36m[201K/785K] [0mupdating: [1;32msrc/pycolor/pycolor/pyformat/__pycache__/fieldsep.cpython-38.pyc[0m (deflated [96m47%[0m)
+[32m 78/465 [0m[36m[209K/777K] [0mupdating: [1;32msrc/pycolor/pycolor/pyformat/__pycache__/__init__.cpython-38.pyc[0m (deflated [96m51%[0m)
+[32m 81/462 [0m[36m[224K/762K] [0mupdating: [1;32msrc/pycolor/pycolor/__pycache__/[0m (stored [96m0%[0m)
+[32m 84/459 [0m[36m[241K/746K] [0mupdating: [1;32msrc/pycolor/pycolor/__pycache__/pycolor_class.cpython-38.pyc[0m (deflated [96m54%[0m)
+[32m107/436 [0m[36m[270K/716K] [0mupdating: [1;32msrc/pycolor/__main__.py[0m (deflated [96m71%[0m)
+[32m108/435 [0m[36m[275K/711K] [0mupdating: [1;32msrc/pycolor/__pycache__/[0m (stored [96m0%[0m)
+[32m110/433 [0m[36m[285K/701K] [0mupdating: [1;32msrc/pycolor/__pycache__/arguments.cpython-38.pyc[0m (deflated [96m49%[0m)
+[32m126/417 [0m[36m[338K/648K] [0mupdating: [1;32msrc/pycolor/__pycache__/__main__.cpython-38.pyc[0m (deflated [96m43%[0m)
+[32m127/416 [0m[36m[342K/644K] [0mupdating: [1;32mtests/config_tests/[0m (stored [96m0%[0m)
+[32m128/415 [0m[36m[342K/644K] [0mupdating: [1;32mtests/config_tests/mocked_data/[0m (stored [96m0%[0m)
+[32m196/347 [0m[36m[375K/611K] [0mupdating: [1;32mtests/config_tests/sampleconfig_tests/pylint/[0m (stored [96m0%[0m)
+[32m201/342 [0m[36m[378K/609K] [0mupdating: [1;32mtests/config_tests/sampleconfig_tests/rsync/[0m (stored [96m0%[0m)
+[32m208/335 [0m[36m[381K/605K] [0mupdating: [1;32mtests/config_tests/sampleconfig_tests/zip/mocked_data/[0m (stored [96m0%[0m)
+[32m209/334 [0m[36m[381K/605K] [0mupdating: [1;32mtests/config_tests/sampleconfig_tests/zip/mocked_data/zip.txt[0m (deflated [96m91%[0m)
+[32m210/333 [0m[36m[421K/566K] [0mupdating: [1;32mtests/config_tests/sampleconfig_tests/zip/test_zip.py[0m (deflated [96m61%[0m)
+[32m212/331 [0m[36m[422K/565K] [0mupdating: [1;32mtests/config_tests/sampleconfig_tests/zip/__pycache__/[0m (stored [96m0%[0m)
+[32m215/328 [0m[36m[424K/562K] [0mupdating: [1;32mtests/config_tests/sampleconfig_tests/zip/__pycache__/test_zip.cpython-38.pyc[0m (deflated [96m44%[0m)
+[32m222/321 [0m[36m[429K/557K] [0mupdating: [1;32mtests/config_tests/test_config.py[0m (deflated [96m64%[0m)
+[32m224/319 [0m[36m[433K/553K] [0mupdating: [1;32mtests/config_tests/test_profile.py[0m (deflated [96m59%[0m)
+[32m226/317 [0m[36m[434K/552K] [0mupdating: [1;32mtests/config_tests/__pycache__/[0m (stored [96m0%[0m)
+[32m230/313 [0m[36m[438K/548K] [0mupdating: [1;32mtests/config_tests/__pycache__/test_config.cpython-38.pyc[0m (deflated [96m46%[0m)
+[32m235/308 [0m[36m[447K/539K] [0mupdating: [1;32mtests/config_tests/__pycache__/test_profile.cpython-38.pyc[0m (deflated [96m44%[0m)
+[32m240/303 [0m[36m[450K/536K] [0mupdating: [1;32mtests/execute_tests/[0m (stored [96m0%[0m)
+[32m241/302 [0m[36m[450K/536K] [0mupdating: [1;32mtests/execute_tests/helpers.py[0m (deflated [96m74%[0m)
+[32m242/301 [0m[36m[455K/531K] [0mupdating: [1;32mtests/execute_tests/test_execute.py[0m (deflated [96m75%[0m)
+[32m245/298 [0m[36m[463K/524K] [0mupdating: [1;32mtests/execute_tests/__pycache__/[0m (stored [96m0%[0m)
+[32m247/296 [0m[36m[466K/520K] [0mupdating: [1;32mtests/exe[0mcute_tests/__pycache__/helpers.cpython-38.pyc (deflated 50%)
+[32m251/292 [0m[36m[478K/508K] [0mupdating: [1;32mtests/execute_tests/__pycache__/test_execute.cpython-38.pyc[0m (deflated [96m50%[0m)
+[32m259/284 [0m[36m[495K/492K] [0mupdating: [1;32mtests/helpers.py[0m (deflated [96m69%[0m)
+[32m260/283 [0m[36m[497K/489K] [0mupdating: [1;32mtests/profileloader_tests/[0m (stored [96m0%[0m)
+[32m271/272 [0m[36m[504K/482K] [0mupdating: [1;32mtests/profileloader_tests/test_profileloader.py[0m (deflated [96m88%[0m)
+[32m273/270 [0m[36m[513K/473K] [0mupdating: [1;32mtests/profileloader_tests/__pycache__/[0m (stored [96m0%[0m)
+[32m274/269 [0m[36m[513K/473K] [0mupdating: [1;32mtests/profileloader_tests/__pycache__/test_profileloader.cpython-38.pyc[0m (deflated [96m64%[0m)
+[32m276/267 [0m[36m[520K/466K] [0mupdating: [1;32mtests/pycolor_tests/[0m (stored [96m0%[0m)
+[32m277/266 [0m[36m[520K/466K] [0mupdating: [1;32mtests/pycolor_tests/mocked_data/[0m (stored [96m0%[0m)
+[32m329/214 [0m[36m[618K/368K] [0mupdating: [1;32mtests/pycolor_tests/pyformat_tests/[0m (stored [96m0%[0m)
+[32m330/213 [0m[36m[618K/368K] [0mupdating: [1;32mtests/pycolor_tests/pyformat_tests/coloring_tests/[0m (stored [96m0%[0m)
+[32m333/210 [0m[36m[633K/353K] [0mupdating: [1;32mtests/pycolor_tests/pyformat_tests/coloring_tests/test_colorstate.py[0m (deflated [96m86%[0m)
+[32m335/208 [0m[36m[641K/346K] [0mupdating: [1;32mtests/pycolor_tests/pyformat_tests/coloring_tests/__pycache__/[0m (stored [96m0%[0m)
+[32m338/205 [0m[36m[649K/337K] [0mupdating: [1;32mtests/pycolor_tests/pyformat_tests/coloring_tests/__pycache__/test_colorstate.cpython-38.pyc[0m (deflated [96m52%[0m)
+[32m345/198 [0m[36m[669K/317K] [0mupdating: [1;32mtests/pycolor_tests/pyformat_tests/test_truncate.py[0m (deflated [96m86%[0m)
+[32m347/196 [0m[36m[672K/314K] [0mupdating: [1;32mtests/pycolor_tests/pyformat_tests/__pycache__/[0m (stored [96m0%[0m)
+[32m364/179 [0m[36m[711K/275K] [0mupdating: [1;32mtests/pycolor_tests/pyformat_tests/__pycache__/test_truncate.cpython-38.pyc[0m (deflated [96m61%[0m)
+[32m369/174 [0m[36m[716K/271K] [0mupdating: [1;32mtests/pycolor_tests/test_pycolor.py[0m (deflated [96m77%[0m)
+[32m370/173 [0m[36m[719K/268K] [0mupdating: [1;32mtests/pycolor_tests/test_pycolor_debug.py[0m (deflated [96m75%[0m)
+[32m372/171 [0m[36m[723K/263K] [0mupdating: [1;32mtests/pycolor_tests/__pycache__/[0m (stored [96m0%[0m)
+[32m373/170 [0m[36m[723K/263K] [0mupdating: [1;32mtests/pycolor_tests/__pycache__/test_pycolor.cpython-38.pyc[0m (deflated [96m59%[0m)
+[32m376/167 [0m[36m[732K/254K] [0mupdating: [1;32mtests/pycolor_tests/__pycache__/test_pycolor_debug.cpython-38.pyc[0m (deflated [96m55%[0m)
+[32m388/155 [0m[36m[753K/233K] [0mupdating: [1;32mtests/testutils.py[0m (deflated [96m62%[0m)
+[32m390/153 [0m[36m[763K/223K] [0mupdating: [1;32mtests/utils_tests/[0m (stored [96m0%[0m)
+[32m398/145 [0m[36m[772K/214K] [0mupdating: [1;32mtests/__pycache__/[0m (stored [96m0%[0m)
+[32m400/143 [0m[36m[773K/213K] [0mupdating: [1;32mtests/__pycache__/helpers.cpython-38.pyc[0m (deflated [96m39%[0m)
+[32m402/141 [0m[36m[775K/211K] [0mupdating: [1;32mtests/__pycache__/testutils.cpython-38.pyc[0m (deflated [96m28%[0m)
+[32m   /        [0m[36m /      [0mdeleting: [1;31msrc/pycolor/config/sample-config/coverage.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31msrc/pycolor/config/sample-config/git.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31msrc/pycolor/config/sample-config/iwconfig.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31msrc/pycolor/config/sample-config/lsusb.json[0m
+[32m450/ 93 [0m[36m[881K/105K] [0mupdating: [1;32mtests/execute_tests/blkid/[0m (stored [96m0%[0m)
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/blkid/mocked_data/[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-after-prev.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-after-prev.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-after-prev.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-after.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-after.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-after.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-before-prev.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-before-prev.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-before-prev.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-before.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-before.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/blkid/mo[0mcked_data/replace-groups-list-overlap-before.txt
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/blkid/mocked_data/replace-groups-list.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/blkid/mocked_data/replace-groups-list.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/blkid/mocked_data/replace-groups-list.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/blkid/test_blkid.py[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/blkid/__init__.py[0m
+[32m451/ 92 [0m[36m[881K/105K] [0mupdating: [1;32mtests/execute_tests/df/[0m (stored [96m0%[0m)
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/color-fields-activation-line-list.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/color-fields-activation-line-list.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/color-fields-activation-line-list.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/color-fields-activation-line.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/color-fields-activation-line.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/color-fields-activation-line.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/color-fields-list.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/color-fields-list.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/color-fields-list.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/color-fields-pad.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/color-fields-pad.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/color-fields-pad.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/color-fields.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/color-fields.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/color-fields.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/field-replace-groups.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/field-replace-groups.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/field-replace-groups.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/field-replace.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/field-replace.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/field-replace.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/no-color-fields-T.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/no-color-fields-T.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/no-color-fields-T.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/normal.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/normal.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/normal.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/numbers-field.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/numbers-field.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/numbers-field.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/table.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/table.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/table.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/timestamp.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/timestamp.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/mocked_data/timestamp.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/test_df.py[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/df/__init__.py[0m
+[32m452/ 91 [0m[36m[881K/105K] [0mupdating: [1;32mtests/execute_tests/free/[0m (stored [96m0%[0m)
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/color-fields-replac[0me-all.json
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/color-fields-replace-all.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/color-fields-replace-all.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/color-human.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/color-human.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/color-human.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/color-replace-fields-list.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/color-replace-fields-list.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/color-replace-fields-list.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/color-replace-fields.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/color-replace-fields.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/color-replace-fields.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/color.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/color.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/color.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/invalid-option.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/invalid-option.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/invalid-option.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/replace-fields-all.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/replace-fields-all.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/replace-fields-all.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/replace-groups-all.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/replace-groups-all.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/mocked_data/replace-groups-all.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/test_free.py[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/free/__init__.py[0m
+[32m453/ 90 [0m[36m[881K/105K] [0mupdating: [1;32mtests/execute_tests/git/[0m (stored [96m0%[0m)
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/git/mocked_data/[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/git/mocked_data/push.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/git/mocked_data/push.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/git/mocked_data/push.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/git/mocked_data/status-deactivation-line-offset.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/git/mocked_data/status-deactivation-line-offset.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/git/mocked_data/status-deactivation-line-offset.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/git/mocked_data/status.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/git/mocked_data/status.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/git/mocked_data/status.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/git/test_git.py[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/git/__init__.py[0m
+[32m454/ 89 [0m[36m[881K/105K] [0mupdating: [1;32mtests/execute_tests/ls/[0m (stored [96m0%[0m)
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/filter-field-py.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/filter-field-py.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/filter-field-py.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/filter-py.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/filter-py.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/filter-py.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/normal-color.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/normal-color.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31m[0mtests/execute_tests/ls/mocked_data/normal-color.txt
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/normal.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/normal.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/normal.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/numbers-from-profile-list-str.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/numbers-from-profile-list-str.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/numbers-from-profile-list-str.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/numbers-from-profile-str.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/numbers-from-profile-str.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/numbers-from-profile-str.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/numbers-from-profile.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/numbers-from-profile.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/numbers-from-profile.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/yellow-executable-replace-groups-list.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/yellow-executable-replace-groups-list.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/yellow-executable-replace-groups-list.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/yellow-executable-replace-groups.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/yellow-executable-replace-groups.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/yellow-executable-replace-groups.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/yellow-executable.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/yellow-executable.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/mocked_data/yellow-executable.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/test_ls.py[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/ls/__init__.py[0m
+[32m455/ 88 [0m[36m[881K/105K] [0mupdating: [1;32mtests/execute_tests/pylint/[0m (stored [96m0%[0m)
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/pylint/mocked_data/[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/pylint/mocked_data/input-color.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/pylint/mocked_data/input-color.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/pylint/mocked_data/input-color.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/pylint/mocked_data/pylint.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/pylint/mocked_data/pylint.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/pylint/mocked_data/pylint.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/pylint/mocked_data/remove-input-color.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/pylint/mocked_data/remove-input-color.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/pylint/mocked_data/remove-input-color.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/pylint/test_pylint.py[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/pylint/__init__.py[0m
+[32m456/ 87 [0m[36m[881K/105K] [0mupdating: [1;32mtests/execute_tests/rsync/[0m (stored [96m0%[0m)
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/rsync/mocked_data/[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/rsync/mocked_data/groups-nums.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/rsync/mocked_data/groups-nums.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/rsync/mocked_data/groups-nums.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/rsync/mocked_data/groups-star.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/rsync/mocked_data/groups-star.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/rsync/mocked_data/groups-star.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/rsync/test_rsync.py[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/execute_tests/rsync/__init__.py[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/pycolor_tests/mocked_dat[0ma/df_color_alias.json
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/pycolor_tests/mocked_data/df_color_alias.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/pycolor_tests/mocked_data/df_color_alias.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/pycolor_tests/mocked_data/ls_numbers.json[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/pycolor_tests/mocked_data/ls_numbers.out.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/pycolor_tests/mocked_data/ls_numbers.txt[0m
+[32m   /        [0m[36m /      [0mdeleting: [1;31mtests/pycolor_tests/mocked_data/version.json[0m
+[32m457/ 86 [0m[36m[881K/105K] [0m  adding: [1;32mtests/config_tests/mocked_data/replace-fields-nonzero-field.json[0m (deflated [96m58%[0m)
+[32m458/ 85 [0m[36m[882K/105K] [0m  adding: [1;32mtests/config_tests/sampleconfig_tests/pylint/mocked_data/[0m (stored [96m0%[0m)
+[32m459/ 84 [0m[36m[882K/105K] [0m  adding: [1;32mtests/config_tests/sampleconfig_tests/pylint/mocked_data/pylint.out.txt[0m (deflated [96m82%[0m)
+[32m460/ 83 [0m[36m[890K/ 96K] [0m  adding: [1;32mtests/config_tests/sampleconfig_tests/pylint/mocked_data/pylint.txt[0m (deflated [96m77%[0m)
+[32m461/ 82 [0m[36m[896K/ 90K] [0m  adding: [1;32mtests/config_tests/sampleconfig_tests/pylint/test_pylint.py[0m (deflated [96m53%[0m)
+[32m462/ 81 [0m[36m[897K/ 90K] [0m  adding: [1;32mtests/config_tests/sampleconfig_tests/pylint/__init__.py[0m (stored [96m0%[0m)
+[32m463/ 80 [0m[36m[897K/ 90K] [0m  adding: [1;32mtests/config_tests/sampleconfig_tests/rsync/mocked_data/[0m (stored [96m0%[0m)
+[32m464/ 79 [0m[36m[897K/ 90K] [0m  adding: [1;32mtests/config_tests/sampleconfig_tests/rsync/mocked_data/rsync.out.txt[0m (deflated [96m89%[0m)
+[32m465/ 78 [0m[36m[910K/ 76K] [0m  adding: [1;32mtests/config_tests/sampleconfig_tests/rsync/mocked_data/rsync.txt[0m (deflated [96m89%[0m)
+[32m466/ 77 [0m[36m[924K/ 62K] [0m  adding: [1;32mtests/config_tests/sampleconfig_tests/rsync/test_rsync.py[0m (deflated [96m54%[0m)
+[32m467/ 76 [0m[36m[925K/ 62K] [0m  adding: [1;32mtests/config_tests/sampleconfig_tests/rsync/__init__.py[0m (stored [96m0%[0m)
+[32m468/ 75 [0m[36m[925K/ 62K] [0m  adding: [1;32mtests/config_tests/sampleconfig_tests/zip/mocked_data/zip_file_sync.txt[0m (deflated [96m91%[0m)
+[32m469/ 74 [0m[36m[944K/ 42K] [0m  adding: [1;32mtests/execute_tests/blkid/__pycache__/[0m (stored [96m0%[0m)
+[32m470/ 73 [0m[36m[944K/ 42K] [0m  adding: [1;32mtests/execute_tests/blkid/__pycache__/test_blkid.cpython-38.pyc[0m (deflated [96m62%[0m)
+[32m471/ 72 [0m[36m[946K/ 40K] [0m  adding: [1;32mtests/execute_tests/blkid/__pycache__/__init__.cpython-38.pyc[0m (deflated [96m22%[0m)
+[32m472/ 71 [0m[36m[946K/ 40K] [0m  adding: [1;32mtests/execute_tests/df/__pycache__/[0m (stored [96m0%[0m)
+[32m473/ 70 [0m[36m[946K/ 40K] [0m  adding: [1;32mtests/execute_tests/df/__pycache__/test_df.cpython-38.pyc[0m (deflated [96m67%[0m)
+[32m474/ 69 [0m[36m[949K/ 37K] [0m  adding: [1;32mtests/execute_tests/df/__pycache__/__init__.cpython-38.pyc[0m (deflated [96m23%[0m)
+[32m475/ 68 [0m[36m[949K/ 37K] [0m  adding: [1;32mtests/execute_tests/free/__pycache__/[0m (stored [96m0%[0m)
+[32m476/ 67 [0m[36m[949K/ 37K] [0m  adding: [1;32mtests/execute_tests/free/__pycache__/test_free.cpython-38.pyc[0m (deflated [96m64%[0m)
+[32m477/ 66 [0m[36m[951K/ 35K] [0m  adding: [1;32mtests/execute_tests/free/__pycache__/__init__.cpython-38.pyc[0m (deflated [96m22%[0m)
+[32m478/ 65 [0m[36m[951K/ 35K] [0m  adding: [1;32mtests/execute_tests/git/__pycache__/[0m (stored [96m0%[0m)
+[32m479/ 64 [0m[36m[951K/ 35K] [0m  adding: [1;32mtests/execute_tests/git/__pycache__/test_git.cpython-38.pyc[0m (deflated [96m48%[0m)
+[32m480/ 63 [0m[36m[953K/ 34K] [0m  adding: [1;32mtests/execute_tests/git/__pycache__/__init__.cpython-38.pyc[0m (deflated [96m23%[0m)
+[32m481/ 62 [0m[36m[953K/ 34K] [0m  adding: [1;32mtests/execute_tests/ls/__pycache__/[0m (stored [96m0%[0m)
+[32m482/ 61 [0m[36m[953K/ 34K] [0m  adding: [1;32mtests/execute_tests/ls/__pycache__/test_ls.cpython-38.pyc[0m (deflated [96m67%[0m)
+[32m483/ 60 [0m[36m[955K/ 31K] [0m  adding: [1;32mtests/execute_tests/ls/__pycache__/__init__.cpython-38.pyc[0m (deflated [96m23%[0m)
+[32m484/ 59 [0m[36m[955K/ 31K] [0m  adding: [1;32mtests/execute_tests/mocked_data/[0m (stored [96m0%[0m)
+[32m485/ 58 [0m[36m[955K/ 31K] [0m  adding: [1;32mtests/execute_tests/mocked_data/activation_expression.json[0m (deflated [96m69%[0m)
+[32m486/ 57 [0m[36m[956K/ 30K] [0m  adding: [1;32mtests/execute_tests/mocked_data/activation_expression.out.txt[0m (deflated [96m55%[0m)
+[32m487/ 56 [0m[36m[956K/ 30K] [0m  adding: [1;32mtests/execute_tests/mocked_data/activation_expression.txt[0m (deflated [96m56%[0m)
+[32m488/ 55 [0m[36m[957K/ 29K] [0m  adding: [1;32mtests/execute_tests/mocked_data/activation_line.json[0m (deflated [96m60%[0m)
+[32m489/ 54 [0m[36m[957K/ 29K] [0m  adding: [1;32mtests/execute_tests/mocked_data/activation_line.out.txt[0m (deflated [96m63%[0m)
+[32m490/ 53 [0m[36m[958K/ 28K] [0m  adding: [1;32mtests/execute_tests/mocked_data/activation_line.txt[0m (deflated [96m56%[0m)
+[32m491/ 52 [0m[36m[959K/ 28K] [0m  adding: [1;32mtests/execute_tests/mocked_data/activation_line_list.json[0m (deflated [96m60%[0m)
+[32m492/ 51 [0m[36m[959K/ 27K] [0m  adding: [1;32mtests/execute_tests/mocked_data/activation_li[0mne_list.out.txt (deflated 65%)
+[32m493/ 50 [0m[36m[960K/ 26K] [0m  adding: [1;32mtests/execute_tests/mocked_data/activation_line_list.txt[0m (deflated [96m56%[0m)
+[32m494/ 49 [0m[36m[960K/ 26K] [0m  adding: [1;32mtests/execute_tests/mocked_data/df_table.json[0m (deflated [96m57%[0m)
+[32m495/ 48 [0m[36m[961K/ 25K] [0m  adding: [1;32mtests/execute_tests/mocked_data/df_table.out.txt[0m (deflated [96m45%[0m)
+[32m496/ 47 [0m[36m[961K/ 25K] [0m  adding: [1;32mtests/execute_tests/mocked_data/df_table.txt[0m (deflated [96m56%[0m)
+[32m497/ 46 [0m[36m[962K/ 24K] [0m  adding: [1;32mtests/execute_tests/mocked_data/df_timestamp.json[0m (deflated [96m56%[0m)
+[32m498/ 45 [0m[36m[962K/ 24K] [0m  adding: [1;32mtests/execute_tests/mocked_data/df_timestamp.out.txt[0m (deflated [96m68%[0m)
+[32m499/ 44 [0m[36m[963K/ 23K] [0m  adding: [1;32mtests/execute_tests/mocked_data/df_timestamp.txt[0m (deflated [96m56%[0m)
+[32m500/ 43 [0m[36m[963K/ 23K] [0m  adding: [1;32mtests/execute_tests/mocked_data/free_color_input.json[0m (deflated [96m52%[0m)
+[32m501/ 42 [0m[36m[964K/ 23K] [0m  adding: [1;32mtests/execute_tests/mocked_data/free_color_input.out.txt[0m (deflated [96m55%[0m)
+[32m502/ 41 [0m[36m[964K/ 22K] [0m  adding: [1;32mtests/execute_tests/mocked_data/free_color_input.txt[0m (deflated [96m56%[0m)
+[32m503/ 40 [0m[36m[964K/ 22K] [0m  adding: [1;32mtests/execute_tests/mocked_data/free_color_input_remove.json[0m (deflated [96m35%[0m)
+[32m504/ 39 [0m[36m[964K/ 22K] [0m  adding: [1;32mtests/execute_tests/mocked_data/free_color_input_remove.out.txt[0m (deflated [96m50%[0m)
+[32m505/ 38 [0m[36m[964K/ 22K] [0m  adding: [1;32mtests/execute_tests/mocked_data/free_color_input_remove.txt[0m (deflated [96m56%[0m)
+[32m506/ 37 [0m[36m[965K/ 21K] [0m  adding: [1;32mtests/execute_tests/mocked_data/free_fields.json[0m (deflated [96m75%[0m)
+[32m507/ 36 [0m[36m[966K/ 21K] [0m  adding: [1;32mtests/execute_tests/mocked_data/free_fields.out.txt[0m (deflated [96m49%[0m)
+[32m508/ 35 [0m[36m[966K/ 20K] [0m  adding: [1;32mtests/execute_tests/mocked_data/free_fields.txt[0m (deflated [96m50%[0m)
+[32m509/ 34 [0m[36m[966K/ 20K] [0m  adding: [1;32mtests/execute_tests/mocked_data/free_replace_all.json[0m (deflated [96m59%[0m)
+[32m510/ 33 [0m[36m[966K/ 20K] [0m  adding: [1;32mtests/execute_tests/mocked_data/free_replace_all.out.txt[0m (deflated [96m77%[0m)
+[32m511/ 32 [0m[36m[967K/ 19K] [0m  adding: [1;32mtests/execute_tests/mocked_data/free_replace_all.txt[0m (deflated [96m76%[0m)
+[32m512/ 31 [0m[36m[968K/ 18K] [0m  adding: [1;32mtests/execute_tests/mocked_data/free_replace_fields_list.json[0m (deflated [96m64%[0m)
+[32m513/ 30 [0m[36m[968K/ 18K] [0m  adding: [1;32mtests/execute_tests/mocked_data/free_replace_fields_list.out.txt[0m (deflated [96m53%[0m)
+[32m514/ 29 [0m[36m[969K/ 18K] [0m  adding: [1;32mtests/execute_tests/mocked_data/free_replace_fields_list.txt[0m (deflated [96m50%[0m)
+[32m515/ 28 [0m[36m[969K/ 17K] [0m  adding: [1;32mtests/execute_tests/mocked_data/git_branch_list_fail.err.txt[0m (deflated [96m11%[0m)
+[32m516/ 27 [0m[36m[969K/ 17K] [0m  adding: [1;32mtests/execute_tests/mocked_data/git_branch_list_fail.json[0m (deflated [96m53%[0m)
+[32m517/ 26 [0m[36m[969K/ 17K] [0m  adding: [1;32mtests/execute_tests/mocked_data/git_branch_list_fail.out.err.txt[0m (deflated [96m8%[0m)
+[32m518/ 25 [0m[36m[969K/ 17K] [0m  adding: [1;32mtests/execute_tests/mocked_data/git_status.json[0m (deflated [96m83%[0m)
+[32m519/ 24 [0m[36m[972K/ 14K] [0m  adding: [1;32mtests/execute_tests/mocked_data/git_status.out.txt[0m (deflated [96m62%[0m)
+[32m520/ 23 [0m[36m[973K/ 13K] [0m  adding: [1;32mtests/execute_tests/mocked_data/git_status.txt[0m (deflated [96m61%[0m)
+[32m521/ 22 [0m[36m[974K/ 13K] [0m  adding: [1;32mtests/execute_tests/mocked_data/not_enabled.json[0m (deflated [96m65%[0m)
+[32m522/ 21 [0m[36m[974K/ 12K] [0m  adding: [1;32mtests/execute_tests/mocked_data/not_enabled.out.txt[0m (deflated [96m50%[0m)
+[32m523/ 20 [0m[36m[974K/ 12K] [0m  adding: [1;32mtests/execute_tests/mocked_data/not_enabled.txt[0m (deflated [96m50%[0m)
+[32m524/ 19 [0m[36m[974K/ 12K] [0m  adding: [1;32mtests/execute_tests/pylint/__pycache__/[0m (stored [96m0%[0m)
+[32m525/ 18 [0m[36m[974K/ 12K] [0m  adding: [1;32mtests/execute_tests/pylint/__pycache__/test_pylint.cpython-38.pyc[0m (deflated [96m49%[0m)
+[32m526/ 17 [0m[36m[976K/ 11K] [0m  adding: [1;32mtests/execute_tests/pylint/__pycache__/__init__.cpython-38.pyc[0m (deflated [96m22%[0m)
+[32m527/ 16 [0m[36m[976K/ 10K] [0m  adding: [1;32mtests/execute_tests/rsync/__pycache__/[0m (stored [96m0%[0m)
+[32m528/ 15 [0m[36m[976K/ 10K] [0m  adding: [1;32mtests/execute_tests/rsync/__pycache__/test_rsync.cpython-38.pyc[0m (deflated [96m44%[0m)
+[32m529/ 14 [0m[36m[977K/ 10K] [0m  adding: [1;32mtests/execute_tests/rsync/__pycache__/__init__.cpython-38.pyc[0m (deflated [96m22%[0m)
+[32m530/ 13 [0m[36m[977K/9.8K] [0m  adding: [1;32mtests/execute_tests/test_activation_lines.py[0m (deflated [96m64%[0m)
+[32m531/ 12 [0m[36m[978K/9.1K] [0m  adding: [1;32mtests/pycolor_tests/mocked_data/empty.json[0m (stored [96m0%[0m)
+[32m532/ 11 [0m[36m[978K/9.1K] [0m  adding: [1;32mtests/pycolor_tests/mocked_data/invalid_json.json[0m (stored [96m0%[0m)
+[32m533/ 10 [0m[36m[978K/9.1K] [0m  adding: [1;32mtests/pycolor_tests/mocked_data/invalid_pattern.json[0m (deflated [96m56%[0m)
+[32m534/  9 [0m[36m[978K/8.9K] [0m  adding: [1;32mte[0msts/pycolor_tests/mocked_data/invalid_profile.json (deflated 43%)
+[32m535/  8 [0m[36m[978K/8.8K] [0m  adding: [1;32mtests/pycolor_tests/pyformat_tests/coloring_tests/mocked_data/[0m (stored [96m0%[0m)
+[32m536/  7 [0m[36m[978K/8.8K] [0m  adding: [1;32mtests/pycolor_tests/pyformat_tests/coloring_tests/mocked_data/df_color_alias.json[0m (deflated [96m55%[0m)
+[32m537/  6 [0m[36m[978K/8.5K] [0m  adding: [1;32mtests/pycolor_tests/pyformat_tests/coloring_tests/mocked_data/df_color_alias.out.txt[0m (deflated [96m80%[0m)
+[32m538/  5 [0m[36m[980K/7.1K] [0m  adding: [1;32mtests/pycolor_tests/pyformat_tests/coloring_tests/mocked_data/df_color_alias.txt[0m (deflated [96m56%[0m)
+[32m539/  4 [0m[36m[980K/6.5K] [0m  adding: [1;32mtests/pycolor_tests/pyformat_tests/coloring_tests/test_color_alias.py[0m (deflated [96m43%[0m)
+[32m540/  3 [0m[36m[980K/6.2K] [0m  adding: [1;32mtests/pycolor_tests/test_pycolor_class.py[0m (deflated [96m61%[0m)
+[32m541/  2 [0m[36m[981K/5.3K] [0m  adding: [1;32mtests/pycolor_tests/test_pycolor_config.py[0m (deflated [96m76%[0m)
+[32m542/  1 [0m[36m[985K/1.9K] [0m  adding: [1;32mtests/utils_tests/test_printmsg.py[0m (deflated [96m71%[0m)

@@ -1,0 +1,31 @@
+2022/01/29 21:28:55 INFO  : blkid.json: Copied (replaced existing)
+2022/01/29 21:28:55 INFO  : ping-unix.json: Copied (replaced existing)
+2022/01/29 21:28:55 INFO  : df.json: Copied (replaced existing)
+2022/01/29 21:28:55 INFO  : pylint.json: Copied (replaced existing)
+2022/01/29 21:28:55 INFO  : pip.json: Updated modification time in destination
+2022/01/29 21:28:55 INFO  : free.json: Updated modification time in destination
+2022/01/29 21:28:56 INFO  : zip.json: Updated modification time in destination
+2022/01/29 21:28:56 INFO  : ifconfig.json: Updated modification time in destination
+2022/01/29 21:28:56 INFO  : rclone.json: Updated modification time in destination
+2022/01/29 21:28:56 INFO  : aws-s3-sync.json: Updated modification time in destination
+2022/01/29 21:28:56 INFO  : rsync.json: Updated modification time in destination
+2022/01/29 21:28:59 INFO  : ping-windows.json: Updated modification time in destination
+2022/01/29 21:28:59 INFO  : Waiting for deletions to finish
+2022/01/29 21:28:59 INFO  : coverage.json: Deleted
+2022/01/29 21:28:59 INFO  : dig.json: Deleted
+2022/01/29 21:28:59 INFO  : iwconfig.json: Deleted
+2022/01/29 21:28:59 INFO  : lsusb.json: Deleted
+2022/01/29 21:28:59 INFO  : git.json: Deleted
+2022/01/29 21:28:59 INFO  :
+Transferred:        6.841k / 6.841 kBytes, 100%, 1.282 kBytes/s, ETA 0s
+Errors:                 0
+Checks:                17 / 17, 100%
+Transferred:            4 / 4, 100%
+Elapsed time:        5.3s
+
+2022/01/29 21:29:01 INFO  :
+Transferred:             0 / 0 Bytes, -, 0 Bytes/s, ETA -
+Errors:                 0
+Checks:                 1 / 1, 100%
+Transferred:            0 / 0, -
+Elapsed time:          0s

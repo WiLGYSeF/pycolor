@@ -1,0 +1,23 @@
+On branch [1;36mmaster[0m
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	[92mnew file:   abc.txt[0m
+	[32mmodified:   config/pattern.py[0m
+	[32mmodified:   config/schema/pattern.json[0m
+	[91mdeleted:    def.txt[0m
+	[93mrenamed:    123.txt -> 456.txt[0m
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	[31mmodified:   tests/execute_tests/blkid/test_blkid.py[0m
+	[31mmodified:   tests/execute_tests/free/test_free.py[0m
+	[31mmodified:   tests/execute_tests/ifconfig/test_ifconfig.py[0m
+	[31mmodified:   tests/execute_tests/ls/test_ls.py[0m
+	[31mmodified:   tests/execute_tests/pylint/test_pylint.py[0m
+	[31mmodified:   tests/execute_tests/rsync/test_rsync.py[0m
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	tests/execute_tests/git/
+	todo.txt

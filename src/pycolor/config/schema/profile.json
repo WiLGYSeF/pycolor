@@ -74,8 +74,8 @@
             "type": "boolean",
             "default": false
         },
-        "interactive": {
-            "description": "normally the output is buffered until newlines are received, but with interactive, output the buffer regardless to show output that does not end with newlines (e.g. interactive prompts). this may cause some patterns to not match if the program outputs in pieces",
+        "nobuffer": {
+            "description": "do not buffer output",
             "type": "boolean",
             "default": false
         },

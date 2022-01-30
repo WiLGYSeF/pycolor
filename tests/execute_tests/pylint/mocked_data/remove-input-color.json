@@ -1,8 +1,0 @@
-{
-    "profiles": [
-        {
-            "name": "pylint",
-            "remove_input_color": true
-        }
-    ]
-}

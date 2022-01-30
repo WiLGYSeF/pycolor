@@ -29,7 +29,7 @@ class Profile:
 
         self.timestamp: typing.Union[str, bool] = False
         self.tty: bool = False
-        self.interactive: bool = False
+        self.nobuffer: bool = False
         self.remove_input_color: bool = False
 
         self.color_aliases: typing.Dict[str, str] = {}

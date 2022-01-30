@@ -1,0 +1,20 @@
+{
+    "profiles": [
+        {
+            "name": "df",
+            "profile_name": "df",
+            "patterns": [
+                {
+                    "separator": " +",
+                    "field": 0,
+                    "expression": "^(.*)$",
+                    "replace_groups": ["%Hb"],
+                    "activation_expression": "^tmpfs",
+                    "activation_expression_line_offset": 2,
+                    "deactivation_expression": "^/",
+                    "deactivation_expression_line_offset": 2
+                }
+            ]
+        }
+    ]
+}

@@ -4,9 +4,9 @@ import sys
 import typing
 
 from tests.execute_tests.helpers import (
-    execute_patch, open_fstream, read_file, test_stream, textstream
+    execute_patch, open_fstream, read_file, test_stream
 )
-from tests.testutils import patch
+from tests.testutils import patch, textstream
 from src.pycolor.pycolor import pycolor_class
 from src.pycolor import __main__ as pycolor
 
@@ -22,6 +22,7 @@ def check_pycolor_main(self,
     print_output: bool = kwargs.get('print_output', False)
     write_output: bool = kwargs.get('write_output', False)
     no_load_args: bool = kwargs.get('no_load_args', False)
+    patch_sample_config_dir: bool = kwargs.get('patch_sample_config_dir', True)
 
     filename_prefix = os.path.join(mocked_data_dir, test_name)
     stdout = textstream()
@@ -40,7 +41,8 @@ def check_pycolor_main(self,
             stack.enter_context(patch(sys, 'stdout', stdout))
         if patch_stderr:
             stack.enter_context(patch(sys, 'stderr', stderr))
-        stack.enter_context(patch(pycolor.config, 'SAMPLE_CONFIG_DIR', None))
+        if patch_sample_config_dir:
+            stack.enter_context(patch(pycolor.config, 'SAMPLE_CONFIG_DIR', None))
 
         try:
             pycolor.main(args, stdout_stream=stdout, stderr_stream=stderr, stdin_stream=stdin)

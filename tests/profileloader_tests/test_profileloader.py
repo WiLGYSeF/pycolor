@@ -1,5 +1,4 @@
 import os
-import sys
 import unittest
 
 from src.pycolor.config import ConfigPropertyError
@@ -7,8 +6,7 @@ from src.pycolor.config.argpattern import ArgPattern
 from src.pycolor.pycolor import profileloader
 from src.pycolor.pycolor.profileloader import ProfileLoader
 from src.pycolor.utils import printmsg
-from tests.execute_tests.helpers import textstream
-from tests.testutils import patch
+from tests.testutils import patch, patch_stderr
 
 ARGS = 'args'
 ARGPATTERNS = 'argpatterns'
@@ -19,10 +17,10 @@ MOCKED_DATA = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mocked_
 class ProfileLoaderTest(unittest.TestCase):
     def test_load_file_same_profile_name(self):
         loader = ProfileLoader()
-        stderr = textstream()
 
-        with patch(sys, 'stderr', stderr), patch(printmsg, 'is_color_enabled', lambda x: True):
+        with patch_stderr() as stderr, patch(printmsg, 'is_color_enabled', lambda x: True):
             loader.load_file(os.path.join(MOCKED_DATA, 'load-file-same-profile-name.json'))
+
         stderr.seek(0)
         self.assertEqual(
             '\x1b[93mwarn\x1b[0m: conflicting profiles with the name "test"\n',

@@ -166,7 +166,7 @@ def execute(
 
         tty (bool): Enable TTY mode
         encoding (str): Stream data to string encoding for callback, default 'utf-8'
-        interactive (bool): Enable interactive mode
+        nobuffer (bool): Enable nobuffer mode
         stdin (Stream): Stdin stream, defaults to sys.stdin
 
     Returns:
@@ -174,7 +174,7 @@ def execute(
     """
     tty: bool = kwargs.get('tty', False)
     encoding: str = kwargs.get('encoding', 'utf-8')
-    interactive: bool = kwargs.get('interactive', False)
+    nobuffer: bool = kwargs.get('nobuffer', False)
     stdout: Stream
     stderr: Stream
     stdin: Stream = kwargs.get('stdin', sys.stdin)
@@ -236,7 +236,7 @@ def execute(
                     try:
                         if data is None or _read(stream, callback, data) is None:
                             break
-                        if interactive and not _is_buffer_empty(stream):
+                        if nobuffer and not _is_buffer_empty(stream):
                             _read(stream, callback, b'', last=True)
                     except Exception:
                         printerr('pycolor error, continuing...', traceback.format_exc(), sep='\n')
