@@ -1,9 +1,8 @@
-import re
 import typing
 
 def match_group_replace(
-    match: re.Match,
-    replace_func: typing.Callable[[re.Match, int, int], str]
+    match: typing.Match,
+    replace_func: typing.Callable[[typing.Match, int, int], str]
 ) -> str:
     """Replace groups in match
 

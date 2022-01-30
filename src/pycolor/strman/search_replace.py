@@ -5,9 +5,9 @@ Span = typing.Tuple[int, int]
 ReplaceRange = typing.Tuple[Span, Span]
 
 def search_replace(
-    pattern: typing.Union[re.Pattern, str],
+    pattern: typing.Union[typing.Pattern, str],
     string: typing.AnyStr,
-    replace: typing.Union[typing.Callable[[re.Match], typing.AnyStr], typing.AnyStr],
+    replace: typing.Union[typing.Callable[[typing.Match], typing.AnyStr], typing.AnyStr],
     **kwargs
 ) -> typing.Tuple[typing.AnyStr, typing.List[ReplaceRange]]:
     """Search and replace in string
@@ -28,8 +28,8 @@ def search_replace(
     start_occurrence: int = max(kwargs.get('start_occurrence', 1), 1)
     max_count: int = kwargs.get('max_count', -1)
 
-    regex = pattern if isinstance(pattern, re.Pattern) else re.compile(pattern)
-    replf: typing.Callable[[re.Match], typing.AnyStr] = (
+    regex = pattern if isinstance(pattern, typing.Pattern) else re.compile(pattern)
+    replf: typing.Callable[[typing.Match], typing.AnyStr] = (
         replace if callable(replace) else lambda x: replace # type: ignore
     )
 

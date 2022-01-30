@@ -55,7 +55,7 @@ def load_schema(schema_name: str, cfg: dict, dest: typing.Any) -> None:
         elif hasattr(dest, key):
             setattr(dest, key, val)
 
-def compile_re(expression: typing.Optional[str], prop: str) -> typing.Optional[re.Pattern]:
+def compile_re(expression: typing.Optional[str], prop: str) -> typing.Optional[typing.Pattern]:
     if expression is None:
         return None
     try:
