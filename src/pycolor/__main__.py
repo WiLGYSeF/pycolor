@@ -39,6 +39,7 @@ def main(
     if (
         config.SAMPLE_CONFIG_DIR is not None
         and CONFIG_DIR is not None
+        and os.path.isdir(config.SAMPLE_CONFIG_DIR)
         and not os.path.exists(CONFIG_DIR)
     ):
         shutil.copytree(config.SAMPLE_CONFIG_DIR, CONFIG_DIR)
