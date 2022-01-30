@@ -8,8 +8,8 @@
                     "expression": [
                         "^",
                         "(?P<vol>[0-9]+>[0-9]+: )?",
-                        "(?P<fc> *[0-9]+/ *[0-9]+ )?",
-                        "(?P<fz>\\[[0-9. ]+[A-Z]?/[0-9. ]+[A-Z]?\\] )?",
+                        "(?P<fc> *[0-9]+/ *[0-9]+ | +/ +)?",
+                        "(?P<fz>\\[[0-9. ]+[A-Z]?/[0-9. ]+[A-Z]?\\] | +/ +)?",
                         "(?:  adding: (?P<addname>.*?)|copying: (?P<copname>.*?)|deleting: (?P<delname>.*?)|freshening: (?P<frename>.*?)|updating: (?P<updname>.*?))",
                         "(?P<uz> \\([0-9. ]+[A-Z]\\))?",
                         "(?P<dots> \\.+)?",
