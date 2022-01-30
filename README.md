@@ -153,7 +153,7 @@ To colorize output through a replace pattern use `%(color:<color value>)`, `%C(<
 
 You can select multiple color values by separating them with `;` (must be wrapped in parentheses). e.g. `%(color:bold;red)` or `%C(bold;red)`.
 
-If `^` is added before a color (e.g. `%C(^red)`), then it is used to set the background color instead.
+If `^` is added before a color (e.g. `%C(^red)`), it will set the background color instead.
 The color formatting for bold, red-on-yellow text can be written as `%C(bold;red;^yellow)hello%C(z)`, or `%C(bol;r;^y)hello%Cz`, which will produce `\e[1;31;43mhello\e[0m`.
 
 If `^` is added before a style (e.g. `%C(^italic)` produces `\e[23m`), then the style is turned off.
