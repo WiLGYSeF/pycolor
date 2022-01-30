@@ -1,0 +1,273 @@
+updating: src/pycolor/ (stored 0%)
+updating: tests/ (stored 0%)
+updating: src/pycolor/arguments.py (deflated 71%)
+updating: src/pycolor/config/ (stored 0%)
+updating: src/pycolor/config/profile.py (deflated 74%)
+updating: src/pycolor/config/sample-config/ (stored 0%)
+updating: src/pycolor/config/sample-config/blkid.json (deflated 69%)
+updating: src/pycolor/config/sample-config/pylint.json (deflated 74%)
+updating: src/pycolor/config/sample-config/zip.json (deflated 72%)
+updating: src/pycolor/config/schema/ (stored 0%)
+updating: src/pycolor/config/schema/profile.json (deflated 77%)
+updating: src/pycolor/execute/ (stored 0%)
+updating: src/pycolor/execute/execute.py (deflated 71%)
+updating: src/pycolor/pycolor/ (stored 0%)
+updating: src/pycolor/pycolor/pycolor_class.py (deflated 75%)
+updating: src/pycolor/pycolor/pyformat/ (stored 0%)
+updating: src/pycolor/pycolor/pyformat/fieldsep.py (deflated 64%)
+updating: src/pycolor/pycolor/pyformat/__init__.py (deflated 77%)
+updating: src/pycolor/__main__.py (deflated 71%)
+updating: tests/config_tests/ (stored 0%)
+updating: tests/config_tests/mocked_data/ (stored 0%)
+deleting: tests/config_tests/mocked_data/replace-fields-nonzero-field.json
+updating: tests/config_tests/sampleconfig_tests/pylint/ (stored 0%)
+deleting: tests/config_tests/sampleconfig_tests/pylint/mocked_data/
+deleting: tests/config_tests/sampleconfig_tests/pylint/mocked_data/pylint.out.txt
+deleting: tests/config_tests/sampleconfig_tests/pylint/mocked_data/pylint.txt
+deleting: tests/config_tests/sampleconfig_tests/pylint/test_pylint.py
+deleting: tests/config_tests/sampleconfig_tests/pylint/__init__.py
+updating: tests/config_tests/sampleconfig_tests/rsync/ (stored 0%)
+deleting: tests/config_tests/sampleconfig_tests/rsync/mocked_data/
+deleting: tests/config_tests/sampleconfig_tests/rsync/mocked_data/rsync.out.txt
+deleting: tests/config_tests/sampleconfig_tests/rsync/mocked_data/rsync.txt
+deleting: tests/config_tests/sampleconfig_tests/rsync/test_rsync.py
+deleting: tests/config_tests/sampleconfig_tests/rsync/__init__.py
+updating: tests/config_tests/test_config.py (deflated 58%)
+updating: tests/config_tests/test_profile.py (deflated 57%)
+updating: tests/execute_tests/ (stored 0%)
+updating: tests/execute_tests/helpers.py (deflated 74%)
+deleting: tests/execute_tests/mocked_data/
+deleting: tests/execute_tests/mocked_data/activation_expression.json
+deleting: tests/execute_tests/mocked_data/activation_expression.out.txt
+deleting: tests/execute_tests/mocked_data/activation_expression.txt
+deleting: tests/execute_tests/mocked_data/activation_line.json
+deleting: tests/execute_tests/mocked_data/activation_line.out.txt
+deleting: tests/execute_tests/mocked_data/activation_line.txt
+deleting: tests/execute_tests/mocked_data/activation_line_list.json
+deleting: tests/execute_tests/mocked_data/activation_line_list.out.txt
+deleting: tests/execute_tests/mocked_data/activation_line_list.txt
+deleting: tests/execute_tests/mocked_data/df_table.json
+deleting: tests/execute_tests/mocked_data/df_table.out.txt
+deleting: tests/execute_tests/mocked_data/df_table.txt
+deleting: tests/execute_tests/mocked_data/df_timestamp.json
+deleting: tests/execute_tests/mocked_data/df_timestamp.out.txt
+deleting: tests/execute_tests/mocked_data/df_timestamp.txt
+deleting: tests/execute_tests/mocked_data/free_color_input.json
+deleting: tests/execute_tests/mocked_data/free_color_input.out.txt
+deleting: tests/execute_tests/mocked_data/free_color_input.txt
+deleting: tests/execute_tests/mocked_data/free_color_input_remove.json
+deleting: tests/execute_tests/mocked_data/free_color_input_remove.out.txt
+deleting: tests/execute_tests/mocked_data/free_color_input_remove.txt
+deleting: tests/execute_tests/mocked_data/free_fields.json
+deleting: tests/execute_tests/mocked_data/free_fields.out.txt
+deleting: tests/execute_tests/mocked_data/free_fields.txt
+deleting: tests/execute_tests/mocked_data/free_replace_all.json
+deleting: tests/execute_tests/mocked_data/free_replace_all.out.txt
+deleting: tests/execute_tests/mocked_data/free_replace_all.txt
+deleting: tests/execute_tests/mocked_data/free_replace_fields_list.json
+deleting: tests/execute_tests/mocked_data/free_replace_fields_list.out.txt
+deleting: tests/execute_tests/mocked_data/free_replace_fields_list.txt
+deleting: tests/execute_tests/mocked_data/git_branch_list_fail.err.txt
+deleting: tests/execute_tests/mocked_data/git_branch_list_fail.json
+deleting: tests/execute_tests/mocked_data/git_branch_list_fail.out.err.txt
+deleting: tests/execute_tests/mocked_data/git_status.json
+deleting: tests/execute_tests/mocked_data/git_status.out.txt
+deleting: tests/execute_tests/mocked_data/git_status.txt
+deleting: tests/execute_tests/mocked_data/not_enabled.json
+deleting: tests/execute_tests/mocked_data/not_enabled.out.txt
+deleting: tests/execute_tests/mocked_data/not_enabled.txt
+deleting: tests/execute_tests/test_activation_lines.py
+updating: tests/execute_tests/test_execute.py (deflated 66%)
+updating: tests/helpers.py (deflated 69%)
+updating: tests/profileloader_tests/ (stored 0%)
+updating: tests/profileloader_tests/test_profileloader.py (deflated 87%)
+updating: tests/pycolor_tests/ (stored 0%)
+updating: tests/pycolor_tests/mocked_data/ (stored 0%)
+deleting: tests/pycolor_tests/mocked_data/empty.json
+deleting: tests/pycolor_tests/mocked_data/invalid_json.json
+deleting: tests/pycolor_tests/mocked_data/invalid_pattern.json
+deleting: tests/pycolor_tests/mocked_data/invalid_profile.json
+updating: tests/pycolor_tests/pyformat_tests/ (stored 0%)
+updating: tests/pycolor_tests/pyformat_tests/coloring_tests/ (stored 0%)
+deleting: tests/pycolor_tests/pyformat_tests/coloring_tests/mocked_data/
+deleting: tests/pycolor_tests/pyformat_tests/coloring_tests/mocked_data/df_color_alias.json
+deleting: tests/pycolor_tests/pyformat_tests/coloring_tests/mocked_data/df_color_alias.out.txt
+deleting: tests/pycolor_tests/pyformat_tests/coloring_tests/mocked_data/df_color_alias.txt
+updating: tests/pycolor_tests/pyformat_tests/coloring_tests/test_colorstate.py (deflated 87%)
+deleting: tests/pycolor_tests/pyformat_tests/coloring_tests/test_color_alias.py
+updating: tests/pycolor_tests/pyformat_tests/test_truncate.py (deflated 84%)
+updating: tests/pycolor_tests/test_pycolor.py (deflated 77%)
+deleting: tests/pycolor_tests/test_pycolor_class.py
+deleting: tests/pycolor_tests/test_pycolor_config.py
+updating: tests/pycolor_tests/test_pycolor_debug.py (deflated 75%)
+updating: tests/testutils.py (deflated 52%)
+updating: tests/utils_tests/ (stored 0%)
+deleting: tests/utils_tests/test_printmsg.py
+  adding: src/pycolor/config/sample-config/coverage.json (deflated 74%)
+  adding: src/pycolor/config/sample-config/git.json (deflated 89%)
+  adding: src/pycolor/config/sample-config/iwconfig.json (deflated 74%)
+  adding: src/pycolor/config/sample-config/lsusb.json (deflated 50%)
+  adding: tests/execute_tests/blkid/ (stored 0%)
+  adding: tests/execute_tests/blkid/mocked_data/ (stored 0%)
+  adding: tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-after-prev.json (deflated 72%)
+  adding: tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-after-prev.out.txt (deflated 58%)
+  adding: tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-after-prev.txt (deflated 36%)
+  adding: tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-after.json (deflated 73%)
+  adding: tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-after.out.txt (deflated 57%)
+  adding: tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-after.txt (deflated 36%)
+  adding: tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-before-prev.json (deflated 72%)
+  adding: tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-before-prev.out.txt (deflated 53%)
+  adding: tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-before-prev.txt (deflated 36%)
+  adding: tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-before.json (deflated 72%)
+  adding: tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-before.out.txt (deflated 53%)
+  adding: tests/execute_tests/blkid/mocked_data/replace-groups-list-overlap-before.txt (deflated 36%)
+  adding: tests/execute_tests/blkid/mocked_data/replace-groups-list.json (deflated 68%)
+  adding: tests/execute_tests/blkid/mocked_data/replace-groups-list.out.txt (deflated 54%)
+  adding: tests/execute_tests/blkid/mocked_data/replace-groups-list.txt (deflated 36%)
+  adding: tests/execute_tests/blkid/test_blkid.py (deflated 73%)
+  adding: tests/execute_tests/blkid/__init__.py (stored 0%)
+  adding: tests/execute_tests/df/ (stored 0%)
+  adding: tests/execute_tests/df/mocked_data/ (stored 0%)
+  adding: tests/execute_tests/df/mocked_data/color-fields-activation-line-list.json (deflated 60%)
+  adding: tests/execute_tests/df/mocked_data/color-fields-activation-line-list.out.txt (deflated 65%)
+  adding: tests/execute_tests/df/mocked_data/color-fields-activation-line-list.txt (deflated 56%)
+  adding: tests/execute_tests/df/mocked_data/color-fields-activation-line.json (deflated 60%)
+  adding: tests/execute_tests/df/mocked_data/color-fields-activation-line.out.txt (deflated 63%)
+  adding: tests/execute_tests/df/mocked_data/color-fields-activation-line.txt (deflated 56%)
+  adding: tests/execute_tests/df/mocked_data/color-fields-list.json (deflated 72%)
+  adding: tests/execute_tests/df/mocked_data/color-fields-list.out.txt (deflated 67%)
+  adding: tests/execute_tests/df/mocked_data/color-fields-list.txt (deflated 56%)
+  adding: tests/execute_tests/df/mocked_data/color-fields-pad.json (deflated 70%)
+  adding: tests/execute_tests/df/mocked_data/color-fields-pad.out.txt (deflated 65%)
+  adding: tests/execute_tests/df/mocked_data/color-fields-pad.txt (deflated 56%)
+  adding: tests/execute_tests/df/mocked_data/color-fields.json (deflated 58%)
+  adding: tests/execute_tests/df/mocked_data/color-fields.out.txt (deflated 67%)
+  adding: tests/execute_tests/df/mocked_data/color-fields.txt (deflated 56%)
+  adding: tests/execute_tests/df/mocked_data/field-replace-groups.json (deflated 57%)
+  adding: tests/execute_tests/df/mocked_data/field-replace-groups.out.txt (deflated 57%)
+  adding: tests/execute_tests/df/mocked_data/field-replace-groups.txt (deflated 56%)
+  adding: tests/execute_tests/df/mocked_data/field-replace.json (deflated 69%)
+  adding: tests/execute_tests/df/mocked_data/field-replace.out.txt (deflated 55%)
+  adding: tests/execute_tests/df/mocked_data/field-replace.txt (deflated 56%)
+  adding: tests/execute_tests/df/mocked_data/no-color-fields-T.json (deflated 61%)
+  adding: tests/execute_tests/df/mocked_data/no-color-fields-T.out.txt (deflated 57%)
+  adding: tests/execute_tests/df/mocked_data/no-color-fields-T.txt (deflated 57%)
+  adding: tests/execute_tests/df/mocked_data/normal.json (stored 0%)
+  adding: tests/execute_tests/df/mocked_data/normal.out.txt (deflated 56%)
+  adding: tests/execute_tests/df/mocked_data/normal.txt (deflated 56%)
+  adding: tests/execute_tests/df/mocked_data/numbers-field.json (deflated 55%)
+  adding: tests/execute_tests/df/mocked_data/numbers-field.out.txt (deflated 71%)
+  adding: tests/execute_tests/df/mocked_data/numbers-field.txt (deflated 56%)
+  adding: tests/execute_tests/df/mocked_data/table.json (deflated 57%)
+  adding: tests/execute_tests/df/mocked_data/table.out.txt (deflated 45%)
+  adding: tests/execute_tests/df/mocked_data/table.txt (deflated 56%)
+  adding: tests/execute_tests/df/mocked_data/timestamp.json (deflated 56%)
+  adding: tests/execute_tests/df/mocked_data/timestamp.out.txt (deflated 68%)
+  adding: tests/execute_tests/df/mocked_data/timestamp.txt (deflated 56%)
+  adding: tests/execute_tests/df/test_df.py (deflated 77%)
+  adding: tests/execute_tests/df/__init__.py (stored 0%)
+  adding: tests/execute_tests/free/ (stored 0%)
+  adding: tests/execute_tests/free/mocked_data/ (stored 0%)
+  adding: tests/execute_tests/free/mocked_data/color-fields-replace-all.json (deflated 68%)
+  adding: tests/execute_tests/free/mocked_data/color-fields-replace-all.out.txt (deflated 77%)
+  adding: tests/execute_tests/free/mocked_data/color-fields-replace-all.txt (deflated 76%)
+  adding: tests/execute_tests/free/mocked_data/color-human.json (deflated 77%)
+  adding: tests/execute_tests/free/mocked_data/color-human.out.txt (deflated 54%)
+  adding: tests/execute_tests/free/mocked_data/color-human.txt (deflated 50%)
+  adding: tests/execute_tests/free/mocked_data/color-replace-fields-list.json (deflated 75%)
+  adding: tests/execute_tests/free/mocked_data/color-replace-fields-list.out.txt (deflated 53%)
+  adding: tests/execute_tests/free/mocked_data/color-replace-fields-list.txt (deflated 50%)
+  adding: tests/execute_tests/free/mocked_data/color-replace-fields.json (deflated 78%)
+  adding: tests/execute_tests/free/mocked_data/color-replace-fields.out.txt (deflated 55%)
+  adding: tests/execute_tests/free/mocked_data/color-replace-fields.txt (deflated 50%)
+  adding: tests/execute_tests/free/mocked_data/color.json (deflated 76%)
+  adding: tests/execute_tests/free/mocked_data/color.out.txt (deflated 51%)
+  adding: tests/execute_tests/free/mocked_data/color.txt (deflated 42%)
+  adding: tests/execute_tests/free/mocked_data/invalid-option.json (deflated 69%)
+  adding: tests/execute_tests/free/mocked_data/invalid-option.out.txt (deflated 62%)
+  adding: tests/execute_tests/free/mocked_data/invalid-option.txt (deflated 62%)
+  adding: tests/execute_tests/free/mocked_data/replace-fields-all.json (deflated 71%)
+  adding: tests/execute_tests/free/mocked_data/replace-fields-all.out.txt (deflated 55%)
+  adding: tests/execute_tests/free/mocked_data/replace-fields-all.txt (deflated 50%)
+  adding: tests/execute_tests/free/mocked_data/replace-groups-all.json (deflated 68%)
+  adding: tests/execute_tests/free/mocked_data/replace-groups-all.out.txt (deflated 51%)
+  adding: tests/execute_tests/free/mocked_data/replace-groups-all.txt (deflated 50%)
+  adding: tests/execute_tests/free/test_free.py (deflated 74%)
+  adding: tests/execute_tests/free/__init__.py (stored 0%)
+  adding: tests/execute_tests/git/ (stored 0%)
+  adding: tests/execute_tests/git/mocked_data/ (stored 0%)
+  adding: tests/execute_tests/git/mocked_data/push.json (deflated 80%)
+  adding: tests/execute_tests/git/mocked_data/push.out.txt (deflated 45%)
+  adding: tests/execute_tests/git/mocked_data/push.txt (deflated 38%)
+  adding: tests/execute_tests/git/mocked_data/status-deactivation-line-offset.json (deflated 76%)
+  adding: tests/execute_tests/git/mocked_data/status-deactivation-line-offset.out.txt (deflated 63%)
+  adding: tests/execute_tests/git/mocked_data/status-deactivation-line-offset.txt (deflated 62%)
+  adding: tests/execute_tests/git/mocked_data/status.json (deflated 82%)
+  adding: tests/execute_tests/git/mocked_data/status.out.txt (deflated 64%)
+  adding: tests/execute_tests/git/mocked_data/status.txt (deflated 62%)
+  adding: tests/execute_tests/git/test_git.py (deflated 64%)
+  adding: tests/execute_tests/git/__init__.py (stored 0%)
+  adding: tests/execute_tests/ls/ (stored 0%)
+  adding: tests/execute_tests/ls/mocked_data/ (stored 0%)
+  adding: tests/execute_tests/ls/mocked_data/filter-field-py.json (deflated 59%)
+  adding: tests/execute_tests/ls/mocked_data/filter-field-py.out.txt (deflated 60%)
+  adding: tests/execute_tests/ls/mocked_data/filter-field-py.txt (deflated 69%)
+  adding: tests/execute_tests/ls/mocked_data/filter-py.json (deflated 56%)
+  adding: tests/execute_tests/ls/mocked_data/filter-py.out.txt (deflated 60%)
+  adding: tests/execute_tests/ls/mocked_data/filter-py.txt (deflated 69%)
+  adding: tests/execute_tests/ls/mocked_data/normal-color.json (stored 0%)
+  adding: tests/execute_tests/ls/mocked_data/normal-color.out.txt (deflated 69%)
+  adding: tests/execute_tests/ls/mocked_data/normal-color.txt (deflated 69%)
+  adding: tests/execute_tests/ls/mocked_data/normal.json (stored 0%)
+  adding: tests/execute_tests/ls/mocked_data/normal.out.txt (deflated 69%)
+  adding: tests/execute_tests/ls/mocked_data/normal.txt (deflated 69%)
+  adding: tests/execute_tests/ls/mocked_data/numbers-from-profile-list-str.json (deflated 62%)
+  adding: tests/execute_tests/ls/mocked_data/numbers-from-profile-list-str.out.txt (deflated 79%)
+  adding: tests/execute_tests/ls/mocked_data/numbers-from-profile-list-str.txt (deflated 69%)
+  adding: tests/execute_tests/ls/mocked_data/numbers-from-profile-str.json (deflated 58%)
+  adding: tests/execute_tests/ls/mocked_data/numbers-from-profile-str.out.txt (deflated 79%)
+  adding: tests/execute_tests/ls/mocked_data/numbers-from-profile-str.txt (deflated 69%)
+  adding: tests/execute_tests/ls/mocked_data/numbers-from-profile.json (deflated 76%)
+  adding: tests/execute_tests/ls/mocked_data/numbers-from-profile.out.txt (deflated 79%)
+  adding: tests/execute_tests/ls/mocked_data/numbers-from-profile.txt (deflated 69%)
+  adding: tests/execute_tests/ls/mocked_data/yellow-executable-replace-groups-list.json (deflated 64%)
+  adding: tests/execute_tests/ls/mocked_data/yellow-executable-replace-groups-list.out.txt (deflated 72%)
+  adding: tests/execute_tests/ls/mocked_data/yellow-executable-replace-groups-list.txt (deflated 69%)
+  adding: tests/execute_tests/ls/mocked_data/yellow-executable-replace-groups.json (deflated 60%)
+  adding: tests/execute_tests/ls/mocked_data/yellow-executable-replace-groups.out.txt (deflated 72%)
+  adding: tests/execute_tests/ls/mocked_data/yellow-executable-replace-groups.txt (deflated 69%)
+  adding: tests/execute_tests/ls/mocked_data/yellow-executable.json (deflated 53%)
+  adding: tests/execute_tests/ls/mocked_data/yellow-executable.out.txt (deflated 69%)
+  adding: tests/execute_tests/ls/mocked_data/yellow-executable.txt (deflated 69%)
+  adding: tests/execute_tests/ls/test_ls.py (deflated 78%)
+  adding: tests/execute_tests/ls/__init__.py (stored 0%)
+  adding: tests/execute_tests/pylint/ (stored 0%)
+  adding: tests/execute_tests/pylint/mocked_data/ (stored 0%)
+  adding: tests/execute_tests/pylint/mocked_data/input-color.json (deflated 74%)
+  adding: tests/execute_tests/pylint/mocked_data/input-color.out.txt (deflated 72%)
+  adding: tests/execute_tests/pylint/mocked_data/input-color.txt (deflated 66%)
+  adding: tests/execute_tests/pylint/mocked_data/pylint.json (deflated 75%)
+  adding: tests/execute_tests/pylint/mocked_data/pylint.out.txt (deflated 76%)
+  adding: tests/execute_tests/pylint/mocked_data/pylint.txt (deflated 69%)
+  adding: tests/execute_tests/pylint/mocked_data/remove-input-color.json (deflated 34%)
+  adding: tests/execute_tests/pylint/mocked_data/remove-input-color.out.txt (deflated 63%)
+  adding: tests/execute_tests/pylint/mocked_data/remove-input-color.txt (deflated 66%)
+  adding: tests/execute_tests/pylint/test_pylint.py (deflated 61%)
+  adding: tests/execute_tests/pylint/__init__.py (stored 0%)
+  adding: tests/execute_tests/rsync/ (stored 0%)
+  adding: tests/execute_tests/rsync/mocked_data/ (stored 0%)
+  adding: tests/execute_tests/rsync/mocked_data/groups-nums.json (deflated 78%)
+  adding: tests/execute_tests/rsync/mocked_data/groups-nums.out.txt (deflated 35%)
+  adding: tests/execute_tests/rsync/mocked_data/groups-nums.txt (deflated 23%)
+  adding: tests/execute_tests/rsync/mocked_data/groups-star.json (deflated 78%)
+  adding: tests/execute_tests/rsync/mocked_data/groups-star.out.txt (deflated 34%)
+  adding: tests/execute_tests/rsync/mocked_data/groups-star.txt (deflated 23%)
+  adding: tests/execute_tests/rsync/test_rsync.py (deflated 58%)
+  adding: tests/execute_tests/rsync/__init__.py (stored 0%)
+  adding: tests/pycolor_tests/mocked_data/df_color_alias.json (deflated 55%)
+  adding: tests/pycolor_tests/mocked_data/df_color_alias.out.txt (deflated 80%)
+  adding: tests/pycolor_tests/mocked_data/df_color_alias.txt (deflated 56%)
+  adding: tests/pycolor_tests/mocked_data/ls_numbers.json (deflated 55%)
+  adding: tests/pycolor_tests/mocked_data/ls_numbers.out.txt (deflated 80%)
+  adding: tests/pycolor_tests/mocked_data/ls_numbers.txt (deflated 70%)
+  adding: tests/pycolor_tests/mocked_data/version.json (stored 0%)

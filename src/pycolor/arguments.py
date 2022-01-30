@@ -1,53 +1,48 @@
 import argparse
+import typing
 
-
-# TODO: messy global
-_parser = None
-
-
-def _build_parser():
-    global _parser
-    _parser = argparse.ArgumentParser(
+def _build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
         description='do real-time output coloring and formatting for commands',
         usage='%(prog)s [options] COMMAND ARG ...'
     )
-    _parser.add_argument('-V', '--version',
+    parser.add_argument('-V', '--version',
         action='store_true', default=False,
         help='prints the version and exits'
     )
-    _parser.add_argument('--color',
+    parser.add_argument('--color',
         action='store', default='auto', nargs='?',
         choices=['auto', 'always', 'never', 'on', 'off'],
         help='enable/disable coloring output. if set to auto, color will be enabled for'
         + ' terminal output but disabled on output redirection (default auto)'
     )
-    _parser.add_argument('--load-file',
+    parser.add_argument('--load-file',
         action='append', metavar='FILE', default=[],
         help='use this config file containing profiles'
     )
-    _parser.add_argument('-p', '--profile',
+    parser.add_argument('-p', '--profile',
         action='store', metavar='NAME',
         help='specifically use this profile even if it does not match the current arguments'
     )
-    _parser.add_argument('-v', '--verbose',
+    parser.add_argument('-v', '--verbose',
         action='count', default=0,
         help='enable debug mode to assist in configuring profiles'
     )
-    _parser.add_argument('--execv',
+    parser.add_argument('--execv',
         action='store_true', default=True,
         help='use execv() if no profile matches the given command (default)'
     )
-    _parser.add_argument('--no-execv',
+    parser.add_argument('--no-execv',
         dest='execv', action='store_false',
         help='do not use execv() if no profile matches the given command'
     )
-    _parser.add_argument('--stdin',
+    parser.add_argument('--stdin',
         action='store_true', default=False,
         help='reads from stdin instead of running the given command. '
         + 'the command can still be given to let pycolor know which profile it should use'
     )
 
-    group = _parser.add_argument_group('profile options')
+    group = parser.add_argument_group('profile options')
     group.add_argument('-t', '--timestamp',
         action='store', metavar='FORMAT', default=False, nargs='?',
         help='force enable "timestamp" for all profiles with an optional FORMAT'
@@ -60,12 +55,12 @@ def _build_parser():
         dest='tty', action='store_false',
         help='do not run the command in a pseudo-terminal (default)'
     )
-    group.add_argument('-i', '--interactive',
+    group.add_argument('-B', '--nobuffer',
         action='store_true', default=False,
-        help='force enable "interactive" for all profiles'
+        help='force enable "nobuffer" for all profiles'
     )
 
-    group = _parser.add_argument_group('debug options')
+    group = parser.add_argument_group('debug options')
     group.add_argument('--debug-color',
         action='store_true', default=False,
         help='display all available color styles and exit'
@@ -85,6 +80,7 @@ def _build_parser():
         action='store', metavar='FILE',
         help='write debug messages to a file in addition to stdout'
     )
+    return parser
 
 class DebugFormatAction(argparse.Action):
     def __init__(self, option_strings, dest, nargs=None, **kwargs):
@@ -94,19 +90,23 @@ class DebugFormatAction(argparse.Action):
         setattr(namespace, 'debug_format_reset', option_string == '--debug-format')
         setattr(namespace, self.dest, values)
 
-def get_args(args):
-    global _parser
-    if _parser is None:
-        _build_parser()
-    return parse_known_args(_parser, args)
+def get_args(args: typing.List[str]) -> typing.Tuple[argparse.ArgumentParser, argparse.Namespace, typing.List[str]]:
+    parser = _build_parser()
+    return (parser, *parse_known_args(parser, args))
 
-def parse_known_args(parser, args):
+def parse_known_args(
+    parser: argparse.ArgumentParser,
+    args: typing.List[str]
+) -> typing.Tuple[argparse.Namespace, typing.List[str]]:
     # TODO: using parser._actions is somewhat of a hack
     args, cmd_args = split_args(args, parser._actions)
     argspace = parser.parse_args(args)
     return argspace, cmd_args
 
-def split_args(args, actions):
+def split_args(
+    args: typing.List[str],
+    actions: typing.List[argparse.Action]
+) -> typing.Tuple[typing.List[str], typing.List[str]]:
     """Splits the arguments between ones that belong to pycolor and the command
 
     Args:

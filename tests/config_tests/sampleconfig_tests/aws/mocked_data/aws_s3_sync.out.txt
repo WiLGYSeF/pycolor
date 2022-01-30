@@ -1,0 +1,41 @@
+(dryrun) upload: [32m/usr/bin/docker to s3://bucket/usr/bin/docker[0m
+(dryrun) upload: [32m/usr/bin/x86_64-linux-gnu-gcov-tool-9 to s3://bucket/usr/bin/x86_64-linux-gnu-gcov-tool-9[0m
+(dryrun) upload: [32m/usr/bin/gpg-wks-server to s3://bucket/usr/bin/gpg-wks-server[0m
+(dryrun) upload: [32m/usr/bin/ppmtoneo to s3://bucket/usr/bin/ppmtoneo[0m
+(dryrun) upload: [32m/usr/bin/arch to s3://bucket/usr/bin/arch[0m
+(dryrun) upload: [32m/usr/bin/roff2html to s3://bucket/usr/bin/roff2html[0m
+(dryrun) upload: [32m/usr/bin/thor to s3://bucket/usr/bin/thor[0m
+(dryrun) upload: [32m/usr/bin/ntfsls to s3://bucket/usr/bin/ntfsls[0m
+(dryrun) upload: [32m/usr/bin/pstree.x11 to s3://bucket/usr/bin/pstree.x11[0m
+(dryrun) upload: [32m/usr/bin/afmtodit to s3://bucket/usr/bin/afmtodit[0m
+(dryrun) upload: [32m/usr/bin/sg_ses to s3://bucket/usr/bin/sg_ses[0m
+(dryrun) upload: [32m/usr/bin/dwp to s3://bucket/usr/bin/dwp[0m
+(dryrun) upload: [32m/usr/bin/bc to s3://bucket/usr/bin/bc[0m
+(dryrun) upload: [32m/usr/bin/pnmnlfilt to s3://bucket/usr/bin/pnmnlfilt[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/ximtoppm[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/x86_64-linux-gnu-objdump[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/deborphan[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/size[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/passwd[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/telnet.netkit[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/nawk[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/choom[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/gresource[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/scsi_stop[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/link[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/systemd-umount[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/see[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/gpg-zip[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/prove[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/mimeopen[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/nmap[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/ltrace[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/column[0m
+(dryrun) delete: [31ms3://bucket/usr/bin/lzless[0m
+(dryrun) upload: [32m/usr/bin/eatmydata to s3://bucket/usr/bin/eatmydata[0m
+(dryrun) upload: [32m/usr/bin/cloud-id to s3://bucket/usr/bin/cloud-id[0m
+(dryrun) upload: [32m/usr/bin/zipdetails to s3://bucket/usr/bin/zipdetails[0m
+(dryrun) upload: [32m/usr/bin/setpriv to s3://bucket/usr/bin/setpriv[0m
+(dryrun) upload: [32m/usr/bin/gpg-agent to s3://bucket/usr/bin/gpg-agent[0m
+(dryrun) upload: [32m/usr/bin/cksum to s3://bucket/usr/bin/cksum[0m
+(dryrun) upload: [32m/usr/bin/avahi-browse to s3://bucket/usr/bin/avahi-browse[0m

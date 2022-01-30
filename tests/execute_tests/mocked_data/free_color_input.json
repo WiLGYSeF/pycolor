@@ -1,0 +1,13 @@
+{
+    "profiles": [
+        {
+            "name": "free",
+            "patterns": [
+                {
+                    "expression": "^ +total .*$",
+                    "replace_all": "%Cc%G0%Cz"
+                }
+            ]
+        }
+    ]
+}

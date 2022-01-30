@@ -1,0 +1,58 @@
+{
+    "profiles": [
+        {
+            "profile_name": "ping-unix",
+            "name": "ping",
+            "which": "/usr/bin/ping",
+            "patterns": [
+                {
+                    "expression": "^PING (.+) \\((.+)\\) [0-9a-f]+\\(\\d+\\) bytes of data\\.$",
+                    "replace_groups": ["%Hly", "%Hy"]
+                },
+                {
+                    "expression": [
+                        "^",
+                        "(?:\\[(?P<ts>[\\d.]+)\\] )?",
+                        "\\d+ bytes from ",
+                        "(?:",
+                            "(?P<dest>.+) \\((?P<ip>.+)\\): ",
+                            "|",
+                            "(?P<d_only>.+): ",
+                        ")",
+                        "icmp_seq=(?P<seq>\\d+) ttl=(?P<ttl>\\d+)",
+                        "(?: time=(?P<time>[\\d.]+ ms))?",
+                        "$"
+                    ],
+                    "replace_groups": {
+                        "ts": "%Gc",
+                        "dest": "%Hly",
+                        "ip,d_only": "%Hy",
+                        "seq,ttl": "%Hg",
+                        "time": "%Hb"
+                    }
+                },
+                {
+                    "expression": "^--- (.+) ping statistics ---$",
+                    "replace_groups": ["%Hly"]
+                },
+                {
+                    "expression": "^(\\d+) packets transmitted, (\\d+) received, (?:(\\+?\\d+) errors, )?(?:0%|(\\d+%)) packet loss, time (\\d+ms)$",
+                    "replace_groups": {
+                        "1,2": "%Hg",
+                        "3,4": "%Hr",
+                        "5": "%Hb"
+                    }
+                },
+                {
+                    "expression": "^rtt (min)/(avg)/(max)/(mdev) = ([\\d.]+)/([\\d.]+)/([\\d.]+)/([\\d.]+) ms$",
+                    "replace_groups": {
+                        "1**4": "%Hg",
+                        "2**4": "%Hc",
+                        "3**4": "%Hlg",
+                        "4**4": "%Hy"
+                    }
+                }
+            ]
+        }
+    ]
+}

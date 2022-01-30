@@ -2,32 +2,46 @@
 
 import json
 import os
+import shutil
 import sys
+import typing
 
+from . import __version__
 from . import arguments
 from . import config
-from . import debug_colors
-from .execute import read_stream
-from .printmsg import printerr, is_color_enabled
-from .pycolor_class import Pycolor
-from . import pyformat
-from . import __version__
+from .execute.execute import read_stream
+from .pycolor import pyformat
+from .pycolor.pycolor_class import Pycolor
+from .utils import debug_colors
+from .utils.printmsg import printerr, is_color_enabled
 
+CONFIG_DIR: typing.Optional[str] = None
+CONFIG_DEFAULT: typing.Optional[str] = None
 
-if os.name == 'nt':
-    HOME = os.getenv('USERPROFILE')
-else:
-    HOME = os.getenv('HOME')
-CONFIG_DIR = os.path.join(HOME, '.pycolor.d')
-CONFIG_DEFAULT = os.path.join(HOME, '.pycolor.json')
+HOME = os.getenv('USERPROFILE' if os.name == 'nt' else 'HOME')
 
+if HOME is not None:
+    CONFIG_DIR = os.path.join(HOME, '.pycolor.d')
+    CONFIG_DEFAULT = os.path.join(HOME, '.pycolor.json')
 
-def main_args():
+def main_args() -> None:
     main(sys.argv[1:])
 
-def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=sys.stdin):
-    argspace, cmd_args = arguments.get_args(args)
+def main(
+    args: typing.List[str],
+    stdout_stream: typing.TextIO = sys.stdout,
+    stderr_stream: typing.TextIO = sys.stderr,
+    stdin_stream: typing.TextIO = sys.stdin
+) -> None:
+    parser, argspace, cmd_args = arguments.get_args(args)
     read_stdin = len(cmd_args) == 0 or argspace.stdin
+
+    if (
+        config.SAMPLE_CONFIG_DIR is not None
+        and CONFIG_DIR is not None
+        and not os.path.exists(CONFIG_DIR)
+    ):
+        shutil.copytree(config.SAMPLE_CONFIG_DIR, CONFIG_DIR)
 
     if argspace.version:
         print(__version__)
@@ -38,12 +52,10 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         sys.exit(0)
 
     if argspace.debug_format:
-        fmt = argspace.debug_format + ('%Cz' if argspace.debug_format_reset else '')
-        print(pyformat.format_string(fmt, context={
-            'color': {
-                'enabled': is_color_enabled(argspace.color)
-            }
-        }))
+        print(pyformat.fmt_str(
+            argspace.debug_format + ('%Cz' if argspace.debug_format_reset else ''),
+            color_enabled=is_color_enabled(argspace.color)
+        ))
         sys.exit(0)
 
     debug_log = None
@@ -60,15 +72,15 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         debug=argspace.verbose,
         debug_log=debug_log,
         debug_log_out=debug_log_out,
-        execv=argspace.execv
+        execv=argspace.execv,
+        stdout=stdout_stream,
+        stderr=stderr_stream
     )
-    pycobj.stdout = stdout_stream
-    pycobj.stderr = stderr_stream
 
     if len(argspace.load_file) == 0:
-        if os.path.isfile(CONFIG_DEFAULT):
+        if CONFIG_DEFAULT is not None and os.path.isfile(CONFIG_DEFAULT):
             try_load_file(pycobj, CONFIG_DEFAULT)
-        if os.path.exists(CONFIG_DIR):
+        if CONFIG_DIR is not None and os.path.exists(CONFIG_DIR):
             load_config_files(pycobj, CONFIG_DIR)
     else:
         for fname in argspace.load_file:
@@ -81,15 +93,15 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
 
     if argspace.tty:
         override_profile_conf(pycobj, 'tty', argspace.tty)
-    if argspace.interactive:
-        override_profile_conf(pycobj, 'interactive', argspace.interactive)
+    if argspace.nobuffer:
+        override_profile_conf(pycobj, 'nobuffer', argspace.nobuffer)
 
     profile = None
     if argspace.profile is not None:
         if len(argspace.profile) != 0:
             profile = pycobj.get_profile_by_name(argspace.profile)
         else:
-            profile = pycobj.profloader.profile_default
+            profile = pycobj.profile_default
         if profile is None:
             printerr('profile with name "%s" not found' % argspace.profile)
             sys.exit(1)
@@ -102,15 +114,14 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
             pycobj.debug_print(1, 'using profile "%s"', profile.get_name())
 
             try:
-                # ensure patterns are loaded here first
-                profile.loaded_patterns
+                profile.load_patterns()
             except config.ConfigError as cex:
                 printerr(cex)
                 sys.exit(1)
 
-        pycobj.set_current_profile(profile)
-        if len(cmd_args) == 0 and pycobj.profloader.is_default_profile(pycobj.current_profile):
-            arguments._parser.print_help()
+        pycobj.current_profile = profile
+        if len(cmd_args) == 0 and pycobj.is_default_profile():
+            parser.print_help()
             sys.exit(1)
 
         try:
@@ -126,18 +137,18 @@ def main(args, stdout_stream=sys.stdout, stderr_stream=sys.stderr, stdin_stream=
         printerr(cex)
         sys.exit(1)
 
-def read_input_stream(pycobj, stream):
+def read_input_stream(pycobj: Pycolor, stream: typing.TextIO) -> None:
     while True:
-        if read_stream(stream.buffer, pycobj.stdout_cb) is None:
+        if read_stream(stream, pycobj.stdout_cb, stream.read().encode()) is None:
             break
-    read_stream(stream.buffer, pycobj.stdout_cb, last=True)
+    read_stream(stream, pycobj.stdout_cb, b'', last=True)
 
-def override_profile_conf(pycobj, attr, val):
+def override_profile_conf(pycobj: Pycolor, attr: str, val: str) -> None:
     for prof in pycobj.profiles:
         setattr(prof, attr, val)
     setattr(pycobj.profile_default, attr, val)
 
-def load_config_files(pycobj, path):
+def load_config_files(pycobj: Pycolor, path: str) -> None:
     # https://stackoverflow.com/a/3207973
     _, _, filenames = next(os.walk(path))
 
@@ -146,7 +157,7 @@ def load_config_files(pycobj, path):
         if os.path.isfile(filepath):
             try_load_file(pycobj, filepath)
 
-def try_load_file(pycobj, fname):
+def try_load_file(pycobj: Pycolor, fname: str) -> bool:
     try:
         pycobj.load_file(fname)
         return True
@@ -154,6 +165,8 @@ def try_load_file(pycobj, fname):
         printerr(jde, filename=fname)
     except config.ConfigError as cex:
         printerr(cex, filename=fname)
+    except Exception as err:
+        printerr(err, filename=fname)
     return False
 
 if __name__ == '__main__': #pragma: no cover

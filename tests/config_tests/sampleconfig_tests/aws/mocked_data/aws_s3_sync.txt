@@ -1,0 +1,41 @@
+(dryrun) upload: /usr/bin/docker to s3://bucket/usr/bin/docker
+(dryrun) upload: /usr/bin/x86_64-linux-gnu-gcov-tool-9 to s3://bucket/usr/bin/x86_64-linux-gnu-gcov-tool-9
+(dryrun) upload: /usr/bin/gpg-wks-server to s3://bucket/usr/bin/gpg-wks-server
+(dryrun) upload: /usr/bin/ppmtoneo to s3://bucket/usr/bin/ppmtoneo
+(dryrun) upload: /usr/bin/arch to s3://bucket/usr/bin/arch
+(dryrun) upload: /usr/bin/roff2html to s3://bucket/usr/bin/roff2html
+(dryrun) upload: /usr/bin/thor to s3://bucket/usr/bin/thor
+(dryrun) upload: /usr/bin/ntfsls to s3://bucket/usr/bin/ntfsls
+(dryrun) upload: /usr/bin/pstree.x11 to s3://bucket/usr/bin/pstree.x11
+(dryrun) upload: /usr/bin/afmtodit to s3://bucket/usr/bin/afmtodit
+(dryrun) upload: /usr/bin/sg_ses to s3://bucket/usr/bin/sg_ses
+(dryrun) upload: /usr/bin/dwp to s3://bucket/usr/bin/dwp
+(dryrun) upload: /usr/bin/bc to s3://bucket/usr/bin/bc
+(dryrun) upload: /usr/bin/pnmnlfilt to s3://bucket/usr/bin/pnmnlfilt
+(dryrun) delete: s3://bucket/usr/bin/ximtoppm
+(dryrun) delete: s3://bucket/usr/bin/x86_64-linux-gnu-objdump
+(dryrun) delete: s3://bucket/usr/bin/deborphan
+(dryrun) delete: s3://bucket/usr/bin/size
+(dryrun) delete: s3://bucket/usr/bin/passwd
+(dryrun) delete: s3://bucket/usr/bin/telnet.netkit
+(dryrun) delete: s3://bucket/usr/bin/nawk
+(dryrun) delete: s3://bucket/usr/bin/choom
+(dryrun) delete: s3://bucket/usr/bin/gresource
+(dryrun) delete: s3://bucket/usr/bin/scsi_stop
+(dryrun) delete: s3://bucket/usr/bin/link
+(dryrun) delete: s3://bucket/usr/bin/systemd-umount
+(dryrun) delete: s3://bucket/usr/bin/see
+(dryrun) delete: s3://bucket/usr/bin/gpg-zip
+(dryrun) delete: s3://bucket/usr/bin/prove
+(dryrun) delete: s3://bucket/usr/bin/mimeopen
+(dryrun) delete: s3://bucket/usr/bin/nmap
+(dryrun) delete: s3://bucket/usr/bin/ltrace
+(dryrun) delete: s3://bucket/usr/bin/column
+(dryrun) delete: s3://bucket/usr/bin/lzless
+(dryrun) upload: /usr/bin/eatmydata to s3://bucket/usr/bin/eatmydata
+(dryrun) upload: /usr/bin/cloud-id to s3://bucket/usr/bin/cloud-id
+(dryrun) upload: /usr/bin/zipdetails to s3://bucket/usr/bin/zipdetails
+(dryrun) upload: /usr/bin/setpriv to s3://bucket/usr/bin/setpriv
+(dryrun) upload: /usr/bin/gpg-agent to s3://bucket/usr/bin/gpg-agent
+(dryrun) upload: /usr/bin/cksum to s3://bucket/usr/bin/cksum
+(dryrun) upload: /usr/bin/avahi-browse to s3://bucket/usr/bin/avahi-browse

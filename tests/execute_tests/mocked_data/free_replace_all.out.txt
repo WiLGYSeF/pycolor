@@ -1,0 +1,15 @@
+              total        used        free      shared  buff/cache   available
+Mem:        [33m8035480[0m     [33m2833916[0m     1202676       99288     3998888     [33m4883804[0m
+Swap:       2097148           0     2097148
+
+              total        used        free      shared  buff/cache   available
+Mem:        [33m8035480[0m     [33m2840724[0m     1197912       97240     3996844     [33m4879040[0m
+Swap:       2097148           0     2097148
+
+              total        used        free      shared  buff/cache   available
+Mem:        [33m8035480[0m     [33m2857284[0m     1175964      102616     [33m4002232[0m     [33m4857096[0m
+Swap:       2097148           0     2097148
+
+              total        used        free      shared  buff/cache   available
+Mem:        [33m8035480[0m     [33m2858276[0m     1177540      100048     3999664     [33m4858680[0m
+Swap:       2097148           0     2097148
