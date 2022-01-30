@@ -1,7 +1,6 @@
-import re
 import typing
 
-def get_named_group_index_dict(match: re.Match) -> typing.Dict[int, str]:
+def get_named_group_index_dict(match: typing.Match) -> typing.Dict[int, str]:
     """Get the name/index map of the groups
 
     Args:
@@ -20,7 +19,7 @@ def get_named_group_index_dict(match: re.Match) -> typing.Dict[int, str]:
 
     return group_idx_to_name
 
-def get_named_group_index_list(match: re.Match) -> typing.List[typing.Optional[str]]:
+def get_named_group_index_list(match: typing.Match) -> typing.List[typing.Optional[str]]:
     """Get the names of the groups
 
     Args:
@@ -40,7 +39,7 @@ def get_named_group_index_list(match: re.Match) -> typing.List[typing.Optional[s
 
     return group_names
 
-def get_named_group_index(match: re.Match, name: str) -> typing.Optional[int]:
+def get_named_group_index(match: typing.Match, name: str) -> typing.Optional[int]:
     """Get the index of the named group
 
     Args:
@@ -57,7 +56,7 @@ def get_named_group_index(match: re.Match, name: str) -> typing.Optional[int]:
                 return i
     return None
 
-def get_named_group_at_index(match: re.Match, idx: int) -> typing.Optional[str]:
+def get_named_group_at_index(match: typing.Match, idx: int) -> typing.Optional[str]:
     """Get the name of the group
 
     Args:

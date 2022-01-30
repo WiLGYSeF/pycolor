@@ -1,4 +1,3 @@
-import re
 import typing
 
 from ..config.pattern import Pattern, ReplaceGroup
@@ -225,7 +224,7 @@ def _replace_groups(
     color_positions: ColorPositions = {}
     replace_ranges = []
 
-    def replace_group(match: re.Match, idx: int, offset_inner: int) -> str:
+    def replace_group(match: typing.Match, idx: int, offset_inner: int) -> str:
         replace_val = _get_replace_group(match, idx, pat.replace_groups)
         if replace_val is None:
             return match.group(idx)
@@ -261,7 +260,7 @@ def _replace_groups(
 def _match_all_group_replace(
     regex: typing.Pattern,
     string: str,
-    replace_func: typing.Callable[[re.Match, int, int], str]
+    replace_func: typing.Callable[[typing.Match, int, int], str]
 ) -> str:
     """Replace groups in regex matches in a string
 
@@ -276,7 +275,7 @@ def _match_all_group_replace(
     result = ''
     last = 0
 
-    def inner_replace_func(match: re.Match, index: int, offset: int) -> str:
+    def inner_replace_func(match: typing.Match, index: int, offset: int) -> str:
         return replace_func(match, index, offset - len(result))
 
     for match in regex.finditer(string):
@@ -310,7 +309,7 @@ def _pat_search_replace(
     """
     color_positions: ColorPositions = {}
 
-    def replacer(match: re.Match) -> str:
+    def replacer(match: typing.Match) -> str:
         context.color_positions_end_idx = offset + match.start()
         context.match = match
 
@@ -399,7 +398,7 @@ def _get_replace_field_separator(
     return None
 
 def _get_replace_group(
-    match: re.Match,
+    match: typing.Match,
     idx: int,
     replace_groups: typing.Union[
         ReplaceGroup,

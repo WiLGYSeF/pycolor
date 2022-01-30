@@ -1,7 +1,8 @@
 # Pycolor
 
-[![Build Status](https://www.travis-ci.com/WiLGYSeF/pycolor.svg?branch=master)](https://www.travis-ci.com/WiLGYSeF/pycolor)
+[![Build Status](https://www.travis-ci.com/WiLGYSeF/pycolor.svg?branch=master)](https://app.travis-ci.com/github/WiLGYSeF/pycolor)
 [![codecov](https://codecov.io/gh/WiLGYSeF/pycolor/branch/master/graph/badge.svg?token=7ASXFQTOOG)](https://codecov.io/gh/WiLGYSeF/pycolor)
+[![PyPI version](https://badgen.net/pypi/v/pycolor-term)](https://pypi.org/project/pycolor-term/)
 
 1. [Installation](#installation).
 2. [Example Usage](#example-usage).

@@ -26,7 +26,7 @@ class ArgPattern:
         mutually_exclusive(self, ['_expression', '_subcommand'])
 
         self.expression: typing.Optional[str] = join_bkstr(self._expression)
-        self.regex: typing.Optional[re.Pattern] = compile_re(self.expression, 'expression')
+        self.regex: typing.Optional[typing.Pattern] = compile_re(self.expression, 'expression')
 
         self.subcommand: typing.List[str] = []
         if isinstance(self._subcommand, str):

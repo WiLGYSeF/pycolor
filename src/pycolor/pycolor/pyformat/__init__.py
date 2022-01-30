@@ -320,7 +320,7 @@ def fmt_str(string: str, color_enabled: bool = True) -> str:
     )
     return formatter.fmt_str(string)
 
-def get_format_param(match: re.Match) -> typing.Tuple[
+def get_format_param(match: typing.Match) -> typing.Tuple[
     typing.Optional[str],
     typing.Optional[str]
 ]:
@@ -332,7 +332,7 @@ def get_format_param(match: re.Match) -> typing.Tuple[
 
     return formatter, param
 
-def _get_numbered_group(match: re.Match, name: str, start: int = 0) -> typing.Optional[str]:
+def _get_numbered_group(match: typing.Match, name: str, start: int = 0) -> typing.Optional[str]:
     groups = match.groupdict()
     idx = start
 

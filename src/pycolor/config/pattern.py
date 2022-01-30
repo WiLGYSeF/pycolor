@@ -44,11 +44,11 @@ class Pattern:
         self._deactivation_expression_line_offset: int = 0
 
         self.active: bool = True
-        self.regex: typing.Optional[re.Pattern] = None
-        self.super_regex: typing.Optional[re.Pattern] = None
-        self.separator_regex: typing.Optional[re.Pattern] = None
-        self.activation_regex: typing.Optional[re.Pattern] = None
-        self.deactivation_regex: typing.Optional[re.Pattern] = None
+        self.regex: typing.Optional[typing.Pattern] = None
+        self.super_regex: typing.Optional[typing.Pattern] = None
+        self.separator_regex: typing.Optional[typing.Pattern] = None
+        self.activation_regex: typing.Optional[typing.Pattern] = None
+        self.deactivation_regex: typing.Optional[typing.Pattern] = None
         self._activation_exp_line_off: int = 0
         self._deactivation_exp_line_off: int = 0
         self.from_profile_str: typing.Optional[str] = None

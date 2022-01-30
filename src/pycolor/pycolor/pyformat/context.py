@@ -1,4 +1,3 @@
-import re
 import typing
 
 from .coloring import ColorPositions
@@ -13,7 +12,7 @@ class Context:
         self.fields: typing.List[str] = kwargs.get('fields', [])
         self.field_cur: typing.Optional[str] = kwargs.get('field_cur')
 
-        self.match: typing.Optional[re.Match] = kwargs.get('match')
+        self.match: typing.Optional[typing.Match] = kwargs.get('match')
         self.match_cur: typing.Optional[str] = kwargs.get('match_cur')
         self.match_incr: typing.Optional[int] = kwargs.get('match_incr')
 

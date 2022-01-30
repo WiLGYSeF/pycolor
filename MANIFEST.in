@@ -1,1 +1,2 @@
+include src/pycolor/config/sample-config/*.json
 include src/pycolor/config/schema/*.json
